@@ -7,6 +7,8 @@ import 'package:nallagram/screens/Profile/edit_profile.dart';
 import 'package:nallagram/screens/Posts/postView_model.dart';
 import 'package:nallagram/screens/Story/storyview.dart';
 import 'package:nallagram/screens/settings/settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 
 import 'profile_upload.dart';
@@ -29,6 +31,16 @@ void getCurrentUser() {
     if (user != null) {
       loggedInUser = user;
     }
+  } catch (e) {
+    print(e);
+  }
+}
+
+ getUserImage() async {
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String photoURL = prefs.getString('user_image');
+    return photoURL;
   } catch (e) {
     print(e);
   }
@@ -71,11 +83,12 @@ class _ProfileState extends State<Profile> {
                             borderRadius: BorderRadius.circular(25),
                           )
                         : BoxDecoration(
+
                             color: Colors.red.shade100,
                             borderRadius: BorderRadius.circular(25),
                             image: DecorationImage(
                               image: CachedNetworkImageProvider(
-                                  loggedInUser.photoURL),
+                                   getUserImage()),
                               fit: BoxFit.cover,
                             )),
                     child: rimage != null
