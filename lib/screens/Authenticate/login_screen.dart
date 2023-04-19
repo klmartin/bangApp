@@ -3,6 +3,7 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import '../../nav.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -129,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('http://192.168.151.229/social-backend-laravel/api/login'),
+                                Uri.parse('http://192.168.100.113/social-backend-laravel/api/login'),
                                 body: {
                                   'email': email,
                                     'password': password,
@@ -139,12 +140,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               final responseBody = jsonDecode(response.body);
                                 print(responseBody);
                               if (responseBody != null) {
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                prefs.setInt('user_id', responseBody['user_id']);
+                                prefs.setString('token', responseBody['token']);
                                 Navigator.pushNamed(context, Nav.id);
                               }
                             }
                             //Implement login functionality.
                             catch (e) {
-                              print('hello');
                               print(e);
                             } finally {
                               showSpinner = false;

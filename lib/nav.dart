@@ -42,7 +42,6 @@ class _NavState extends State<Nav> {
     Home(),
     Explore(),
     Create(),
-
     Activity(),
     Profile(),
   ];

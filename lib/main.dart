@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nallagram/firebase_options.dart';
 import 'package:nallagram/nav.dart';
 import 'package:nallagram/screens/Authenticate/login_screen.dart';
 import 'package:nallagram/screens/Chat/calls_chat.dart';
@@ -11,14 +10,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'root.dart';
 import 'screens/Chat/chat_home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-final _auth = FirebaseAuth.instance;
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  if (Firebase.apps.length == 0) {
+    await Firebase.initializeApp();
+  }
   runApp(MyApp());
 }
 
@@ -54,14 +52,23 @@ class MyApp extends StatelessWidget {
 
 class Authenticate extends StatelessWidget {
   static const id = 'auth';
+
   @override
   Widget build(BuildContext context) {
-    final firebaseUser = context.watch<User>();
-
-    if (firebaseUser != null) {
-      return Nav();
-    }
-
-    return Welcome();
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          String token = snapshot.data.getString('token');
+          if (token != null) {
+            return Nav();
+          } else {
+            return Welcome();
+          }
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
   }
 }
