@@ -11,13 +11,9 @@ import 'package:nallagram/widgets/story_widget.dart';
 import '../../widgets/post_card.dart';
 import '../Comments/commentspage.dart';
 import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
-// import '../data.dart';
 import 'package:http/http.dart' as http;
 
 
-final _firestore = FirebaseFirestore.instance;
 
 List<String> likedusers = [];
 
@@ -184,7 +180,7 @@ class _HomeState extends State<Home> {
 
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('http://192.168.151.229/social-backend-laravel/api/getAllPosts'));
+    var response = await http.get(Uri.parse('http://192.168.100.103/social-backend-laravel/api/getAllPosts'));
     var data = json.decode(response.body);
     return data['posts'];
   }
@@ -212,32 +208,398 @@ class PostStream extends StatelessWidget {
           if (challengeImgUrl != null) {
             postCards.add(Row(
               children: [
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.45,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(imgurl),
-                      fit: BoxFit.cover,
+                Stack(children: [
+                  SizedBox(
+                    height: 450,
+                  child: Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                    ),
+                    shadowColor: Colors.black,
+                    elevation: 40.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(32)),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(32)),
+                        child: CachedNetworkImage(
+                          imageUrl: imgurl,
+                          fit: BoxFit.cover,
+                          width: 190,
+                          placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.red.shade100,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
+                        ),
+                      ),
                     ),
                   ),
+
                 ),
+                  GestureDetector(
+                    onDoubleTap: () {
+                      // setState(() {
+                      //   widget.isLiked = !widget.isLiked;
+                      //   if (widget.isLiked) {
+                      //     widget.likes += 1;
+                      //   } else if (widget.likes > 0) {
+                      //     widget.likes -= 1;
+                      //   }
+                      //
+                      //   // widget.likes += 1;
+                      // });
+                      print('hello');
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+                      child: Container(
+
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(32),
+                            color: Colors.white,
+                            gradient: LinearGradient(
+                              begin: FractionalOffset.bottomCenter,
+                              end: FractionalOffset.topCenter,
+                              colors: [
+                                Colors.grey.withOpacity(0.0),
+                                Colors.black.withOpacity(0.5),
+                              ],
+                            )),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                    // child: ListTile(
+                    //   leading: CircleAvatar(
+                    //     radius: 20.0,
+                    //     backgroundColor: Colors.red.shade100,
+                    //     backgroundImage: CachedNetworkImageProvider(imgurl),
+                    //   ),
+                    //   title: Text(
+                    //     'widget.name',
+                    //     style: TextStyle(
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.white,
+                    //       fontFamily: 'Metropolis',
+                    //       fontSize: 14.0,
+                    //     ),
+                    //   ),
+                    //   subtitle: Text(
+                    //     'widget.place',
+                    //     style: TextStyle(
+                    //         fontSize: 12.0,
+                    //         fontFamily: 'Metropolis',
+                    //         color: Colors.white),
+                    //   ),
+                    //   dense: true,
+                    //   trailing: Icon(
+                    //     Icons.more_vert,
+                    //     color: Colors.white.withOpacity(0.8),
+                    //     // size: 15,
+                    //   ),
+                    // ),
+                  ),
+                  Positioned.fill(
+                    top: 350,
+                    left: 25,
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            child: Row(
+                              children: <Widget>[
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(32),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        // setState(() {
+                                        //   widget.isLiked = !widget.isLiked;
+                                        //   if (widget.isLiked) {
+                                        //     widget.likes += 1;
+                                        //   } else if (widget.likes > 0) {
+                                        //     widget.likes -= 1;
+                                        //   }
+                                        // });
+                                        print('hello');
+                                      },
+                                      child: AnimatedContainer(
+                                        duration: Duration(
+                                          milliseconds: 400,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          // color: !widget.isLiked
+                                          //     ? Colors.grey.withOpacity(0.5)
+                                          //     : Colors.red,
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(50),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Row(
+                                            children: <Widget>[
+                                              FaIcon(
+                                                FontAwesomeIcons.solidHeart,
+                                                color: Colors.white,
+                                                size: 20,
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 8.0),
+                                                child: Text(
+                                                  '${2}',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Metropolis',
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: IconButton(
+                                    onPressed: () => print('hello'),
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.solidCommentDots,
+                                      size: 20,
+                                    ),
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10, right: 20.0),
+                            child: LikeButton(
+                              likeBuilder: (bool isLiked) {
+                                return FaIcon(
+                                  FontAwesomeIcons.bookmark,
+                                  color: Colors.white,
+                                  size: 20,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ]),
                 SizedBox(width: 10),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.45,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(challengeImgUrl),
-                      fit: BoxFit.cover,
+                Stack(children: [
+                  SizedBox(
+                    height: 450,
+                    child: Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                      ),
+                      shadowColor: Colors.black,
+                      elevation: 40.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          child: CachedNetworkImage(
+                            imageUrl: challengeImgUrl,
+                            fit: BoxFit.cover,
+                            width: 190,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.red.shade100,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Icon(Icons.error),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  ),
+                  GestureDetector(
+                    onDoubleTap: () {
+                      // setState(() {
+                      //   widget.isLiked = !widget.isLiked;
+                      //   if (widget.isLiked) {
+                      //     widget.likes += 1;
+                      //   } else if (widget.likes > 0) {
+                      //     widget.likes -= 1;
+                      //   }
+                      //
+                      //   // widget.likes += 1;
+                      // });
+                      print('hello');
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+                      child: Container(
+
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(32),
+                            color: Colors.white,
+                            gradient: LinearGradient(
+                              begin: FractionalOffset.bottomCenter,
+                              end: FractionalOffset.topCenter,
+                              colors: [
+                                Colors.grey.withOpacity(0.0),
+                                Colors.black.withOpacity(0.5),
+                              ],
+                            )),
+                      ),
                     ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                    // child: ListTile(
+                    //   leading: CircleAvatar(
+                    //     radius: 20.0,
+                    //     backgroundColor: Colors.red.shade100,
+                    //     backgroundImage: CachedNetworkImageProvider(imgurl),
+                    //   ),
+                    //   title: Text(
+                    //     'widget.name',
+                    //     style: TextStyle(
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.white,
+                    //       fontFamily: 'Metropolis',
+                    //       fontSize: 14.0,
+                    //     ),
+                    //   ),
+                    //   subtitle: Text(
+                    //     'widget.place',
+                    //     style: TextStyle(
+                    //         fontSize: 12.0,
+                    //         fontFamily: 'Metropolis',
+                    //         color: Colors.white),
+                    //   ),
+                    //   dense: true,
+                    //   trailing: Icon(
+                    //     Icons.more_vert,
+                    //     color: Colors.white.withOpacity(0.8),
+                    //     // size: 15,
+                    //   ),
+                    // ),
+                  ),
+                  Positioned.fill(
+                    top: 350,
+                    left: 25,
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            child: Row(
+                              children: <Widget>[
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(32),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        // setState(() {
+                                        //   widget.isLiked = !widget.isLiked;
+                                        //   if (widget.isLiked) {
+                                        //     widget.likes += 1;
+                                        //   } else if (widget.likes > 0) {
+                                        //     widget.likes -= 1;
+                                        //   }
+                                        // });
+                                        print('hello');
+                                      },
+                                      child: AnimatedContainer(
+                                        duration: Duration(
+                                          milliseconds: 400,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          // color: !widget.isLiked
+                                          //     ? Colors.grey.withOpacity(0.5)
+                                          //     : Colors.red,
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(50),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Row(
+                                            children: <Widget>[
+                                              FaIcon(
+                                                FontAwesomeIcons.solidHeart,
+                                                color: Colors.white,
+                                                size: 20,
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 8.0),
+                                                child: Text(
+                                                  '${2}',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Metropolis',
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: IconButton(
+                                    onPressed: () => print('hello'),
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.solidCommentDots,
+                                      size: 20,
+                                    ),
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10, right: 20.0),
+                            child: LikeButton(
+                              likeBuilder: (bool isLiked) {
+                                return FaIcon(
+                                  FontAwesomeIcons.bookmark,
+                                  color: Colors.white,
+                                  size: 20,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ]),
+
               ],
             ));
           } else {
             postCards.add(PostCard(
-
               likes: 123,
             ));
           }

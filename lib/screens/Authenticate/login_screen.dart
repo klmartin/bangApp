@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('http://192.168.100.113/social-backend-laravel/api/login'),
+                                Uri.parse('http://172.20.10.4/social-backend-laravel/api/login'),
                                 body: {
                                   'email': email,
                                     'password': password,

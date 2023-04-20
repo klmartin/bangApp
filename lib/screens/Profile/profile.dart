@@ -16,6 +16,14 @@ final _auth = FirebaseAuth.instance;
 final _store = FirebaseFirestore.instance;
 bool _persposts = true;
 
+Future<void> myMethod() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String imageUrl = prefs.getString('imageUrl');
+  // pass imageUrl to CachedNetworkImageProvider
+}
+
+
+
 void getProfileData() async {
   final info = await _store.collection('users').doc(loggedInUser.uid).get();
   Map data = info.data();
@@ -36,7 +44,7 @@ void getCurrentUser() {
   }
 }
 
- getUserImage() async {
+Future<void> getUserImage() async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String photoURL = prefs.getString('user_image');
@@ -87,8 +95,7 @@ class _ProfileState extends State<Profile> {
                             color: Colors.red.shade100,
                             borderRadius: BorderRadius.circular(25),
                             image: DecorationImage(
-                              image: CachedNetworkImageProvider(
-                                   getUserImage()),
+                                image: CachedNetworkImageProvider( '') ,
                               fit: BoxFit.cover,
                             )),
                     child: rimage != null
@@ -175,7 +182,7 @@ class _ProfileState extends State<Profile> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              loggedInUser.displayName.toUpperCase(),
+              'Kaboja',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Metropolis',
