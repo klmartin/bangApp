@@ -100,84 +100,6 @@ class _HomeState extends State<Home> {
   }
 }
 
-// class PostStream extends StatelessWidget {
-//
-//   Future<List<dynamic>> getPosts() async {
-//     var response = await http.get(Uri.parse('http://192.168.100.113/social-backend-laravel/api/getAllPosts'));
-//     var data = json.decode(response.body);
-//     return data['posts'];
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return FutureBuilder(
-//       future: getPosts(),
-//       builder: (context, snapshot) {
-//         if (!snapshot.hasData) {
-//           return Center(
-//             child: CircularProgressIndicator(
-//               backgroundColor: Colors.lightBlue,
-//             ),
-//           );
-//         }
-//
-//         List<Widget> postCards = [];
-//
-//         for (var post in snapshot.data) {
-//           final caption = post['caption'];
-//           final imgurl = post['imgurl'];
-//           final challengeImgUrl = post['challengeImgUrl'];
-//
-//           if (challengeImgUrl != null) {
-//             postCards.add(Row(
-//               children: [
-//                 Container(
-//                   width: MediaQuery.of(context).size.width * 0.45,
-//                   height: 200,
-//                   decoration: BoxDecoration(
-//                     image: DecorationImage(
-//                       image: NetworkImage(imgurl),
-//                       fit: BoxFit.cover,
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(width: 10),
-//                 Container(
-//                   width: MediaQuery.of(context).size.width * 0.45,
-//                   height: 200,
-//                   decoration: BoxDecoration(
-//                     image: DecorationImage(
-//                       image: NetworkImage(challengeImgUrl),
-//                       fit: BoxFit.cover,
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ));
-//           } else {
-//             postCards.add(Container(
-//               width: MediaQuery.of(context).size.width,
-//               height: 200,
-//               decoration: BoxDecoration(
-//                 image: DecorationImage(
-//                   image: NetworkImage(imgurl),
-//                   fit: BoxFit.cover,
-//                 ),
-//               ),
-//             ));
-//           }
-//         }
-//
-//         return ListView(
-//           shrinkWrap: true,
-//           physics: ClampingScrollPhysics(),
-//           children: postCards.reversed.toList(),
-//         );
-//       },
-//     );
-//   }
-// }
-
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
     var response = await http.get(Uri.parse('http://192.168.100.103/social-backend-laravel/api/getAllPosts'));
@@ -306,7 +228,7 @@ class PostStream extends StatelessWidget {
                   ),
                   Positioned.fill(
                     top: 350,
-                    left: 25,
+                    left: 9,
                     child: Align(
                       alignment: Alignment.bottomLeft,
                       child: Row(
@@ -389,7 +311,7 @@ class PostStream extends StatelessWidget {
                             child: LikeButton(
                               likeBuilder: (bool isLiked) {
                                 return FaIcon(
-                                  FontAwesomeIcons.bookmark,
+                                  FontAwesomeIcons.circle,
                                   color: Colors.white,
                                   size: 20,
                                 );
@@ -500,7 +422,7 @@ class PostStream extends StatelessWidget {
                   ),
                   Positioned.fill(
                     top: 350,
-                    left: 25,
+                    left: 9,
                     child: Align(
                       alignment: Alignment.bottomLeft,
                       child: Row(
@@ -583,7 +505,7 @@ class PostStream extends StatelessWidget {
                             child: LikeButton(
                               likeBuilder: (bool isLiked) {
                                 return FaIcon(
-                                  FontAwesomeIcons.bookmark,
+                                  FontAwesomeIcons.circle,
                                   color: Colors.white,
                                   size: 20,
                                 );
