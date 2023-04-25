@@ -3,40 +3,52 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nallagram/screens/Profile/profile_upload.dart';
+import 'package:nallagram/services/service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final _auth = FirebaseAuth.instance;
 final _store = FirebaseFirestore.instance;
 String _name;
 String _descr;
 
-User loggedInUser;
+Service  loggedInUser;
 
 class EditPage extends StatefulWidget {
-  @override
+  static const String id = 'edit';
+
   _EditPageState createState() => _EditPageState();
 }
 
 class _EditPageState extends State<EditPage> {
+  Map<String, dynamic> _currentUser;
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    _getCurrentUser();
   }
 
-  void getCurrentUser() {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        loggedInUser = user;
-        print(loggedInUser);
-      }
-    } catch (e) {
-      print(e);
+  Future<void> _getCurrentUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await http.get(Uri.parse('http://192.168.32.229/social-backend-laravel/api/v1/users/getCurrentUser'), headers: {
+      'Authorization': '${ prefs.getString('token')}',
+    });
+
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _currentUser = json.decode(response.body);
+      });
+    } else {
+      throw Exception('Failed to load current user');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
+    print('Welcome, $_currentUser');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -80,7 +92,7 @@ class _EditPageState extends State<EditPage> {
                             borderRadius: BorderRadius.circular(32),
                             image: DecorationImage(
                                 image: CachedNetworkImageProvider(
-                                    loggedInUser.photoURL),
+                                    'http://via.placeholder.com/200x150'),
                                 fit: BoxFit.cover)),
                       ),
                       TextButton(
@@ -104,7 +116,7 @@ class _EditPageState extends State<EditPage> {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text('Name'),
+                      child: Text('User Name'),
                     ),
                     TextField(
                       textAlign: TextAlign.center,
@@ -143,11 +155,13 @@ class _EditPageState extends State<EditPage> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Text('Description'),
+                        child: Text('Bio'),
                       ),
                       TextField(
+                        minLines: 6,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
                         textAlign: TextAlign.center,
-                        keyboardType: TextInputType.emailAddress,
                         onChanged: (value) {
                           _descr = value;
                           //Do something with the user input.

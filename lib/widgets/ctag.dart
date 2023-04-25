@@ -4,8 +4,8 @@ import 'package:toast/toast.dart';
 Widget tagBuild(String tag, Color color, context) {
   return GestureDetector(
     onTap: () {
-      Toast.show("This feature will be available soon!", context,
-          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      Toast.show("This feature will be available soon!",
+          duration: Toast.lengthShort, gravity: Toast.bottom);
     },
     child: Card(
       margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 5.0),

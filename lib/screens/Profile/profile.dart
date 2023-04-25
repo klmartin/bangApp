@@ -7,10 +7,12 @@ import 'package:nallagram/screens/Profile/edit_profile.dart';
 import 'package:nallagram/screens/Posts/postView_model.dart';
 import 'package:nallagram/screens/Story/storyview.dart';
 import 'package:nallagram/screens/settings/settings.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
 
+import '../../models/userprovider.dart';
 import 'profile_upload.dart';
 final _auth = FirebaseAuth.instance;
 final _store = FirebaseFirestore.instance;
@@ -35,9 +37,10 @@ void getProfileData() async {
 
 void getCurrentUser() {
   try {
-    final user = _auth.currentUser;
+    final user = loggedInUser.getCurrentUser();
     if (user != null) {
-      loggedInUser = user;
+
+      print(loggedInUser);
     }
   } catch (e) {
     print(e);
@@ -65,14 +68,35 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  String id="";
   @override
   void initState() {
     super.initState();
+    final userData=  Provider.of<UserProvider>(context,listen:false);
+
+    getId();
     getCurrentUser();
+
   }
+
+
+
+void  getId() async {
+    final prefs =  await SharedPreferences.getInstance();
+    print(prefs);
+     id = '${prefs.getInt('user_id')}';
+
+
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    final userData=  Provider.of<UserProvider>(context,listen:false);
+    print("My Id is ${userData.myUser.id}");
+    getId();
+    print(id);
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: ListView(
@@ -95,7 +119,7 @@ class _ProfileState extends State<Profile> {
                             color: Colors.red.shade100,
                             borderRadius: BorderRadius.circular(25),
                             image: DecorationImage(
-                                image: CachedNetworkImageProvider( '') ,
+                                image: CachedNetworkImageProvider(userData.myUser.profileurl) ,
                               fit: BoxFit.cover,
                             )),
                     child: rimage != null
@@ -112,7 +136,8 @@ class _ProfileState extends State<Profile> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5.0),
                     child: Text(
-                      '$posts',
+                      // '$posts',
+                      '76',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -138,7 +163,8 @@ class _ProfileState extends State<Profile> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5.0),
                     child: Text(
-                      '$followers',
+                      // '$followers',
+                      '21',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -164,7 +190,8 @@ class _ProfileState extends State<Profile> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 4.0),
                     child: Text(
-                      '$following',
+                      // '$following',
+                      '2',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -182,7 +209,7 @@ class _ProfileState extends State<Profile> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Kaboja',
+              userData.myUser.name??"",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Metropolis',
@@ -372,7 +399,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
               ),
             ],
           ),
-          _persposts ? ProfilePostsStream() : Expanded(child: Tagged()),
+          // _persposts ? ProfilePostsStream() : Expanded(child: Tagged()),
         ],
       ),
     );

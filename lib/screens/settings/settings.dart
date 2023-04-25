@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nallagram/screens/Authenticate/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class AppSettings extends StatelessWidget {
   @override
@@ -13,38 +15,10 @@ class AppSettings extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(CupertinoIcons.back),
-          color: Colors.black,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              // logout functionality
-              Navigator.pushNamedAndRemoveUntil(context, '/login', (_) => false);
-            },
-            child: Padding(
-              padding: EdgeInsets.only(right: 20.0),
-              child: Icon(Icons.logout),
-            ),
-          ),
-        ],
       ),
       body: ListView(
         children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              // logout functionality
-              Navigator.pushNamed(context, LoginScreen.id);
-            },
-            child: Padding(
-              padding: EdgeInsets.only(right: 20.0),
-              child: Icon(Icons.logout),
-            ),
-          ),
+
           ListTile(
             leading: FaIcon(FontAwesomeIcons.userPlus),
             title: Text("Follow and Invite Friends  "),
@@ -70,6 +44,17 @@ class AppSettings extends StatelessWidget {
           ListTile(
             leading: FaIcon(FontAwesomeIcons.exclamationCircle),
             title: Text("About"),
+          ),
+          ListTile(
+            leading: Icon(
+                Icons.logout
+            ),
+            title: Text("Logout"),
+            onTap: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove('token');
+              Navigator.pushNamed(context, LoginScreen.id);
+            },
           ),
         ],
       ),

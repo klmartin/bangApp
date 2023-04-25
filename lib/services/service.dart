@@ -1,12 +1,15 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Service {
+  Object get uid => null;
+
 
 
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
-    String addimageUrl = 'http://192.168.151.229/social-backend-laravel/api/imageadd';
+    String addimageUrl = 'http://192.168.70.229/social-backend-laravel/api/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -26,7 +29,7 @@ class Service {
   }
 
   Future<bool> addChallengImage(Map<String, String> body, String filepath,String filepath2) async {
-    String addimageUrl = 'http://192.168.151.229/social-backend-laravel/api/imagechallengadd';
+    String addimageUrl = 'http://192.168.70.229/social-backend-laravel/api/imagechallengadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath))
@@ -47,5 +50,16 @@ class Service {
     }
   }
 
+  Future<Map<String, dynamic>> getCurrentUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await http.get(Uri.parse('http://192.168.10.101/social-backend-laravel/api/v1/users/getCurrentUser'), headers: {
+      'Authorization': '${ prefs.getString('token')}',
+    });
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load current user');
+    }
+  }
 
 }

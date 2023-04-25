@@ -147,57 +147,19 @@ class _PmScreenState extends State<PmScreen> {
                 color: Colors.black,
               ),
             ),
-            DropdownButton2(
-              offset: Offset(-130, 0),
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-              ),
-              underline: Container(),
-              customButton: Container(
-                child: Icon(
-                  CupertinoIcons.list_bullet,
+            Positioned(
+              left: -130,
+              top: 0,
+              child: DropdownButton2(
+                style: TextStyle(
                   color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
                 ),
+                // other parameters
               ),
-              dropdownWidth: 150,
-              dropdownDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-              ),
-              buttonDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              items: [
-                MenuItem(
-                  value: 'Block',
-                  text: '',
-                  widget: Block(),
-                ),
-                MenuItem(
-                  value: 'Report',
-                  text: '',
-                  widget: Report(),
-                ),
-              ].map<DropdownMenuItem<MenuItem>>((MenuItem value) {
-                return DropdownMenuItem<MenuItem>(
-                  value: value,
-                  child: value,
-                );
-              }).toList(),
-              onMenuStateChange: (isOpen) {
-                onMenuStateChange(isOpen);
-              },
-              onChanged: (MenuItem item) {
-                switch (item?.value) {
-                  case 'Block':
-                    break;
-                  case 'Report':
-                    break;
-                }
-              },
             ),
+
           ],
         ),
         backgroundColor: Colors.white,

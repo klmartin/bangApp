@@ -70,6 +70,8 @@ class _SwitchExampleState extends State<SwitchExample> {
   @override
 
   Widget build(BuildContext context) {
+    Size size= MediaQuery.of(context).size;
+
     return Column(
       children: [
         Text(
@@ -88,103 +90,111 @@ class _SwitchExampleState extends State<SwitchExample> {
             });
           },
         ),
-        InkWell(
-          child: GestureDetector(
-            onTap: () async {
-              var source = type == ImageSourceType.camera
-                  ? ImageSource.camera
-                  : ImageSource.gallery;
-              XFile image = await imagePicker.pickImage(
-                source: source,
-              );
-              setState(() {
-                if (image.path != null) {
-                  _image = File(image.path);
-                } else if (image.path == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text("Sending Message"),
-                  ));
-                }
-              });
-            },
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                  color: Colors.red[200],
-                  borderRadius: BorderRadius.circular(32)),
-              child: _image != null
-                  ? Image.file(
-                _image,
-                width: 200.0,
-                height: 200.0,
-                fit: BoxFit.cover,
-              )
-                  : Container(
-                decoration: BoxDecoration(
-                  color: Colors.red[100],
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                width: 200,
-                height: 200,
-                child: Icon(
-                  Icons.camera_alt,
-                  color: Colors.black,
+        Row(
+          children: [
+            InkWell(
+              child: GestureDetector(
+                onTap: () async {
+                  var source = type == ImageSourceType.camera
+                      ? ImageSource.camera
+                      : ImageSource.gallery;
+                  XFile image = await imagePicker.pickImage(
+                    source: source,
+                  );
+                  setState(() {
+                    if (image.path != null) {
+                      _image = File(image.path);
+                    } else if (image.path == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Sending Message"),
+                      ));
+                    }
+                  });
+                },
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                      color: Colors.red[200],
+                      borderRadius: BorderRadius.circular(32)),
+                  child: _image != null
+                      ? Image.file(
+                    _image,
+                    width: 200.0,
+                    height: 200.0,
+                    fit: BoxFit.cover,
+                  )
+                      : Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red[100],
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                    width: 200,
+                    height: 200,
+                    child: Icon(
+                      Icons.camera_alt,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
+            SizedBox(width: 15,),
+            _isSwitched ?
+            Container(
+              width: size.width*0.4,
+              child: InkWell(
+                child: GestureDetector(
+                  onTap: () async {
+                    var source = type == ImageSourceType.camera
+                        ? ImageSource.camera
+                        : ImageSource.gallery;
+                    XFile image2 = await imagePickerr.pickImage(
+                      source: source,
+                    );
+                    setState(() {
+                      if (image2.path != null) {
+                        _image2 = File(image2.path);
+                      } else if (image2.path == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Sending Message"),
+                        ));
+                      }
+                    });
+                  },
+                  child: Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                        color: Colors.red[200],
+                        borderRadius: BorderRadius.circular(32)),
+                    child: _image2 != null
+                        ? Image.file(
+                      _image2,
+                      width: 200.0,
+                      height: 200.0,
+                      fit: BoxFit.cover,
+                    )
+                        : Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red[100],
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      width: 200,
+                      height: 200,
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ):SizedBox(),
+          ],
         ),
-        SizedBox(height: 15,),
-        _isSwitched ?
-        InkWell(
-          child: GestureDetector(
-            onTap: () async {
-              var source = type == ImageSourceType.camera
-                  ? ImageSource.camera
-                  : ImageSource.gallery;
-              XFile image2 = await imagePickerr.pickImage(
-                source: source,
-              );
-              setState(() {
-                if (image2.path != null) {
-                  _image2 = File(image2.path);
-                } else if (image2.path == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text("Sending Message"),
-                  ));
-                }
-              });
-            },
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                  color: Colors.red[200],
-                  borderRadius: BorderRadius.circular(32)),
-              child: _image2 != null
-                  ? Image.file(
-                _image2,
-                width: 200.0,
-                height: 200.0,
-                fit: BoxFit.cover,
-              )
-                  : Container(
-                decoration: BoxDecoration(
-                  color: Colors.red[100],
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                width: 200,
-                height: 200,
-                child: Icon(
-                  Icons.camera_alt,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-        ):SizedBox(),
-        SizedBox(height: 15.0),
+
+        SizedBox(width: 15.0),
         _isSwitched ? Padding(
           padding: const EdgeInsets.only(top: 46.0),
           child: ElevatedButton(

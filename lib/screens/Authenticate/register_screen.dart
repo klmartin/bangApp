@@ -1,9 +1,18 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import '../../nav.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:nallagram/screens/Profile/edit_profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:nallagram/models/userprovider.dart';
+
 
 class Register extends StatefulWidget {
   static const String id = 'register';
@@ -13,23 +22,14 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   @override
-  final _auth = FirebaseAuth.instance;
-  final _store = FirebaseFirestore.instance;
+  DateTime date_of_birth = DateTime.now();
+  TextEditingController _dateController = TextEditingController();
   User user; //never gonna change
   //instance
   String email;
   String password;
   String name;
-  List<String> profiles = [
-    'https://cdn.dribbble.com/users/86682/screenshots/10441196/penguin.png',
-    'https://cdn.dribbble.com/users/1162077/screenshots/7475318/media/8837a0ae1265548e27a2b2bb3ab1f366.png',
-    'https://cdn.dribbble.com/users/1162077/screenshots/7495197/media/92507bdcf4b5edfa12d5e9cc4f01b301.png',
-    'https://cdn.dribbble.com/users/1162077/screenshots/7542499/media/d6f3265e5017257e5900b762754f2655.png',
-    'https://cdn.dribbble.com/users/1162077/screenshots/5940704/media/6a37a16dc390eed6c93f6f5020af211a.png'
-  ];
-  String photoUrl(List<String> pfls) {
-    return pfls.elementAt(Random().nextInt(pfls.length));
-  }
+  String phoneNumber;
 
   bool showSpinner = false;
   @override
@@ -47,10 +47,11 @@ class _RegisterState extends State<Register> {
               // Hero(
               //   tag: 'logo',
               //   child: Container(
-              //     height: 200.0,
-              //     child: Image.asset('images/logo.png'),
+              //     height: 50.0,
+              //     child: Image.asset('images/bng new4-2'),
               //   ),
               // ),
+
               SizedBox(
                 height: 48.0,
               ),
@@ -64,18 +65,82 @@ class _RegisterState extends State<Register> {
                 decoration: InputDecoration(
                   hintText: 'Enter your name',
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Colors.blueAccent, width: 1.0),
+                    BorderSide(color: Colors.blueAccent, width: 1.0),
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Colors.blueAccent, width: 2.0),
+                    BorderSide(color: Colors.blueAccent, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                controller: _dateController,
+                onTap: () async {
+                  final DateTime picked = await showDatePicker(
+                    context: context,
+                    initialDate: date_of_birth,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(2100),
+                  );
+                  if (picked != null && picked != date_of_birth) {
+                    setState(() {
+                      date_of_birth = picked;
+                      _dateController.text = DateFormat.yMd().format(date_of_birth);
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Enter your Date of Birth',
+                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blueAccent, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blueAccent, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  //Do something with the user input.
+                  phoneNumber = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Enter your email',
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.blueAccent, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.blueAccent, width: 2.0),
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                 ),
@@ -153,40 +218,35 @@ class _RegisterState extends State<Register> {
                       setState(() {
                         showSpinner = true;
                       });
-
                       try {
-                        final newUser =
-                            await _auth.createUserWithEmailAndPassword(
-                                email: email, password: password);
-                        User user = newUser.user;
-                        user.updateDisplayName(name);
-                        var pfp = photoUrl(profiles);
-                        user.updatePhotoURL(pfp);
-                        _store.collection('users').doc(user.uid).set({
-                          'name': name,
-                          'profile': pfp,
-                          'followerlist': [""],
-                          'followinglist': [""],
-                          'descr':
-                              'Tap edit profile to update profile photo and description',
-                          'followers': 0,
-                          'userid': user.uid,
-                          'following': 0,
-                          'posts': 0
-                        });
-
-                        if (newUser != null) {
-                          Navigator.pushNamed(context, Nav.id);
+                        final response = await http.post(
+                          Uri.parse('http://192.168.10.101/social-backend-laravel/api/v1/register'),
+                          body: {
+                            'email': email,
+                            'name':name,
+                            'date_of_birth':_dateController.text,
+                            'phone_number':phoneNumber,
+                            'password': password,
+                          },
+                        );
+                        final responseBody = jsonDecode(response.body);
+                        // Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
+                        print(responseBody);
+                        if (responseBody != null) {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          // prefs.setInt('user_id', responseBody['user']['user_id']);
+                          prefs.setString('token', responseBody['access_token']);
+                          prefs.setString('name', responseBody['user']['name']);
+                          Navigator.pushNamed(context, EditPage.id);
                         }
                       }
-                      //Implement registration functionality.
-                      //as it is returning a future we assign a final variable to it
+                      //Implement login functionality.
                       catch (e) {
                         print(e);
                       } finally {
                         showSpinner = false;
                       }
-                    },
+                      print(phoneNumber); print(password); },
                     minWidth: 200.0,
                     height: 42.0,
                     child: Text(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:nallagram/models/userprovider.dart';
+import 'package:provider/provider.dart';
 import '../../nav.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -19,7 +21,14 @@ class _LoginScreenState extends State<LoginScreen> {
   String email;
   String password;
   @override
+  void initState(){
+    super.initState();
+    Provider.of<UserProvider>(context,listen:false);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: ModalProgressHUD(
@@ -130,20 +139,25 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('http://172.20.10.4/social-backend-laravel/api/login'),
+                                Uri.parse('http://192.168.70.229/social-backend-laravel/api/login'),
                                 body: {
                                   'email': email,
-                                    'password': password,
+                                  'password': password,
                                   },
                                 );
 
                               final responseBody = jsonDecode(response.body);
+                                Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
+
+
                                 print(responseBody);
                               if (responseBody != null) {
                                 SharedPreferences prefs = await SharedPreferences.getInstance();
                                 prefs.setInt('user_id', responseBody['user_id']);
                                 prefs.setString('token', responseBody['token']);
                                 prefs.setString('user_image', responseBody['user_image']);
+                                prefs.setString('name', responseBody['name']);
+                                print(prefs.getInt("user_id"));
                                 Navigator.pushNamed(context, Nav.id);
                               }
                             }
