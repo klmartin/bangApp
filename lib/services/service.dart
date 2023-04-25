@@ -9,7 +9,7 @@ class Service {
 
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
-    String addimageUrl = 'http://192.168.70.229/social-backend-laravel/api/imageadd';
+    String addimageUrl = 'http://192.168.100.100/social-backend-laravel/api/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -29,7 +29,8 @@ class Service {
   }
 
   Future<bool> addChallengImage(Map<String, String> body, String filepath,String filepath2) async {
-    String addimageUrl = 'http://192.168.70.229/social-backend-laravel/api/imagechallengadd';
+
+    String addimageUrl = 'http://192.168.100.100/social-backend-laravel/api/imagechallengadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath))

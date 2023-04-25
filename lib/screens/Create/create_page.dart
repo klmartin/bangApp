@@ -113,14 +113,14 @@ class _SwitchExampleState extends State<SwitchExample> {
                 },
                 child: Container(
                   width: 200,
-                  height: 200,
+                  height: 190,
                   decoration: BoxDecoration(
                       color: Colors.red[200],
                       borderRadius: BorderRadius.circular(32)),
                   child: _image != null
                       ? Image.file(
                     _image,
-                    width: 200.0,
+                    width: 190.0,
                     height: 200.0,
                     fit: BoxFit.cover,
                   )
@@ -129,7 +129,7 @@ class _SwitchExampleState extends State<SwitchExample> {
                       color: Colors.red[100],
                       borderRadius: BorderRadius.circular(32),
                     ),
-                    width: 200,
+                    width: 190,
                     height: 200,
                     child: Icon(
                       Icons.camera_alt,
@@ -139,18 +139,18 @@ class _SwitchExampleState extends State<SwitchExample> {
                 ),
               ),
             ),
-            SizedBox(width: 15,),
+            SizedBox(width: 5,),
             _isSwitched ?
             Container(
               width: size.width*0.4,
               child: InkWell(
                 child: GestureDetector(
                   onTap: () async {
-                    var source = type == ImageSourceType.camera
+                    var source2 = type == ImageSourceType.camera
                         ? ImageSource.camera
                         : ImageSource.gallery;
                     XFile image2 = await imagePickerr.pickImage(
-                      source: source,
+                      source: source2,
                     );
                     setState(() {
                       if (image2.path != null) {
@@ -163,7 +163,7 @@ class _SwitchExampleState extends State<SwitchExample> {
                     });
                   },
                   child: Container(
-                    width: 200,
+                    width: 190,
                     height: 200,
                     decoration: BoxDecoration(
                         color: Colors.red[200],
@@ -171,7 +171,7 @@ class _SwitchExampleState extends State<SwitchExample> {
                     child: _image2 != null
                         ? Image.file(
                       _image2,
-                      width: 200.0,
+                      width: 190.0,
                       height: 200.0,
                       fit: BoxFit.cover,
                     )
@@ -180,7 +180,7 @@ class _SwitchExampleState extends State<SwitchExample> {
                         color: Colors.red[100],
                         borderRadius: BorderRadius.circular(32),
                       ),
-                      width: 200,
+                      width: 190,
                       height: 200,
                       child: Icon(
                         Icons.camera_alt,

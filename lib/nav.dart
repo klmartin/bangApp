@@ -26,7 +26,7 @@ class _NavState extends State<Nav> {
     super.initState();
     getCurrentUser();
     // _getToken();
-    getProfileData();
+    // getProfileData();
     // getProfileData();
   }
 

@@ -15,7 +15,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/userprovider.dart';
 import 'profile_upload.dart';
 final _auth = FirebaseAuth.instance;
-final _store = FirebaseFirestore.instance;
 bool _persposts = true;
 
 Future<void> myMethod() async {
@@ -26,14 +25,14 @@ Future<void> myMethod() async {
 
 
 
-void getProfileData() async {
-  final info = await _store.collection('users').doc(loggedInUser.uid).get();
-  Map data = info.data();
-  followers = data['followers'];
-  following = data['following'];
-  descr = data['descr'];
-  posts = data['posts'];
-}
+// void getProfileData() async {
+//   final info = await _store.collection('users').doc(loggedInUser.uid).get();
+//   Map data = info.data();
+//   followers = data['followers'];
+//   following = data['following'];
+//   descr = data['descr'];
+//   posts = data['posts'];
+// }
 
 void getCurrentUser() {
   try {
@@ -436,11 +435,11 @@ class ProfilePostsStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _store
-          .collection('users')
-          .doc(loggedInUser.uid)
-          .collection('posts')
-          .snapshots(),
+      // stream: _store
+      //     .collection('users')
+      //     .doc(loggedInUser.uid)
+      //     .collection('posts')
+      //     .snapshots(),
       builder: (context, snapshot) {
         List<ImagePost> ImagePosts = [];
         if (!snapshot.hasData) {

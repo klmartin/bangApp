@@ -3,6 +3,7 @@ import 'package:nallagram/nav.dart';
 import 'package:nallagram/screens/Authenticate/login_screen.dart';
 import 'package:nallagram/screens/Chat/calls_chat.dart';
 import 'package:nallagram/screens/Chat/new_message_chat.dart';
+import 'package:nallagram/screens/Comments/commentspage.dart';
 import 'package:provider/provider.dart';
 import 'models/userprovider.dart';
 import 'screens/Authenticate/welcome_screen.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
           Welcome.id: (context) => Welcome(),
           EditPage.id:(context) => EditPage(),
           Authenticate.id: (context) => Authenticate(),
+          CommentsPage.id:(context) => CommentsPage(),
         },
       ),
     );
