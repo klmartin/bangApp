@@ -139,13 +139,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('http://192.168.70.229/social-backend-laravel/api/login'),
+                                Uri.parse('http://172.20.10.2/social-backend-laravel/api/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,
                                   },
                                 );
-
+                                print(response.body);
                               final responseBody = jsonDecode(response.body);
                                 Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
 

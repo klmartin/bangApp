@@ -107,11 +107,10 @@ class _HomeState extends State<Home> {
 
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('http://192.168.100.100/social-backend-laravel/api/getAllPosts'));
+    var response = await http.get(Uri.parse('http://192.168.111.229/social-backend-laravel/api/getAllPosts'));
     var data = json.decode(response.body);
     return data['posts'];
   }
-
   @override
   Widget build(BuildContext context) {
     Size size= MediaQuery.of(context).size;
