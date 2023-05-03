@@ -15,6 +15,7 @@ import 'package:like_button/like_button.dart';
 import 'package:nallagram/widgets/story_widget.dart';
 import '../../widgets/post_card.dart';
 import '../Comments/commentspage.dart';
+import 'package:nallagram/screens/Widgets/readmore.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -107,13 +108,12 @@ class _HomeState extends State<Home> {
 
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('http://192.168.111.229/social-backend-laravel/api/getAllPosts'));
+    var response = await http.get(Uri.parse('http://10.0.16.158/social-backend-laravel/api/getPosts'));
     var data = json.decode(response.body);
-    return data['posts'];
+    return data['data']['data'];
   }
   @override
   Widget build(BuildContext context) {
-    Size size= MediaQuery.of(context).size;
     return FutureBuilder(
       future: getPosts(),
       builder: (context, snapshot) {
@@ -128,11 +128,14 @@ class PostStream extends StatelessWidget {
         List<Widget> postCards = [];
 
         for (var post in snapshot.data) {
-          final caption = post['caption'];
-          final imgurl = post['imgurl'];
-          final challengeImgUrl = post['challengeImgUrl'];
+          final name = post['user']['name'];
+          final followerCount = post['user']['followerCount'].toString();
+          final caption = post['body'];
+          final imgurl = post['image'];
+          final challengeImgUrl = post['challenge_img'];
           final imgWidth = post['width'];
           final imgHeight = post['height'];
+          final postId = post['id'];
           // final challengeimgWidth = post['chwidth'];
           // final challengeimgHeight =  post['chheight'];
 
@@ -175,15 +178,30 @@ class PostStream extends StatelessWidget {
                                     crossAxisAlignment:
                                     CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        'widget.post.name',
-                                        style: const TextStyle(
-                                          fontFamily: 'EuclidTriangle',
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          letterSpacing: 0,
-                                          color: Colors.white,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            name,
+                                            style: const TextStyle(
+                                              fontFamily: 'EuclidTriangle',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              letterSpacing: 0,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            followerCount,
+                                            style: const TextStyle(
+                                              fontFamily: 'EuclidTriangle',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              letterSpacing: 0,
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        ],
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
@@ -346,7 +364,7 @@ class PostStream extends StatelessWidget {
                             },
                             child: const Icon(
                               CupertinoIcons.ellipsis,
-                              color: Colors.white,
+                              color: Colors.black,
                               size: 24,
                             ),
                           ),
@@ -416,7 +434,7 @@ class PostStream extends StatelessWidget {
                               "${2} likes",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                             ),
                           ),
@@ -439,30 +457,30 @@ class PostStream extends StatelessWidget {
                                 },
                                 child: const Icon(
                                   CupertinoIcons.share,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                               ),
                               const SizedBox(
                                 width: 16,
                               ),
-                              // GestureDetector(
-                              //   onTap: () {
-                              //     Navigator.push(
-                              //       context,
-                              //       createRoute(
-                              //         CommentScreen(
-                              //           postId: widget.post.postId,
-                              //           userId: widget.post.userId,
-                              //           currentUser: widget.currentUser,
-                              //         ),
-                              //       ),
-                              //     );
-                              //   },
-                              //   child: const Icon(
-                              //     CupertinoIcons.bubble_middle_bottom,
-                              //     color: Colors.white,
-                              //   ),
-                              // ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    createRoute(
+                                      CommentsPage(
+                                        postId: postId,
+                                        userId: '1',
+                                        // currentUser: 1,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: const Icon(
+                                  CupertinoIcons.bubble_middle_bottom,
+                                  color: Colors.black,
+                                ),
+                              ),
                               const SizedBox(
                                 width: 16,
                               ),
@@ -486,25 +504,25 @@ class PostStream extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // if (widget.post.caption != "") const SizedBox(height: 16),
-                    // if (widget.post.caption != "")
-                    //   Padding(
-                    //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    //     child: ReadMoreText(
-                    //       widget.post.caption,
-                    //       trimLines: 2,
-                    //       style: Theme.of(context).textTheme.bodyText1,
-                    //       colorClickableText: Theme.of(context).primaryColor,
-                    //       trimMode: TrimMode.line,
-                    //       trimCollapsedText: '...Show more',
-                    //       trimExpandedText: '...Show less',
-                    //       moreStyle: TextStyle(
-                    //         fontSize: 14,
-                    //         fontWeight: FontWeight.bold,
-                    //         color: Theme.of(context).primaryColor,
-                    //       ),
-                    //     ),
-                    //   ),
+                    if (caption != "") const SizedBox(height: 16),
+                    if (caption != "")
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: ReadMoreText(
+                          caption,
+                          trimLines: 2,
+                          style: Theme.of(context).textTheme.bodyText1,
+                          colorClickableText: Theme.of(context).primaryColor,
+                          trimMode: TrimMode.line,
+                          trimCollapsedText: '...Show more',
+                          trimExpandedText: '...Show less',
+                          moreStyle: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
                     const SizedBox(height: 20),
                   ],
             ),
@@ -549,16 +567,32 @@ class PostStream extends StatelessWidget {
                                         crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            'widget.post.name',
-                                            style: const TextStyle(
-                                              fontFamily: 'EuclidTriangle',
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                              letterSpacing: 0,
-                                              color: Colors.white,
-                                            ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                name,
+                                                style: const TextStyle(
+                                                  fontFamily: 'EuclidTriangle',
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  letterSpacing: 0,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              SizedBox(width: 5),
+                                              Text(
+                                                followerCount,
+                                                style: const TextStyle(
+                                                  fontFamily: 'EuclidTriangle',
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  letterSpacing: 0,
+                                                  color: Colors.black,
+                                                ),
+                                              )
+                                            ],
                                           ),
+
                                           const SizedBox(height: 2),
                                           Text(
                                               StringExtension
@@ -720,7 +754,7 @@ class PostStream extends StatelessWidget {
                                 },
                                 child: const Icon(
                                   CupertinoIcons.ellipsis,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   size: 24,
                                 ),
                               ),
@@ -768,7 +802,7 @@ class PostStream extends StatelessWidget {
                                   "${2} likes",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -791,28 +825,28 @@ class PostStream extends StatelessWidget {
                                     // },
                                     child: const Icon(
                                       CupertinoIcons.share,
-                                      color: Colors.white,
+                                      color: Colors.black,
                                     ),
                                   ),
                                   const SizedBox(
                                     width: 16,
                                   ),
                                   GestureDetector(
-                                    // onTap: () {
-                                    //   Navigator.push(
-                                    //     context,
-                                    //     createRoute(
-                                    //       CommentScreen(
-                                    //         postId: widget.post.postId,
-                                    //         userId: widget.post.userId,
-                                    //         currentUser: widget.currentUser,
-                                    //       ),
-                                    //     ),
-                                    //   );
-                                    // },
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        createRoute(
+                                          CommentScreen(
+                                            postId: widget.post.postId,
+                                            userId: widget.post.userId,
+                                            currentUser: widget.currentUser,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                     child: const Icon(
                                       CupertinoIcons.bubble_middle_bottom,
-                                      color: Colors.white,
+                                      color: Colors.black,
                                     ),
                                   ),
                                   const SizedBox(
@@ -838,25 +872,25 @@ class PostStream extends StatelessWidget {
                             ],
                           ),
                         ),
-                        // if (widget.post.caption != "") const SizedBox(height: 16),
-                        // if (widget.post.caption != "")
-                        //   Padding(
-                        //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        //     child: ReadMoreText(
-                        //       widget.post.caption,
-                        //       trimLines: 2,
-                        //       style: Theme.of(context).textTheme.bodyText1,
-                        //       colorClickableText: Theme.of(context).primaryColor,
-                        //       trimMode: TrimMode.line,
-                        //       trimCollapsedText: '...Show more',
-                        //       trimExpandedText: '...Show less',
-                        //       moreStyle: TextStyle(
-                        //         fontSize: 14,
-                        //         fontWeight: FontWeight.bold,
-                        //         color: Theme.of(context).primaryColor,
-                        //       ),
-                        //     ),
-                        //   ),
+                        if (caption != "") const SizedBox(height: 16),
+                        if (caption != "")
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: ReadMoreText(
+                              caption,
+                              trimLines: 2,
+                              style: Theme.of(context).textTheme.bodyText1,
+                              colorClickableText: Theme.of(context).primaryColor,
+                              trimMode: TrimMode.line,
+                              trimCollapsedText: '...Show more',
+                              trimExpandedText: '...Show less',
+                              moreStyle: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          ),
                         const SizedBox(height: 20),
                       ],
                     ))

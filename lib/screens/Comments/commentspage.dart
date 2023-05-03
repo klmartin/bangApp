@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:nallagram/models/user_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../nav.dart';
 
@@ -37,9 +37,16 @@ const kMessageContainerDecoration = BoxDecoration(
 
 class CommentsPage extends StatefulWidget {
   static const String id = 'comment_screen';
-  final postID;
+  final String userId;
+  final UserModel currentUser;
+  final String postId;
+  const CommentsPage({
+    Key key,
+    @required this.userId,
+    @required this.currentUser,
+    @required this.postId,
+  }) : super(key: key);
 
-  CommentsPage({@required this.postID});
 
   @override
   _CommentsPageState createState() => _CommentsPageState();
@@ -93,7 +100,7 @@ class _CommentsPageState extends State<CommentsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            MessageStream(postID: widget.postID),
+            MessageStream(postID: postId),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
@@ -115,17 +122,17 @@ class _CommentsPageState extends State<CommentsPage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    messageTextController.clear();
-                    _firestore
-                        .collection('posts')
-                        .doc(widget.postID)
-                        .collection('comments')
-                        .add({
-                      'name': loggedInUser.displayName,
-                      'comment': commentText,
-                      'profile': loggedInUser.photoURL,
-                      'timestamp': FieldValue.serverTimestamp(),
-                    });
+                    // messageTextController.clear();
+                    // _firestore
+                    //     .collection('posts')
+                    //     .doc(widget.postID)
+                    //     .collection('comments')
+                    //     .add({
+                    //   'name': loggedInUser.displayName,
+                    //   'comment': commentText,
+                    //   'profile': loggedInUser.photoURL,
+                    //   'timestamp': FieldValue.serverTimestamp(),
+                    // });
                     //Implement send functionality.
                   },
                   child: CircleAvatar(

@@ -220,7 +220,7 @@ class _RegisterState extends State<Register> {
                       });
                       try {
                         final response = await http.post(
-                          Uri.parse('http://192.168.10.101/social-backend-laravel/api/v1/register'),
+                          Uri.parse('http://10.0.16.158/social-backend-laravel/api/v1/register'),
                           body: {
                             'email': email,
                             'name':name,
@@ -234,9 +234,10 @@ class _RegisterState extends State<Register> {
                         print(responseBody);
                         if (responseBody != null) {
                           SharedPreferences prefs = await SharedPreferences.getInstance();
-                          // prefs.setInt('user_id', responseBody['user']['user_id']);
+                          prefs.setInt('user_id', responseBody['id']);
                           prefs.setString('token', responseBody['access_token']);
-                          prefs.setString('name', responseBody['user']['name']);
+                          prefs.setString('name', responseBody['name']);
+                          prefs.setString('email', responseBody['name']);
                           Navigator.pushNamed(context, EditPage.id);
                         }
                       }
