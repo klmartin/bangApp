@@ -9,7 +9,8 @@ class Service {
 
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
-    String addimageUrl = 'http://192.168.100.105/social-backend-laravel/api/imageadd';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String addimageUrl = 'http://192.168.15.229/social-backend-laravel/api/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -30,7 +31,7 @@ class Service {
 
   Future<bool> addChallengImage(Map<String, String> body, String filepath,String filepath2) async {
 
-    String addimageUrl = 'http://192.168.100.105/social-backend-laravel/api/imagechallengadd';
+    String addimageUrl = 'http://192.168.85.229/social-backend-laravel/api/imagechallengadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath))
@@ -53,7 +54,7 @@ class Service {
 
   Future<Map<String, dynamic>> getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(Uri.parse('http://192.168.100.105/social-backend-laravel/api/userr'),
+    final response = await http.get(Uri.parse('http://192.168.85.229/social-backend-laravel/api/userr'),
           headers: {
             'Authorization': 'Bearer ${ prefs.getString('token')}',
           });

@@ -37,13 +37,13 @@ const kMessageContainerDecoration = BoxDecoration(
 
 class CommentsPage extends StatefulWidget {
   static const String id = 'comment_screen';
-  final String userId;
-  final UserModel currentUser;
-  final String postId;
+  final int userId;
+  // final UserModel currentUser;
+  final  postId;
   const CommentsPage({
     Key key,
     @required this.userId,
-    @required this.currentUser,
+    // @required this.currentUser,
     @required this.postId,
   }) : super(key: key);
 
@@ -58,6 +58,10 @@ class _CommentsPageState extends State<CommentsPage> {
   //initialising firestore
 
   String commentText;
+
+  get postId => null;
+
+
 
   @override
   void initState() {
@@ -270,11 +274,11 @@ class MessageStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore
-          .collection('posts')
-          .doc(postID)
-          .collection('comments')
-          .snapshots(),
+      // stream: _firestore
+      //     .collection('posts')
+      //     .doc(postID)
+      //     .collection('comments')
+      //     .snapshots(),
       builder: (context, snapshot) {
         List<MessageBubble> messageBubbles = [];
         if (!snapshot.hasData) {

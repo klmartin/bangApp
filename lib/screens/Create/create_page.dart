@@ -44,7 +44,6 @@ class _CreateState extends State<Create> {
 class SwitchExample extends StatefulWidget {
   const SwitchExample();
   // const SwitchExample(key);
-
   @override
   State<SwitchExample> createState() => _SwitchExampleState();
 }
@@ -199,10 +198,12 @@ class _SwitchExampleState extends State<SwitchExample> {
           padding: const EdgeInsets.only(top: 46.0),
           child: ElevatedButton(
               onPressed: () {
+
                 Map<String, String> body = {
-                  'caption': 'martin'};
+                  'user_id':'3',
+                  'caption': 'martin'
+                };
                 // ImageHandlerMulti(image,_image2);
-                print('here');
                 service.addChallengImage(body, _image.path,_image2.path);
                 Navigator.pushNamed(context, Nav.id);
               },
@@ -213,6 +214,7 @@ class _SwitchExampleState extends State<SwitchExample> {
               onPressed: () {
                 // ImageHandler(_image);
                 Map<String, String> body = {
+                  'user_id':'3',
                   'caption': 'martin'};
                 service.addImage(body, _image.path);
                 Navigator.pushNamed(context, Nav.id);

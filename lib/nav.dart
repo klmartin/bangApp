@@ -10,6 +10,9 @@ import 'package:nallagram/screens/Home/home.dart';
 import 'screens/Create/create_page.dart';
 import 'screens/Chat/chat_home.dart';
 import 'screens/Profile/profile.dart';
+import 'package:nallagram/screens/Widgets/fab_container.dart';
+import 'package:ionicons/ionicons.dart';
+
 
 final _auth = FirebaseAuth.instance;
 User loggedInUser = _auth.currentUser;
@@ -34,7 +37,7 @@ class _NavState extends State<Nav> {
   int _selectedIndex = 0;
   void _onItemTap(int index) {
     setState(() {
-      _selectedIndex = index;
+        _selectedIndex = index;
     });
   }
 
@@ -61,7 +64,7 @@ class _NavState extends State<Nav> {
         elevation: 0.0,
         backgroundColor: Colors.white,
         title: Text(
-          'Bang',
+          'BangApp',
           style: TextStyle(
             fontFamily: 'Metropolis',
             color: Colors.black,
@@ -137,4 +140,17 @@ class _NavState extends State<Nav> {
       ),
     );
   }
+
+  buildFab() {
+    return Container(
+      height: 45.0,
+      width: 45.0,
+      // ignore: missing_required_param
+      child: FabContainer(
+        icon: Ionicons.add_outline,
+        mini: true,
+      ),
+    );
+  }
+
 }
