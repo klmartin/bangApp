@@ -1,4 +1,4 @@
-package com.cyblogerz.nallagram
+package com.cyblogerz.bangapp
 
 import io.flutter.embedding.android.FlutterActivity
 

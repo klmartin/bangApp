@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:nallagram/screens/Profile/edit_profile.dart';
-import 'package:nallagram/screens/Posts/postView_model.dart';
-import 'package:nallagram/screens/Story/storyview.dart';
-import 'package:nallagram/screens/settings/settings.dart';
+import 'package:bangapp/screens/Profile/edit_profile.dart';
+import 'package:bangapp/screens/Posts/postView_model.dart';
+import 'package:bangapp/screens/Story/storyview.dart';
+import 'package:bangapp/screens/settings/settings.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

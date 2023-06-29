@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nallagram/screens/Profile/profilelist_page.dart';
+import 'package:bangapp/screens/Profile/profilelist_page.dart';
 
 class SearchBox extends StatelessWidget {
   const SearchBox({

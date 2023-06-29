@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:nallagram/models/userprovider.dart';
+import 'package:bangapp/models/userprovider.dart';
 import 'package:provider/provider.dart';
 import '../../nav.dart';
 import 'package:http/http.dart' as http;
@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('http://192.168.100.101/social-backend-laravel/api/v1/login'),
+                                Uri.parse('https://kimjotech.com/BangAppBackend/api/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,

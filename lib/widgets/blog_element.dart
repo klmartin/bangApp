@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:nallagram/screens/blog/blog_view.dart';
+import 'package:bangapp/screens/blog/blog_view.dart';
 
 class BlogElement extends StatelessWidget {
   BlogElement({

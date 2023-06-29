@@ -21,7 +21,7 @@ class SmallBoxCarousel extends StatelessWidget {
               letterSpacing: -1),
 
         ),
-        SizedBox(height: 10),
+
         CarouselSlider(
           options: CarouselOptions(
             height: 250,
@@ -35,7 +35,7 @@ class SmallBoxCarousel extends StatelessWidget {
               return Builder(
                 builder: (BuildContext context) {
                   return Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    margin: EdgeInsets.symmetric(horizontal: 1.0),
                     child: Column(
                       children: [
                         Row(  // Replace Column with Row
@@ -61,7 +61,6 @@ class SmallBoxCarousel extends StatelessWidget {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10),
                         Text(
                           box.text,
                           style: TextStyle(fontSize: 12),

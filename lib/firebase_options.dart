@@ -53,17 +53,17 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyAi1aYB6DP5z48KrldSk3TMPF7R-USVQ-o',
     appId: '1:243168622483:android:babba9cf0993aa73299a66',
     messagingSenderId: '243168622483',
-    projectId: 'nallagram-ac',
-    storageBucket: 'nallagram-ac.appspot.com',
+    projectId: 'bangapp-ac',
+    storageBucket: 'bangapp-ac.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDwUlZTdnWEo4SS6ovnm8DU9ISg5g8lK1k',
     appId: '1:243168622483:ios:98911caf952c5700299a66',
     messagingSenderId: '243168622483',
-    projectId: 'nallagram-ac',
-    storageBucket: 'nallagram-ac.appspot.com',
+    projectId: 'bangapp-ac',
+    storageBucket: 'bangapp-ac.appspot.com',
     iosClientId: '243168622483-j2n9iso4qa9lmioou32pik9u431kl49g.apps.googleusercontent.com',
-    iosBundleId: 'com.cyblogerz.nallagram',
+    iosBundleId: 'com.cyblogerz.bangapp',
   );
 }

@@ -8,10 +8,10 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:nallagram/screens/Profile/edit_profile.dart';
+import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:nallagram/models/userprovider.dart';
+import 'package:bangapp/models/userprovider.dart';
 
 
 class Register extends StatefulWidget {
@@ -220,7 +220,7 @@ class _RegisterState extends State<Register> {
                       });
                       try {
                         final response = await http.post(
-                          Uri.parse('http://192.168.100.101/social-backend-laravel/api/v1/register'),
+                          Uri.parse('https://kimjotech.com/BangAppBackend/api/v1/register'),
                           body: {
                             'email': email,
                             'name':name,

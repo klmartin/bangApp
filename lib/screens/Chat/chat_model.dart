@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nallagram/widgets/bloc/file_handler_bloc.dart';
+import 'package:bangapp/widgets/bloc/file_handler_bloc.dart';
 
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;

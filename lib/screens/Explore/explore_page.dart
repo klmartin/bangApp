@@ -1,108 +1,48 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:nallagram/widgets/SearchBox.dart';
-import 'package:nallagram/widgets/ctag.dart';
-import 'dart:math';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:nallagram/screens/Posts/postView_model.dart';
+import 'package:bangapp/widgets/SearchBox.dart';
+import 'package:bangapp/widgets/buildBangUpdate.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:ui';
+import 'package:flutter/material.dart';
 
-final _store = FirebaseFirestore.instance;
+class Explore extends StatefulWidget {
+  @override
+  _ExploreState createState() => _ExploreState();
+}
 
-class Explore extends StatelessWidget {
-//   @override
-//   _ExploreState createState() => _ExploreState();
-// }
 
-// class _ExploreState extends State<Explore> {
 
-  List<Color> _colors = [
-    Colors.red,
-    Colors.pink,
-    Colors.blue,
-    Colors.purple,
-    Colors.deepPurple,
-    Colors.teal,
-    Colors.indigo,
-    Colors.cyan,
-  ];
-  cgen(List<Color> nlis) {
-    return nlis.elementAt(Random().nextInt(nlis.length));
-  }
-
-  Widget picPost(String url) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30.0),
-      child: Image.network(
-        url,
-        width: double.infinity,
-        fit: BoxFit.fill,
-      ),
-    );
-  }
-
+class _ExploreState extends State<Explore> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: <Widget>[
+      children: [
         SearchBox(),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: <Widget>[
-              tagBuild('Travel', Colors.pink, context),
-              tagBuild('Architecture', Colors.blue, context),
-              tagBuild('Travel', Colors.orange, context),
-              tagBuild('Technology', Colors.red, context),
-              tagBuild('Flutter', cgen(_colors), context),
-              tagBuild('Python', cgen(_colors), context),
-              tagBuild('Reactjs', cgen(_colors), context),
-              tagBuild('Business', cgen(_colors), context),
-              tagBuild('Design', cgen(_colors), context),
-              tagBuild('Fashion', cgen(_colors), context),
-              tagBuild('Music', cgen(_colors), context),
-            ],
-          ),
+        SizedBox(height: 10),
+        Expanded(
+          child: BangUpdates(),
         ),
-        // SizedBox(
-        //   height: 20.0,
-        // ),
-
-        PostsStream(),
       ],
     );
   }
 }
 
-class ImageBox extends StatelessWidget {
-  final imageUrl;
-  ImageBox({@required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => POstView(imageUrl)));
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          color: Colors.red.shade100,
-          image: DecorationImage(
-              image: CachedNetworkImageProvider(imageUrl), fit: BoxFit.cover),
-        ),
-      ),
-    );
+class BangUpdates extends StatelessWidget {
+  Future<List<dynamic>> getBangUpdates() async {
+    var response = await http.get(Uri.parse('https://kimjotech.com/BangAppBackend/api/bang-updates'));
+    var data = json.decode(response.body);
+    return data;
   }
-}
 
-class PostsStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _store.collection('posts').snapshots(),
+    return FutureBuilder(
+      future: getBangUpdates(),
       builder: (context, snapshot) {
-        List<ImageBox> imageBoxes = [];
         if (!snapshot.hasData) {
           return Center(
             child: CircularProgressIndicator(
@@ -110,25 +50,30 @@ class PostsStream extends StatelessWidget {
             ),
           );
         }
-        final images = snapshot.data.docs;
-
-        for (var image in images) {
-          final url = image['url'];
-          final gridItem = ImageBox(
-            imageUrl: url,
-          );
-          imageBoxes.add(gridItem);
-        }
-        return Expanded(
-          child: GridView.count(
-            crossAxisCount: 3,
-            padding: EdgeInsets.all(20),
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            children: imageBoxes,
-          ),
+        return PageView.builder(
+          scrollDirection: Axis.vertical,
+          itemCount: snapshot.data.length,
+          itemBuilder: (context, index) {
+            final post = snapshot.data[index];
+            final filename = post['filename'];
+            final type = post['type'];
+            final caption = post['caption'];
+            return Container(
+              height: MediaQuery.of(context).size.height,
+              child: AspectRatio(
+                aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
+                child: buildBangUpdate(context, filename, type, caption),
+              ),
+            );
+          },
+          controller: PageController(),
         );
       },
     );
   }
 }
+
+
+
+
+

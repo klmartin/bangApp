@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:nallagram/screens/Chat/calls_model.dart';
-import 'package:nallagram/screens/Chat/chat_model.dart';
+import 'package:bangapp/screens/Chat/calls_model.dart';
+import 'package:bangapp/screens/Chat/chat_model.dart';
 
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;

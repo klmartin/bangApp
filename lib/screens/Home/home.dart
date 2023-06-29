@@ -3,16 +3,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:nallagram/models/story_view_model.dart';
+import 'package:bangapp/models/story_view_model.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../services/extension.dart';
 import '../../services/animation.dart';
-import 'package:nallagram/widgets/user_profile.dart';
+import 'package:bangapp/widgets/user_profile.dart';
 import 'package:like_button/like_button.dart';
-import 'package:nallagram/widgets/story_widget.dart';
+import 'package:bangapp/widgets/story_widget.dart';
+import 'package:bangapp/widgets/build_media.dart';
 import '../Comments/commentspage.dart';
-import 'package:nallagram/screens/Widgets/readmore.dart';
+import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'dart:convert';
+import 'package:bangapp/services/service.dart';
 import 'package:http/http.dart' as http;
 import '../Widgets/small_box.dart';
 
@@ -31,30 +33,6 @@ class _HomeState extends State<Home> {
   }
   @override
   Widget build(BuildContext context) {
-    List<BoxData> boxes = [
-      BoxData(
-        imageUrl1: 'https://via.placeholder.com/1000x500',
-        imageUrl2: 'https://via.placeholder.com/1000x500',
-        text: 'Bang Battle 1',
-      ),
-      BoxData(
-        imageUrl1: 'https://via.placeholder.com/1000x500',
-        text: 'Bang Battle 2',
-      ),
-      BoxData(
-        imageUrl1: 'https://via.placeholder.com/1000x500',
-        text: 'Bang Battle 3',
-      ),
-      BoxData(
-        imageUrl1: 'https://via.placeholder.com/1000x500',
-
-        text: 'Bang Battle 3',
-      ),
-      BoxData(
-        imageUrl1: 'https://via.placeholder.com/1000x500',
-        text: 'Bang Battle 3',
-      ),
-    ];
 
     return ListView(children: [
       Column(
@@ -76,14 +54,13 @@ class _HomeState extends State<Home> {
     ]);
   }
 }
-
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('http://192.168.15.229/social-backend-laravel/api/getPosts'));
+    var response = await http.get(Uri.parse('https://kimjotech.com/BangAppBackend/api/getPosts'));
     var data = json.decode(response.body);
+    print(response);
     return data['data']['data'];
   }
-
   void viewImage(BuildContext context, String imageUrl) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -101,7 +78,16 @@ class PostStream extends StatelessWidget {
       ),
     );
   }
-
+  String getMediaTypeFromUrl(String url) {
+    final extension = url.split('.').last.toLowerCase();
+    if (extension == 'jpg' || extension == 'jpeg' || extension == 'png' || extension == 'gif') {
+      return 'image';
+    } else if (extension == 'mp4' || extension == 'mov' || extension == 'avi' || extension == 'wmv') {
+      return 'video';
+    } else {
+      return 'unknown'; // Return 'unknown' if the media type is unsupported
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -114,33 +100,32 @@ class PostStream extends StatelessWidget {
             ),
           );
         }
+        var postCount = 0;
         List<BoxData> boxes = [
           BoxData(
-            imageUrl1: 'http://192.168.15.229/social-backend-laravel/storage/app/images/battle/amber1.jpeg',
-            imageUrl2: 'http://192.168.15.229/social-backend-laravel/storage/app/images/battle/gigi1.jpeg',
+            imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber1.jpeg',
+            imageUrl2: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/gigi1.jpeg',
             text: 'Bang Battle 1',
           ),
           BoxData(
-            imageUrl1: 'http://192.168.15.229/social-backend-laravel/storage/app/images/battle/amber2.jpeg',
-            imageUrl2: 'http://192.168.15.229/social-backend-laravel/storage/app/images/battle/gigi2.jpeg',
+            imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber2.jpeg',
+            imageUrl2: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/gigi2.jpeg',
             text: 'Bang Battle 2',
           ),
           BoxData(
-            imageUrl1: 'http://192.168.15.229/social-backend-laravel/storage/app/images/battle/amber3.jpeg',
-            imageUrl2: 'http://192.168.15.229/social-backend-laravel/storage/app/images/battle/gigi3.jpeg',
+            imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber3.jpeg',
+            imageUrl2: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/gigi3.jpeg',
             text: 'Bang Battle 3',
           ),
           BoxData(
-            imageUrl1: 'http://192.168.15.229/social-backend-laravel/storage/app/images/battle/amber3.jpeg',
-            imageUrl2: 'http://192.168.15.229/social-backend-laravel/storage/app/images/battle/gigi4.jpeg',
+            imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber3.jpeg',
+            imageUrl2: 'https://kimjotech.com/BangAppBackend/app/images/battle/gigi4.jpeg',
             text: 'Bang Battle 3',
           ),
 
         ];
         List<Widget> postCards = [];
-        int postCount =0;
         for (var post in snapshot.data) {
-
           final name = post['user']['name'];
           final followerCount = post['user']['followerCount'].toString();
           final caption = post['body'];
@@ -152,14 +137,14 @@ class PostStream extends StatelessWidget {
           final userId = post['user']['id'];
           var isLiked = post['isFavorited']==0 ? false : true ;
           var likeCount = post['likeCount'];
-          // final challengeimgWidth = post['chwidth'];
-          // final challengeimgHeight =  post['chheight'];
+          var type = post['type'];
+          var isPinned = post['pinned'];
           // final likeCount = likes.isEmpty ? 0 : int.parse(post['likes']['like_count']) ;
+          postCount ++;
+          if(postCount % 3 == 0){
+            postCards.add(SmallBoxCarousel(boxes: boxes,));
+          }
           if (challengeImgUrl != null) {
-            if(postCount % 3 == 0){
-              postCards.add(SmallBoxCarousel(boxes: boxes,));
-            }
-            else{
               postCards.add(
                   Container(
                     decoration: const BoxDecoration(
@@ -585,13 +570,7 @@ class PostStream extends StatelessWidget {
                       ],
                     ),
                   ));
-            }
-
-            postCount ++;
           } else {
-            if(postCount% 3 == 0){
-              postCards.add(SmallBoxCarousel(boxes: boxes,));
-            }else{
               postCards.add(
                   Container(
                       decoration: const BoxDecoration(
@@ -645,7 +624,7 @@ class PostStream extends StatelessWidget {
                                                 ),
                                                 SizedBox(width: 5),
                                                 Text(
-                                                  '         ${followerCount} Followers',
+                                                  '${followerCount} Followers',
                                                   style: const TextStyle(
                                                     fontFamily: 'EuclidTriangle',
                                                     fontWeight: FontWeight.bold,
@@ -656,7 +635,6 @@ class PostStream extends StatelessWidget {
                                                 )
                                               ],
                                             ),
-
                                             const SizedBox(height: 2),
                                             Text(
                                                 StringExtension
@@ -832,20 +810,9 @@ class PostStream extends StatelessWidget {
                             },
                             child: AspectRatio(
                               aspectRatio: imgWidth / imgHeight,
-                              child: CachedNetworkImage(
-                                imageUrl: imgurl,
-                                placeholder: (context, url) => AspectRatio(
-                                  aspectRatio: imgWidth / imgHeight,
-                                  child: Shimmer.fromColors(
-                                    baseColor: const Color.fromARGB(255, 30, 34, 45),
-                                    highlightColor: const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-                                    child: Container(color: const Color.fromARGB(255, 30, 34, 45)),
-                                  ),
-                                ),
-                              ),
+                              child: buildMediaWidget(context, imgurl,type,imgWidth,imgHeight,isPinned),
                             ),
                           ),
-
                           const SizedBox(height: 20),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -855,7 +822,12 @@ class PostStream extends StatelessWidget {
                                 Stack(
                                   // mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 40) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 40),
+                                    GestureDetector(
+                                      onTap: () => Service().likeAction(likeCount, isLiked), // Call the likeAction function on tap
+                                      child: !isLiked
+                                          ? Icon(CupertinoIcons.heart, color: Colors.red, size: 40)
+                                          : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 40),
+                                    ),
                                     SizedBox(width: 4),
 
                                   ],
@@ -894,12 +866,8 @@ class PostStream extends StatelessWidget {
                           const SizedBox(height: 20),
                         ],
                       )));
-            }
-
-            postCount ++;
           }
         }
-
         return ListView(
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),

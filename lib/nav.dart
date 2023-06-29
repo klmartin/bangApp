@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:nallagram/screens/Explore/explore_page.dart';
-import 'package:nallagram/screens/blog/blog_home.dart';
+import 'package:bangapp/screens/Explore/explore_page.dart';
+import 'package:bangapp/screens/blog/blog_home.dart';
 import 'screens/Activity/activity_page.dart';
-import 'package:nallagram/screens/Home/home.dart';
+import 'package:bangapp/screens/Home/home.dart';
 import 'screens/Create/create_page.dart';
 import 'screens/Chat/chat_home.dart';
 import 'screens/Profile/profile.dart';
-import 'package:nallagram/screens/Widgets/fab_container.dart';
+import 'package:bangapp/screens/Widgets/fab_container.dart';
 import 'package:ionicons/ionicons.dart';
 
 

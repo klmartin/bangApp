@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nallagram/nav.dart';
-import 'package:nallagram/screens/Authenticate/login_screen.dart';
-import 'package:nallagram/screens/Chat/calls_chat.dart';
-import 'package:nallagram/screens/Chat/new_message_chat.dart';
-import 'package:nallagram/screens/Comments/commentspage.dart';
+import 'package:bangapp/nav.dart';
+import 'package:bangapp/screens/Authenticate/login_screen.dart';
+import 'package:bangapp/screens/Chat/calls_chat.dart';
+import 'package:bangapp/screens/Chat/new_message_chat.dart';
+import 'package:bangapp/screens/Comments/commentspage.dart';
 import 'package:provider/provider.dart';
 import 'models/userprovider.dart';
 import 'screens/Authenticate/welcome_screen.dart';

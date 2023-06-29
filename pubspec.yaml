@@ -1,5 +1,5 @@
-name: nallagram
-description: Insta Clone
+name: bangapp
+description: social media application in tanzania
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -32,7 +32,7 @@ dependencies:
   curved_navigation_bar: ^1.0.1
   dropdown_button2: ^2.1.0
   emoji_picker_flutter: ^1.4.0
-  file_picker: ^5.2.0+1
+  file_picker: ^5.2.10
   firebase_auth: ^4.4.2
   firebase_core: ^2.10.0
   firebase_messaging: ^14.4.1
@@ -53,6 +53,7 @@ dependencies:
   toast: ^0.3.0
   http: ^0.13.5
   chewie: ^1.0.0
+  video_player: ^2.6.1
 
 dev_dependencies:
   flutter_test:

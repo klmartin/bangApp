@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nallagram/models/blog_shrink_model.dart';
-import 'package:nallagram/widgets/blog_element.dart';
-import 'package:nallagram/widgets/ctag.dart';
-import 'package:nallagram/widgets/featured_blog.dart';
+import 'package:bangapp/models/blog_shrink_model.dart';
+import 'package:bangapp/widgets/blog_element.dart';
+import 'package:bangapp/widgets/ctag.dart';
+import 'package:bangapp/widgets/featured_blog.dart';
 
 class BlogHome extends StatelessWidget {
   @override
