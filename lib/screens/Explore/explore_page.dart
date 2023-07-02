@@ -14,8 +14,6 @@ class Explore extends StatefulWidget {
   _ExploreState createState() => _ExploreState();
 }
 
-
-
 class _ExploreState extends State<Explore> {
   @override
   Widget build(BuildContext context) {

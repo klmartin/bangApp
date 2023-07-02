@@ -93,8 +93,8 @@ class _NavState extends State<Nav> {
             ),
           ),
           IconButton(
-            icon: FaIcon(
-              FontAwesomeIcons.paperPlane,
+            icon: Icon(
+              Ionicons.chatbox_outline,
               color: Colors.black,
             ),
             onPressed: () {

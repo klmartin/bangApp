@@ -31,6 +31,8 @@ class SearchBox extends StatelessWidget {
                   fontWeight: FontWeight.w400,
                   fontFamily: 'Metropolis',
                   fontSize: 15.0,
+                  color: Colors.black
+
                 ),
               ),
             ),

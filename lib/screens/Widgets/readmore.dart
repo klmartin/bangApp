@@ -17,6 +17,7 @@ class ReadMoreText extends StatefulWidget {
         this.trimLines = 2,
         this.trimMode = TrimMode.length,
         this.style,
+        this.userName,
         this.textAlign,
         this.textDirection,
         this.locale,
@@ -51,6 +52,7 @@ class ReadMoreText extends StatefulWidget {
 
   final String delimiter;
   final String data;
+  final String userName;
   final String trimExpandedText;
   final String trimCollapsedText;
   final Color colorClickableText;
@@ -67,27 +69,35 @@ class ReadMoreText extends StatefulWidget {
 }
 
 const String _kEllipsis = '\u2026';
-
 const String _kLineSeparator = '\u2028';
 
 class ReadMoreTextState extends State<ReadMoreText> {
   bool _readMore = true;
-
   void _onTapLink() {
     setState(() {
       _readMore = !_readMore;
       widget.callback?.call(_readMore);
     });
   }
-
   @override
   Widget build(BuildContext context) {
     final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
+    final userNameStyle = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 15,
+      color: Colors.black,
+    );
+
+    final dataStyle = TextStyle(
+      fontWeight: FontWeight.normal,
+      fontSize: 15,
+      color: Colors.black,
+    );
+
     TextStyle effectiveTextStyle = widget.style;
     if (widget.style?.inherit ?? false) {
       effectiveTextStyle = defaultTextStyle.style.merge(widget.style);
     }
-
     final textAlign =
         widget.textAlign ?? defaultTextStyle.textAlign ?? TextAlign.start;
     final textDirection = widget.textDirection ?? Directionality.of(context);
@@ -95,7 +105,6 @@ class ReadMoreTextState extends State<ReadMoreText> {
         widget.textScaleFactor ?? MediaQuery.textScaleFactorOf(context);
     final overflow = defaultTextStyle.overflow;
     final locale = widget.locale ?? Localizations.maybeLocaleOf(context);
-
     final colorClickableText =
     // ignore: deprecated_member_use
     widget.colorClickableText ?? Theme.of(context).accentColor;
@@ -104,7 +113,6 @@ class ReadMoreTextState extends State<ReadMoreText> {
     final _defaultMoreStyle = widget.moreStyle ??
         effectiveTextStyle?.copyWith(color: colorClickableText);
     final _defaultDelimiterStyle = widget.delimiterStyle ?? effectiveTextStyle;
-
     TextSpan link = TextSpan(
       text: _readMore ? widget.trimCollapsedText : widget.trimExpandedText,
       style: _readMore ? _defaultMoreStyle : _defaultLessStyle,
@@ -128,8 +136,17 @@ class ReadMoreTextState extends State<ReadMoreText> {
 
         // Create a TextSpan with data
         final text = TextSpan(
-          style: effectiveTextStyle,
-          text: widget.data,
+
+          children: [
+            TextSpan(
+              text: widget.userName,
+              style: userNameStyle,
+            ),
+            TextSpan(
+              text: " " + widget.data,
+              style: dataStyle,
+            ),
+          ],
         );
 
         // Layout and measure link
@@ -175,23 +192,41 @@ class ReadMoreTextState extends State<ReadMoreText> {
           endIndex = pos.offset;
           linkLongerThanLine = true;
         }
-
         // ignore: prefer_typing_uninitialized_variables
         var textSpan;
         switch (widget.trimMode) {
           case TrimMode.length:
             if (widget.trimLength < widget.data.length) {
               textSpan = TextSpan(
-                style: effectiveTextStyle,
-                text: _readMore
-                    ? widget.data.substring(0, widget.trimLength)
-                    : widget.data,
-                children: <TextSpan>[_delimiter, link],
+                children: [
+                  TextSpan(
+                    text: _readMore
+                        ?widget.userName + " " + widget.data.substring(0, widget.trimLength)
+                        : widget.userName + " " +widget.data,
+                    children: <TextSpan>[_delimiter, link],
+                    style: userNameStyle,
+                  ),
+                  TextSpan(
+                    text: _readMore
+                        ?widget.userName + " " + widget.data.substring(0, widget.trimLength)
+                        : widget.userName + " " +widget.data,
+                    children: <TextSpan>[_delimiter, link],
+                    style: dataStyle,
+                  ),
+                ],
               );
             } else {
-              textSpan = TextSpan(
-                style: effectiveTextStyle,
-                text: widget.data,
+              textSpan =  TextSpan(
+                children: [
+                  TextSpan(
+                    text: widget.userName,
+                    style: userNameStyle,
+                  ),
+                  TextSpan(
+                    text: " " + widget.data,
+                    style: dataStyle,
+                  ),
+                ],
               );
             }
             break;
@@ -207,8 +242,16 @@ class ReadMoreTextState extends State<ReadMoreText> {
               );
             } else {
               textSpan = TextSpan(
-                style: effectiveTextStyle,
-                text: widget.data,
+                children: [
+                  TextSpan(
+                    text: widget.userName,
+                    style: userNameStyle,
+                  ),
+                  TextSpan(
+                    text: " " + widget.data,
+                    style: dataStyle,
+                  ),
+                ],
               );
             }
             break;

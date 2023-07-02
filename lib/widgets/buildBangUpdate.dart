@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:bangapp/screens/Widgets/readmore.dart';
+import 'package:bangapp/widgets/user_profile.dart';
 
 Object buildBangUpdate(BuildContext context, filename,type,caption) {
   if ( type == 'image') {
@@ -33,18 +35,31 @@ Object buildBangUpdate(BuildContext context, filename,type,caption) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Icon(CupertinoIcons.chat_bubble_text, color: Colors.black, size: 40),
+                Icon(CupertinoIcons.heart, color: Colors.black, size: 30),
                 SizedBox(height: 8),
-                Icon(CupertinoIcons.heart, color: Colors.black, size: 40),
+                Icon(CupertinoIcons.chat_bubble, color: Colors.black, size: 30),
                 SizedBox(height: 8),
-                Icon(CupertinoIcons.share, color: Colors.black, size: 40),
+                Icon(CupertinoIcons.paperplane, color: Colors.black, size: 30),
               ],
             ),
           ),
           Positioned(
+            bottom: 80,
+            left: 10,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+              UserProfile(
+                url: 'https://kimjotech.com/BangAppBackend//storage//app//bangInspiration//bang_logo.jpg',
+                size: 40),
+                SizedBox(width:5),
+                Text('User Name', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              ]
+              )),
+          Positioned(
             bottom: 50,
             left: 10,
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(caption, style: TextStyle(
@@ -52,7 +67,6 @@ Object buildBangUpdate(BuildContext context, filename,type,caption) {
                   fontSize: 20.0,
                   letterSpacing: -1,
                 ) ),
-
               ],
             ),
           ),
@@ -85,20 +99,68 @@ Object buildBangUpdate(BuildContext context, filename,type,caption) {
           ),
         );
       },
-      child: AspectRatio(
+      child: Stack(
+        children: [
+          Center(
+            child: AspectRatio(
         aspectRatio: 16 / 9, // Adjust the aspect ratio as per your video's dimensions
         child: Stack(
-          alignment: Alignment.center,
-          children: [
-            VideoPlayer(_videoPlayerController),
-            Icon(
-              Icons.play_circle_fill,
-              size: 50,
-              color: Colors.white,
-            ),
-          ],
+            alignment: Alignment.center,
+            children: [
+              VideoPlayer(_videoPlayerController),
+              Icon(
+                Icons.play_circle_fill,
+                size: 50,
+                color: Colors.white,
+              ),
+            ],
         ),
       ),
+          ),
+          Positioned(
+            bottom: 10,
+            right: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Icon(CupertinoIcons.heart, color: Colors.black, size: 30),
+                SizedBox(height: 8),
+                Icon(CupertinoIcons.chat_bubble, color: Colors.black, size: 30),
+                SizedBox(height: 8),
+                Icon(CupertinoIcons.paperplane, color: Colors.black, size: 30),
+              ],
+            ),
+          ),
+          Positioned(
+              bottom: 80,
+              left: 10,
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    UserProfile(
+                        url: 'https://kimjotech.com/BangAppBackend//storage//app//bangInspiration//bang_logo.jpg',
+                        size: 40),
+                    SizedBox(width:5),
+                    Text('User Name', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  ]
+              )),
+          Positioned(
+            bottom: 50,
+            left: 10,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(caption, style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20.0,
+                  letterSpacing: -1,
+                ) ),
+              ],
+            ),
+          ),
+      ]
+      )
+
     );
   }
   else {

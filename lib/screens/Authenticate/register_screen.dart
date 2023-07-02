@@ -5,7 +5,6 @@ import '../../nav.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
@@ -96,7 +95,7 @@ class _RegisterState extends State<Register> {
                   if (picked != null && picked != date_of_birth) {
                     setState(() {
                       date_of_birth = picked;
-                      _dateController.text = DateFormat.yMd().format(date_of_birth);
+                      // _dateController.text = date_of_birth;
                     });
                   }
                 },

@@ -2,16 +2,13 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:bangapp/models/story_view_model.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../services/extension.dart';
 import '../../services/animation.dart';
 import 'package:bangapp/widgets/user_profile.dart';
-import 'package:like_button/like_button.dart';
-import 'package:bangapp/widgets/story_widget.dart';
 import 'package:bangapp/widgets/build_media.dart';
 import '../Comments/commentspage.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'dart:convert';
 import 'package:bangapp/services/service.dart';
@@ -33,7 +30,6 @@ class _HomeState extends State<Home> {
   }
   @override
   Widget build(BuildContext context) {
-
     return ListView(children: [
       Column(
         children: <Widget>[
@@ -89,6 +85,7 @@ class PostStream extends StatelessWidget {
     }
   }
   @override
+
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: getPosts(),
@@ -105,22 +102,22 @@ class PostStream extends StatelessWidget {
           BoxData(
             imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber1.jpeg',
             imageUrl2: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/gigi1.jpeg',
-            text: 'Bang Battle 1',
+            text: 'Nani Mkali ?',
           ),
           BoxData(
             imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber2.jpeg',
             imageUrl2: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/gigi2.jpeg',
-            text: 'Bang Battle 2',
+            text: 'Nani Mkali ?',
           ),
           BoxData(
             imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber3.jpeg',
             imageUrl2: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/gigi3.jpeg',
-            text: 'Bang Battle 3',
+            text: 'Nani Mkali ?',
           ),
           BoxData(
             imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber3.jpeg',
-            imageUrl2: 'https://kimjotech.com/BangAppBackend/app/images/battle/gigi4.jpeg',
-            text: 'Bang Battle 3',
+            imageUrl2: 'https://kimjotech.com/BangAppBackend/app/images/battle/amber3.jpeg',
+            text: 'Nani Mkali ?',
           ),
 
         ];
@@ -152,10 +149,9 @@ class PostStream extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const SizedBox(height: 30),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
+                              horizontal: 5.0, vertical: 5.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -164,8 +160,6 @@ class PostStream extends StatelessWidget {
                                   onTap: () {
                                     // Navigator.push(
                                     //   context,
-
-
                                     //   createRoute(
                                     //     ProfileScreen(
                                     //       currentUser: widget.currentUser,
@@ -378,9 +372,8 @@ class PostStream extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 2),
                         AspectRatio(
-                          aspectRatio: 190 / 150,
+                          aspectRatio: 190 / 120,
                           child: Row(
                             children: [
                               Expanded(
@@ -427,7 +420,6 @@ class PostStream extends StatelessWidget {
                             ],
                           ),
                         ),//displaying first challenge picture
-                        const SizedBox(height: 15),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Row(
@@ -443,17 +435,17 @@ class PostStream extends StatelessWidget {
                                     Stack(
                                       // mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 40) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 40),
+                                        !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 30) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
                                         SizedBox(width: 4),
                                         Positioned(
-                                          top: 9,
-                                          left: 13,
+                                          top: 7.5,
+                                          left: 11,
                                           child: Text(
                                             'A',
                                             style: TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 20,
+                                              fontSize: 14,
                                             ),
                                           ),
                                         ),
@@ -474,7 +466,7 @@ class PostStream extends StatelessWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  const SizedBox(
+                                  SizedBox(
                                     width: 15,
                                   ),
                                   GestureDetector(
@@ -491,7 +483,29 @@ class PostStream extends StatelessWidget {
                                       );
                                     },
                                     child: const Icon(
-                                      CupertinoIcons.bubble_middle_bottom,
+                                      Ionicons.chatbox_outline,
+                                      color: Colors.black,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        createRoute(
+                                          CommentsPage(
+                                            postId: postId,
+                                            userId: 1,
+                                            // currentUser: 1,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: const Icon(
+                                      CupertinoIcons.chat_bubble,
                                       color: Colors.black,
                                       size: 30,
                                     ),
@@ -511,17 +525,17 @@ class PostStream extends StatelessWidget {
                                           children: [
                                             Stack(
                                               children: [
-                                                !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 40) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 40),
+                                                !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 30) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
                                                 SizedBox(width: 4),
                                                 Positioned(
-                                                  top: 9,
-                                                  left: 13,
+                                                  top: 7.5,
+                                                  left: 11.5,
                                                   child: Text(
                                                     'B',
                                                     style: TextStyle(
                                                       color: Colors.black,
                                                       fontWeight: FontWeight.bold,
-                                                      fontSize: 20,
+                                                      fontSize: 15,
                                                     ),
                                                   ),
                                                 ),
@@ -547,22 +561,24 @@ class PostStream extends StatelessWidget {
                             ],
                           ),
                         ),
-                        if (caption != "") const SizedBox(height: 16),
-                        if (caption != "")
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: ReadMoreText(
-                              caption,
-                              trimLines: 2,
-                              style: Theme.of(context).textTheme.bodyText1,
-                              colorClickableText: Theme.of(context).primaryColor,
-                              trimMode: TrimMode.line,
-                              trimCollapsedText: '...Show more',
-                              trimExpandedText: '...Show less',
-                              moreStyle: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).primaryColor,
+                        if (caption != "") SizedBox(height: 16),
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: ReadMoreText(
+                                caption,
+                                trimLines: 2,
+                                style: Theme.of(context).textTheme.bodyText1,
+                                colorClickableText: Theme.of(context).primaryColor,
+                                trimMode: TrimMode.line,
+                                trimCollapsedText: '...Show more',
+                                trimExpandedText: '...Show less',
+                                userName: name,
+                                moreStyle: TextStyle(
+                                  fontSize: 15,
+                                  color: Theme.of(context).primaryColor,
+                                ),
                               ),
                             ),
                           ),
@@ -579,7 +595,6 @@ class PostStream extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 10),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16.0, vertical: 8.0),
@@ -624,7 +639,7 @@ class PostStream extends StatelessWidget {
                                                 ),
                                                 SizedBox(width: 5),
                                                 Text(
-                                                  '${followerCount} Followers',
+                                                  '        ${followerCount} Followers',
                                                   style: const TextStyle(
                                                     fontFamily: 'EuclidTriangle',
                                                     fontWeight: FontWeight.bold,
@@ -803,7 +818,6 @@ class PostStream extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 10),
                           InkWell(
                             onTap: () {
                               viewImage(context, imgurl);
@@ -813,39 +827,83 @@ class PostStream extends StatelessWidget {
                               child: buildMediaWidget(context, imgurl,type,imgWidth,imgHeight,isPinned),
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Stack(
-                                  // mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () => Service().likeAction(likeCount, isLiked), // Call the likeAction function on tap
-                                      child: !isLiked
-                                          ? Icon(CupertinoIcons.heart, color: Colors.red, size: 40)
-                                          : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 40),
-                                    ),
-                                    SizedBox(width: 4),
+                          Row(
+                            children: [
+                              Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Stack(
+                                    // mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () => Service().likeAction(likeCount, isLiked), // Call the likeAction function on tap
+                                        child: !isLiked
+                                            ? Icon(CupertinoIcons.heart, color: Colors.red, size: 30)
+                                            : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
+                                      ),
+                                      SizedBox(width: 4),
 
-                                  ],
-                                ),
-                                SizedBox(height: 2),
-                                Text(
-                                  "$likeCount likes" ,
-                                  style: TextStyle(
-                                    fontSize: 12.5,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
+                                    ],
                                   ),
-                                ),
-                              ],
+                                  SizedBox(height: 2),
+                                  Text(
+                                    "$likeCount likes" ,
+                                    style: TextStyle(
+                                      fontSize: 12.5,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                              SizedBox(width: 180),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    createRoute(
+                                      CommentsPage(
+                                        postId: postId,
+                                        userId: 1,
+                                        // currentUser: 1,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: const Icon(
+                                  Ionicons.chatbox_outline,
+                                  color: Colors.black,
+                                  size: 30,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      createRoute(
+                        CommentsPage(
+                          postId: postId,
+                          userId: 1,
+                          // currentUser: 1,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Icon(
+                    CupertinoIcons.chat_bubble,
+                    color: Colors.black,
+                    size: 30,
+                  ),
+                ),
+                            ],
                           ),
                           if (caption != "") const SizedBox(height: 16),
-                          if (caption != "")
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: ReadMoreText(
@@ -856,9 +914,9 @@ class PostStream extends StatelessWidget {
                                 trimMode: TrimMode.line,
                                 trimCollapsedText: '...Show more',
                                 trimExpandedText: '...Show less',
+                                userName: name,
                                 moreStyle: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
                                   color: Theme.of(context).primaryColor,
                                 ),
                               ),
@@ -876,7 +934,6 @@ class PostStream extends StatelessWidget {
       },
     );
   }
-
   void setState(Null Function() param0) {}
 }
 

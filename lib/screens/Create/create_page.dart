@@ -29,11 +29,9 @@ class Create extends StatefulWidget {
 class _CreateState extends State<Create> {
   Service service = Service();
   Widget build(BuildContext context) {
-
     return ListView(
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       children: [
-        SizedBox(height: 15.0),
         SizedBox(height: 15.0),
         SwitchExample(),
       ],
@@ -79,9 +77,9 @@ class _SwitchExampleState extends State<SwitchExample> {
         Text(
           _isSwitched ? 'Challenge' : 'Normal',
           style: TextStyle(
-            fontSize: 24.0,
+            fontSize: 20.0,
             fontWeight: FontWeight.bold,
-            color: _isSwitched ? Colors.red : Colors.green,
+            color: _isSwitched ? Colors.red : Colors.black,
           ),
         ),
         Switch(
@@ -95,17 +93,15 @@ class _SwitchExampleState extends State<SwitchExample> {
         Row(
           children: [
             InkWell(
+              splashColor: Colors.black,
+              highlightColor: Colors.red,
               child:
               GestureDetector(
                 onTap: () async {
-
-
                   final mediaFile = await FilePicker.platform.pickFiles(
-
                     type: FileType.media,
                     allowMultiple: false,
                   );
-
                   setState(() {
                     if (mediaFile != null) {
                       if (mediaFile.files.first.path.contains('.mp4')) {
@@ -271,43 +267,79 @@ class _SwitchExampleState extends State<SwitchExample> {
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                '2.5K 1100 followers',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    '2,500 tshs',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12, fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const Text(
+                    '500 followers',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12, fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ],
               ),
             ),
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                '5K 1100 followers',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    '5,000 tshs',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12, fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const Text(
+                    '1,100 followers',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12, fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ],
               ),
             ),
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                '10K 1100 followers',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    '10,000 tshs',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12, fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const Text(
+                    '2,300 followers',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12, fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -318,7 +350,7 @@ class _SwitchExampleState extends State<SwitchExample> {
             GestureDetector(
             child: Chip(
               avatar: CircleAvatar(
-                backgroundColor: Colors.red.shade800,
+                backgroundColor: Color(0xFFAD6E00),
               ),
               label: const Text('BRONZE'),
             ),
@@ -329,7 +361,7 @@ class _SwitchExampleState extends State<SwitchExample> {
             GestureDetector(
               child: Chip(
                 avatar: CircleAvatar(
-                  backgroundColor: Colors.grey.shade800,
+                  backgroundColor: Colors.grey.shade600,
                 ),
                 label: const Text('SILVER'),
               ),
@@ -337,6 +369,7 @@ class _SwitchExampleState extends State<SwitchExample> {
                 buildFab("silver", context);
               },
             ),
+            SizedBox(),
             GestureDetector(
               child:Chip(
                 avatar: CircleAvatar(
@@ -348,9 +381,10 @@ class _SwitchExampleState extends State<SwitchExample> {
                 //Prints the label of each tapped chip
                 buildFab("gold",context);
               },),
+            SizedBox(width: 0.3),
           ],
         ),
-        SizedBox(width: 15.0),
+        SizedBox(width: 10.0),
         _isSwitched ? Padding(
           padding: const EdgeInsets.only(top: 46.0),
           child: ElevatedButton(
