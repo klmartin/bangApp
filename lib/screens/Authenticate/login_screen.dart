@@ -145,12 +145,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'password': password,
                                   },
                                 );
-                                print(response.body);
                               final responseBody = jsonDecode(response.body);
                                 Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
-
-
-                                print(responseBody);
                               if (responseBody != null) {
                                 SharedPreferences prefs = await SharedPreferences.getInstance();
                                 prefs.setInt('user_id', responseBody['user_id']);

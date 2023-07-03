@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
 }
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('https://kimjotech.com/BangAppBackend/api/getPosts'));
+    var response = await http.get(Uri.parse('http://192.168.100.100/social-backend-laravel/api/getPosts'));
     var data = json.decode(response.body);
     print(response);
     return data['data']['data'];

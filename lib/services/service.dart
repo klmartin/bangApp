@@ -64,7 +64,7 @@ class Service {
     print("martin");
     try {
       // Make a POST request to the Laravel API route for liking
-      final response = await http.post(Uri.parse('https://your-laravel-api.com/like'),
+      final response = await http.post(Uri.parse('http://192.168.100.100/social-backend-laravel/api/likePost'),
         body: {
           'itemId': 'your-item-id',
           'userId': 'your-user-id',
