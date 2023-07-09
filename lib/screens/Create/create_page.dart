@@ -1,516 +1,259 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path/path.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:bangapp/services/service.dart';
-import '../../nav.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
-import 'package:file_picker/file_picker.dart';
-
-final storage = FirebaseStorage.instance;
-final store = FirebaseFirestore.instance;
-final auth = FirebaseAuth.instance;
-
-
-User user;
-
-
-enum ImageSourceType { gallery, camera }
+import 'package:chewie/chewie.dart';
+import 'dart:io';
+import 'package:image_editor_plus/image_editor_plus.dart';
+import 'package:video_editor/video_editor.dart';
+import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
 
 class Create extends StatefulWidget {
+  Create({Key key, this.title}) : super(key: key);
+  final String title;
   @override
   _CreateState createState() => _CreateState();
 }
 
 class _CreateState extends State<Create> {
-  Service service = Service();
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 15.0),
-      children: [
-        SizedBox(height: 15.0),
-        SwitchExample(),
-      ],
-    );
+  AssetEntity _selectedAsset;
+  VideoPlayerController _videoPlayerController;
+  ChewieController _chewieController;
+
+  void selectAsset(AssetEntity asset) async {
+    setState(() {
+      _selectedAsset = asset;
+      if (_selectedAsset.type == AssetType.video) {
+        _initializeVideoPlayer();
+      }
+      else if(_selectedAsset.type == AssetType.image){
+        if (_chewieController != null) {
+          _chewieController.pause();
+        }
+      }
+    });
   }
 
+  Future<void> _initializeVideoPlayer() async {
+    final file = await _selectedAsset.file;
+    _videoPlayerController = VideoPlayerController.file(File(file.path));
+    await _videoPlayerController.initialize();
+    setState(() {
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController,
+        autoPlay: true,
+        looping: true,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController?.dispose();
+    _chewieController?.dispose();
+    super.dispose();
+  }
+  Uint8List fileToUint8List(File file) {
+    final bytes = file.readAsBytesSync();
+    return Uint8List.fromList(bytes);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Create Post',style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+        backgroundColor: Colors.white,
+        actions: [
+          GestureDetector(
+            onTap: () async {
+              if (_selectedAsset.type == AssetType.video) {
+                var editedVideo = await _selectedAsset.file;
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VideoEditor(
+                      video:editedVideo,
+                    ),
+                  ),
+                );
+              } else if (_selectedAsset.type == AssetType.image) {
+                var editedImage = fileToUint8List(await _selectedAsset.file);
+                // Redirect to image editor
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ImageEditor(
+                      image: editedImage,
+                      appBar: Colors.white,
+                    ),
+                  ),
+                );
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.pink,
+                    Colors.redAccent,
+                    Colors.orange
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Icon(Icons.navigate_next, size: 30),
+            ),
+          ),
+
+          SizedBox(width: 10)
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: MediaQuery.of(context).size.height / 2.2,
+              child: Center(
+                child: _selectedAsset != null
+                    ? _selectedAsset.type == AssetType.video
+                    ? Container(
+                      height: MediaQuery.of(context).size.height / 2.2,
+                      child: Chewie(
+                        controller: _chewieController,
+                      ),
+                    )
+                    : FutureBuilder<Uint8List>(
+                  future: _selectedAsset.thumbnailDataWithSize(
+                      ThumbnailSize(200, 200)),
+                  builder:
+                      (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.connectionState ==
+                        ConnectionState.done) {
+                      final thumbnailData = snapshot.data;
+                      return Image.memory(
+                        thumbnailData,
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.cover,
+                      );
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  },
+                )
+                    : Text("Image"),
+              ),
+            ),
+            Expanded(child: MediaGrid(selectAsset)),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class SwitchExample extends StatefulWidget {
-  const SwitchExample();
-  // const SwitchExample(key);
+class MediaGrid extends StatefulWidget {
+  final Function(AssetEntity) onSelectAsset;
+  MediaGrid(this.onSelectAsset);
   @override
-  State<SwitchExample> createState() => _SwitchExampleState();
+  _MediaGridState createState() => _MediaGridState();
 }
 
-class _SwitchExampleState extends State<SwitchExample> {
-  @override
-  Service service = Service();
-  var image;
-  bool light = true;
-  bool _isSwitched = false;
-  var image2;
-  var _image;
-  var _image2;
-  var imagePickerr;
-  var imagePicker;
-  var type;
-  var caption;
-  int pinPost = 0 ;
-  XFile mediaFile;
-  VideoPlayerController videoController;
+class _MediaGridState extends State<MediaGrid> {
+  List<Widget> _mediaList = [];
+  int currentPage = 0;
+  int lastPage;
+
   @override
   void initState() {
     super.initState();
-    imagePickerr = ImagePicker();
-    imagePicker = ImagePicker();
+    _fetchNewMedia();
   }
-  @override
-  Widget build(BuildContext context) {
-    Size size= MediaQuery.of(context).size;
-    return Column(
-      children: [
-        Text(
-          _isSwitched ? 'Challenge' : 'Normal',
-          style: TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-            color: _isSwitched ? Colors.red : Colors.black,
-          ),
-        ),
-        Switch(
-          value: _isSwitched,
-          onChanged: (value) {
-            setState(() {
-              _isSwitched = value;
-            });
-          },
-        ),
-        Row(
-          children: [
-            InkWell(
-              splashColor: Colors.black,
-              highlightColor: Colors.red,
-              child:
-              GestureDetector(
-                onTap: () async {
-                  final mediaFile = await FilePicker.platform.pickFiles(
-                    type: FileType.media,
-                    allowMultiple: false,
-                  );
-                  setState(() {
-                    if (mediaFile != null) {
-                      if (mediaFile.files.first.path.contains('.mp4')) {
-                        // Handle video file
-                        videoController = VideoPlayerController.file(File(mediaFile.files.first.path))
-                          ..initialize().then((_) {
-                            setState(() {
-                              videoController.play();
-                            });
-                          });
-                      } else {
-                        // Handle image file
-                        this.mediaFile = XFile(mediaFile.files.first.path);
-                        videoController?.dispose();
-                      }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Sending Message")),
-                      );
-                    }
-                  });
-                },
-                child: Container(
-                  width: 190,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.red[200],
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: mediaFile != null && mediaFile.path.contains('.mp4')
-                      ? AspectRatio(
-                    aspectRatio: videoController.value.aspectRatio,
-                    child: VideoPlayer(videoController),
-                  )
-                      : mediaFile != null
-                      ? Image.file(
-                    File(mediaFile.path),
-                    width: 190.0,
-                    height: 200.0,
-                    fit: BoxFit.cover,
-                  )
-                      : Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red[100],
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                    width: 190,
-                    height: 200,
-                    child: Icon(
-                      Icons.camera_alt,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 5,),
-            _isSwitched ?
-            Container(
-              width: size.width*0.4,
-              child: InkWell(
-                child: GestureDetector(
-                  onTap: () async {
-                    var source2 = type == ImageSourceType.camera
-                        ? ImageSource.camera
-                        : ImageSource.gallery;
-                    XFile image2 = await imagePickerr.pickImage(
-                      source: source2,
-                    );
-                    setState(() {
-                      if (image2.path != null) {
-                        _image2 = File(image2.path);
-                      } else if (image2.path == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text("Sending Message"),
-                        ));
-                      }
-                    });
-                  },
-                  child: Container(
-                    width: 190,
-                    height: 200,
-                    decoration: BoxDecoration(
-                        color: Colors.red[200],
-                        borderRadius: BorderRadius.circular(32)),
-                    child: _image2 != null
-                        ? Image.file(
-                      _image2,
-                      width: 190.0,
-                      height: 200.0,
-                      fit: BoxFit.cover,
-                    )
-                        : Container(
-                      decoration: BoxDecoration(
-                        color: Colors.red[100],
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                      width: 190,
-                      height: 200,
-                      child: Icon(
-                        Icons.camera_alt,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ):SizedBox(),
-          ],
-        ),
-        SizedBox(height: 15.0),
-        Text(
-          'Caption'.toUpperCase(),
-          style: TextStyle(
-            fontSize: 15.0,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        TextFormField(
-          initialValue: "",
-          decoration: InputDecoration(
-            hintText: 'Write a Caption!',
-            focusedBorder: UnderlineInputBorder(),
-          ),
-          maxLines: null,
-          onChanged: (val) {
-            setState(() {
-              caption = val;
-            });
-          },
-        ),
-        SizedBox(height: 15),
-        Row(
-          children: [
-            Text(
-              'Pin Post',
-              style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.bold,
-                color:  Colors.red,
-              ),
-            ),
-            Switch(
-              value: pinPost == 1,
-              onChanged: (value) {
-                setState(() {
-                  pinPost = value ? 1 : 0;
-                });
-              },
-            ),
-          ],
-        ),
-        SizedBox(height: 15),
-        Text('BUY FOLLOWERS',style: TextStyle(
-          fontSize: 15.0,
-          fontWeight: FontWeight.w600,
-          ),
-        ),
-        SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    '2,500 tshs',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12, fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  const Text(
-                    '500 followers',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12, fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    '5,000 tshs',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12, fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  const Text(
-                    '1,100 followers',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12, fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    '10,000 tshs',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12, fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  const Text(
-                    '2,300 followers',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12, fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            GestureDetector(
-            child: Chip(
-              avatar: CircleAvatar(
-                backgroundColor: Color(0xFFAD6E00),
-              ),
-              label: const Text('BRONZE'),
-            ),
-            onTap: () {
-              //Prints the label of each tapped chip
-              buildFab("bronze",context);
-            },),
-            GestureDetector(
-              child: Chip(
-                avatar: CircleAvatar(
-                  backgroundColor: Colors.grey.shade600,
-                ),
-                label: const Text('SILVER'),
-              ),
-              onTap: () {
-                buildFab("silver", context);
-              },
-            ),
-            SizedBox(),
-            GestureDetector(
-              child:Chip(
-                avatar: CircleAvatar(
-                  backgroundColor: Colors.yellow.shade800,
-                ),
-                label: const Text('GOLD '),
-              ),
-              onTap: () {
-                //Prints the label of each tapped chip
-                buildFab("gold",context);
-              },),
-            SizedBox(width: 0.3),
-          ],
-        ),
-        SizedBox(width: 10.0),
-        _isSwitched ? Padding(
-          padding: const EdgeInsets.only(top: 46.0),
-          child: ElevatedButton(
-              onPressed: () {
-                Map<String, String> body = {
-                  'user_id': '3',
-                  'body': caption,
-                  'pinned': pinPost == 1 ? '1' : '0',
-                };
-                // ImageHandlerMulti(image,_image2);
-                service.addChallengImage(body, _image.path,_image2.path);
-                Navigator.pushNamed(context, Nav.id);
-              },
-              child: Text('Post')),
-          ) : Padding(
-          padding: const EdgeInsets.only(top: 46.0),
-          child: ElevatedButton(
-              onPressed: () {
-                // ImageHandler(_image);
-                Map<String, String> body = {
-                  'user_id': '3',
-                  'body': caption,
-                  'pinned': pinPost == 1 ? '1' : '0',
-                };
-                service.addImage(body, _image.path);
-                Navigator.pushNamed(context, Nav.id);
-              },
-              child: Text('Done')),
-        )
-      ],
-    );
-  }
-  buildFab(value,BuildContext context) {
-    return showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Center(
-                  child: Text(
-                    'Payment Options',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
-                ),
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.money_dollar_circle,
-                  size: 25.0,
-                ),
-                title: Text('Tigo Pesa'),
-                onTap: () {
-                  print(value);
-                  // Navigator.pop(context);
-                  // Navigator.of(context).push(
-                  //   CupertinoPageRoute(
-                  //     builder: (_) => CreatePost(),
-                  //   ),
-                  // );
-                },
-              ),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.money_dollar_circle,
-                  size: 25.0,
-                ),
-                title: Text('M-pesa'),
-                onTap: () async {
-                  print(value);
-                  // Navigator.pop(context);
-                  // await viewModel.pickImage(context: context);
 
-                },
-              ),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.money_dollar_circle,
-                  size: 25.0,
-                ),
-                title: Text('Airtel Money'),
-                onTap: () {
-                  print(value);
-                  // Navigator.pop(context);
-                  // Navigator.of(context).push(
-                  //   CupertinoPageRoute(
-                  //     builder: (_) => CreatePost(),
-                  //   ),
-                  // );
-                },
-              ),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.money_dollar_circle,
-                  size: 25.0,
-                ),
-                title: Text('Halo Pesa'),
-                onTap: () {
-                  print(value);
-                  // Navigator.pop(context);
-                  // Navigator.of(context).push(
-                  //   CupertinoPageRoute(
-                  //     builder: (_) => CreatePost(),
-                  //   ),
-                  // );
-                },
-              ),
-            ],
+  _handleScrollEvent(ScrollNotification scroll) {
+    if (scroll.metrics.pixels / scroll.metrics.maxScrollExtent > 0.33) {
+      if (currentPage != lastPage) {
+        _fetchNewMedia();
+      }
+    }
+  }
+
+  _fetchNewMedia() async {
+    lastPage = currentPage;
+    var result = await PhotoManager.requestPermissionExtend();
+    if (result != null) {
+      List<AssetPathEntity> albums =
+      await PhotoManager.getAssetPathList(onlyAll: true);
+      List<AssetEntity> media =
+      await albums[0].getAssetListPaged(page: currentPage, size: 80);
+      List<Widget> temp = [];
+      for (var asset in media) {
+        temp.add(
+          GestureDetector(
+            onTap: () {
+              widget.onSelectAsset(asset);
+            },
+            child: FutureBuilder<Uint8List>(
+              future:asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.done)
+                  return Stack(
+                    children: <Widget>[
+                      Positioned.fill(
+                        child: Image.memory(
+                          snapshot.data,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      if (asset.type == AssetType.video)
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 5, bottom: 5),
+                            child: Icon(
+                              Icons.videocam,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                return Container();
+              },
+            ),
           ),
         );
-      },
-    );
+      }
+      setState(() {
+        _mediaList.addAll(temp);
+        currentPage++;
+      });
+    } else {
+      // Handle permission denied
+    }
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scroll) {
+        _handleScrollEvent(scroll);
+        return;
+      },
+      child: GridView.builder(
+        itemCount: _mediaList.length,
+        gridDelegate:
+        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        itemBuilder: (BuildContext context, int index) {
+          return _mediaList[index];
+        },
+      ),
+    );
+  }
 }
-
-

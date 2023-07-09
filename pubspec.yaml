@@ -54,7 +54,13 @@ dependencies:
   http: ^0.13.5
   chewie: ^1.0.0
   video_player: ^2.7.0
-
+  photo_manager: ^2.6.0
+  image_cropper: ^4.0.1
+  image_editor: ^1.2.1
+  image_editor_plus: ^0.2.0
+  video_editor: ^3.0.0
+  fraction: ^4.1.4
+  ffmpeg_kit_flutter_min: ^5.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

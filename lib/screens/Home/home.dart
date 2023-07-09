@@ -7,11 +7,11 @@ import '../../services/extension.dart';
 import '../../services/animation.dart';
 import 'package:bangapp/widgets/user_profile.dart';
 import 'package:bangapp/widgets/build_media.dart';
+import 'package:bangapp/screens/Widgets/like_button.dart';
 import '../Comments/commentspage.dart';
-import 'package:ionicons/ionicons.dart';
+import '../Profile/profile.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'dart:convert';
-import 'package:bangapp/services/service.dart';
 import 'package:http/http.dart' as http;
 import '../Widgets/small_box.dart';
 
@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
 }
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('http://192.168.100.100/social-backend-laravel/api/getPosts'));
+    var response = await http.get(Uri.parse('http://192.168.52.229/social-backend-laravel/api/getPosts'));
     var data = json.decode(response.body);
     print(response);
     return data['data']['data'];
@@ -131,16 +131,17 @@ class PostStream extends StatelessWidget {
           final imgWidth = post['width'];
           final imgHeight = post['height'];
           final postId = post['id'];
+          final commentCount = post['commentCount'];
           final userId = post['user']['id'];
           var isLiked = post['isFavorited']==0 ? false : true ;
-          var likeCount = post['likeCount'];
+          var likeCount = post['likes'] != null && post['likes'].isNotEmpty ? post['likes'][0]['like_count'] : 0;
           var type = post['type'];
           var isPinned = post['pinned'];
           // final likeCount = likes.isEmpty ? 0 : int.parse(post['likes']['like_count']) ;
           postCount ++;
-          if(postCount % 3 == 0){
-            postCards.add(SmallBoxCarousel(boxes: boxes,));
-          }
+          // if(postCount % 3 == 0){
+          //   postCards.add(SmallBoxCarousel(boxes: boxes,));
+          // }
           if (challengeImgUrl != null) {
               postCards.add(
                   Container(
@@ -158,15 +159,14 @@ class PostStream extends StatelessWidget {
                               Flexible(
                                 child: InkWell(
                                   onTap: () {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   createRoute(
-                                    //     ProfileScreen(
-                                    //       currentUser: widget.currentUser,
-                                    //       id: widget.post.userId,
-                                    //     ),
-                                    //   ),
-                                    // );
+                                    Navigator.push(
+                                      context,
+                                      createRoute(
+                                        Profile(
+                                          id: userId,
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: Row(
                                     children: [
@@ -186,7 +186,7 @@ class PostStream extends StatelessWidget {
                                                 style: const TextStyle(
                                                   fontFamily: 'EuclidTriangle',
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
+                                                  fontSize: 15,
                                                   letterSpacing: 0,
                                                   color: Colors.black,
                                                 ),
@@ -197,7 +197,7 @@ class PostStream extends StatelessWidget {
                                                 style: const TextStyle(
                                                   fontFamily: 'EuclidTriangle',
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
+                                                  fontSize: 15,
                                                   letterSpacing: 0,
                                                   color: Colors.black,
                                                 ),
@@ -439,7 +439,7 @@ class PostStream extends StatelessWidget {
                                         SizedBox(width: 4),
                                         Positioned(
                                           top: 7.5,
-                                          left: 11,
+                                          left: 10.5,
                                           child: Text(
                                             'A',
                                             style: TextStyle(
@@ -476,29 +476,6 @@ class PostStream extends StatelessWidget {
                                         createRoute(
                                           CommentsPage(
                                             postId: postId,
-                                            userId: 1,
-                                            // currentUser: 1,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: const Icon(
-                                      Ionicons.chatbox_outline,
-                                      color: Colors.black,
-                                      size: 30,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 15,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        createRoute(
-                                          CommentsPage(
-                                            postId: postId,
-                                            userId: 1,
                                             // currentUser: 1,
                                           ),
                                         ),
@@ -507,7 +484,7 @@ class PostStream extends StatelessWidget {
                                     child: const Icon(
                                       CupertinoIcons.chat_bubble,
                                       color: Colors.black,
-                                      size: 30,
+                                      size: 29,
                                     ),
                                   ),//for comments
                                   const SizedBox(
@@ -529,7 +506,7 @@ class PostStream extends StatelessWidget {
                                                 SizedBox(width: 4),
                                                 Positioned(
                                                   top: 7.5,
-                                                  left: 11.5,
+                                                  left: 11,
                                                   child: Text(
                                                     'B',
                                                     style: TextStyle(
@@ -543,7 +520,7 @@ class PostStream extends StatelessWidget {
                                             ),
                                             SizedBox(height: 2),
                                             Text(
-                                              "$likeCount like",
+                                              '$likeCount like',
                                               style: TextStyle(
                                                 fontSize: 12.5,
                                                 color: Colors.black,
@@ -582,6 +559,8 @@ class PostStream extends StatelessWidget {
                               ),
                             ),
                           ),
+                          Text("     $commentCount comments"),
+
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -604,15 +583,14 @@ class PostStream extends StatelessWidget {
                                 Flexible(
                                   child: InkWell(
                                     onTap: () {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   createRoute(
-                                      //     ProfileScreen(
-                                      //       currentUser: widget.currentUser,
-                                      //       id: widget.post.userId,
-                                      //     ),
-                                      //   ),
-                                      // );
+                                      Navigator.push(
+                                        context,
+                                        createRoute(
+                                          Profile(
+                                            id: userId,
+                                          ),
+                                        ),
+                                      );
                                     },
                                     child: Row(
                                       children: [
@@ -632,7 +610,7 @@ class PostStream extends StatelessWidget {
                                                   style: const TextStyle(
                                                     fontFamily: 'EuclidTriangle',
                                                     fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
+                                                    fontSize: 15,
                                                     letterSpacing: 0,
                                                     color: Colors.black,
                                                   ),
@@ -643,7 +621,7 @@ class PostStream extends StatelessWidget {
                                                   style: const TextStyle(
                                                     fontFamily: 'EuclidTriangle',
                                                     fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
+                                                    fontSize: 15,
                                                     letterSpacing: 0,
                                                     color: Colors.black,
                                                   ),
@@ -828,23 +806,37 @@ class PostStream extends StatelessWidget {
                             ),
                           ),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
+                              SizedBox(width: 280),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    createRoute(
+                                      CommentsPage(
+                                        postId: postId,
+                                        // currentUser: 1,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: const Icon(
+                                  CupertinoIcons.chat_bubble,
+                                  color: Colors.black,
+                                  size: 29,
+                                ),
+                              ),
                               Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 15.0),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Stack(
                                     // mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      GestureDetector(
-                                        onTap: () => Service().likeAction(likeCount, isLiked), // Call the likeAction function on tap
-                                        child: !isLiked
-                                            ? Icon(CupertinoIcons.heart, color: Colors.red, size: 30)
-                                            : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
-                                      ),
+                                      LikeButton(likeCount: likeCount,isLiked:isLiked,postId:postId),
                                       SizedBox(width: 4),
-
                                     ],
                                   ),
                                   SizedBox(height: 2),
@@ -859,48 +851,8 @@ class PostStream extends StatelessWidget {
                                 ],
                               ),
                             ),
-                              SizedBox(width: 180),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    createRoute(
-                                      CommentsPage(
-                                        postId: postId,
-                                        userId: 1,
-                                        // currentUser: 1,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: const Icon(
-                                  Ionicons.chatbox_outline,
-                                  color: Colors.black,
-                                  size: 30,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      createRoute(
-                        CommentsPage(
-                          postId: postId,
-                          userId: 1,
-                          // currentUser: 1,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Icon(
-                    CupertinoIcons.chat_bubble,
-                    color: Colors.black,
-                    size: 30,
-                  ),
-                ),
+
+
                             ],
                           ),
                           if (caption != "") const SizedBox(height: 16),
@@ -921,6 +873,8 @@ class PostStream extends StatelessWidget {
                                 ),
                               ),
                             ),
+
+                            Text("     $commentCount comments"),
                           const SizedBox(height: 20),
                         ],
                       )));

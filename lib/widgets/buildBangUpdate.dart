@@ -6,8 +6,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'package:bangapp/widgets/user_profile.dart';
+import 'package:bangapp/screens/Explore/bang_updates_like_button.dart';
 
-Object buildBangUpdate(BuildContext context, filename,type,caption) {
+Object buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCount) {
   if ( type == 'image') {
     return GestureDetector(
       onTap: () {
@@ -35,11 +36,29 @@ Object buildBangUpdate(BuildContext context, filename,type,caption) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Icon(CupertinoIcons.heart, color: Colors.black, size: 30),
-                SizedBox(height: 8),
-                Icon(CupertinoIcons.chat_bubble, color: Colors.black, size: 30),
-                SizedBox(height: 8),
-                Icon(CupertinoIcons.paperplane, color: Colors.black, size: 30),
+                BangUpdateLikeButton(likeCount: likeCount,isLiked:false,postId:postId),
+                SizedBox(height: 10),
+                Text(
+                  "$likeCount " ,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Icon(CupertinoIcons.chat_bubble, color: Colors.white, size: 30),
+                SizedBox(height: 10),
+                Text(
+                  "0 " ,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Icon(CupertinoIcons.paperplane, color: Colors.white, size: 30),
               ],
             ),
           ),
@@ -53,7 +72,7 @@ Object buildBangUpdate(BuildContext context, filename,type,caption) {
                 url: 'https://kimjotech.com/BangAppBackend//storage//app//bangInspiration//bang_logo.jpg',
                 size: 40),
                 SizedBox(width:5),
-                Text('User Name', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text('User Name', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14,color: Colors.white)),
               ]
               )),
           Positioned(
@@ -63,9 +82,8 @@ Object buildBangUpdate(BuildContext context, filename,type,caption) {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(caption, style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20.0,
-                  letterSpacing: -1,
+                  color: Colors.white,
+                  fontSize: 15.0,
                 ) ),
               ],
             ),
@@ -123,11 +141,29 @@ Object buildBangUpdate(BuildContext context, filename,type,caption) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Icon(CupertinoIcons.heart, color: Colors.black, size: 30),
-                SizedBox(height: 8),
-                Icon(CupertinoIcons.chat_bubble, color: Colors.black, size: 30),
-                SizedBox(height: 8),
-                Icon(CupertinoIcons.paperplane, color: Colors.black, size: 30),
+                BangUpdateLikeButton(likeCount: likeCount,isLiked:false,postId:postId),
+                SizedBox(height: 10),
+                Text(
+                  "$likeCount" ,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Icon(CupertinoIcons.chat_bubble, color: Colors.white, size: 30),
+                SizedBox(height: 10),
+                Text(
+                  "0 " ,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Icon(CupertinoIcons.paperplane, color: Colors.white, size: 30),
               ],
             ),
           ),
@@ -141,7 +177,7 @@ Object buildBangUpdate(BuildContext context, filename,type,caption) {
                         url: 'https://kimjotech.com/BangAppBackend//storage//app//bangInspiration//bang_logo.jpg',
                         size: 40),
                     SizedBox(width:5),
-                    Text('User Name', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    Text('User Name', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white)),
                   ]
               )),
           Positioned(
@@ -151,9 +187,8 @@ Object buildBangUpdate(BuildContext context, filename,type,caption) {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(caption, style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20.0,
-                  letterSpacing: -1,
+                  color: Colors.white,
+                  fontSize: 15.0,
                 ) ),
               ],
             ),

@@ -30,7 +30,7 @@ Object buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight
         buildFab(isPinned,context);
       },
       child: CachedNetworkImage(
-        imageUrl: 'https://kimjotech.com/BangAppBackend/storage/app/images/pinned/PinnedPost.gif',
+        imageUrl: 'http://192.168.52.229/social-backend-laravel/storage/app/images/pinned/PinnedPost.gif',
         placeholder: (context, url) => AspectRatio(
           aspectRatio: imgWidth / imgHeight,
           child: Shimmer.fromColors(

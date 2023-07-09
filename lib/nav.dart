@@ -1,7 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:bangapp/screens/Explore/explore_page.dart';
 import 'package:bangapp/screens/blog/blog_home.dart';
@@ -14,9 +13,6 @@ import 'package:bangapp/screens/Widgets/fab_container.dart';
 import 'package:ionicons/ionicons.dart';
 
 
-final _auth = FirebaseAuth.instance;
-User loggedInUser = _auth.currentUser;
-
 class Nav extends StatefulWidget {
   static const String id = 'nav';
   @override
@@ -24,20 +20,22 @@ class Nav extends StatefulWidget {
 }
 
 class _NavState extends State<Nav> {
+  bool _isAppBarEnabled = true; // Variable to track app bar state
+
   @override
   void initState() {
     super.initState();
     getCurrentUser();
-    // _getToken();
-    // getProfileData();
-    // getProfileData();
   }
 
   @override
   int _selectedIndex = 0;
   void _onItemTap(int index) {
     setState(() {
-        _selectedIndex = index;
+      _selectedIndex = index;
+
+      // Disable app bar when "Create" tab is clicked
+      _isAppBarEnabled = index != 2;
     });
   }
 
@@ -50,16 +48,18 @@ class _NavState extends State<Nav> {
   ];
 
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.white,
-      //color set to transperent or set your own color
       statusBarIconBrightness: Brightness.dark,
-      //set brightness for icons, like dark background light icons
     ));
+
     return Scaffold(
-      appBar: AppBar(
+      appBar: _isAppBarEnabled // Conditionally show/hide app bar
+          ? AppBar(
         automaticallyImplyLeading: false,
         elevation: 0.0,
         backgroundColor: Colors.white,
@@ -77,14 +77,20 @@ class _NavState extends State<Nav> {
           GestureDetector(
             onTap: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => BlogHome()));
+                context,
+                MaterialPageRoute(builder: (context) => BlogHome()),
+              );
             },
             child: Container(
               padding: EdgeInsets.all(2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.redAccent, Colors.orange],
+                  colors: [
+                    Colors.pink,
+                    Colors.redAccent,
+                    Colors.orange
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -102,7 +108,9 @@ class _NavState extends State<Nav> {
             },
           ),
         ],
-      ),
+      )
+          : null, // Hide app bar when _isAppBarEnabled is false
+
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.grey.shade200,
@@ -140,7 +148,6 @@ class _NavState extends State<Nav> {
       ),
     );
   }
-
   buildFab() {
     return Container(
       height: 45.0,

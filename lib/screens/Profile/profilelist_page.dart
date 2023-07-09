@@ -7,9 +7,7 @@ import 'package:bangapp/screens/Profile/user_profile.dart';
 
 import '../../nav.dart';
 
-final _firestore = FirebaseFirestore.instance;
-final _auth = FirebaseAuth.instance;
-final currentUsermail = loggedInUser.email;
+
 
 class ProfileList extends StatelessWidget {
   @override
@@ -146,44 +144,44 @@ class _UserBubbleState extends State<UserBubble> {
 class UsersStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('users').snapshots(),
-      builder: (context, snapshot) {
-        List<UserBubble> userBubbles = [];
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.lightBlue,
-            ),
-          );
-        }
-        final users = snapshot.data.docs;
-
-        for (var user in users) {
-          final profile = user['profile'];
-          final name = user['name'];
-          final followers = user['followers'];
-          final following = user['following'];
-          final descr = user['descr'];
-          final posts = user['posts'];
-          final selectedUid = user['userid'];
-          final currentUser = loggedInUser.displayName;
-          final userBubble = UserBubble(
-            descr: descr,
-            followers: followers,
-            following: following,
-            posts: posts,
-            profileUrl: profile,
-            selectedUser: selectedUid,
-            name: name,
-            isMe: currentUser == name,
-          );
-          userBubbles.add(userBubble);
-        }
-        return ListView(
-          children: userBubbles,
-        );
-      },
-    );
+    // return StreamBuilder<QuerySnapshot>(
+    //   stream: _firestore.collection('users').snapshots(),
+    //   builder: (context, snapshot) {
+    //     List<UserBubble> userBubbles = [];
+    //     if (!snapshot.hasData) {
+    //       return Center(
+    //         child: CircularProgressIndicator(
+    //           backgroundColor: Colors.lightBlue,
+    //         ),
+    //       );
+    //     }
+    //     final users = snapshot.data.docs;
+    //
+    //     for (var user in users) {
+    //       final profile = user['profile'];
+    //       final name = user['name'];
+    //       final followers = user['followers'];
+    //       final following = user['following'];
+    //       final descr = user['descr'];
+    //       final posts = user['posts'];
+    //       final selectedUid = user['userid'];
+    //       final currentUser = loggedInUser.displayName;
+    //       final userBubble = UserBubble(
+    //         descr: descr,
+    //         followers: followers,
+    //         following: following,
+    //         posts: posts,
+    //         profileUrl: profile,
+    //         selectedUser: selectedUid,
+    //         name: name,
+    //         isMe: currentUser == name,
+    //       );
+    //       userBubbles.add(userBubble);
+    //     }
+    //     return ListView(
+    //       children: userBubbles,
+    //     );
+    //   },
+    // );
   }
 }

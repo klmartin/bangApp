@@ -139,13 +139,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('https://kimjotech.com/BangAppBackend/api/v1/login'),
+                                Uri.parse('http://192.168.52.229/social-backend-laravel/api/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,
                                   },
                                 );
                               final responseBody = jsonDecode(response.body);
+                              print(responseBody);
                                 Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
                               if (responseBody != null) {
                                 SharedPreferences prefs = await SharedPreferences.getInstance();

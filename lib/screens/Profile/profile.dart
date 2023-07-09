@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
@@ -9,10 +10,8 @@ import 'package:bangapp/screens/Story/storyview.dart';
 import 'package:bangapp/screens/settings/settings.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-
 import '../../models/userprovider.dart';
+import 'package:bangapp/services/fetch_post.dart';
 import 'profile_upload.dart';
 final _auth = FirebaseAuth.instance;
 bool _persposts = true;
@@ -22,17 +21,14 @@ Future<void> myMethod() async {
   String imageUrl = prefs.getString('imageUrl');
   // pass imageUrl to CachedNetworkImageProvider
 }
-
-
-
-// void getProfileData() async {
-//   final info = await _store.collection('users').doc(loggedInUser.uid).get();
-//   Map data = info.data();
-//   followers = data['followers'];
-//   following = data['following'];
-//   descr = data['descr'];
-//   posts = data['posts'];
-// }
+void getProfileData() async {
+  // final info = await FetchPosts().getMyPosts();
+  // Map data = info.data();
+  // followers = data['followers'];
+  // following = data['following'];
+  // descr = data['descr'];
+  // posts = data['posts'];
+}
 
 void getCurrentUser() {
   try {
@@ -62,40 +58,35 @@ int followers;
 int following;
 
 class Profile extends StatefulWidget {
+  final int id;
+  const Profile({
+    Key key,
+    this.id,
+  }) : super(key: key);
+
   @override
   State<Profile> createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  String id="";
   @override
+
   void initState() {
     super.initState();
     final userData=  Provider.of<UserProvider>(context,listen:false);
-
-    getId();
+    // getId();
     getCurrentUser();
 
   }
 
-
-
-void  getId() async {
-    final prefs =  await SharedPreferences.getInstance();
-    print(prefs);
-     id = '${prefs.getInt('user_id')}';
-
-
-
-  }
-
+// void  getId() async {
+//     final prefs =  await SharedPreferences.getInstance();
+//     ownId = '${prefs.getInt('user_id')}';
+// }
 
   @override
   Widget build(BuildContext context) {
     final userData=  Provider.of<UserProvider>(context,listen:false);
-    print("My Id is ${userData.myUser.id}");
-    getId();
-    print(id);
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: ListView(
@@ -114,7 +105,6 @@ void  getId() async {
                             borderRadius: BorderRadius.circular(25),
                           )
                         : BoxDecoration(
-
                             color: Colors.red.shade100,
                             borderRadius: BorderRadius.circular(25),
                             image: DecorationImage(
@@ -130,79 +120,8 @@ void  getId() async {
                           )
                         : Container()),
               ),
-              Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5.0),
-                    child: Text(
-                      // '$posts',
-                      '76',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          fontFamily: 'Metropolis'),
-                    ),
-                  ),
-                  Text(
-                    'Posts',
-                    style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: FaIcon(
-                  FontAwesomeIcons.ellipsisV,
-                  size: 10,
-                  color: Colors.grey,
-                ),
-              ),
-              Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5.0),
-                    child: Text(
-                      // '$followers',
-                      '21',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          fontFamily: 'Metropolis'),
-                    ),
-                  ),
-                  Text(
-                    'Followers',
-                    style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: FaIcon(
-                  FontAwesomeIcons.ellipsisV,
-                  size: 10,
-                  color: Colors.grey,
-                ),
-              ),
-              Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
-                    child: Text(
-                      // '$following',
-                      '2',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          fontFamily: 'Metropolis'),
-                    ),
-                  ),
-                  Text(
-                    'Following',
-                    style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                  )
-                ],
-              ),
+              SizedBox(width: 280)
+
             ],
           ),
           Padding(
@@ -256,33 +175,83 @@ void  getId() async {
               )),
             ],
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+            Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5.0),
+                child: Text(
+                  // '$posts',
+                  '76',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      fontFamily: 'Metropolis'),
+                ),
+              ),
+              Text(
+                'Posts',
+                style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+              )
+            ],
+          ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: FaIcon(
+                FontAwesomeIcons.ellipsisV,
+                size: 10,
+                color: Colors.grey,
+              ),
+            ),
+            Column(
               children: <Widget>[
-                Highlight(
-                    name: 'Github',
-                    url:
-                        'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'),
-                Highlight(
-                    name: 'LinkedIn',
-                    url:
-                        'https://cdn2.iconfinder.com/data/icons/simple-social-media-shadow/512/14-512.png'),
-                Highlight(
-                    name: 'Dribbble',
-                    url:
-                        'https://cdn.freebiesupply.com/logos/large/2x/dribbble-icon-1-logo-png-transparent.png'),
-                Highlight(
-                    name: 'Reddit',
-                    url:
-                        'https://www.redditinc.com/assets/images/site/reddit-logo.png'),
-                Highlight(
-                    name: 'Quora',
-                    url:
-                        'https://www.shareicon.net/data/128x128/2015/07/21/72869_quora_512x512.png'),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  child: Text(
+                    // '$followers',
+                    '21',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        fontFamily: 'Metropolis'),
+                  ),
+                ),
+                Text(
+                  'Followers',
+                  style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                )
               ],
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: FaIcon(
+                FontAwesomeIcons.ellipsisV,
+                size: 10,
+                color: Colors.grey,
+              ),
+            ),
+            Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4.0),
+                  child: Text(
+                    // '$following',
+                    '2',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        fontFamily: 'Metropolis'),
+                  ),
+                ),
+                Text(
+                  'Following',
+                  style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                )
+              ],
+            ),
+            ]),
           ProfilePosts(),
         ],
       ),
@@ -334,7 +303,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
                       decoration: BoxDecoration(
                         border: Border(
                             bottom: BorderSide(
-                                color: _persposts ? Colors.black : Colors.grey,
+                                color: _persposts ? Colors.white : Colors.grey,
                                 width: 0.5)),
                         color: Colors.white,
                         shape: BoxShape.rectangle,
@@ -353,7 +322,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
                             padding: EdgeInsets.all(20.0),
                             child: FaIcon(
                               FontAwesomeIcons.thLarge,
-                              color: _persposts ? Colors.black : Colors.grey,
+                              color: _persposts ? Colors.white : Colors.grey,
                               size: 15,
                             ),
                           ),
@@ -369,7 +338,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
                       decoration: BoxDecoration(
                         border: Border(
                             bottom: BorderSide(
-                                color: _persposts ? Colors.grey : Colors.black,
+                                color: _persposts ? Colors.grey : Colors.white,
                                 width: 0.5)),
                         color: Colors.white,
                         shape: BoxShape.rectangle,
@@ -389,7 +358,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
                             child: FaIcon(
                               FontAwesomeIcons.userTag,
                               size: 15,
-                              color: _persposts ? Colors.grey : Colors.black,
+                              color: _persposts ? Colors.grey : Colors.white,
                             ),
                           ),
                         ),
@@ -398,7 +367,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
               ),
             ],
           ),
-          // _persposts ? ProfilePostsStream() : Expanded(child: Tagged()),
+          _persposts ? ProfilePostsStream() : Expanded(child: Tagged()),
         ],
       ),
     );
@@ -431,15 +400,11 @@ class ImagePost extends StatelessWidget {
   }
 }
 
-class ProfilePostsStream extends StatelessWidget {
+class ProfilePostsStream extends State<Profile> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      // stream: _store
-      //     .collection('users')
-      //     .doc(loggedInUser.uid)
-      //     .collection('posts')
-      //     .snapshots(),
+    return FutureBuilder(
+      future: FetchPosts().getMyPosts(widget.id),
       builder: (context, snapshot) {
         List<ImagePost> ImagePosts = [];
         if (!snapshot.hasData) {
@@ -449,16 +414,16 @@ class ProfilePostsStream extends StatelessWidget {
             ),
           );
         }
-        final posts = snapshot.data.docs.reversed;
+        final posts = snapshot.data;
 
         for (var post in posts) {
-          if (post['userid'] == loggedInUser.uid) {
-            final image = post['url'];
+          // if (post['id'] ) {
+            final image = post['image'];
             final imagePost = ImagePost(
               url: image,
             );
             ImagePosts.add(imagePost);
-          }
+          // }
         }
         return Expanded(
           child: Padding(
@@ -477,7 +442,6 @@ class ProfilePostsStream extends StatelessWidget {
     );
   }
 }
-
 class Tagged extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

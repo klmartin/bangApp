@@ -219,7 +219,7 @@ class _RegisterState extends State<Register> {
                       });
                       try {
                         final response = await http.post(
-                          Uri.parse('https://kimjotech.com/BangAppBackend/api/v1/register'),
+                          Uri.parse('http://192.168.52.229/social-backend-laravel/api/v1/register'),
                           body: {
                             'email': email,
                             'name':name,

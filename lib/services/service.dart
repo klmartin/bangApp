@@ -60,16 +60,16 @@ class Service {
     }
   }
 
-  void likeAction(likeCount,isLiked) async {
-    print("martin");
+  void likeAction(likeCount, isLiked, postId) async {
     try {
-      // Make a POST request to the Laravel API route for liking
-      final response = await http.post(Uri.parse('http://192.168.100.100/social-backend-laravel/api/likePost'),
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(Uri.parse('http://192.168.52.229/social-backend-laravel/api/likePost'),
         body: {
-          'itemId': 'your-item-id',
-          'userId': 'your-user-id',
+          'post_id': postId.toString(),
+          'user_id': prefs.getInt('user_id').toString(), // Convert to string
         },
       );
+      print(response.body);
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
@@ -82,7 +82,71 @@ class Service {
         // Handle API error, if necessary
       }
     } catch (e) {
+      print(e);
       // Handle exceptions, if any
+    }
+  }
+
+  void likeBangUpdate(likeCount, isLiked, postId) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(Uri.parse('http://192.168.52.229/social-backend-laravel/api/likeBangUpdate'),
+        body: {
+          'post_id': postId.toString(),
+          'user_id': prefs.getInt('user_id').toString(), // Convert to string
+        },
+      );
+      print(response.body);
+      if (response.statusCode == 200) {
+        // Update the like count based on the response from the API
+        final responseData = json.decode(response.body);
+        final updatedLikeCount = responseData['likeCount'];
+        setState(() {
+          likeCount = updatedLikeCount;
+          isLiked = !isLiked;
+        });
+      } else {
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      print(e);
+      // Handle exceptions, if any
+    }
+  }
+
+  Future<List<dynamic>> getComments(String postId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.52.229/social-backend-laravel/api/getComments/$postId'),
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData['comments'];
+      }
+    } catch (e) {
+      print(e);
+      // Handle exceptions, if any
+    }
+    return []; // Return an empty list in case of errors
+  }
+
+  Future<Map<String, dynamic>> postComment(postId,commentText) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(
+        Uri.parse('http://192.168.52.229/social-backend-laravel/api/postComment'),
+        body: {
+          'post_id': postId.toString(),
+          'user_id': prefs.getInt('user_id').toString(), // Convert to string
+          'body': commentText,
+        },
+      );
+      print(response.body);
+      return jsonDecode(response.body);
+    }
+    catch (e) {
+      print(e);
+      return e;
     }
   }
 
