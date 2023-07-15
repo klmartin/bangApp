@@ -1,230 +1,193 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:loading_overlay/loading_overlay.dart';
-import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path/path.dart';
+import 'dart:typed_data';
+import 'package:image_editor_plus/utils.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:bangapp/services/service.dart';
+import '../../nav.dart';
+import 'package:video_player/video_player.dart';
+import 'package:file_picker/file_picker.dart';
 
-import 'package:bangapp/widgets/indicators.dart';
+final storage = FirebaseStorage.instance;
+final store = FirebaseFirestore.instance;
+final auth = FirebaseAuth.instance;
 
-class CreatePost extends StatefulWidget {
+
+User? user;
+
+
+enum ImageSourceType { gallery, camera }
+
+class FinalCreate extends StatefulWidget {
+  static const String id = 'final_posts';
+  final Uint8List? editedImage;
+
+  const FinalCreate({
+    Key? key,
+    this.editedImage,
+  }) : super(key: key);
+
   @override
-  _CreatePostState createState() => _CreatePostState();
+  _FinaleCreateState createState() => _FinaleCreateState();
 }
 
-class _CreatePostState extends State<CreatePost> {
+class _FinaleCreateState extends State<FinalCreate> {
+  Service service = Service();
+
   @override
   Widget build(BuildContext context) {
+    return ListView(
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      children: [
+        SizedBox(height: 15.0),
+        SwitchExample(editedImage: widget.editedImage), // Pass editedImage from widget
+      ],
+    );
+  }
+}
 
-    // PostsViewModel viewModel = Provider.of<PostsViewModel>(context);
-    return WillPopScope(
-      // onWillPop: () async {
-      //   await viewModel.resetPost();
-      //   return true;
-      // },
-      child: LoadingOverlay(
-        progressIndicator: circularProgress(context),
-        isLoading: viewModel.loading,
-        child: Scaffold(
-          key: viewModel.scaffoldKey,
-          appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(Ionicons.close_outline),
-              onPressed: () {
-                viewModel.resetPost();
-                Navigator.pop(context);
-              },
-            ),
-            title: Text('BANG'.toUpperCase()),
-            centerTitle: true,
-            actions: [
-              GestureDetector(
-                onTap: () async {
-                  await viewModel.uploadPosts(context);
-                  Navigator.pop(context);
-                  viewModel.resetPost();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text(
-                    'Post'.toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
+
+class SwitchExample extends StatefulWidget {
+  final  Uint8List? editedImage;
+  const SwitchExample({
+    required this.editedImage,
+  });
+  // const SwitchExample(key);
+  @override
+  State<SwitchExample> createState() => _SwitchExampleState();
+}
+
+class _SwitchExampleState extends State<SwitchExample> {
+  @override
+  Uint8List? editedImage;
+  void initState() {
+    super.initState();
+    editedImage = widget.editedImage; // Access the editedImage from widget
+  }
+  Service service = Service();
+  var image;
+  bool light = true;
+  bool _isSwitched = false;
+  var image2;
+  var _image;
+  var _image2;
+  var type;
+  var caption;
+  int pinPost = 0 ;
+  XFile? mediaFile;
+  VideoPlayerController? videoController;
+  @override
+
+  Widget build(BuildContext context) {
+    Size size= MediaQuery.of(context).size;
+    return Container(
+          height: double.infinity,
+          child:Column (
+          children:[
+          Row(
+          children: [
+          Container(
+          width: size.width*0.4,
+            child: InkWell(
+              child: Container(
+                width: 190,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.red[200],
+                  borderRadius: BorderRadius.circular(32),
                 ),
-              )
-            ],
-          ),
-          body: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
-            children: [
-              SizedBox(height: 15.0),
-              // StreamBuilder(
-                // stream: usersRef.doc(currentUserId()).snapshots(),
-                // builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  // if (snapshot.hasData) {
-                    // UserModel user = UserModel.fromJson(
-                    //   snapshot.data!.data() as Map<String, dynamic>,
-                    // );
-                    // return ListTile(
-                    //   leading: CircleAvatar(
-                    //     radius: 25.0,
-                    //     backgroundImage: NetworkImage(user.photoUrl!),
-                    //   ),
-                    //   title: Text(
-                    //     user.username!,
-                    //     style: TextStyle(fontWeight: FontWeight.bold),
-                    //   ),
-                    //   subtitle: Text(
-                    //     user.email!,
-                    //   ),
-                    // );
-                  // }
-                  // return Container();
-                // },
-              // ),
-              InkWell(
-                onTap: () => showImageChoices(context, viewModel),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width - 30,
+                child: editedImage != null
+                    ? Image.memory(
+                  editedImage!,
+                  width: 190.0,
+                  height: 200.0,
+                  fit: BoxFit.cover,
+                )
+                    : Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(5.0),
-                    ),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
+                    color: Colors.red[100],
+                    borderRadius: BorderRadius.circular(32),
                   ),
-                  child: viewModel.imgLink != null
-                      ? CustomImage(
-                    imageUrl: viewModel.imgLink,
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.width - 30,
-                    fit: BoxFit.cover,
-                  )
-                      : viewModel.mediaUrl == null
-                      ? Center(
-                    child: Text(
-                      'Upload a Photo',
-                      style: TextStyle(
-                        color:
-                        Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  )
-                      : Image.file(
-                    viewModel.mediaUrl!,
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.width - 30,
-                    fit: BoxFit.cover,
+                  width: 190,
+                  height: 200,
+                  child: Icon(
+                    Icons.camera_alt,
+                    color: Colors.black,
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
+            ),
+          ),
+          ]),
+          SizedBox(height: 15.0),
+          Text(
+            'Caption'.toUpperCase(),
+            style: TextStyle(
+              fontSize: 15.0,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          TextFormField(
+            initialValue: "",
+            decoration: InputDecoration(
+              hintText: 'Write a Caption!',
+              focusedBorder: UnderlineInputBorder(),
+            ),
+            maxLines: null,
+            onChanged: (val) {
+              setState(() {
+                caption = val;
+              });
+            },
+          ),
+          SizedBox(height: 15),
+          Row(
+            children: [
               Text(
-                'Post Caption'.toUpperCase(),
+                'Pin Post',
                 style: TextStyle(
                   fontSize: 15.0,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
+                  color:  Colors.red,
                 ),
               ),
-              TextFormField(
-                decoration: InputDecoration(
-                  hintText: 'Eg. This is very beautiful place!',
-                  focusedBorder: UnderlineInputBorder(),
-                ),
-                maxLines: null,
-                onChanged: (val) => viewModel.setDescription(val),
-              ),
-              SizedBox(height: 20.0),
-              Text(
-                'Location'.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.all(0.0),
-                title: Container(
-                  width: 250.0,
-                  child: TextFormField(
-                    controller: viewModel.locationTEC,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(0.0),
-                      hintText: 'United States,Los Angeles!',
-                      focusedBorder: UnderlineInputBorder(),
-                    ),
-                    maxLines: null,
-                    onChanged: (val) => viewModel.setLocation(val),
-                  ),
-                ),
-                trailing: IconButton(
-                  tooltip: "Use your current location",
-                  icon: Icon(
-                    CupertinoIcons.map_pin_ellipse,
-                    size: 25.0,
-                  ),
-                  iconSize: 30.0,
-                  color: Theme.of(context).colorScheme.secondary,
-                  onPressed: () => viewModel.getLocation(),
-                ),
+              Switch(
+                value: pinPost == 1,
+                onChanged: (value) {
+                  setState(() {
+                    pinPost = value ? 1 : 0;
+                  });
+                },
               ),
             ],
           ),
-        ),
-      ),
+          SizedBox(height: 15),
+          Padding(
+            padding: const EdgeInsets.only(top: 46.0),
+            child: ElevatedButton(
+                onPressed: () {
+                  // ImageHandler(_image);
+                  Map<String, String> body = {
+                    'user_id': '3',
+                    'body': caption,
+                    'pinned': pinPost == 1 ? '1' : '0',
+                  };
+                  service.addImage(body, _image.path);
+                  Navigator.pushNamed(context, Nav.id);
+                },
+                child: Text('Done')),
+          )
+        ]
+       )
     );
   }
 
-  // showImageChoices(BuildContext context, PostsViewModel viewModel) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     shape: RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.circular(10.0),
-  //     ),
-  //     builder: (BuildContext context) {
-  //       return FractionallySizedBox(
-  //         heightFactor: .6,
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             SizedBox(height: 20.0),
-  //             Padding(
-  //               padding: const EdgeInsets.symmetric(horizontal: 10.0),
-  //               child: Text(
-  //                 'Select Image',
-  //                 style: TextStyle(
-  //                   fontWeight: FontWeight.bold,
-  //                 ),
-  //               ),
-  //             ),
-  //             Divider(),
-  //             ListTile(
-  //               leading: Icon(Ionicons.camera_outline),
-  //               title: Text('Camera'),
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 viewModel.pickImage(camera: true);
-  //               },
-  //             ),
-  //             ListTile(
-  //               leading: Icon(Ionicons.image),
-  //               title: Text('Gallery'),
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 viewModel.pickImage();
-  //               },
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
+
 }
+
+

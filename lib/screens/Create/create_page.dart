@@ -5,8 +5,9 @@ import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'dart:io';
 import 'package:image_editor_plus/image_editor_plus.dart';
-import 'package:video_editor/video_editor.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
+
+import '../../services/animation.dart';
 
 class Create extends StatefulWidget {
   Create({ Key? key,  this.title}) : super(key: key);
@@ -79,11 +80,12 @@ class _CreateState extends State<Create> {
                     ),
                   ),
                 );
-              } else if (_selectedAsset?.type == AssetType.image ) {
+              }
+              else if (_selectedAsset?.type == AssetType.image) {
                 Uint8List? editedImage;
                 var filee = await _selectedAsset?.file;
                 if (filee != null) {
-                  var editedImage = fileToUint8List(filee);
+                  editedImage = fileToUint8List(filee);
                 }
                 // Redirect to image editor
                 await Navigator.push(
@@ -95,7 +97,9 @@ class _CreateState extends State<Create> {
                     ),
                   ),
                 );
+
               }
+
             },
             child: Container(
               padding: EdgeInsets.all(2),

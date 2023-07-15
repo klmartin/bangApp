@@ -13,6 +13,7 @@ import 'root.dart';
 import 'screens/Chat/chat_home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bangapp/screens/Create/final_create.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
           EditPage.id:(context) => EditPage(),
           Authenticate.id: (context) => Authenticate(),
           CommentsPage.id:(context) => CommentsPage(userId: null),
+          FinalCreate.id:(context) =>FinalCreate(),
         },
       ),
     );
