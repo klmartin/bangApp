@@ -16,31 +16,31 @@ class Create extends StatefulWidget {
 }
 
 class _CreateState extends State<Create> {
-  late AssetEntity _selectedAsset;
-  late VideoPlayerController _videoPlayerController;
-  late ChewieController _chewieController;
+   AssetEntity? _selectedAsset;
+   VideoPlayerController? _videoPlayerController;
+   ChewieController? _chewieController;
 
   void selectAsset(AssetEntity asset) async {
     setState(() {
       _selectedAsset = asset;
-      if (_selectedAsset.type == AssetType.video) {
+      if (_selectedAsset?.type == AssetType.video) {
         _initializeVideoPlayer();
       }
-      else if(_selectedAsset.type == AssetType.image){
+      else if(_selectedAsset?.type == AssetType.image){
         if (_chewieController != null) {
-          _chewieController.pause();
+          _chewieController!.pause();
         }
       }
     });
   }
 
   Future<void> _initializeVideoPlayer() async {
-    var file = await _selectedAsset.file;
+    var file = await _selectedAsset?.file;
     _videoPlayerController = VideoPlayerController.file(File(file!.path));
-    await _videoPlayerController.initialize();
+    await _videoPlayerController!.initialize();
     setState(() {
       _chewieController = ChewieController(
-        videoPlayerController: _videoPlayerController,
+        videoPlayerController: _videoPlayerController!,
         autoPlay: true,
         looping: true,
       );
@@ -69,8 +69,8 @@ class _CreateState extends State<Create> {
         actions: [
           GestureDetector(
             onTap: () async {
-              if (_selectedAsset.type == AssetType.video) {
-                var editedVideo = await _selectedAsset.file;
+              if (_selectedAsset?.type == AssetType.video) {
+                var editedVideo = await _selectedAsset?.file;
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -79,9 +79,9 @@ class _CreateState extends State<Create> {
                     ),
                   ),
                 );
-              } else if (_selectedAsset.type == AssetType.image ) {
+              } else if (_selectedAsset?.type == AssetType.image ) {
                 Uint8List? editedImage;
-                var filee = await _selectedAsset.file;
+                var filee = await _selectedAsset?.file;
                 if (filee != null) {
                   var editedImage = fileToUint8List(filee);
                 }
@@ -124,15 +124,15 @@ class _CreateState extends State<Create> {
               height: MediaQuery.of(context).size.height / 2.2,
               child: Center(
                 child: _selectedAsset != null
-                    ? _selectedAsset.type == AssetType.video
+                    ? _selectedAsset?.type == AssetType.video
                     ? Container(
                       height: MediaQuery.of(context).size.height / 2.2,
                       child: Chewie(
-                        controller: _chewieController,
+                        controller: _chewieController!,
                       ),
                     )
                     :FutureBuilder<Uint8List?>(
-                      future: _selectedAsset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+                      future: _selectedAsset?.thumbnailDataWithSize(ThumbnailSize(200, 200)),
                       builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           final thumbnailData = snapshot.data!;
