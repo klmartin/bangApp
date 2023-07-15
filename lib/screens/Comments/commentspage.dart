@@ -33,14 +33,14 @@ const kMessageContainerDecoration = BoxDecoration(
 
 class CommentsPage extends StatefulWidget {
   static const String id = 'comment_screen';
-  final int userId;
+  final int? userId;
   final postId;
-  final _MessageStreamState messageStreamState;
+  final _MessageStreamState? messageStreamState;
   const CommentsPage({
-    Key key,
-    @required this.userId,
-    @required this.postId,
-    @required this.messageStreamState,
+     Key? key,
+     required this.userId,
+     this.postId,
+      this.messageStreamState,
   }) : super(key: key);
 
   @override
@@ -49,7 +49,7 @@ class CommentsPage extends StatefulWidget {
 
 class _CommentsPageState extends State<CommentsPage> {
   final messageTextController = TextEditingController();
-  String commentText;
+  late String commentText;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +110,7 @@ class _CommentsPageState extends State<CommentsPage> {
                               'image': response['data']['user']['image'],
                             },
                           };
-                          widget.messageStreamState.addComment(newComment);
+                          widget.messageStreamState?.addComment(newComment);
                           // MessageStream.of(context).addComment(newComment);
 
                       },
@@ -140,9 +140,9 @@ class MessageBubble extends StatelessWidget {
   final String sender;
 
   MessageBubble({
-    @required this.text,
-    @required this.sender,
-    @required this.url,
+    required this.text,
+    required this.sender,
+    required this.url,
   });
 
   @override
@@ -238,12 +238,12 @@ class MessageBubble extends StatelessWidget {
 class MessageStream extends StatefulWidget {
   final postID;
 
-  MessageStream({@required this.postID, _MessageStreamState messageStreamState});
+  MessageStream({required this.postID,  _MessageStreamState? messageStreamState});
 
   @override
   _MessageStreamState createState() => _MessageStreamState();
 
-  static _MessageStreamState of(BuildContext context) {
+  static _MessageStreamState? of(BuildContext context) {
     return context.findAncestorStateOfType<_MessageStreamState>();
   }
 }

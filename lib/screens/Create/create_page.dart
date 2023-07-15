@@ -9,16 +9,16 @@ import 'package:video_editor/video_editor.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
 
 class Create extends StatefulWidget {
-  Create({Key key, this.title}) : super(key: key);
-  final String title;
+  Create({ Key? key,  this.title}) : super(key: key);
+  final String? title;
   @override
   _CreateState createState() => _CreateState();
 }
 
 class _CreateState extends State<Create> {
-  AssetEntity _selectedAsset;
-  VideoPlayerController _videoPlayerController;
-  ChewieController _chewieController;
+  late AssetEntity _selectedAsset;
+  late VideoPlayerController _videoPlayerController;
+  late ChewieController _chewieController;
 
   void selectAsset(AssetEntity asset) async {
     setState(() {
@@ -35,8 +35,8 @@ class _CreateState extends State<Create> {
   }
 
   Future<void> _initializeVideoPlayer() async {
-    final file = await _selectedAsset.file;
-    _videoPlayerController = VideoPlayerController.file(File(file.path));
+    var file = await _selectedAsset.file;
+    _videoPlayerController = VideoPlayerController.file(File(file!.path));
     await _videoPlayerController.initialize();
     setState(() {
       _chewieController = ChewieController(
@@ -75,12 +75,16 @@ class _CreateState extends State<Create> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => VideoEditor(
-                      video:editedVideo,
+                      video:editedVideo!,
                     ),
                   ),
                 );
-              } else if (_selectedAsset.type == AssetType.image) {
-                var editedImage = fileToUint8List(await _selectedAsset.file);
+              } else if (_selectedAsset.type == AssetType.image ) {
+                Uint8List? editedImage;
+                var filee = await _selectedAsset.file;
+                if (filee != null) {
+                  var editedImage = fileToUint8List(filee);
+                }
                 // Redirect to image editor
                 await Navigator.push(
                   context,
@@ -110,7 +114,6 @@ class _CreateState extends State<Create> {
               child: Icon(Icons.navigate_next, size: 30),
             ),
           ),
-
           SizedBox(width: 10)
         ],
       ),
@@ -128,25 +131,22 @@ class _CreateState extends State<Create> {
                         controller: _chewieController,
                       ),
                     )
-                    : FutureBuilder<Uint8List>(
-                  future: _selectedAsset.thumbnailDataWithSize(
-                      ThumbnailSize(200, 200)),
-                  builder:
-                      (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.connectionState ==
-                        ConnectionState.done) {
-                      final thumbnailData = snapshot.data;
-                      return Image.memory(
-                        thumbnailData,
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.cover,
-                      );
-                    } else {
-                      return CircularProgressIndicator();
-                    }
-                  },
-                )
+                    :FutureBuilder<Uint8List?>(
+                      future: _selectedAsset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+                      builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          final thumbnailData = snapshot.data!;
+                          return Image.memory(
+                            thumbnailData,
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+                            fit: BoxFit.cover,
+                          );
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    )
                     : Text("Image"),
               ),
             ),
@@ -168,7 +168,7 @@ class MediaGrid extends StatefulWidget {
 class _MediaGridState extends State<MediaGrid> {
   List<Widget> _mediaList = [];
   int currentPage = 0;
-  int lastPage;
+  late int lastPage;
 
   @override
   void initState() {
@@ -199,34 +199,41 @@ class _MediaGridState extends State<MediaGrid> {
             onTap: () {
               widget.onSelectAsset(asset);
             },
-            child: FutureBuilder<Uint8List>(
-              future:asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.connectionState == ConnectionState.done)
-                  return Stack(
-                    children: <Widget>[
-                      Positioned.fill(
-                        child: Image.memory(
-                          snapshot.data,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      if (asset.type == AssetType.video)
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: EdgeInsets.only(right: 5, bottom: 5),
-                            child: Icon(
-                              Icons.videocam,
-                              color: Colors.white,
-                            ),
+            child: FutureBuilder<Uint8List?>(
+              future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+              builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData) {
+                    return Stack(
+                      children: <Widget>[
+                        Positioned.fill(
+                          child: Image.memory(
+                            snapshot.data!,
+                            fit: BoxFit.cover,
                           ),
                         ),
-                    ],
-                  );
-                return Container();
+                        if (asset.type == AssetType.video)
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 5, bottom: 5),
+                              child: Icon(
+                                Icons.videocam,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  } else {
+                    return Container(); // Return a fallback widget if data is null
+                  }
+                } else {
+                  return CircularProgressIndicator();
+                }
               },
-            ),
+            )
+
           ),
         );
       }
@@ -244,7 +251,7 @@ class _MediaGridState extends State<MediaGrid> {
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scroll) {
         _handleScrollEvent(scroll);
-        return;
+        return true;
       },
       child: GridView.builder(
         itemCount: _mediaList.length,

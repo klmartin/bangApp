@@ -1,14 +1,14 @@
 class UserModel {
-  final String name;
-  final String profileurl;
-  final int id;
+  final String? name;
+  final String? profileurl;
+  final int? id;
   // final int followers;
   // final int following;
   // final int posts;
 
   UserModel({
-      this.profileurl,
-     this.id,
+    this.profileurl,
+    this.id,
     // this.followers,
     // this.following,
     // this.posts,
@@ -41,10 +41,10 @@ class UserModelRegister {
   // final int posts;
 
   UserModelRegister({
-    this.image,
-    this.id,
-    this.name,
-    this.email,
+    required this.image,
+    required this.id,
+    required this.name,
+    required this.email,
   });
   factory UserModelRegister.fromJson(Map<dynamic,dynamic> json){
     return UserModelRegister(

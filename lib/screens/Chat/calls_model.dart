@@ -5,10 +5,10 @@ class CallsModel extends StatefulWidget {
   final String type;
   final String typeDescription;
   const CallsModel({
-    Key key,
+    Key? key,
     this.icon,
-    this.type,
-    this.typeDescription,
+    required this.type,
+    required this.typeDescription,
   }) : super(key: key);
 
   @override

@@ -9,25 +9,25 @@ enum TrimMode {
 class ReadMoreText extends StatefulWidget {
   const ReadMoreText(
       this.data, {
-        Key key,
+        Key? key,
         this.trimExpandedText = 'show less',
         this.trimCollapsedText = 'read more',
-        this.colorClickableText,
+        required this.colorClickableText,
         this.trimLength = 240,
         this.trimLines = 2,
         this.trimMode = TrimMode.length,
-        this.style,
-        this.userName,
-        this.textAlign,
-        this.textDirection,
-        this.locale,
-        this.textScaleFactor,
-        this.semanticsLabel,
-        this.moreStyle,
-        this.lessStyle,
+         this.style,
+         this.userName,
+         this.textAlign,
+         this.textDirection,
+         this.locale,
+         this.textScaleFactor,
+         this.semanticsLabel,
+         this.moreStyle,
+         this.lessStyle,
         this.delimiter = _kEllipsis + ' ',
-        this.delimiterStyle,
-        this.callback,
+         this.delimiterStyle,
+         this.callback,
       }) : super(key: key);
 
   /// Used on TrimMode.Length
@@ -42,27 +42,27 @@ class ReadMoreText extends StatefulWidget {
   final TrimMode trimMode;
 
   /// TextStyle for expanded text
-  final TextStyle moreStyle;
+  final TextStyle? moreStyle;
 
   /// TextStyle for compressed text
-  final TextStyle lessStyle;
+  final TextStyle? lessStyle;
 
   ///Called when state change between expanded/compress
-  final Function(bool val) callback;
+  final Function(bool val)? callback;
 
-  final String delimiter;
-  final String data;
-  final String userName;
-  final String trimExpandedText;
-  final String trimCollapsedText;
-  final Color colorClickableText;
-  final TextStyle style;
-  final TextAlign textAlign;
-  final TextDirection textDirection;
-  final Locale locale;
-  final double textScaleFactor;
-  final String semanticsLabel;
-  final TextStyle delimiterStyle;
+  final String? delimiter;
+  final String? data;
+  final String? userName;
+  final String? trimExpandedText;
+  final String? trimCollapsedText;
+  final Color? colorClickableText;
+  final TextStyle? style;
+  final TextAlign? textAlign;
+  final TextDirection? textDirection;
+  final Locale? locale;
+  final double? textScaleFactor;
+  final String? semanticsLabel;
+  final TextStyle? delimiterStyle;
 
   @override
   ReadMoreTextState createState() => ReadMoreTextState();
@@ -94,7 +94,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
       color: Colors.black,
     );
 
-    TextStyle effectiveTextStyle = widget.style;
+    TextStyle? effectiveTextStyle = widget.style;
     if (widget.style?.inherit ?? false) {
       effectiveTextStyle = defaultTextStyle.style.merge(widget.style);
     }
@@ -107,7 +107,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
     final locale = widget.locale ?? Localizations.maybeLocaleOf(context);
     final colorClickableText =
     // ignore: deprecated_member_use
-    widget.colorClickableText ?? Theme.of(context).accentColor;
+    widget.colorClickableText ?? widget.colorClickableText;
     final _defaultLessStyle = widget.lessStyle ??
         effectiveTextStyle?.copyWith(color: colorClickableText);
     final _defaultMoreStyle = widget.moreStyle ??
@@ -121,7 +121,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
 
     TextSpan _delimiter = TextSpan(
       text: _readMore
-          ? widget.trimCollapsedText.isNotEmpty
+          ? widget.trimCollapsedText!.isNotEmpty
           ? widget.delimiter
           : ''
           : '',
@@ -143,7 +143,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
               style: userNameStyle,
             ),
             TextSpan(
-              text: " " + widget.data,
+              text: " " + widget.data!,
               style: dataStyle,
             ),
           ],
@@ -196,20 +196,20 @@ class ReadMoreTextState extends State<ReadMoreText> {
         var textSpan;
         switch (widget.trimMode) {
           case TrimMode.length:
-            if (widget.trimLength < widget.data.length) {
+            if (widget.trimLength < widget.data!.length) {
               textSpan = TextSpan(
                 children: [
                   TextSpan(
                     text: _readMore
-                        ?widget.userName + " " + widget.data.substring(0, widget.trimLength)
-                        : widget.userName + " " +widget.data,
+                        ?widget.userName! + " " + widget.data!.substring(0, widget.trimLength)
+                        : widget.userName! + " " +widget.data!,
                     children: <TextSpan>[_delimiter, link],
                     style: userNameStyle,
                   ),
                   TextSpan(
                     text: _readMore
-                        ?widget.userName + " " + widget.data.substring(0, widget.trimLength)
-                        : widget.userName + " " +widget.data,
+                        ?widget.userName! + " " + widget.data!.substring(0, widget.trimLength)
+                        : widget.userName! + " " +widget.data!,
                     children: <TextSpan>[_delimiter, link],
                     style: dataStyle,
                   ),
@@ -223,7 +223,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
                     style: userNameStyle,
                   ),
                   TextSpan(
-                    text: " " + widget.data,
+                    text: " " + widget.data!,
                     style: dataStyle,
                   ),
                 ],
@@ -235,7 +235,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
               textSpan = TextSpan(
                 style: effectiveTextStyle,
                 text: _readMore
-                    ? widget.data.substring(0, endIndex) +
+                    ? widget.data!.substring(0, endIndex) +
                     (linkLongerThanLine ? _kLineSeparator : '')
                     : widget.data,
                 children: <TextSpan>[_delimiter, link],
@@ -248,7 +248,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
                     style: userNameStyle,
                   ),
                   TextSpan(
-                    text: " " + widget.data,
+                    text: " " + widget.data!,
                     style: dataStyle,
                   ),
                 ],

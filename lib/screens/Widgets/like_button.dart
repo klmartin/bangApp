@@ -7,9 +7,9 @@ class LikeButton extends StatefulWidget {
   final bool isLiked;
   final int postId;
   LikeButton({
-     this.likeCount,
-     this.isLiked,
-     this.postId,
+     required this.likeCount,
+     required this.isLiked,
+     required this.postId,
   });
   @override
   _LikeButtonState createState() => _LikeButtonState();
@@ -33,7 +33,7 @@ class _LikeButtonState extends State<LikeButton> {
             setState(() {
               isLiked = !isLiked; // Update the isLiked state variable
             });
-            await Service().likeAction(widget.likeCount, isLiked, widget.postId); // Use the parameters from the widget
+             Service().likeAction(widget.likeCount, isLiked, widget.postId); // Use the parameters from the widget
           },
           child: isLiked
               ? Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30)

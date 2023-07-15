@@ -12,12 +12,12 @@ class VideoDetailScreen extends StatefulWidget {
   String videoUrl;
 
   VideoDetailScreen({
-    Key key,
-    this.thumbnail,
-    this.title,
-    this.viewCount,
-    this.dayAgo,
-    this.videoUrl,
+    Key? key,
+    required this.thumbnail,
+    required this.title,
+    required this.viewCount,
+    required this.dayAgo,
+    required this.videoUrl,
   }) : super(key: key);
   @override
   _VideoDetailPageState createState() => _VideoDetailPageState();
@@ -26,11 +26,11 @@ class VideoDetailScreen extends StatefulWidget {
 class _VideoDetailPageState extends State<VideoDetailScreen> {
   bool isSwitched = true;
   // for video player
-  VideoPlayerController _controller;
-  Future<void> _initializeVideoPlayerFuture;
-  int _playBackTime;
+  late VideoPlayerController _controller;
+  late Future<void>? _initializeVideoPlayerFuture;
+  late int _playBackTime;
   //The values that are passed when changing quality
-  Duration newCurrentPosition;
+  late Duration newCurrentPosition;
   @override
   void initState() {
     super.initState();

@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 
 class UserProfile extends StatelessWidget {
   final String url;
-  final File path;
-  final double size;
+  final File? path;
+  final double? size;
   const UserProfile({
-    Key key,
+    Key? key,
     this.url = "",
-    this.path,
-     this.size,
+     this.path,
+      this.size,
   }) : super(key: key);
 
   @override
@@ -29,14 +29,14 @@ class UserProfile extends StatelessWidget {
           width: size,
           height: size,
           child: path == null && url == ""
-              ? Icon(CupertinoIcons.person, size: size / 2)
+              ? Icon(CupertinoIcons.person, size: size! / 2)
               : path == null
               ? CachedNetworkImage(
             imageUrl: url,
             fit: BoxFit.cover,
           )
               : Image.file(
-            path,
+            path!,
             fit: BoxFit.cover,
           ),
         ),

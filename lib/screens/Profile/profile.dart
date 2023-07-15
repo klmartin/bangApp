@@ -1,3 +1,4 @@
+import 'package:bangapp/screens/Profile/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,11 +15,11 @@ import '../../models/userprovider.dart';
 import 'package:bangapp/services/fetch_post.dart';
 import 'profile_upload.dart';
 final _auth = FirebaseAuth.instance;
-bool _persposts = true;
+late bool _persposts ;
 
 Future<void> myMethod() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String imageUrl = prefs.getString('imageUrl');
+  String? imageUrl = prefs.getString('imageUrl');
   // pass imageUrl to CachedNetworkImageProvider
 }
 void getProfileData() async {
@@ -32,7 +33,7 @@ void getProfileData() async {
 
 void getCurrentUser() {
   try {
-    final user = loggedInUser.getCurrentUser();
+    final user = loggedInUser?.getCurrentUser();
     if (user != null) {
 
       print(loggedInUser);
@@ -42,26 +43,26 @@ void getCurrentUser() {
   }
 }
 
-Future<void> getUserImage() async {
+Future<String?> getUserImage() async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String photoURL = prefs.getString('user_image');
+    String? photoURL = prefs.getString('user_image');
     return photoURL;
   } catch (e) {
     print(e);
   }
 }
 
-int posts;
+late int posts;
 var descr;
-int followers;
-int following;
+late int followers;
+late int following;
 
 class Profile extends StatefulWidget {
-  final int id;
+  final int? id;
   const Profile({
-    Key key,
-    this.id,
+     Key? key,
+     this.id,
   }) : super(key: key);
 
   @override
@@ -108,7 +109,7 @@ class _ProfileState extends State<Profile> {
                             color: Colors.red.shade100,
                             borderRadius: BorderRadius.circular(25),
                             image: DecorationImage(
-                                image: CachedNetworkImageProvider(userData.myUser.profileurl) ,
+                                image: CachedNetworkImageProvider(userData.myUser.profileurl!) ,
                               fit: BoxFit.cover,
                             )),
                     child: rimage != null
@@ -263,7 +264,7 @@ class Highlights extends StatefulWidget {
   final String name;
   final String url;
 
-  Highlights({@required this.name, @required this.url});
+  Highlights({required this.name, required this.url});
 
   @override
   _HighlightsState createState() => _HighlightsState();
@@ -279,105 +280,66 @@ class _HighlightsState extends State<Highlights> {
   }
 }
 
-class ProfilePosts extends StatefulWidget {
+class ProfilePostsStream extends StatefulWidget {
+  final int? id;
+
+  ProfilePostsStream({this.id});
+
   @override
-  _ProfilePostsState createState() => _ProfilePostsState();
+  _ProfilePostsStreamState createState() => _ProfilePostsStreamState();
 }
 
-class _ProfilePostsState extends State<ProfilePosts> {
+class _ProfilePostsStreamState extends State<ProfilePostsStream> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 500,
-      height: 500,
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: Material(
-                    type: MaterialType
-                        .transparency, //Makes it usable on any background color, thanks @IanSmith
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(
-                                color: _persposts ? Colors.white : Colors.grey,
-                                width: 0.5)),
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: InkWell(
-                        //This keeps the splash effect within the circle
-                        borderRadius: BorderRadius.circular(
-                            1000), //Something large to ensure a circle
-                        onTap: () {
-                          setState(() {
-                            _persposts = true;
-                          });
-                        },
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: FaIcon(
-                              FontAwesomeIcons.thLarge,
-                              color: _persposts ? Colors.white : Colors.grey,
-                              size: 15,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )),
-              ),
-              Expanded(
-                child: Material(
-                  type: MaterialType
-                      .transparency, //Makes it usable on any background color, thanks @IanSmith
-                  child: Ink(
-                      decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(
-                                color: _persposts ? Colors.grey : Colors.white,
-                                width: 0.5)),
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: InkWell(
-                        //This keeps the splash effect within the circle
-                        borderRadius: BorderRadius.circular(
-                            1000.0), //Something large to ensure a circle
-                        onTap: () {
-                          setState(() {
-                            _persposts = false;
-                          });
-                        },
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: FaIcon(
-                              FontAwesomeIcons.userTag,
-                              size: 15,
-                              color: _persposts ? Colors.grey : Colors.white,
-                            ),
-                          ),
-                        ),
-                      )),
-                ),
-              ),
-            ],
+    return FutureBuilder(
+      future: FetchPosts().getMyPosts(widget.id),
+      builder: (context, snapshot) {
+        List<ImagePost> imagePosts = [];
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.lightBlue,
+            ),
+          );
+        }
+        if (snapshot.hasData) {
+          final List<dynamic> posts = snapshot.data! as List<dynamic>;
+          for (var post in posts) {
+            final image = post['image'];
+            final imagePost = ImagePost(
+              url: image,
+            );
+            imagePosts.add(imagePost);
+          }
+        }
+
+
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: GridView.count(
+              crossAxisCount: 3,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              children: imagePosts,
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+            ),
           ),
-          _persposts ? ProfilePostsStream() : Expanded(child: Tagged()),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
+
 class ImagePost extends StatelessWidget {
   final String url;
   final bool isMe = true;
-  ImagePost({@required this.url});
+
+  ImagePost({required this.url});
+
   @override
   Widget build(BuildContext context) {
     if (isMe) {
@@ -396,52 +358,14 @@ class ImagePost extends StatelessWidget {
         ),
       );
     }
-  
+    else {
+      return Container();
+    }
   }
 }
 
-class ProfilePostsStream extends State<Profile> {
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: FetchPosts().getMyPosts(widget.id),
-      builder: (context, snapshot) {
-        List<ImagePost> ImagePosts = [];
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.lightBlue,
-            ),
-          );
-        }
-        final posts = snapshot.data;
 
-        for (var post in posts) {
-          // if (post['id'] ) {
-            final image = post['image'];
-            final imagePost = ImagePost(
-              url: image,
-            );
-            ImagePosts.add(imagePost);
-          // }
-        }
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 15.0),
-            child: GridView.count(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              children: ImagePosts,
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
+
 class Tagged extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -457,7 +381,7 @@ class Highlight extends StatefulWidget {
   final String name;
   final String url;
 
-  Highlight({this.name, this.url});
+  Highlight({required this.name, required this.url});
 
   @override
   _HighlightState createState() => _HighlightState();
@@ -476,7 +400,7 @@ class _HighlightState extends State<Highlight> {
           GestureDetector(
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => StoryPageView()));
+                  MaterialPageRoute(builder: (context) => StoryPageView(key: null,)));
             },
             child: Container(
               width: 60,

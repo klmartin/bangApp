@@ -16,9 +16,9 @@ class ExportService {
 
   static Future<FFmpegSession> runFFmpegCommand(
       FFmpegVideoEditorExecute execute, {
-         void Function(File file) onCompleted,
-        void Function(Object, StackTrace) onError,
-        void Function(Statistics) onProgress,
+         required void Function(File file) onCompleted,
+        required void Function(Object, StackTrace) onError,
+        required void Function(Statistics) onProgress,
       }) {
     log('FFmpeg start process with command = ${execute.command}');
     return FFmpegKit.executeAsync(

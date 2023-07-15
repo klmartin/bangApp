@@ -17,13 +17,13 @@ class PostCard extends StatefulWidget {
   final String postID;
 
   PostCard(
-      {@required this.likes,
-      @required this.name,
-      // @required this.liked,
-      @required this.place,
-      @required this.profilePic,
-      @required this.postUrl,
-      @required this.postID});
+      {required this.likes,
+      required this.name,
+      // required this.liked,
+      required this.place,
+      required this.profilePic,
+      required this.postUrl,
+      required this.postID});
 
   @override
   State<PostCard> createState() => _PostCardState();

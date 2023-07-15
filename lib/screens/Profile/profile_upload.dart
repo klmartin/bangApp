@@ -14,11 +14,11 @@ final store = FirebaseFirestore.instance;
 final auth = FirebaseAuth.instance;
 var rimage;
 var imagePicker;
-User user;
+User? user;
 
 void uploadProfile(String url) async {
   user = auth.currentUser;
-  user.updatePhotoURL(url);
+  user?.updatePhotoURL(url);
 }
 
 enum ImageSourceType { gallery, camera }

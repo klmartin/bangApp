@@ -7,9 +7,9 @@ class BangUpdateLikeButton extends StatefulWidget {
   final bool isLiked;
   final int postId;
   BangUpdateLikeButton({
-    this.likeCount,
-    this.isLiked,
-    this.postId,
+    required this.likeCount,
+    required this.isLiked,
+    required this.postId,
   });
   @override
   _BangUpdateLikeButtonState createState() => _BangUpdateLikeButtonState();

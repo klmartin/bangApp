@@ -6,7 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:video_player/video_player.dart';
 
 Future<void> _getImageDimension(File file,
-    { Function(Size) onResult}) async {
+    { required Function(Size) onResult}) async {
   var decodedImage = await decodeImageFromList(file.readAsBytesSync());
   onResult(Size(decodedImage.width.toDouble(), decodedImage.height.toDouble()));
 }
@@ -16,17 +16,17 @@ String _fileMBSize(File file) =>
 
 class VideoResultPopup extends StatefulWidget {
   final File video;
-   VideoResultPopup({@required this.video});
+   VideoResultPopup({required this.video});
   @override
   State<VideoResultPopup> createState() => _VideoResultPopupState();
 }
 
 class _VideoResultPopupState extends State<VideoResultPopup> {
-  VideoPlayerController _controller;
-  FileImage _fileImage;
+  late VideoPlayerController _controller;
+  late FileImage _fileImage;
   Size _fileDimension = Size.zero;
   bool _isGif = false;
-  String _fileMbSize;
+  late String _fileMbSize;
 
   @override
   void initState() {
@@ -97,7 +97,7 @@ class _VideoResultPopupState extends State<VideoResultPopup> {
   }
 }
 class CoverResultPopup extends StatefulWidget {
-  const CoverResultPopup({key,  this.cover});
+  const CoverResultPopup({key,  required this.cover});
 
   final File cover;
 
@@ -106,9 +106,9 @@ class CoverResultPopup extends StatefulWidget {
 }
 
 class _CoverResultPopupState extends State<CoverResultPopup> {
-  Uint8List _imagebytes;
-  Size _fileDimension;
-  String _fileMbSize;
+  late Uint8List _imagebytes;
+  late Size _fileDimension;
+  late String _fileMbSize;
 
   @override
   void initState() {
@@ -151,7 +151,7 @@ class _CoverResultPopupState extends State<CoverResultPopup> {
 }
 
 class FileDescription extends StatelessWidget {
-  const FileDescription({key,  this.description});
+  const FileDescription({key,  required this.description});
 
   final Map<String, String> description;
 

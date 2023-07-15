@@ -10,10 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final _auth = FirebaseAuth.instance;
 final _store = FirebaseFirestore.instance;
-String _name;
-String _descr;
+late String _name;
+late String _descr;
 
-Service  loggedInUser;
+Service?  loggedInUser;
 
 class EditPage extends StatefulWidget {
   static const String id = 'edit';
@@ -22,7 +22,7 @@ class EditPage extends StatefulWidget {
 }
 
 class _EditPageState extends State<EditPage> {
-  Map<String, dynamic> _currentUser;
+  late Map<String, dynamic> _currentUser;
   @override
   void initState() {
     super.initState();

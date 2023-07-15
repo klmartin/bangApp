@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bangapp/models/userprovider.dart';
 import 'package:provider/provider.dart';
 import '../../nav.dart';
@@ -18,8 +18,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool showSpinner = false;
-  String email;
-  String password;
+  late String email;
+  late String password;
   @override
   void initState(){
     super.initState();
@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('http://192.168.52.229/social-backend-laravel/api/v1/login'),
+                                Uri.parse('https://citsapps.com/social-backend-laravel/api/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,

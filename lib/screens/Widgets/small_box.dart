@@ -11,7 +11,7 @@ class SmallBoxCarousel extends StatelessWidget {
   final isLiked = false;
   final likeCount = 0;
   final postId = 1;
-  SmallBoxCarousel({ this.boxes});
+  SmallBoxCarousel({ required this.boxes});
   void viewImage(BuildContext context, String imageUrl) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -155,7 +155,7 @@ class SmallBoxCarousel extends StatelessWidget {
                                         createRoute(
                                           CommentsPage(
                                             postId: postId,
-                                            userId: 1,
+                                            userId: 1, messageStreamState: null,
                                             // currentUser: 1,
                                           ),
                                         ),
@@ -304,7 +304,7 @@ class SmallBoxCarousel extends StatelessWidget {
                                         createRoute(
                                           CommentsPage(
                                             postId: postId,
-                                            userId: 1,
+                                            userId: 1, messageStreamState: null,
                                             // currentUser: 1,
                                           ),
                                         ),
@@ -326,7 +326,7 @@ class SmallBoxCarousel extends StatelessWidget {
                                         createRoute(
                                           CommentsPage(
                                             postId: postId,
-                                            userId: 1,
+                                            userId: 1, messageStreamState: null,
                                             // currentUser: 1,
                                           ),
                                         ),
@@ -410,5 +410,5 @@ class BoxData {
   final String imageUrl2;
   final String text;
 
-  BoxData({ this.imageUrl1, this.imageUrl2,  this.text});
+  BoxData({ required this.imageUrl1, required this.imageUrl2,  required this.text});
 }

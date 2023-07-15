@@ -3,7 +3,7 @@ import 'package:bangapp/screens/Profile/profilelist_page.dart';
 
 class SearchBox extends StatelessWidget {
   const SearchBox({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

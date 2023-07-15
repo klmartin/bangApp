@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../nav.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
@@ -23,12 +23,12 @@ class _RegisterState extends State<Register> {
   @override
   DateTime date_of_birth = DateTime.now();
   TextEditingController _dateController = TextEditingController();
-  User user; //never gonna change
+  late User user; //never gonna change
   //instance
-  String email;
-  String password;
-  String name;
-  String phoneNumber;
+  late String email;
+  late String password;
+  late String name;
+  late String phoneNumber;
 
   bool showSpinner = false;
   @override
@@ -86,7 +86,7 @@ class _RegisterState extends State<Register> {
               TextField(
                 controller: _dateController,
                 onTap: () async {
-                  final DateTime picked = await showDatePicker(
+                  final DateTime? picked = await showDatePicker(
                     context: context,
                     initialDate: date_of_birth,
                     firstDate: DateTime(1900),
@@ -219,7 +219,7 @@ class _RegisterState extends State<Register> {
                       });
                       try {
                         final response = await http.post(
-                          Uri.parse('http://192.168.52.229/social-backend-laravel/api/v1/register'),
+                          Uri.parse('https://citsapps.com/social-backend-laravel/api/v1/register'),
                           body: {
                             'email': email,
                             'name':name,

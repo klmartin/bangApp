@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class BlogShrink {
   BlogShrink({
-    @required this.tName,
-    @required this.tColor,
-    @required this.title,
-    @required this.text,
-    @required this.author,
-    @required this.image,
-    @required this.comments,
-    @required this.time,
+    required this.tName,
+    required this.tColor,
+    required this.title,
+    required this.text,
+    required this.author,
+    required this.image,
+    required this.comments,
+    required this.time,
   });
   final String title;
   final String tName;

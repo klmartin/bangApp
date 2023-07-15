@@ -52,9 +52,9 @@ class _HomeState extends State<Home> {
 }
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('http://192.168.52.229/social-backend-laravel/api/getPosts'));
+    var response = await http.get(Uri.parse('https://citsapps.com/social-backend-laravel/api/getPosts'));
     var data = json.decode(response.body);
-    print(response);
+    print(response.body);
     return data['data']['data'];
   }
   void viewImage(BuildContext context, String imageUrl) {
@@ -100,49 +100,52 @@ class PostStream extends StatelessWidget {
         var postCount = 0;
         List<BoxData> boxes = [
           BoxData(
-            imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber1.jpeg',
-            imageUrl2: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/gigi1.jpeg',
+            imageUrl1: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber1.jpeg',
+            imageUrl2: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/gigi1.jpeg',
             text: 'Nani Mkali ?',
           ),
           BoxData(
-            imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber2.jpeg',
-            imageUrl2: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/gigi2.jpeg',
+            imageUrl1: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber2.jpeg',
+            imageUrl2: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/gigi2.jpeg',
             text: 'Nani Mkali ?',
           ),
           BoxData(
-            imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber3.jpeg',
-            imageUrl2: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/gigi3.jpeg',
+            imageUrl1: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber3.jpeg',
+            imageUrl2: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/gigi3.jpeg',
             text: 'Nani Mkali ?',
           ),
           BoxData(
-            imageUrl1: 'https://kimjotech.com/BangAppBackend/storage/app/images/battle/amber3.jpeg',
-            imageUrl2: 'https://kimjotech.com/BangAppBackend/app/images/battle/amber3.jpeg',
+            imageUrl1: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber3.jpeg',
+            imageUrl2: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber3.jpeg',
             text: 'Nani Mkali ?',
           ),
 
         ];
         List<Widget> postCards = [];
-        for (var post in snapshot.data) {
-          final name = post['user']['name'];
-          final followerCount = post['user']['followerCount'].toString();
-          final caption = post['body'];
-          final imgurl = post['image'];
-          final challengeImgUrl = post['challenge_img'];
-          final imgWidth = post['width'];
-          final imgHeight = post['height'];
-          final postId = post['id'];
-          final commentCount = post['commentCount'];
-          final userId = post['user']['id'];
-          var isLiked = post['isFavorited']==0 ? false : true ;
-          var likeCount = post['likes'] != null && post['likes'].isNotEmpty ? post['likes'][0]['like_count'] : 0;
-          var type = post['type'];
-          var isPinned = post['pinned'];
-          // final likeCount = likes.isEmpty ? 0 : int.parse(post['likes']['like_count']) ;
-          postCount ++;
-          // if(postCount % 3 == 0){
-          //   postCards.add(SmallBoxCarousel(boxes: boxes,));
-          // }
-          if (challengeImgUrl != null) {
+
+        if (snapshot.data != null) {
+          final List<dynamic> dataList = snapshot.data as List<dynamic>;
+          for (var post in dataList) {
+            final name = post['user']['name'];
+            final followerCount = post['user']['followerCount'].toString();
+            final caption = post['body'];
+            final imgurl = post['image'];
+            final challengeImgUrl = post['challenge_img'];
+            final imgWidth = post['width'];
+            final imgHeight = post['height'];
+            final postId = post['id'];
+            final commentCount = post['commentCount'];
+            final userId = post['user']['id'];
+            var isLiked = post['isFavorited']==0 ? false : true ;
+            var likeCount = post['likes'] != null && post['likes'].isNotEmpty ? post['likes'][0]['like_count'] : 0;
+            var type = post['type'];
+            var isPinned = post['pinned'];
+            // final likeCount = likes.isEmpty ? 0 : int.parse(post['likes']['like_count']) ;
+            postCount ++;
+            if(postCount % 3 == 0){
+              postCards.add(SmallBoxCarousel(boxes: boxes,));
+            }
+            if (challengeImgUrl != null) {
               postCards.add(
                   Container(
                     decoration: const BoxDecoration(
@@ -475,7 +478,7 @@ class PostStream extends StatelessWidget {
                                         context,
                                         createRoute(
                                           CommentsPage(
-                                            postId: postId,
+                                            postId: postId, userId: userId, messageStreamState: null,
                                             // currentUser: 1,
                                           ),
                                         ),
@@ -539,33 +542,33 @@ class PostStream extends StatelessWidget {
                           ),
                         ),
                         if (caption != "") SizedBox(height: 16),
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: ReadMoreText(
-                                caption,
-                                trimLines: 2,
-                                style: Theme.of(context).textTheme.bodyText1,
-                                colorClickableText: Theme.of(context).primaryColor,
-                                trimMode: TrimMode.line,
-                                trimCollapsedText: '...Show more',
-                                trimExpandedText: '...Show less',
-                                userName: name,
-                                moreStyle: TextStyle(
-                                  fontSize: 15,
-                                  color: Theme.of(context).primaryColor,
-                                ),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: ReadMoreText(
+                              caption,
+                              trimLines: 2,
+                              style: Theme.of(context).textTheme.bodyText1!,
+                              colorClickableText: Theme.of(context).primaryColor,
+                              trimMode: TrimMode.line,
+                              trimCollapsedText: '...Show more',
+                              trimExpandedText: '...Show less',
+                              userName: name,
+                              moreStyle: TextStyle(
+                                fontSize: 15,
+                                color: Theme.of(context).primaryColor,
                               ),
                             ),
                           ),
-                          Text("     $commentCount comments"),
+                        ),
+                        Text("     $commentCount comments"),
 
                         const SizedBox(height: 20),
                       ],
                     ),
                   ));
-          } else {
+            } else {
               postCards.add(
                   Container(
                       decoration: const BoxDecoration(
@@ -815,7 +818,7 @@ class PostStream extends StatelessWidget {
                                     context,
                                     createRoute(
                                       CommentsPage(
-                                        postId: postId,
+                                        postId: postId, userId: userId, messageStreamState: null,
                                         // currentUser: 1,
                                       ),
                                     ),
@@ -828,58 +831,60 @@ class PostStream extends StatelessWidget {
                                 ),
                               ),
                               Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Stack(
-                                    // mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      LikeButton(likeCount: likeCount,isLiked:isLiked,postId:postId),
-                                      SizedBox(width: 4),
-                                    ],
-                                  ),
-                                  SizedBox(height: 2),
-                                  Text(
-                                    "$likeCount likes" ,
-                                    style: TextStyle(
-                                      fontSize: 12.5,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
+                                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Stack(
+                                      // mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        LikeButton(likeCount: 0 ,isLiked:isLiked,postId:postId),
+                                        SizedBox(width: 4),
+                                      ],
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(height: 2),
+                                    Text(
+                                      "$likeCount likes" ,
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
 
 
                             ],
                           ),
                           if (caption != "") const SizedBox(height: 16),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: ReadMoreText(
-                                caption,
-                                trimLines: 2,
-                                style: Theme.of(context).textTheme.bodyText1,
-                                colorClickableText: Theme.of(context).primaryColor,
-                                trimMode: TrimMode.line,
-                                trimCollapsedText: '...Show more',
-                                trimExpandedText: '...Show less',
-                                userName: name,
-                                moreStyle: TextStyle(
-                                  fontSize: 15,
-                                  color: Theme.of(context).primaryColor,
-                                ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: ReadMoreText(
+                              caption,
+                              trimLines: 2,
+                              style: Theme.of(context).textTheme.bodyText1!,
+                              colorClickableText: Theme.of(context).primaryColor,
+                              trimMode: TrimMode.line,
+                              trimCollapsedText: '...Show more',
+                              trimExpandedText: '...Show less',
+                              userName: name,
+                              moreStyle: TextStyle(
+                                fontSize: 15,
+                                color: Theme.of(context).primaryColor,
                               ),
                             ),
+                          ),
 
-                            Text("     $commentCount comments"),
+                          Text("     $commentCount comments"),
                           const SizedBox(height: 20),
                         ],
                       )));
+            }
           }
         }
+
         return ListView(
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),

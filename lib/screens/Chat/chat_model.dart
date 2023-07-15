@@ -12,7 +12,7 @@ import 'package:bangapp/widgets/bloc/file_handler_bloc.dart';
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;
 bool isOpen = false;
-User loggedInUser;
+User? loggedInUser;
 
 // const kSendButtonTextStyle = TextStyle(
 //   color: Colors.lightBlueAccent,
@@ -64,9 +64,9 @@ class PmScreen extends StatefulWidget {
   final String name;
 
   PmScreen(
-      {@required this.selectedUser,
-      @required this.name,
-      @required this.profileUrl});
+      {required this.selectedUser,
+      required this.name,
+      required this.profileUrl});
   @override
   _PmScreenState createState() => _PmScreenState();
 }
@@ -76,7 +76,7 @@ class _PmScreenState extends State<PmScreen> {
 
   //initialising firestore
 
-  String messageText;
+  late String messageText;
 
   @override
   void initState() {
@@ -155,7 +155,7 @@ class _PmScreenState extends State<PmScreen> {
                   color: Colors.black,
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
-                ),
+                ), items: [],
                 // other parameters
               ),
             ),
@@ -199,24 +199,24 @@ class _PmScreenState extends State<PmScreen> {
                             .collection('users')
                             .doc(widget.selectedUser)
                             .collection('messages')
-                            .doc(loggedInUser.uid)
+                            .doc(loggedInUser?.uid)
                             .collection('pms')
                             .doc()
                             .set({
                           'text': messageText,
-                          'sender': loggedInUser.email,
+                          'sender': loggedInUser?.email,
                           'timestamp': FieldValue.serverTimestamp()
                         });
                         _firestore
                             .collection('users')
-                            .doc(loggedInUser.uid)
+                            .doc(loggedInUser?.uid)
                             .collection('messages')
                             .doc(widget.selectedUser)
                             .collection('pms')
                             .doc()
                             .set({
                           'text': messageText,
-                          'sender': loggedInUser.email,
+                          'sender': loggedInUser?.email,
                           'timestamp': FieldValue.serverTimestamp()
                         });
                         // .add({
@@ -258,7 +258,7 @@ class MessageBubble extends StatelessWidget {
   final String sender;
   final bool isMe;
   MessageBubble(
-      {@required this.text, @required this.sender, @required this.isMe});
+      {required this.text, required this.sender, required this.isMe});
   @override
   Widget build(BuildContext context) {
     if (isMe) {
@@ -369,13 +369,13 @@ class MessageBubble extends StatelessWidget {
 class MessageStream extends StatelessWidget {
   final selectedUser;
 
-  MessageStream({@required this.selectedUser});
+  MessageStream({required this.selectedUser});
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: _firestore
           .collection('users')
-          .doc(loggedInUser.uid)
+          .doc(loggedInUser?.uid)
           .collection('messages')
           .doc(selectedUser)
           .collection('pms')
@@ -390,12 +390,12 @@ class MessageStream extends StatelessWidget {
             ),
           );
         }
-        final messages = snapshot.data.docs.reversed;
+        final messages = snapshot.data?.docs.reversed;
 
-        for (var message in messages) {
+        for (var message in messages!) {
           final messageText = message['text'];
           final messageSender = message['sender'];
-          final currentUser = loggedInUser.email;
+          final currentUser = loggedInUser?.email;
           final messageBubble = MessageBubble(
             text: messageText,
             sender: messageSender,
@@ -419,10 +419,10 @@ class MenuItem extends StatefulWidget {
   final String text;
   final Widget widget;
   const MenuItem({
-    Key key,
-    this.value,
-    this.widget,
-    this.text,
+    Key? key,
+    required this.value,
+    required this.widget,
+    required this.text,
   }) : super(key: key);
 
   @override
@@ -437,7 +437,7 @@ class _MenuItemState extends State<MenuItem> {
 }
 
 class Block extends StatefulWidget {
-  const Block({Key key}) : super(key: key);
+  const Block({required Key key}) : super(key: key);
 
   @override
   State<Block> createState() => _BlockState();
@@ -453,7 +453,7 @@ class _BlockState extends State<Block> {
 }
 
 class Report extends StatefulWidget {
-  const Report({Key key}) : super(key: key);
+  const Report({required Key key}) : super(key: key);
 
   @override
   State<Report> createState() => _ReportState();

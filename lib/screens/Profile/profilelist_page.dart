@@ -40,14 +40,14 @@ class UserBubble extends StatefulWidget {
   final String selectedUser;
   final bool isMe;
   UserBubble(
-      {@required this.profileUrl,
-      @required this.descr,
-      @required this.posts,
-      @required this.followers,
-      @required this.following,
-      @required this.name,
-      @required this.isMe,
-      @required this.selectedUser});
+      {required this.profileUrl,
+      required this.descr,
+      required this.posts,
+      required this.followers,
+      required this.following,
+      required this.name,
+      required this.isMe,
+      required this.selectedUser});
 
   @override
   State<UserBubble> createState() => _UserBubbleState();
@@ -144,6 +144,7 @@ class _UserBubbleState extends State<UserBubble> {
 class UsersStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return Container();
     // return StreamBuilder<QuerySnapshot>(
     //   stream: _firestore.collection('users').snapshots(),
     //   builder: (context, snapshot) {

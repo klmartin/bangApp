@@ -5,18 +5,18 @@ import 'package:provider/provider.dart';
 // import '../posts/create_post.dart';
 
 class FabContainer extends StatelessWidget {
-  final Widget page;
-  final IconData icon;
-  final bool mini;
+  final Widget? page;
+  final IconData? icon;
+  final bool? mini;
 
-  FabContainer({this.page,  this.icon, this.mini = false});
+  FabContainer({ this.page,   this.icon, this.mini = false});
 
   @override
   Widget build(BuildContext context) {
     return OpenContainer(
       transitionType: ContainerTransitionType.fade,
       openBuilder: (BuildContext context, VoidCallback _) {
-        return page;
+        return page!;
       },
       closedElevation: 4.0,
       closedShape: const RoundedRectangleBorder(
@@ -35,7 +35,7 @@ class FabContainer extends StatelessWidget {
           onPressed: () {
             chooseUpload(context);
           },
-          mini: mini,
+          mini: mini!,
         );
       },
     );
@@ -75,12 +75,12 @@ class FabContainer extends StatelessWidget {
                 ),
                 title: Text('Choose From Gallery'),
                 onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(
-                      // builder: (_) => CreatePost(),
-                    ),
-                  );
+                  // Navigator.pop(context);
+                  // Navigator.of(context).push(
+                  //   CupertinoPageRoute(
+                  //     builder: (_) => CreatePost(),
+                  //   ),
+                  // );
                 },
               ),
               ListTile(

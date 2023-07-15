@@ -8,7 +8,7 @@ import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'package:bangapp/widgets/user_profile.dart';
 import 'package:bangapp/screens/Explore/bang_updates_like_button.dart';
 
-Object buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCount) {
+Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCount) {
   if ( type == 'image') {
     return GestureDetector(
       onTap: () {
@@ -36,7 +36,7 @@ Object buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCo
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BangUpdateLikeButton(likeCount: likeCount,isLiked:false,postId:postId),
+                BangUpdateLikeButton(likeCount: 0,isLiked:false,postId:postId),
                 SizedBox(height: 10),
                 Text(
                   "$likeCount " ,
@@ -141,7 +141,7 @@ Object buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCo
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BangUpdateLikeButton(likeCount: likeCount,isLiked:false,postId:postId),
+                BangUpdateLikeButton(likeCount: 0,isLiked:false,postId:postId),
                 SizedBox(height: 10),
                 Text(
                   "$likeCount" ,

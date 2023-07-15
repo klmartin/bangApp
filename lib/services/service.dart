@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Service {
-  Object get uid => null;
+  Object? get uid => null;
+
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String addimageUrl = 'https://kimjotech.com/BangAppBackend/api/imageadd';
+    String addimageUrl = 'https://citsapps.com/social-backend-laravel/api/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -26,7 +27,7 @@ class Service {
   }
 
   Future<bool> addChallengImage(Map<String, String> body, String filepath,String filepath2) async {
-    String addimageUrl = 'https://kimjotech.com/BangAppBackend/api/imagechallengadd';
+    String addimageUrl = 'https://citsapps.com/social-backend-laravel/api/imagechallengadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath))
@@ -63,7 +64,7 @@ class Service {
   void likeAction(likeCount, isLiked, postId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(Uri.parse('http://192.168.52.229/social-backend-laravel/api/likePost'),
+      final response = await http.post(Uri.parse('https://citsapps.com/social-backend-laravel/social-backend-laravel/api/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -87,10 +88,10 @@ class Service {
     }
   }
 
-  void likeBangUpdate(likeCount, isLiked, postId) async {
+  Future likeBangUpdate(likeCount, isLiked, postId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(Uri.parse('http://192.168.52.229/social-backend-laravel/api/likeBangUpdate'),
+      final response = await http.post(Uri.parse('https://citsapps.com/social-backend-laravel/api/likeBangUpdate'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -117,7 +118,7 @@ class Service {
   Future<List<dynamic>> getComments(String postId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.52.229/social-backend-laravel/api/getComments/$postId'),
+        Uri.parse('https://citsapps.com/social-backend-laravel/api/getComments/$postId'),
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -130,11 +131,11 @@ class Service {
     return []; // Return an empty list in case of errors
   }
 
-  Future<Map<String, dynamic>> postComment(postId,commentText) async {
+  Future postComment(postId,commentText) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('http://192.168.52.229/social-backend-laravel/api/postComment'),
+        Uri.parse('https://citsapps.com/social-backend-laravel/api/postComment'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string

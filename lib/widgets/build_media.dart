@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
 
-Object buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
+Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
   if ( type == 'image'&& isPinned!=0) {
     return GestureDetector(
       onTap: () {

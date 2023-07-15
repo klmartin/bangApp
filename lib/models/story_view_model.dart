@@ -2,7 +2,7 @@ class StoryViewModel{
   final String name;
   final String img;
 
-  StoryViewModel({this.name,this.img});
+  StoryViewModel({required this.name,required this.img});
 
 }
 

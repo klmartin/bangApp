@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 class BlogView extends StatelessWidget {
   const BlogView(
-      {@required this.title,
-      @required this.tColor,
-      @required this.tName,
-      @required this.tdata,
-      @required this.comments,
-      @required this.img,
-      @required this.author,
-      @required this.time});
+      {required this.title,
+      required this.tColor,
+      required this.tName,
+      required this.tdata,
+      required this.comments,
+      required this.img,
+      required this.author,
+      required this.time});
   final String title;
   final String tName;
   final Color tColor;

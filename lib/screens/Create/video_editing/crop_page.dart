@@ -3,7 +3,7 @@ import 'package:fraction/fraction.dart';
 import 'package:video_editor/video_editor.dart';
 
 class CropPage extends StatelessWidget {
-  const CropPage({key,  this.controller});
+  const CropPage({key,  required this.controller});
 
   final VideoEditorController controller;
 
@@ -66,11 +66,11 @@ class CropPage extends StatelessWidget {
                             onPressed: () =>
                             controller.preferredCropAspectRatio = controller
                                 .preferredCropAspectRatio
-                                .toFraction()
+                                ?.toFraction()
                                 .inverse()
                                 .toDouble(),
                             icon: controller.preferredCropAspectRatio != null &&
-                                controller.preferredCropAspectRatio < 1
+                                controller.preferredCropAspectRatio! < 1
                                 ? const Icon(
                                 Icons.panorama_vertical_select_rounded)
                                 : const Icon(Icons.panorama_vertical_rounded),
@@ -79,11 +79,11 @@ class CropPage extends StatelessWidget {
                             onPressed: () =>
                             controller.preferredCropAspectRatio = controller
                                 .preferredCropAspectRatio
-                                .toFraction()
+                                ?.toFraction()
                                 .inverse()
                                 .toDouble(),
                             icon: controller.preferredCropAspectRatio != null &&
-                                controller.preferredCropAspectRatio > 1
+                                controller.preferredCropAspectRatio! > 1
                                 ? const Icon(
                                 Icons.panorama_horizontal_select_rounded)
                                 : const Icon(Icons.panorama_horizontal_rounded),
@@ -92,7 +92,7 @@ class CropPage extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          _buildCropButton(context, null),
+                          _buildCropButton(context, Fraction(1, 1)),
                           _buildCropButton(context, 1.toFraction()),
                           _buildCropButton(
                               context, Fraction.fromString("9/16")),
@@ -133,7 +133,7 @@ class CropPage extends StatelessWidget {
 
   Widget _buildCropButton(BuildContext context, Fraction f) {
     if (controller.preferredCropAspectRatio != null &&
-        controller.preferredCropAspectRatio > 1) f = f?.inverse();
+        controller.preferredCropAspectRatio! > 1) f = f!.inverse();
 
     return Flexible(
       child: TextButton(

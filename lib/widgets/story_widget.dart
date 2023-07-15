@@ -5,14 +5,14 @@ import 'package:bangapp/widgets/blog_element.dart';
 
 class BlogShrink {
   BlogShrink({
-    @required this.tName,
-    @required this.tColor,
-    @required this.title,
-    @required this.text,
-    @required this.author,
-    @required this.image,
-    @required this.comments,
-    @required this.time,
+    required this.tName,
+    required this.tColor,
+    required this.title,
+    required this.text,
+    required this.author,
+    required this.image,
+    required this.comments,
+    required this.time,
   });
   final String title;
   final String tName;
@@ -27,7 +27,7 @@ class StoryWid extends StatelessWidget {
   final String name;
   final String img;
 
-  const StoryWid({Key key, this.name ,this.img}) : super(key: key);
+  const StoryWid({Key? key, required this.name ,required this.img}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(

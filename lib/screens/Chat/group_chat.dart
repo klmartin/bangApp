@@ -7,7 +7,7 @@ import 'package:flutter_emoji/flutter_emoji.dart';
 
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;
-User loggedInUser;
+User? loggedInUser;
 
 const kSendButtonTextStyle = TextStyle(
   color: Colors.lightBlueAccent,
@@ -48,7 +48,7 @@ class _GroupChatState extends State<GroupChat> {
 
   //initialising firestore
 
-  String messageText;
+  String? messageText;
 
   @override
   void initState() {
@@ -112,7 +112,7 @@ class _GroupChatState extends State<GroupChat> {
                         messageTextController.clear();
                         _firestore.collection('messages').add({
                           'text': messageText,
-                          'sender': loggedInUser.email,
+                          'sender': loggedInUser?.email,
                           'timestamp': FieldValue.serverTimestamp()
                         });
                         //Implement send functionality.
@@ -133,7 +133,7 @@ class MessageBubble extends StatelessWidget {
   final String sender;
   final bool isMe;
   MessageBubble(
-      {@required this.text, @required this.sender, @required this.isMe});
+      {required this.text, required this.sender, required this.isMe});
   @override
   Widget build(BuildContext context) {
     if (isMe) {
@@ -251,12 +251,12 @@ class MessageStream extends StatelessWidget {
             ),
           );
         }
-        final messages = snapshot.data.docs.reversed;
+        final messages = snapshot.data?.docs.reversed;
 
-        for (var message in messages) {
+        for (var message in messages!) {
           final messageText = message['text'];
           final messageSender = message['sender'];
-          final currentUser = loggedInUser.email;
+          final currentUser = loggedInUser?.email;
           final messageBubble = MessageBubble(
             text: messageText,
             sender: messageSender,

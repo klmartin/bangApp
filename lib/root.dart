@@ -10,5 +10,5 @@ class AuthenticationProvider {
 // FirebaseAuth instance
   AuthenticationProvider(this.firebaseAuth);
 //Constructor to initialize the Firebase Auth instance.
-  Stream<User> get authStateChanges => firebaseAuth.idTokenChanges();
+  Stream<User?> get authStateChanges => firebaseAuth.idTokenChanges();
 }

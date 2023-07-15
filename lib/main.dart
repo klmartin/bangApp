@@ -9,7 +9,6 @@ import 'models/userprovider.dart';
 import 'screens/Authenticate/welcome_screen.dart';
 import 'screens/Profile/edit_profile.dart';
 import 'screens/Authenticate/register_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'root.dart';
 import 'screens/Chat/chat_home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
             create: (_) => AuthenticationProvider(FirebaseAuth.instance)),
         StreamProvider(
             create: (context) =>
-                context.read<AuthenticationProvider>().authStateChanges)
+                context.read<AuthenticationProvider>().authStateChanges, initialData: null,)
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -49,11 +48,14 @@ class MyApp extends StatelessWidget {
           Welcome.id: (context) => Welcome(),
           EditPage.id:(context) => EditPage(),
           Authenticate.id: (context) => Authenticate(),
-          CommentsPage.id:(context) => CommentsPage(),
+          CommentsPage.id:(context) => CommentsPage(userId: null),
         },
       ),
     );
   }
+}
+
+class _MessageStreamState {
 }
 
 class Authenticate extends StatelessWidget {
@@ -65,7 +67,7 @@ class Authenticate extends StatelessWidget {
       future: SharedPreferences.getInstance(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          String token = snapshot.data.getString('token');
+          String? token = snapshot.data?.getString('token');
           if (token != null) {
             return Nav();
           } else {

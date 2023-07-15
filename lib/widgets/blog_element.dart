@@ -4,14 +4,14 @@ import 'package:bangapp/screens/blog/blog_view.dart';
 
 class BlogElement extends StatelessWidget {
   BlogElement({
-    @required this.title,
-    @required this.comments,
-    @required this.time,
-    @required this.image,
-    @required this.text,
-    @required this.author,
-    @required this.tagColor,
-    @required this.tagName,
+    required this.title,
+    required this.comments,
+    required this.time,
+    required this.image,
+    required this.text,
+    required this.author,
+    required this.tagColor,
+    required this.tagName,
   });
   final String title;
   final String image;

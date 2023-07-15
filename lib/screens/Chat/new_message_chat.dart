@@ -1,24 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bangapp/screens/Chat/chat_model.dart';
 import 'package:bangapp/widgets/SearchBox.dart';
 
-final _firestore = FirebaseFirestore.instance;
-final _auth = FirebaseAuth.instance;
-User _loggedInUser;
+
 List<String> docList = [];
 void docCheck() async {
-  var result = await _firestore
-      .collection('users')
-      .doc(_loggedInUser.uid)
-      .collection('messages')
-      .get();
-  result.docs.forEach((res) {
-    docList.add(res.id.toString());
-  });
+  // var result = await _firestore
+  //     .collection('users')
+  //     .doc(_loggedInUser.uid)
+  //     .collection('messages')
+  //     .get();
+  // result.docs.forEach((res) {
+  //   docList.add(res.id.toString());
+  // });
 }
 
 class NewMessageChat extends StatefulWidget {
@@ -30,7 +26,7 @@ class NewMessageChat extends StatefulWidget {
 class _NewMessageChatState extends State<NewMessageChat> {
   //initialising firestore
 
-  String messageText;
+  late String messageText;
 
   @override
   void initState() {
@@ -40,15 +36,15 @@ class _NewMessageChatState extends State<NewMessageChat> {
   }
 
   void getCurrentUser() {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        _loggedInUser = user;
-        print(_loggedInUser);
-      }
-    } catch (e) {
-      print(e);
-    }
+    // try {
+    //   final user = _auth.currentUser;
+    //   if (user != null) {
+    //     _loggedInUser = user;
+    //     print(_loggedInUser);
+    //   }
+    // } catch (e) {
+    //   print(e);
+    // }
   }
 
   @override
@@ -110,12 +106,12 @@ class UserBubble extends StatefulWidget {
   final String selectedUser;
   final bool isMe;
   UserBubble(
-      {@required this.profileUrl,
-      @required this.name,
-      @required this.message,
-      @required this.time,
-      @required this.isMe,
-      @required this.selectedUser});
+      {required this.profileUrl,
+      required this.name,
+      required this.message,
+      required this.time,
+      required this.isMe,
+      required this.selectedUser});
 
   @override
   State<UserBubble> createState() => _UserBubbleState();
@@ -193,38 +189,39 @@ class _UserBubbleState extends State<UserBubble> {
 class UsersStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('users').snapshots(),
-      builder: (context, snapshot) {
-        List<UserBubble> userBubbles = [];
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.lightBlue,
-            ),
-          );
-        }
-        final users = snapshot.data.docs;
-
-        for (var user in users) {
-          final profile = user['profile'];
-          final name = user['name'];
-          final selectedUid = user['userid'];
-          final currentUser = _loggedInUser.displayName;
-          final userBubble = UserBubble(
-            profileUrl: profile,
-            selectedUser: selectedUid,
-            name: name,
-            isMe: currentUser == name,
-          );
-          userBubbles.add(userBubble);
-        }
-        return Expanded(
-          child: ListView(
-            children: userBubbles,
-          ),
-        );
-      },
-    );
+    // return StreamBuilder<QuerySnapshot>(
+    //   stream: _firestore.collection('users').snapshots(),
+    //   builder: (context, snapshot) {
+    //     List<UserBubble> userBubbles = [];
+    //     if (!snapshot.hasData) {
+    //       return Center(
+    //         child: CircularProgressIndicator(
+    //           backgroundColor: Colors.lightBlue,
+    //         ),
+    //       );
+    //     }
+    //     final users = snapshot.data.docs;
+    //
+    //     for (var user in users) {
+    //       final profile = user['profile'];
+    //       final name = user['name'];
+    //       final selectedUid = user['userid'];
+    //       final currentUser = _loggedInUser.displayName;
+    //       final userBubble = UserBubble(
+    //         profileUrl: profile,
+    //         selectedUser: selectedUid,
+    //         name: name,
+    //         isMe: currentUser == name,
+    //       );
+    //       userBubbles.add(userBubble);
+    //     }
+    //     return Expanded(
+    //       child: ListView(
+    //         children: userBubbles,
+    //       ),
+    //     );
+    //   },
+    // );
+    return Container();
   }
 }

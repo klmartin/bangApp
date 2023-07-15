@@ -32,7 +32,7 @@ class Activity extends StatelessWidget {
             FontAwesomeIcons.userPlus,
             color: Colors.blueAccent,
             size: 19.0,
-          ),
+          ), onPressed: () {  },
         ),
         onTap: () {
           Toast.show("Following list updated!",

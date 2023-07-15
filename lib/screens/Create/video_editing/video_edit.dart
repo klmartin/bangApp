@@ -52,7 +52,7 @@ class VideoEditor extends StatefulWidget {
   final File video;
 
   VideoEditor({
-    @required this.video,
+    required this.video,
   });
 
   @override
@@ -63,7 +63,7 @@ class _VideoEditorState extends State<VideoEditor> {
   final _exportingProgress = ValueNotifier<double>(0.0);
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
-  VideoEditorController _controller;
+  late VideoEditorController _controller;
   @override
   void initState() {
     super.initState();
@@ -143,7 +143,7 @@ class _VideoEditorState extends State<VideoEditor> {
           context: context,
           builder: (_) => CoverResultPopup(cover: cover),
         );
-      },
+      }, onProgress: (Statistics ) {  },
     );
   }
 
@@ -254,7 +254,7 @@ class _VideoEditorState extends State<VideoEditor> {
                           ),
                           ValueListenableBuilder(
                             valueListenable: _isExporting,
-                            builder: (_, bool export, Widget child) =>
+                            builder: (_, bool export, Widget? child) =>
                                 AnimatedSize(
                                   duration: kThemeAnimationDuration,
                                   child: export ? child : null,
@@ -269,6 +269,7 @@ class _VideoEditorState extends State<VideoEditor> {
                               ),
                             ),
                           )
+
                         ],
                       ),
                     ),

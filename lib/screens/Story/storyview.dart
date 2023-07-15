@@ -2,7 +2,7 @@ import 'package:story_view/story_view.dart';
 import 'package:flutter/material.dart';
 
 class StoryPageView extends StatefulWidget {
-  const StoryPageView({Key key}) : super(key: key);
+  const StoryPageView({ Key? key}) : super(key: key);
 
   @override
   _StoryPageViewState createState() => _StoryPageViewState();
