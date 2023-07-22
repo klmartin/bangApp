@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
@@ -6,37 +8,52 @@ import 'package:chewie/chewie.dart';
 import 'dart:io';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
-
 import '../../services/animation.dart';
 
 class Create extends StatefulWidget {
-  Create({ Key? key,  this.title}) : super(key: key);
+  Create({Key? key, this.title}) : super(key: key);
   final String? title;
+
   @override
   _CreateState createState() => _CreateState();
 }
 
 class _CreateState extends State<Create> {
-   AssetEntity? _selectedAsset;
-   VideoPlayerController? _videoPlayerController;
-   ChewieController? _chewieController;
+  List<AssetEntity> _selectedAssets = [];
+  VideoPlayerController? _videoPlayerController;
+  ChewieController? _chewieController;
 
   void selectAsset(AssetEntity asset) async {
     setState(() {
-      _selectedAsset = asset;
-      if (_selectedAsset?.type == AssetType.video) {
-        _initializeVideoPlayer();
-      }
-      else if(_selectedAsset?.type == AssetType.image){
-        if (_chewieController != null) {
-          _chewieController!.pause();
+      if (_selectedAssets.contains(asset)) {
+        _selectedAssets.remove(asset);
+      } else {
+        if (_selectedAssets.length < 2) {
+          _selectedAssets.add(asset);
+        } else {
+          // Show a message or alert that only two images can be selected
         }
+      }
+
+      if (_selectedAssets.isNotEmpty) {
+        if (_selectedAssets[0].type == AssetType.video) {
+          _initializeVideoPlayer();
+        } else if (_selectedAssets[0].type == AssetType.image) {
+          if (_chewieController != null) {
+            _chewieController!.pause();
+          }
+        }
+      } else {
+        _videoPlayerController?.dispose();
+        _chewieController?.dispose();
+        _videoPlayerController = null;
+        _chewieController = null;
       }
     });
   }
 
   Future<void> _initializeVideoPlayer() async {
-    var file = await _selectedAsset?.file;
+    var file = await _selectedAssets[0].file;
     _videoPlayerController = VideoPlayerController.file(File(file!.path));
     await _videoPlayerController!.initialize();
     setState(() {
@@ -49,11 +66,20 @@ class _CreateState extends State<Create> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _videoPlayerController = null;
+    _chewieController = null;
+  }
+
+
+  @override
   void dispose() {
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
     super.dispose();
   }
+
   Uint8List fileToUint8List(File file) {
     final bytes = file.readAsBytesSync();
     return Uint8List.fromList(bytes);
@@ -63,54 +89,67 @@ class _CreateState extends State<Create> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Post',style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+        title: Text(
+          'Create Post',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         automaticallyImplyLeading: false,
         elevation: 0.0,
         backgroundColor: Colors.white,
         actions: [
           GestureDetector(
             onTap: () async {
-              if (_selectedAsset?.type == AssetType.video) {
-                var editedVideo = await _selectedAsset?.file;
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VideoEditor(
-                      video:editedVideo!,
+              if (_selectedAssets.isNotEmpty) {
+                if (_selectedAssets[0].type == AssetType.video) {
+                  var editedVideo = await _selectedAssets[0].file;
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VideoEditor(
+                        video: editedVideo!,
+                      ),
                     ),
-                  ),
-                );
-              }
-              else if (_selectedAsset?.type == AssetType.image) {
-                Uint8List? editedImage;
-                var filee = await _selectedAsset?.file;
-                if (filee != null) {
-                  editedImage = fileToUint8List(filee);
+                  );
                 }
-                // Redirect to image editor
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ImageEditor(
-                      image: editedImage,
-                      appBar: Colors.white,
-                    ),
-                  ),
-                );
+                else if (_selectedAssets[0].type == AssetType.image) {
+                  Uint8List? editedImage;
+                  Uint8List ? editedImage2;
+                  var filee = await _selectedAssets[0].file;
+                  editedImage = fileToUint8List(filee!);
+                  if (_selectedAssets.length == 2) {
+                    var filee2 = await _selectedAssets[1].file;
+                    editedImage2 = fileToUint8List(filee2!);
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ImageEditor(
+                            image: editedImage,
+                            image2: editedImage2,
+                            allowMultiple: true
+                        ),
+                      ),
+                    );
+                  }
+                  else{
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ImageEditor(
+                          image: editedImage,
+                        ),
+                      ),
+                    );
+                  }
 
+                }
               }
-
             },
             child: Container(
               padding: EdgeInsets.all(2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.pink,
-                    Colors.redAccent,
-                    Colors.orange
-                  ],
+                  colors: [Colors.pink, Colors.redAccent, Colors.orange],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -122,39 +161,48 @@ class _CreateState extends State<Create> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height / 2.2,
-              child: Center(
-                child: _selectedAsset != null
-                    ? _selectedAsset?.type == AssetType.video
-                    ? Container(
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: <Widget>[
+                  Container(
                       height: MediaQuery.of(context).size.height / 2.2,
-                      child: Chewie(
-                        controller: _chewieController!,
-                      ),
-                    )
-                    :FutureBuilder<Uint8List?>(
-                      future: _selectedAsset?.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-                      builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          final thumbnailData = snapshot.data!;
-                          return Image.memory(
-                            thumbnailData,
-                            height: MediaQuery.of(context).size.height,
-                            width: MediaQuery.of(context).size.width,
-                            fit: BoxFit.cover,
-                          );
-                        } else {
-                          return CircularProgressIndicator();
-                        }
-                      },
-                    )
-                    : Text("Image"),
+                      child: PageView(
+                        scrollDirection: Axis.horizontal, // Set the scroll direction to horizontal
+                        children: _selectedAssets.map((asset) {
+                          if (asset.type == AssetType.video) {
+                            return Container(
+                              height: MediaQuery.of(context).size.height / 2.2,
+                              child: Chewie(
+                                controller: _chewieController!,
+                              ),
+                            );
+                          } else {
+                            return FutureBuilder<Uint8List?>(
+                              future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+                              builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+                                if (snapshot.connectionState == ConnectionState.done) {
+                                  final thumbnailData = snapshot.data!;
+                                  return Image.memory(
+                                    thumbnailData,
+                                    height: MediaQuery.of(context).size.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    fit: BoxFit.cover,
+                                  );
+                                } else {
+                                  return CircularProgressIndicator();
+                                }
+                              },
+                            );
+                          }
+                        }).toList(),
+                      )
+                  ),
+                  Expanded(child: MediaGrid(selectAsset)),
+                ],
               ),
             ),
-            Expanded(child: MediaGrid(selectAsset)),
           ],
         ),
       ),
@@ -205,7 +253,8 @@ class _MediaGridState extends State<MediaGrid> {
             },
             child: FutureBuilder<Uint8List?>(
               future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-              builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+              builder: (BuildContext context,
+                  AsyncSnapshot<Uint8List?> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
                     return Stack(
@@ -220,7 +269,8 @@ class _MediaGridState extends State<MediaGrid> {
                           Align(
                             alignment: Alignment.bottomRight,
                             child: Padding(
-                              padding: EdgeInsets.only(right: 5, bottom: 5),
+                              padding:
+                              EdgeInsets.only(right: 5, bottom: 5),
                               child: Icon(
                                 Icons.videocam,
                                 color: Colors.white,
@@ -230,14 +280,13 @@ class _MediaGridState extends State<MediaGrid> {
                       ],
                     );
                   } else {
-                    return Container(); // Return a fallback widget if data is null
+                    return Container();
                   }
                 } else {
                   return CircularProgressIndicator();
                 }
               },
-            )
-
+            ),
           ),
         );
       }
@@ -268,3 +317,4 @@ class _MediaGridState extends State<MediaGrid> {
     );
   }
 }
+

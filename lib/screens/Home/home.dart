@@ -52,9 +52,8 @@ class _HomeState extends State<Home> {
 }
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('http://192.168.188.229/social-backend-laravel/api/getPosts'));
+    var response = await http.get(Uri.parse('http://192.168.219.229/social-backend-laravel/api/getPosts'));
     var data = json.decode(response.body);
-    print(response.body);
     return data['data']['data'];
   }
   void viewImage(BuildContext context, String imageUrl) {

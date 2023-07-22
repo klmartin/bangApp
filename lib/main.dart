@@ -56,10 +56,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-class _MessageStreamState {
-}
-
 class Authenticate extends StatelessWidget {
   static const id = 'auth';
 

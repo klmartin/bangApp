@@ -14,7 +14,7 @@ class BlogHome extends StatefulWidget {
 class _BlogHomeState extends State<BlogHome> {
 
   Future<List<dynamic>> getInspirations() async {
-    var response = await http.get(Uri.parse('https://192.168.188.229/social-backend-laravel/api/get/bangInspirations'));
+    var response = await http.get(Uri.parse('https://192.168.114.229/social-backend-laravel/api/get/bangInspirations'));
     var data = json.decode(response.body);
     print(data);
     return data;

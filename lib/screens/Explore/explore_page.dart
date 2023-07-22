@@ -31,7 +31,7 @@ class _ExploreState extends State<Explore> {
 
 class BangUpdates extends StatelessWidget {
   Future<List<dynamic>> getBangUpdates() async {
-    var response = await http.get(Uri.parse('http://192.168.188.229/social-backend-laravel/api/bang-updates'));
+    var response = await http.get(Uri.parse('http://192.168.114.229/social-backend-laravel/api/bang-updates'));
     var data = json.decode(response.body);
     return data;
   }
