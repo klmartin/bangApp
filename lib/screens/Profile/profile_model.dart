@@ -1,15 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 //Profile photo - squircle --> posts no | Followers no | Following no |
 //Name o <em>Position</em>
 //About
-final _auth = FirebaseAuth.instance;
-final _store = FirebaseFirestore.instance;
-User? currentUser;
-Future data = _store.collection('users').doc(currentUser?.uid).get();
+
 
 class ProfileModel extends StatelessWidget {
   @override
@@ -45,7 +40,7 @@ class ProfileModel extends StatelessWidget {
         ),
         Row(
           children: <Widget>[
-            Text(currentUser!.displayName!),
+            Text('currentUser!.displayName!'),
             FaIcon(FontAwesomeIcons.circle),
             Text('Flutter app developer'),
           ],

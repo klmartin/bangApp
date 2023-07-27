@@ -9,43 +9,37 @@ import '../../widgets/user_profile.dart';
 import '../Comments/commentspage.dart';
 import '../Profile/profile.dart';
 import '../Widgets/readmore.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 
 
-class POstView extends StatefulWidget {
-  final  name;
-  final  caption;
-  final  imgurl;
-  final  challengeImgUrl;
-  final  imgWidth;
-  final  imgHeight;
-  final  postId;
-  final  commentCount;
-  final  userId;
-  final  isLiked;
-  final  likeCount;
-  final  type;
+class ViewChallengePage extends StatefulWidget {
+  final int? challengeId;
 
-  POstView(
-      this.name,
-      this.caption,
-      this.imgurl,
-      this.challengeImgUrl,
-      this.imgWidth,
-      this.imgHeight,
-      this.postId,
-      this.commentCount,
-      this.userId,
-      this.isLiked,
-      this.likeCount,
-      this.type,
-      );
+  ViewChallengePage({
+    Key? key,
+    this.challengeId,
+  }): super(key: key);
   static const id = 'postview';
   @override
-  _POstViewState createState() => _POstViewState();
+  _ViewChallengePageState createState() => _ViewChallengePageState();
 }
 
-class _POstViewState extends State<POstView> {
+class _ViewChallengePageState extends State<ViewChallengePage> {
+  Future<List<dynamic>> getChallenge(int? challengeId) async {
+    var response = await http.get(Uri.parse('http://192.168.166.229/social-backend-laravel/api/getChallenge'));
+    var data = json.decode(response.body);
+    return data['data']['data'];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.challengeId != null) {
+      getChallenge(widget.challengeId);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -54,7 +48,7 @@ class _POstViewState extends State<POstView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: PostCard(widget.name,widget.caption,widget.imgurl,widget.challengeImgUrl,widget.imgWidth,widget.imgHeight,widget.postId,widget.commentCount,widget.userId,widget.isLiked,widget.likeCount,widget.type),
+            child: PostCard(widget.challengeId,null,'',null,null,null,null,null,null,null,null,null),
           ),
         ),
       ),
@@ -197,50 +191,50 @@ class _PostCardState extends State<PostCard> {
                                       height: 20,
                                     ),
                                     Column(
-                                        children: [
-                                          ListTile(
-                                            onTap: () async{
-                                              try {
-                                                var response = await Service().deletePost(widget.postId);
-                                                if (response["message"] == "Post deleted successfully") {
-                                                  Navigator.push(
-                                                    context,
-                                                    createRoute(
-                                                      Profile(
-                                                        id: widget.userId,
-                                                      ),
+                                      children: [
+                                        ListTile(
+                                          onTap: () async{
+                                            try {
+                                              var response = await Service().deletePost(widget.postId);
+                                              if (response["message"] == "Post deleted successfully") {
+                                                Navigator.push(
+                                                  context,
+                                                  createRoute(
+                                                    Profile(
+                                                      id: widget.userId,
                                                     ),
-                                                  );
-                                                } else {
-                                                  // Show a toast indicating deletion failure
-                                                  Fluttertoast.showToast(msg: "Post deletion failed.");
-                                                }
-                                              } catch (e) {
-                                                // Show a toast indicating deletion failure (in case of an error)
+                                                  ),
+                                                );
+                                              } else {
+                                                // Show a toast indicating deletion failure
                                                 Fluttertoast.showToast(msg: "Post deletion failed.");
                                               }
-                                            },
-                                            minLeadingWidth: 20,
-                                            leading: Icon(
-                                              CupertinoIcons.delete,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            title: Text(
-                                              "Delete Post",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText1,
-                                            ),
+                                            } catch (e) {
+                                              // Show a toast indicating deletion failure (in case of an error)
+                                              Fluttertoast.showToast(msg: "Post deletion failed.");
+                                            }
+                                          },
+                                          minLeadingWidth: 20,
+                                          leading: Icon(
+                                            CupertinoIcons.delete,
+                                            color: Theme.of(context)
+                                                .primaryColor,
                                           ),
-                                          Divider(
-                                            height: .5,
-                                            thickness: .5,
-                                            color:
-                                            Colors.grey.shade800,
-                                          )
-                                        ],
-                                      ),
+                                          title: Text(
+                                            "Delete Post",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          ),
+                                        ),
+                                        Divider(
+                                          height: .5,
+                                          thickness: .5,
+                                          color:
+                                          Colors.grey.shade800,
+                                        )
+                                      ],
+                                    ),
                                     Column(
                                       children: [
                                         ListTile(

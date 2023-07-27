@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,10 +8,8 @@ import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bangapp/widgets/bloc/file_handler_bloc.dart';
 
-final _firestore = FirebaseFirestore.instance;
-final _auth = FirebaseAuth.instance;
+
 bool isOpen = false;
-User? loggedInUser;
 
 // const kSendButtonTextStyle = TextStyle(
 //   color: Colors.lightBlueAccent,
@@ -81,20 +78,20 @@ class _PmScreenState extends State<PmScreen> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    // getCurrentUser();
   }
 
-  void getCurrentUser() {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        loggedInUser = user;
-        print(loggedInUser);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
+  // void getCurrentUser() {
+  //   try {
+  //     final user = _auth.currentUser;
+  //     if (user != null) {
+  //       loggedInUser = user;
+  //       print(loggedInUser);
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -195,30 +192,30 @@ class _PmScreenState extends State<PmScreen> {
                     TextButton(
                       onPressed: () {
                         messageTextController.clear();
-                        _firestore
-                            .collection('users')
-                            .doc(widget.selectedUser)
-                            .collection('messages')
-                            .doc(loggedInUser?.uid)
-                            .collection('pms')
-                            .doc()
-                            .set({
-                          'text': messageText,
-                          'sender': loggedInUser?.email,
-                          'timestamp': FieldValue.serverTimestamp()
-                        });
-                        _firestore
-                            .collection('users')
-                            .doc(loggedInUser?.uid)
-                            .collection('messages')
-                            .doc(widget.selectedUser)
-                            .collection('pms')
-                            .doc()
-                            .set({
-                          'text': messageText,
-                          'sender': loggedInUser?.email,
-                          'timestamp': FieldValue.serverTimestamp()
-                        });
+                        // _firestore
+                        //     .collection('users')
+                        //     .doc(widget.selectedUser)
+                        //     .collection('messages')
+                        //     .doc(loggedInUser?.uid)
+                        //     .collection('pms')
+                        //     .doc()
+                        //     .set({
+                        //   'text': messageText,
+                        //   'sender': loggedInUser?.email,
+                        //   'timestamp': FieldValue.serverTimestamp()
+                        // });
+                        // _firestore
+                        //     .collection('users')
+                        //     .doc(loggedInUser?.uid)
+                        //     .collection('messages')
+                        //     .doc(widget.selectedUser)
+                        //     .collection('pms')
+                        //     .doc()
+                        //     .set({
+                        //   'text': messageText,
+                        //   'sender': loggedInUser?.email,
+                        //   'timestamp': FieldValue.serverTimestamp()
+                        // });
                         // .add({
                         //   'text': messageText,
                         //   'sender': loggedInUser.email,
@@ -373,14 +370,7 @@ class MessageStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore
-          .collection('users')
-          .doc(loggedInUser?.uid)
-          .collection('messages')
-          .doc(selectedUser)
-          .collection('pms')
-          .orderBy('timestamp')
-          .snapshots(),
+      stream: null,
       builder: (context, snapshot) {
         List<MessageBubble> messageBubbles = [];
         if (!snapshot.hasData) {
@@ -395,7 +385,7 @@ class MessageStream extends StatelessWidget {
         for (var message in messages!) {
           final messageText = message['text'];
           final messageSender = message['sender'];
-          final currentUser = loggedInUser?.email;
+          final currentUser =' loggedInUser?.email';
           final messageBubble = MessageBubble(
             text: messageText,
             sender: messageSender,

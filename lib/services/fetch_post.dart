@@ -6,9 +6,10 @@ class FetchPosts {
 
   Future<List<dynamic>> getMyPosts(id) async {
     print('this is my id');
-    print(id);
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var response = await http.get(Uri.parse('https://citsapps.com/social-backend-laravel/api/getMyPosts/'+prefs.getInt('user_id').toString()));
+    print(prefs.getInt('user_id').toString());
+    var response = await http.get(Uri.parse('http://192.168.219.229/social-backend-laravel/api/getMyPosts/'+prefs.getInt('user_id').toString()));
     var data = json.decode(response.body);
     return data['data']['data'];  }
 }

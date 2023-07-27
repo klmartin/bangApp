@@ -31,12 +31,8 @@ dependencies:
   cloud_firestore: ^4.5.2
   curved_navigation_bar: ^1.0.1
   dropdown_button2: ^2.1.0
-  emoji_picker_flutter: ^1.4.0
+  emoji_picker_flutter: ^1.6.1
   file_picker: ^5.2.10
-  firebase_auth: ^4.4.2
-  firebase_core: ^2.10.0
-  firebase_messaging: ^14.4.1
-  firebase_storage: ^11.1.1
   flutter:
     sdk: flutter
   flutter_emoji: ^2.2.1+1
@@ -61,6 +57,12 @@ dependencies:
   video_editor: ^3.0.0
   fraction: ^4.1.4
   ffmpeg_kit_flutter_min: ^5.1.0
+  fluttertoast: ^8.2.2
+  mime: ^1.0.4
+  firebase_messaging: ^14.6.5
+  firebase_core: ^2.15.0
+  firebase_auth: ^4.7.1
+  flutter_local_notifications: ^15.1.0+1
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -6,7 +6,9 @@ import '../../nav.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:bangapp/services/service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -17,9 +19,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   bool showSpinner = false;
   late String email;
   late String password;
+  final userId = null;
+
   @override
   void initState(){
     super.initState();
@@ -139,22 +144,29 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('https://citsapps.com/social-backend-laravel/api/v1/login'),
+                                Uri.parse('http://192.168.166.229/social-backend-laravel/api/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,
                                   },
                                 );
                               final responseBody = jsonDecode(response.body);
-                              print(responseBody);
-                                Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
+                              print('logging user');
+                              print(response.body);
                               if (responseBody != null) {
-                                SharedPreferences prefs = await SharedPreferences.getInstance();
-                                prefs.setInt('user_id', responseBody['user_id']);
-                                prefs.setString('token', responseBody['token']);
-                                prefs.setString('user_image', responseBody['user_image']);
-                                prefs.setString('name', responseBody['name']);
-                                print(prefs.getInt("user_id"));
+                                _firebaseMessaging.getToken().then((token) async {
+                                  print('this is token');
+                                  print(token);
+                                  print(responseBody['user_id']);
+                                  Service().sendTokenToBackend(token,responseBody['user_id']);
+                                  Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
+                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  prefs.setInt('user_id', responseBody['user_id']);
+                                  prefs.setString('token', responseBody['token']);
+                                  prefs.setString('user_image', responseBody['user_image']);
+                                  prefs.setString('name', responseBody['name']);
+                                  prefs.setString('device_token', token!);
+                                });
                                 Navigator.pushNamed(context, Nav.id);
                               }
                             }

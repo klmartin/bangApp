@@ -1,36 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path/path.dart';
 
-// import 'nav.dart';
-
-final storage = FirebaseStorage.instance;
-final store = FirebaseFirestore.instance;
-final auth = FirebaseAuth.instance;
 var rimage;
 var imagePicker;
-User? user;
-
-void uploadProfile(String url) async {
-  user = auth.currentUser;
-  user?.updatePhotoURL(url);
-}
-
 enum ImageSourceType { gallery, camera }
-
-void imageHandler(File image) async {
-  var uploadTask =
-      await storage.ref().child(basename(image.path)).putFile(image);
-  if (uploadTask.state == TaskState.success) {
-    final String downloadUrl = await uploadTask.ref.getDownloadURL();
-    uploadProfile(downloadUrl);
-  }
-}
 
 class UploadProfile extends StatefulWidget {
   @override

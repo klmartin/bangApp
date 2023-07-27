@@ -6,7 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
 
 Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
-  if ( type == 'image'&& isPinned!=0) {
+  if ( type == 'image'&& isPinned==0) {
     return GestureDetector(
       onTap: () {
         viewImage(context, mediaUrl);
@@ -24,7 +24,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
       ),
     );
   }
-  else if (type == 'image' && isPinned==0){
+  else if (type == 'image' && isPinned==1){
     return GestureDetector(
       onTap: () {
         buildFab(isPinned,context);
@@ -84,6 +84,8 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
     );
   }
   else {
+    print(type);
+    print('martin is here');
     return Container(); // Return an empty container if the media type is unknown or unsupported
   }
 }

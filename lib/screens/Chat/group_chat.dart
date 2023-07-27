@@ -1,13 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 
-final _firestore = FirebaseFirestore.instance;
-final _auth = FirebaseAuth.instance;
-User? loggedInUser;
+
 
 const kSendButtonTextStyle = TextStyle(
   color: Colors.lightBlueAccent,
@@ -53,20 +50,20 @@ class _GroupChatState extends State<GroupChat> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    // getCurrentUser();
   }
 
-  void getCurrentUser() {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        loggedInUser = user;
-        print(loggedInUser);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
+  // void getCurrentUser() {
+  //   try {
+  //     final user = _auth.currentUser;
+  //     if (user != null) {
+  //       loggedInUser = user;
+  //       print(loggedInUser);
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -110,11 +107,11 @@ class _GroupChatState extends State<GroupChat> {
                   TextButton(
                       onPressed: () {
                         messageTextController.clear();
-                        _firestore.collection('messages').add({
-                          'text': messageText,
-                          'sender': loggedInUser?.email,
-                          'timestamp': FieldValue.serverTimestamp()
-                        });
+                        // _firestore.collection('messages').add({
+                        //   'text': messageText,
+                        //   'sender': loggedInUser?.email,
+                        //   'timestamp': FieldValue.serverTimestamp()
+                        // });
                         //Implement send functionality.
                       },
                       child: FaIcon(FontAwesomeIcons.arrowRight)),
@@ -240,8 +237,7 @@ class MessageStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream:
-          _firestore.collection('messages').orderBy('timestamp').snapshots(),
+      stream: null,
       builder: (context, snapshot) {
         List<MessageBubble> messageBubbles = [];
         if (!snapshot.hasData) {
@@ -256,7 +252,7 @@ class MessageStream extends StatelessWidget {
         for (var message in messages!) {
           final messageText = message['text'];
           final messageSender = message['sender'];
-          final currentUser = loggedInUser?.email;
+          final currentUser = 'loggedInUser?.email';
           final messageBubble = MessageBubble(
             text: messageText,
             sender: messageSender,

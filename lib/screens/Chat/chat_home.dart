@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,20 +9,9 @@ import 'package:bangapp/screens/Chat/new_message_chat.dart';
 import 'package:bangapp/widgets/SearchBox.dart';
 // import 'group_chat.dart';
 
-final _firestore = FirebaseFirestore.instance;
-final _auth = FirebaseAuth.instance;
-User? _loggedInUser;
+
 List<String> docList = [];
-void docCheck() async {
-  var result = await _firestore
-      .collection('users')
-      .doc(_loggedInUser?.uid)
-      .collection('messages')
-      .get();
-  result.docs.forEach((res) {
-    docList.add(res.id.toString());
-  });
-}
+
 
 class ChatHome extends StatefulWidget {
   static const String id = 'chat_home';
@@ -40,19 +28,6 @@ class _ChatHomeState extends State<ChatHome> {
   void initState() {
     super.initState();
     // docCheck();
-    getCurrentUser();
-  }
-
-  void getCurrentUser() {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        _loggedInUser = user;
-        print(_loggedInUser);
-      }
-    } catch (e) {
-      print(e);
-    }
   }
 
   @override
@@ -235,7 +210,7 @@ class UsersStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('users').snapshots(),
+      stream: null,
       builder: (context, snapshot) {
         List<UserBubble> userBubbles = [];
         if (!snapshot.hasData) {
@@ -251,14 +226,14 @@ class UsersStream extends StatelessWidget {
           final profile = user['profile'];
           final name = user['name'];
           final selectedUid = user['userid'];
-          final currentUser = _loggedInUser?.displayName;
-          final userBubble = UserBubble(
-            profileUrl: profile,
-            selectedUser: selectedUid,
-            name: name,
-            isMe: currentUser == name, message: '', time: '',
-          );
-          userBubbles.add(userBubble);
+          // final currentUser = _loggedInUser?.displayName;
+          // final userBubble = UserBubble(
+          //   profileUrl: profile,
+          //   selectedUser: selectedUid,
+          //   name: name,
+          //   // isMe: currentUser == name, message: '', time: '',
+          // );
+          // userBubbles.add(userBubble);
         }
         return Expanded(
           child: ListView(

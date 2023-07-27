@@ -1,17 +1,23 @@
-import 'dart:ui';
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:image_editor_plus/image_editor_plus.dart';
 import '../../services/extension.dart';
 import '../../services/animation.dart';
 import 'package:bangapp/widgets/user_profile.dart';
 import 'package:bangapp/widgets/build_media.dart';
 import 'package:bangapp/screens/Widgets/like_button.dart';
 import '../Comments/commentspage.dart';
+import '../Create/video_editing/video_edit.dart';
 import '../Profile/profile.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:mime/mime.dart';
 import 'package:http/http.dart' as http;
 import '../Widgets/small_box.dart';
 
@@ -52,7 +58,7 @@ class _HomeState extends State<Home> {
 }
 class PostStream extends StatelessWidget {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('http://192.168.219.229/social-backend-laravel/api/getPosts'));
+    var response = await http.get(Uri.parse('http://192.168.166.229/social-backend-laravel/api/getPosts'));
     var data = json.decode(response.body);
     return data['data']['data'];
   }
@@ -83,8 +89,14 @@ class PostStream extends StatelessWidget {
       return 'unknown'; // Return 'unknown' if the media type is unsupported
     }
   }
+  Future<Uint8List> fileToUint8List(File file) async {
+    if (file != null) {
+      List<int> bytes = await file.readAsBytes();
+      return Uint8List.fromList(bytes);
+    }
+    return Uint8List(0);
+  }
   @override
-
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: getPosts(),
@@ -96,7 +108,7 @@ class PostStream extends StatelessWidget {
             ),
           );
         }
-        var postCount = 0;
+        var postCount = -1;
         List<BoxData> boxes = [
           BoxData(
             imageUrl1: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber1.jpeg',
@@ -121,7 +133,6 @@ class PostStream extends StatelessWidget {
 
         ];
         List<Widget> postCards = [];
-
         if (snapshot.data != null) {
           final List<dynamic> dataList = snapshot.data as List<dynamic>;
           for (var post in dataList) {
@@ -139,9 +150,8 @@ class PostStream extends StatelessWidget {
             var likeCount = post['likes'] != null && post['likes'].isNotEmpty ? post['likes'][0]['like_count'] : 0;
             var type = post['type'];
             var isPinned = post['pinned'];
-            // final likeCount = likes.isEmpty ? 0 : int.parse(post['likes']['like_count']) ;
             postCount ++;
-            if(postCount % 3 == 0){
+            if(postCount % 8 == 0 || postCount ==0){
               postCards.add(SmallBoxCarousel(boxes: boxes,));
             }
             if (challengeImgUrl != null) {
@@ -195,7 +205,7 @@ class PostStream extends StatelessWidget {
                                               ),
                                               SizedBox(width: 5),
                                               Text(
-                                                '        ${followerCount} Followers',
+                                                '        $followerCount Followers',
                                                 style: const TextStyle(
                                                   fontFamily: 'EuclidTriangle',
                                                   fontWeight: FontWeight.bold,
@@ -322,33 +332,6 @@ class PostStream extends StatelessWidget {
                                                       ),
                                                       title: Text(
                                                         "Copy URL",
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyText1,
-                                                      ),
-                                                    ),
-                                                    Divider(
-                                                      height: .5,
-                                                      thickness: .5,
-                                                      color: Colors.grey.shade800,
-                                                    )
-                                                  ],
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    ListTile(
-                                                      onTap: () {
-                                                        // launch(state
-                                                        //     .post.postImageUrl);
-                                                      },
-                                                      minLeadingWidth: 20,
-                                                      leading: Icon(
-                                                        CupertinoIcons.photo,
-                                                        color: Theme.of(context)
-                                                            .primaryColor,
-                                                      ),
-                                                      title: Text(
-                                                        "Challenge Image",
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyText1,
@@ -540,13 +523,13 @@ class PostStream extends StatelessWidget {
                             ],
                           ),
                         ),
-                        if (caption != "") SizedBox(height: 16),
+                        if (caption != null) SizedBox(height: 16),
                         Align(
                           alignment: Alignment.topLeft,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16.0),
                             child: ReadMoreText(
-                              caption,
+                              caption ?? "",
                               trimLines: 2,
                               style: Theme.of(context).textTheme.bodyText1!,
                               colorClickableText: Theme.of(context).primaryColor,
@@ -619,7 +602,7 @@ class PostStream extends StatelessWidget {
                                                 ),
                                                 SizedBox(width: 5),
                                                 Text(
-                                                  '        ${followerCount} Followers',
+                                                  '        $followerCount Followers',
                                                   style: const TextStyle(
                                                     fontFamily: 'EuclidTriangle',
                                                     fontWeight: FontWeight.bold,
@@ -761,9 +744,43 @@ class PostStream extends StatelessWidget {
                                                   Column(
                                                     children: [
                                                       ListTile(
-                                                        onTap: () {
-                                                          // launch(state
-                                                          //     .post.postImageUrl);
+                                                        onTap: () async {
+                                                          FilePickerResult? result = await FilePicker.platform.pickFiles();
+                                                          if (result != null) {
+                                                            File file = File(result.files.first.path!);
+                                                            final mimeType = lookupMimeType(file.path!);
+                                                            if(mimeType!.startsWith('image/')){
+                                                              Uint8List image = await fileToUint8List(file);
+                                                              await Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (context) => ImageEditor(
+                                                                      image: image!,
+                                                                      postId: postId!,
+                                                                      userChallenged:userId,
+                                                                      challengeImg: true,
+                                                                      image2: null,
+                                                                      allowMultiple: true
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+                                                            else if(mimeType!.startsWith('video/')){
+                                                              await Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (context) => VideoEditor(
+                                                                    video: File(file.path!),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+                                                            else{
+                                                              Fluttertoast.showToast(msg: "Unsupported file type.");
+                                                            }
+                                                          } else {
+                                                            // User canceled the picker
+                                                          }
                                                         },
                                                         minLeadingWidth: 20,
                                                         leading: Icon(
@@ -857,11 +874,11 @@ class PostStream extends StatelessWidget {
 
                             ],
                           ),
-                          if (caption != "") const SizedBox(height: 16),
+                          if (caption != null) const SizedBox(height: 16),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16.0),
                             child: ReadMoreText(
-                              caption,
+                              caption ?? "",
                               trimLines: 2,
                               style: Theme.of(context).textTheme.bodyText1!,
                               colorClickableText: Theme.of(context).primaryColor,
@@ -883,11 +900,10 @@ class PostStream extends StatelessWidget {
             }
           }
         }
-
         return ListView(
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
-          children: postCards.reversed.toList(),
+          children: postCards.toList(),
         );
       },
     );

@@ -1,6 +1,5 @@
 import 'package:bangapp/screens/Profile/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
@@ -14,7 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/userprovider.dart';
 import 'package:bangapp/services/fetch_post.dart';
 import 'profile_upload.dart';
-final _auth = FirebaseAuth.instance;
 late bool _persposts ;
 
 Future<void> myMethod() async {
@@ -29,18 +27,6 @@ void getProfileData() async {
   // following = data['following'];
   // descr = data['descr'];
   // posts = data['posts'];
-}
-
-void getCurrentUser() {
-  try {
-    final user = loggedInUser?.getCurrentUser();
-    if (user != null) {
-
-      print(loggedInUser);
-    }
-  } catch (e) {
-    print(e);
-  }
 }
 
 Future<String?> getUserImage() async {
@@ -74,10 +60,6 @@ class _ProfileState extends State<Profile> {
 
   void initState() {
     super.initState();
-    final userData=  Provider.of<UserProvider>(context,listen:false);
-    // getId();
-    getCurrentUser();
-
   }
 
 // void  getId() async {
@@ -88,6 +70,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     final userData=  Provider.of<UserProvider>(context,listen:false);
+    print(userData.myUser.id);
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: ListView(
@@ -109,7 +92,7 @@ class _ProfileState extends State<Profile> {
                             color: Colors.red.shade100,
                             borderRadius: BorderRadius.circular(25),
                             image: DecorationImage(
-                                image: CachedNetworkImageProvider(userData.myUser.profileurl!) ,
+                                image: CachedNetworkImageProvider('https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber1.jpeg') ,
                               fit: BoxFit.cover,
                             )),
                     child: rimage != null
@@ -345,8 +328,8 @@ class ImagePost extends StatelessWidget {
     if (isMe) {
       return GestureDetector(
         onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => POstView(url)));
+          // Navigator.push(
+              // context, MaterialPageRoute(builder: (context) => POstView(url)));
         },
         child: Container(
           decoration: BoxDecoration(

@@ -25,7 +25,6 @@ class _NavState extends State<Nav> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
   }
 
   @override

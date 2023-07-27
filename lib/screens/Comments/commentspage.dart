@@ -1,20 +1,10 @@
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:bangapp/models/user_model.dart';
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../nav.dart';
 import 'package:bangapp/services/service.dart';
 
-const kMessageTextFieldDecoration = InputDecoration(
-  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-  prefixIcon: Icon(Icons.emoji_emotions_outlined),
-  suffixIcon: Icon(Icons.camera_alt),
-  hintText: 'Type a message',
-  hintStyle: TextStyle(
-    height: 1.5,
-  ),
-  border: InputBorder.none,
-);
 
 const kMessageContainerDecoration = BoxDecoration(
   color: Colors.white,
@@ -37,10 +27,10 @@ class CommentsPage extends StatefulWidget {
   final postId;
   final _MessageStreamState? messageStreamState;
   const CommentsPage({
-     Key? key,
-     required this.userId,
-     this.postId,
-      this.messageStreamState,
+    Key? key,
+    required this.userId,
+    this.postId,
+    this.messageStreamState,
   }) : super(key: key);
 
   @override
@@ -50,6 +40,75 @@ class CommentsPage extends StatefulWidget {
 class _CommentsPageState extends State<CommentsPage> {
   final messageTextController = TextEditingController();
   late String commentText;
+  final TextEditingController _controller = TextEditingController();
+  bool _showEmojiPicker = false; // Flag to control emoji picker visibility
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void showEmojiPicker(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return EmojiPicker(
+            textEditingController: _controller,
+            onBackspacePressed: _onBackspacePressed,
+            config: Config(
+              columns: 7,
+              emojiSizeMax: 32 *
+                  (foundation.defaultTargetPlatform ==
+                      TargetPlatform.iOS
+                      ? 1.30
+                      : 1.0),
+              verticalSpacing: 0,
+              horizontalSpacing: 0,
+              gridPadding: EdgeInsets.zero,
+              initCategory: Category.RECENT,
+              bgColor: const Color(0xFFF2F2F2),
+              indicatorColor: Colors.blue,
+              iconColor: Colors.grey,
+              iconColorSelected: Colors.blue,
+              backspaceColor: Colors.blue,
+              skinToneDialogBgColor: Colors.white,
+              skinToneIndicatorColor: Colors.grey,
+              enableSkinTones: true,
+              recentTabBehavior: RecentTabBehavior.RECENT,
+              recentsLimit: 28,
+              replaceEmojiOnLimitExceed: false,
+              noRecents: const Text(
+                'No Recents',
+                style: TextStyle(fontSize: 20, color: Colors.black26),
+                textAlign: TextAlign.center,
+              ),
+              loadingIndicator: const SizedBox.shrink(),
+              tabIndicatorAnimDuration: kTabScrollDuration,
+              categoryIcons: const CategoryIcons(),
+              buttonMode: ButtonMode.MATERIAL,
+              checkPlatformCompatibility: true,
+            ),
+          );
+        });
+
+  }
+  _onBackspacePressed() {
+    _controller
+      ..text = _controller.text.characters.toString()
+      ..selection = TextSelection.fromPosition(
+          TextPosition(offset: _controller.text.length));
+  }
+
+  void _onEmojiSelected(Category? category, Emoji emoji) {
+    _controller.text += emoji.emoji;
+  }
+
+  void _toggleEmojiPicker() {
+    setState(() {
+      _showEmojiPicker = !_showEmojiPicker;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,44 +134,73 @@ class _CommentsPageState extends State<CommentsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            MessageStream(
-              postID: widget.postId,
-              messageStreamState: widget.messageStreamState, // Pass the messageStreamState
+            //MessageStream widget or any other content you have
+
+
+
+            //Use the Visibility widget to show or hide the emoji picker
+            Visibility(
+              visible: _showEmojiPicker,
+              child: Container(
+                height: MediaQuery.of(context).viewInsets.bottom, // Height of the keyboard
+                child: EmojiPicker(
+                  onEmojiSelected: _onEmojiSelected,
+                  config: Config(
+                    columns: 7,
+                    // ... Your existing emoji config ...
+                  ),
+                ),
+              ),
             ),
+
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      decoration: kMessageContainerDecoration,
-                      child: TextField(
-                        controller: messageTextController,
-                        onChanged: (value) {
-                          commentText = value;
-                        },
-                        decoration: kMessageTextFieldDecoration,
-                      ),
-                    ),
-                  ),
-                ),
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: kMessageContainerDecoration,
+          child: TextField(
+            controller: messageTextController,
+            onChanged: (value) {
+              commentText = value;
+            },
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              prefixIcon: GestureDetector(
+                onTap: () {
+                  // Call the function to show the emoji picker
+                  showEmojiPicker(context);
+                },
+                child: Icon(Icons.emoji_emotions_outlined),
+              ),
+              suffixIcon: Icon(Icons.camera_alt),
+              hintText: 'Type aaaa message',
+              hintStyle: TextStyle(
+                height: 1.5,
+              ),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+      ),
+    ),
                 TextButton(
                   onPressed: () {
                     Service().postComment(widget.postId, commentText).then(
                           (response) {
-                            print('martin');
-                          print(response['data']);
-                          final newComment = {
-                            'body': response['data']['body'],
-                            'user': {
-                              'name': response['data']['user']['name'],
-                              'image': response['data']['user']['image'],
-                            },
-                          };
-                          widget.messageStreamState?.addComment(newComment);
-                          // MessageStream.of(context).addComment(newComment);
-
+                        print('martin');
+                        print(response['data']);
+                        final newComment = {
+                          'body': response['data']['body'],
+                          'user': {
+                            'name': response['data']['user']['name'],
+                            'image': response['data']['user']['image'],
+                          },
+                        };
+                        widget.messageStreamState?.addComment(newComment);
+                        // MessageStream.of(context).addComment(newComment);
                       },
                     );
                   },
@@ -133,6 +221,8 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 }
+
+
 
 class MessageBubble extends StatelessWidget {
   final String text;

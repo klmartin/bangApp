@@ -1,22 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
-import 'package:image_editor_plus/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:bangapp/services/service.dart';
 import '../../nav.dart';
 import 'package:video_player/video_player.dart';
-import 'package:file_picker/file_picker.dart';
-final storage = FirebaseStorage.instance;
-final store = FirebaseFirestore.instance;
-final auth = FirebaseAuth.instance;
-
-User? user;
+import 'package:path_provider/path_provider.dart';
 
 enum ImageSourceType { gallery, camera }
 
@@ -24,10 +16,16 @@ class FinalCreate extends StatefulWidget {
   static const String id = 'final_posts';
   final Uint8List? editedImage;
   final Uint8List? editedImage2;
+  final bool? challengeImg;
+  final int? userChallenged;
+  final int? postId;
   const FinalCreate({
     Key? key,
     this.editedImage,
+    this.userChallenged,
+    this.challengeImg = false,
     this.editedImage2,
+    this.postId,
   }) : super(key: key);
 
   @override
@@ -35,6 +33,7 @@ class FinalCreate extends StatefulWidget {
 }
 
 class _FinaleCreateState extends State<FinalCreate> {
+
   Service service = Service();
   var image;
   bool light = true;
@@ -43,7 +42,13 @@ class _FinaleCreateState extends State<FinalCreate> {
   int pinPost = 0 ;
   XFile? mediaFile;
   VideoPlayerController? videoController;
-
+  Future<String> saveUint8ListAsFile(Uint8List data, String fileName) async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String filePath = '${appDocDir.path}/$fileName';
+    File file = File(filePath);
+    await file.writeAsBytes(data);
+    return filePath;
+  }
   @override
   Widget build(BuildContext context) {
     Size size= MediaQuery.of(context).size;
@@ -56,63 +61,53 @@ class _FinaleCreateState extends State<FinalCreate> {
                 child:Column (
                     children:[
                       Row(
-                        children: [
-                          // Display the first image
-                          Container(
-                            height: MediaQuery.of(context).size.height / 2.2,
-                            width: size.width * 0.4,
-                            child: InkWell(
-                              child: Container(
-                                width: 190,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  color: Colors.red[200],
-                                  borderRadius: BorderRadius.circular(32),
-                                ),
-                                child: widget.editedImage != null
-                                    ? Image.memory(
-                                  widget.editedImage!,
-                                  width: 190.0,
-                                  height: 200.0,
-                                  fit: BoxFit.cover,
-                                )
-                                    : Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.red[100],
-                                    borderRadius: BorderRadius.circular(32),
-                                  ),
-                                  width: 190,
-                                  height: 200,
-                                  child: Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.black,
-                                  ),
-                                ),
+                        children: [ // Display the first image
+                        if (widget.editedImage != null)
+                        Expanded(
+                        child: Container(
+                        height: MediaQuery.of(context).size.height / 2.2,
+                        child: InkWell(
+                            child: Container(
+                              width: 190,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                color: Colors.red[200],
+                                borderRadius: BorderRadius.circular(32),
+                              ),
+                              child: Image.memory(
+                                widget.editedImage!,
+                                width: 190.0,
+                                height: 200.0,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                          // Display the second image if editedImage2 is not null
-                          if (widget.editedImage2 != null)
-                            Container(
-                              height: MediaQuery.of(context).size.height / 2.2,
-                              width: size.width * 0.4,
-                              child: InkWell(
-                                child: Container(
-                                  width: 190,
-                                  height: 200,
-                                  decoration: BoxDecoration(
-                                    color: Colors.red[200],
-                                    borderRadius: BorderRadius.circular(32),
-                                  ),
-                                  child: Image.memory(
-                                    widget.editedImage2!,
-                                    width: 190.0,
-                                    height: 200.0,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            ),
+                        ),
+                        )
+                        else
+                        Container(), // Empty container if the first image is null
+                        // Display the second image if editedImage2 is not null
+                        if (widget.editedImage2 != null)
+                        Container(
+                        height: MediaQuery.of(context).size.height / 2.2,
+                        width: size.width * 0.4,
+                        child: InkWell(
+                        child: Container(
+                        width: 190,
+                        height: 200,
+                        decoration: BoxDecoration(
+                        color: Colors.red[200],
+                        borderRadius: BorderRadius.circular(32),
+                        ),
+                        child: Image.memory(
+                        widget.editedImage2!,
+                        width: 190.0,
+                        height: 200.0,
+                        fit: BoxFit.cover,
+                        ),
+                        ),
+                        ),
+                        ),
                         ],
                       ),
                       SizedBox(height: 15.0),
@@ -161,24 +156,41 @@ class _FinaleCreateState extends State<FinalCreate> {
                       Padding(
                         padding: const EdgeInsets.only(top: 46.0),
                         child: ElevatedButton(
-                            onPressed: () {
-                              if (widget.editedImage != null && widget.editedImage2 == null){
+                            onPressed: () async {
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg==false){
+                                String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+                                print(filePath);
                                 Map<String, String> body = {
-                                  'user_id': '3',
-                                  'body': caption,
+                                  'user_id': prefs.getInt('user_id').toString(),
+                                  'body': caption ?? '',
                                   'pinned': pinPost == 1 ? '1' : '0',
                                 };
-                                service.addImage(body, widget.editedImage as String);
+                                await service.addImage(body, filePath);
+                                Navigator.pushNamed(context, Nav.id);
+                              }
+                              else if(widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg==true){
+                                String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+                                print(filePath);
+                                Map<String, String> body = {
+                                  'user_id': prefs.getInt('user_id').toString(),
+                                  'body': caption ?? '',
+                                  'post_id':widget.postId.toString(),
+                                  'pinned': pinPost == 1 ? '1' : '0',
+                                };
+                                await service.addChallenge(body, filePath,widget.userChallenged!);
                                 Navigator.pushNamed(context, Nav.id);
                               }
                               else{
+                                String filePath1 = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+                                String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');
                                 Map<String, String> body = {
-                                'user_id': '3',
-                                'body': caption,
-                                'pinned': pinPost == 1 ? '1' : '0',
-                                };
-                                service.addImage(body, widget.editedImage as String);
-                                Navigator.pushNamed(context, Nav.id);
+                                    'user_id': prefs.getInt('user_id').toString(),
+                                    'body': caption ?? '',
+                                    'pinned': pinPost == 1 ? '1' : '0',
+                                  };
+                                  await service.addChallengImage(body, filePath1,filePath2);
+                                  Navigator.pushNamed(context, Nav.id);
                                 }
                             },
                             child: Text('Done')),
@@ -186,8 +198,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                     ]
                 )
             )
-
-            // SwitchExample(editedImage: widget.editedImage, editedImage2: widget.editedImage2), // Pass editedImage from widget
           ],
         )
     );

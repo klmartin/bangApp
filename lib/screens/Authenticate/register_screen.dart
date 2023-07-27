@@ -1,8 +1,6 @@
 import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import '../../nav.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:http/http.dart' as http;
@@ -23,7 +21,6 @@ class _RegisterState extends State<Register> {
   @override
   DateTime date_of_birth = DateTime.now();
   TextEditingController _dateController = TextEditingController();
-  late User user; //never gonna change
   //instance
   late String email;
   late String password;

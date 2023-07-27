@@ -1,55 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Chat/chat_model.dart';
 // import 'package:bangapp/edit_profile.dart';
+import 'package:bangapp/services/fetch_post.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
-import 'package:bangapp/screens/Story/storyview.dart';
 
-//Profile photo - squircle --> posts no | Followers no | Following no |
-//Name o <em>Position</em>
-//About
-final _auth = FirebaseAuth.instance;
-final _store = FirebaseFirestore.instance;
 List<dynamic> followinglist = [];
 late int cufollowing;
 bool _persposts = true;
 late int followers;
 List<dynamic> followlist = [];
 
-void getCurrentUser() {
-  try {
-    final user = _auth.currentUser;
-    if (user != null) {
-      loggedInUser = user;
-      print(loggedInUser);
-    }
-  } catch (e) {
-    print(e);
-  }
-}
-
-void followData(userId) async {
-  var userDat = await _store.collection('users').doc(userId).get();
-  var currentDat =
-      await _store.collection('users').doc(loggedInUser?.uid.toString()).get();
-  followinglist = currentDat['followinglist'];
-  cufollowing = currentDat['following'];
-  var data = userDat.data();
-  followlist = data?['followerlist'];
-  followers = data?['followers'];
-}
-
-// User loggedInUser;
-// var data;
-// int posts;
-// // String userId;
-// var descr;
-// int followers;
-// int following;
 
 class UserProfile extends StatefulWidget {
   final posts;
@@ -78,8 +41,6 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
-    followData(widget.userid);
   }
 
   @override
@@ -202,56 +163,15 @@ class _UserProfileState extends State<UserProfile> {
                 child: OutlinedButton(
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
-                        followlist.contains(loggedInUser?.uid)
-                            ? Colors.white
-                            : Colors.blue,
+                        Colors.white,
                       ),
                     ),
-                    onPressed: () async {
-                      if (!followlist.contains(loggedInUser?.uid.toString())) {
-                        setState(() {
-                          // widget.followState = 'Unfollow';
-                          followers += 1;
-                          widget.followers = followers!;
-                          followlist.add(loggedInUser?.uid.toString());
-                          cufollowing += 1;
-                        });
-                      } else {
-                        setState(() {
-                          // widget.followState = 'Follow';
-                          followers -= 1;
-                          widget.followers = followers!;
-                          followlist.remove(loggedInUser?.uid.toString());
-                          cufollowing -= 1;
-                        });
-                      }
-                      _store
-                          .collection('users')
-                          .doc(widget.userid)
-                          .update({'followers': followers});
+                    onPressed: () async { //follow or unfollow
 
-                      _store
-                          .collection('users')
-                          .doc(widget.userid)
-                          .update({'followerlist': followlist});
-
-                      _store.collection('users').doc(loggedInUser?.uid).update({
-                        'followinglist': followlist,
-                      });
-                      _store
-                          .collection('users')
-                          .doc(loggedInUser?.uid.toString())
-                          .update({'following': cufollowing});
                     },
-                    child: Text(
-                      followlist.contains(loggedInUser?.uid.toString())
-                          ? 'Unfollow'
-                          : 'Follow',
+                    child: Text('Unfollow Follow',
                       style: TextStyle(
-                          color:
-                              followlist.contains(loggedInUser?.uid.toString())
-                                  ? Colors.black
-                                  : Colors.white),
+                          color:Colors.white),
                     )),
               )),
               SizedBox(width: 10),
@@ -271,46 +191,6 @@ class _UserProfileState extends State<UserProfile> {
               )),
             ],
           ),
-          // Row(
-          //   children: <Widget>[
-          //     Container(
-          //       height: 100,
-          //       width: 100,
-          //       decoration: BoxDecoration(
-          //         borderRadius: BorderRadius.circular(20),
-          //         border: Border()
-          //       ),
-          //       child: Icon(Icons.add),
-          //     ),
-          //   ],
-          // ),
-          // SingleChildScrollView(
-          //   scrollDirection: Axis.horizontal,
-          //   child: Row(
-          //     children: <Widget>[
-          //       Highlight(
-          //           name: 'Github',
-          //           url:
-          //               'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'),
-          //       Highlight(
-          //           name: 'LinkedIn',
-          //           url:
-          //               'https://cdn2.iconfinder.com/data/icons/simple-social-media-shadow/512/14-512.png'),
-          //       Highlight(
-          //           name: 'LinkedIn',
-          //           url:
-          //               'https://cdn2.iconfinder.com/data/icons/simple-social-media-shadow/512/14-512.png'),
-          //       Highlight(
-          //           name: 'LinkedIn',
-          //           url:
-          //               'https://cdn2.iconfinder.com/data/icons/simple-social-media-shadow/512/14-512.png'),
-          //       Highlight(
-          //           name: 'LinkedIn',
-          //           url:
-          //               'https://cdn2.iconfinder.com/data/icons/simple-social-media-shadow/512/14-512.png'),
-          //     ],
-          //   ),
-          // ),
           ProfilePosts(
             userid: widget.userid,
           ),
@@ -319,27 +199,6 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 }
-
-class Highlights extends StatefulWidget {
-  final String name;
-  final String url;
-
-  Highlights({required this.name, required this.url});
-
-  @override
-  _HighlightsState createState() => _HighlightsState();
-}
-
-class _HighlightsState extends State<Highlights> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
-      child: Column(children: <Widget>[]),
-    );
-  }
-}
-
 class ProfilePosts extends StatefulWidget {
   final int ? userid;
 
@@ -450,86 +309,46 @@ class _ProfilePostsState extends State<ProfilePosts> {
 }
 
 class ImagePost extends StatelessWidget {
-  final String url;
   final bool isMe = true;
-  ImagePost({required this.url});
+  final caption;
+  final name;
+  final imgurl;
+  final challengeImgUrl;
+  final imgWidth;
+  final imgHeight;
+  final postId;
+  final commentCount;
+  final userId;
+  final isLiked;
+  final likeCount;
+  final type;
+  ImagePost({this.name,this.caption, this.imgurl, this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId, this.isLiked, this.likeCount, this.type});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => POstView(url)));
+            context, MaterialPageRoute(builder: (context) => POstView(name,caption,imgurl,challengeImgUrl,imgWidth,imgHeight,postId,commentCount,userId,isLiked,likeCount,type)));
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
           color: Colors.red.shade100,
           image: DecorationImage(
-              image: CachedNetworkImageProvider(url), fit: BoxFit.cover),
+              image: CachedNetworkImageProvider(imgurl), fit: BoxFit.cover),
         ),
       ),
     );
-
-    // else {
-    //     return Padding(
-    //       padding: const EdgeInsets.all(8.0),
-    //       child: Column(
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           Padding(
-    //             padding: const EdgeInsets.only(bottom: 5.0),
-    //             child: Text(
-    //               sender,
-    //               style: TextStyle(color: Colors.black54, fontSize: 12),
-    //             ),
-    //           ),
-    //           Container(
-    //             // elevation: 5.0,
-    //             decoration: BoxDecoration(
-    //               gradient: LinearGradient(
-    //                 colors: [Colors.pink, Colors.redAccent, Colors.orange],
-    //                 begin: Alignment.bottomRight,
-    //                 end: Alignment.topLeft,
-    //               ),
-    //               borderRadius: BorderRadius.only(
-    //                   bottomLeft: Radius.circular(30.0),
-    //                   topRight: Radius.circular(30.0),
-    //                   bottomRight: Radius.circular(30.0)),
-    //             ),
-
-    //             child: Padding(
-    //               padding: const EdgeInsets.symmetric(
-    //                   vertical: 10.0, horizontal: 20.0),
-    //               child: Text(
-    //                 text == null ? '' : text,
-    //                 style: TextStyle(
-    //                   fontSize: 16,
-    //                   color: Colors.white,
-    //                   fontFamily: 'Metropolis',
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //     );
-    //   }
   }
 }
 
 class ProfilePostsStream extends StatelessWidget {
   final userid;
-
   ProfilePostsStream({required this.userid});
-
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _store
-          .collection('users')
-          .doc(userid)
-          .collection('posts')
-          .snapshots(),
+    return FutureBuilder(
+      future:FetchPosts().getMyPosts(userid),
       builder: (context, snapshot) {
         List<ImagePost> ImagePosts = [];
         if (!snapshot.hasData) {
@@ -539,13 +358,23 @@ class ProfilePostsStream extends StatelessWidget {
             ),
           );
         }
-        final posts = snapshot.data?.docs.reversed;
-
+        final List<dynamic> posts = snapshot.data! as List<dynamic>;
         for (var post in posts!) {
           if (post['userid'] == userid) {
-            final image = post['url'];
+            final image = post['image'];
             final imagePost = ImagePost(
-              url: image,
+              caption:post['body'],
+              name:post['user']['name'],
+              imgurl:post['image'],
+              challengeImgUrl:post['challenge_img'],
+              imgWidth:post['width'],
+              imgHeight:post['height'],
+              postId:post['id'],
+              commentCount:post['commentCount'],
+              userId:post['user_id'],
+              isLiked:post['isFavorited']==0 ? false : true,
+              likeCount:post['likes'] != null && post['likes'].isNotEmpty ? post['likes'][0]['like_count'] : 0,
+              type:post['type'],
             );
             ImagePosts.add(imagePost);
           }
@@ -589,92 +418,6 @@ class Tagged extends StatelessWidget {
           style: TextStyle(fontFamily: 'Metropolis'),
         )
       ],
-    );
-  }
-}
-
-class Highlight extends StatefulWidget {
-  final String name;
-  final String url;
-
-  Highlight({required this.name, required this.url});
-
-  @override
-  _HighlightState createState() => _HighlightState();
-}
-
-class _HighlightState extends State<Highlight> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        child: Column(children: <Widget>[
-          SizedBox(
-            height: 10.0,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => StoryPageView()));
-            },
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.pink.withOpacity(0.2),
-                //     spreadRadius: 2,
-                //     blurRadius: 8,
-                //     offset: Offset(0, 7),
-                //   ),
-                // ],
-                gradient: LinearGradient(
-                  colors: [Colors.purple, Colors.blue],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  height: 36,
-                  width: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: Container(
-                      width: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        image: DecorationImage(
-                            image: NetworkImage(widget.url), fit: BoxFit.cover),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            // padding: const EdgeInsets.fromLTRB(10.0, 5.0, 8.0, 5.0),
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              widget.name,
-              style: TextStyle(
-                fontFamily: 'Metropolis',
-                fontSize: 11.0,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          )
-        ]),
-      ),
     );
   }
 }

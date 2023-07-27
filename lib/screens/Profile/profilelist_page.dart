@@ -1,13 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bangapp/screens/Profile/user_profile.dart';
 
 import '../../nav.dart';
-
-
 
 class ProfileList extends StatelessWidget {
   @override
