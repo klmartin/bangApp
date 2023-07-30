@@ -1,14 +1,15 @@
 import 'dart:ffi';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import '../../nav.dart';
-import 'dart:math';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'login_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:bangapp/services/service.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:provider/provider.dart';
-import 'package:bangapp/models/userprovider.dart';
+import 'package:filter_list/filter_list.dart';
 
 
 class Register extends StatefulWidget {
@@ -17,8 +18,61 @@ class Register extends StatefulWidget {
   _RegisterState createState() => _RegisterState();
 }
 
+class Hobby {
+  final String? name;
+  final int ?id;
+  final String? avatar;
+
+  Hobby({this.name,this.id, this.avatar});
+
+  factory Hobby.fromJson(Map<String, dynamic> json) {
+    return Hobby(
+      name: json['name'],
+      id: json['id'],
+      avatar: "", // You can set the avatar URL here if needed
+    );
+  }
+}
+
+Future<List<Hobby>> fetchHobbies() async {
+  print('fetching hobbies');
+  final response = await http.get(Uri.parse('http://192.168.124.229/social-backend-laravel/api/hobbies'));
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
+
+    print(json.decode(response.body));
+    return data.map((json) => Hobby.fromJson(json)).toList();
+
+  } else {
+    throw Exception('Failed to load hobbies');
+  }
+}
+
+class User {
+  final String? name;
+  final String? avatar;
+  User({this.name, this.avatar});
+}
+
+List<User> userList = [
+  User(name: "Jon", avatar: ""),
+  User(name: "Lindsey ", avatar: ""),
+  User(name: "Valarie ", avatar: ""),
+  User(name: "Elyse ", avatar: ""),
+  User(name: "Ethel ", avatar: ""),
+  User(name: "Emelyan ", avatar: ""),
+  User(name: "Catherine ", avatar: ""),
+  User(name: "Stepanida  ", avatar: ""),
+  User(name: "Carolina ", avatar: ""),
+  User(name: "Nail  ", avatar: ""),
+  User(name: "Kamil ", avatar: ""),
+  User(name: "Mariana ", avatar: ""),
+  User(name: "Katerina ", avatar: ""),
+];
 class _RegisterState extends State<Register> {
   @override
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   DateTime date_of_birth = DateTime.now();
   TextEditingController _dateController = TextEditingController();
   //instance
@@ -26,9 +80,58 @@ class _RegisterState extends State<Register> {
   late String password;
   late String name;
   late String phoneNumber;
+  late String occupation;
 
   bool showSpinner = false;
   @override
+    List<Hobby>? selectedHobbyList;
+    List<Hobby> hobbyList = [];
+
+  String selectedHobbiesText = "";
+  List<int> selectedHobbyIds = [];
+
+   loadHobbies() async {
+    try {
+      hobbyList = await fetchHobbies();
+      return hobbyList;
+    } catch (e) {
+      // Handle error, if any
+    }
+  }
+
+  void updateSelectedHobbiesText() {
+    setState(() {
+      selectedHobbiesText = selectedHobbyList!
+          .map((hobby) => hobby.name!)
+          .toList()
+          .join(", "); // Concatenate hobby names with a comma and space
+      selectedHobbyIds = selectedHobbyList!
+          .map((hobby) => hobby.id!) // Access the ID property of the Hobby
+          .toList();
+    });
+  }
+
+  void openFilterDialog() async {
+    await FilterListDialog.display<Hobby>(
+      context,
+      listData: await loadHobbies()!, // Use hobbyList as the data source
+      selectedListData: selectedHobbyList,
+      choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
+      validateSelectedItem: (list, val) => list!.contains(val),
+      onItemSearch: (hobby, query) {
+        return hobby.name!.toLowerCase().contains(query.toLowerCase());
+      },
+      onApplyButtonClick: (list) {
+        setState(() {
+          selectedHobbyList = List.from(list!);
+          updateSelectedHobbiesText();
+        });
+
+        Navigator.pop(context);
+      },
+    );
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -36,17 +139,20 @@ class _RegisterState extends State<Register> {
         inAsyncCall: showSpinner,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: ListView(
             children: <Widget>[
-              // Hero(
-              //   tag: 'logo',
-              //   child: Container(
-              //     height: 50.0,
-              //     child: Image.asset('images/bng new4-2'),
-              //   ),
-              // ),
+              Center(
+                child: Hero(
+                  tag: 'logo',
+                  child: Text('Bang App',
+                      style: TextStyle(
+                        fontFamily: 'Billabong',
+                        color: Colors.black,
+                        fontSize: 70.0,
+                        fontWeight: FontWeight.w500,
+                      )),
+                ),
+              ),
 
               SizedBox(
                 height: 48.0,
@@ -92,7 +198,7 @@ class _RegisterState extends State<Register> {
                   if (picked != null && picked != date_of_birth) {
                     setState(() {
                       date_of_birth = picked;
-                      // _dateController.text = date_of_birth;
+                      // _dateController. = date_of_birth ;
                     });
                   }
                 },
@@ -123,7 +229,36 @@ class _RegisterState extends State<Register> {
                   phoneNumber = value;
                 },
                 decoration: InputDecoration(
-                  hintText: 'Enter your email',
+                  hintText: 'Enter your phone number',
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.blueAccent, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.blueAccent, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.emailAddress,
+                onChanged: (value) {
+                  //Do something with the user input.
+                  occupation = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Occupation',
                   contentPadding:
                   EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                   border: OutlineInputBorder(
@@ -173,6 +308,37 @@ class _RegisterState extends State<Register> {
               SizedBox(
                 height: 8.0,
               ),
+               TextField(
+                onTap: () async {
+                   openFilterDialog();
+
+                },
+                readOnly: true, // Make the TextField read-only to prevent manual input
+                decoration: InputDecoration(
+                  labelText: "Select Hobbies",
+                  suffixIcon: Icon(Icons.arrow_drop_down),
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.blueAccent, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.blueAccent, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),// Add an icon at the end of the TextField
+                ),
+                controller: TextEditingController(text: selectedHobbiesText),
+                 // Show the selected hobbies in the TextField
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
               TextField(
                 obscureText: true,
                 textAlign: TextAlign.center,
@@ -215,26 +381,56 @@ class _RegisterState extends State<Register> {
                         showSpinner = true;
                       });
                       try {
+                        print('this is data');
+                        print(date_of_birth.toString());
+                        print(json.encode(selectedHobbyIds).runtimeType);
                         final response = await http.post(
-                          Uri.parse('https://citsapps.com/social-backend-laravel/api/v1/register'),
+                          Uri.parse('http://192.168.124.229/social-backend-laravel/api/v1/register'),
                           body: {
                             'email': email,
                             'name':name,
-                            'date_of_birth':_dateController.text,
+                            'date_of_birth':date_of_birth.toString(),
                             'phone_number':phoneNumber,
                             'password': password,
+                            'occupation':occupation,
+                            'hobbies':json.encode(selectedHobbyIds)
                           },
                         );
                         final responseBody = jsonDecode(response.body);
                         // Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
-                        print(responseBody);
                         if (responseBody != null) {
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          prefs.setInt('user_id', responseBody['id']);
-                          prefs.setString('token', responseBody['access_token']);
-                          prefs.setString('name', responseBody['name']);
-                          prefs.setString('email', responseBody['name']);
-                          Navigator.pushNamed(context, EditPage.id);
+                          if (responseBody.containsKey('errors')) {
+                            setState(() {
+                              showSpinner = false;
+                            });
+                            // There are validation errors
+                            final errors = responseBody['errors'];
+                            String errorMessage = '';
+                            // Iterate through the error messages and concatenate them into a single string
+                            errors.forEach((key, value) {
+                              errorMessage += value[0] + '\n';
+                            });
+                            // Display a toast message with the error
+                            Fluttertoast.showToast(
+                              msg: errorMessage,
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.CENTER,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                            );
+                          }
+                          else{
+                            _firebaseMessaging.getToken().then((token) async {
+                              Service().sendTokenToBackend(token,responseBody['id']);
+                            });
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            prefs.setInt('user_id', responseBody['id']);
+                            prefs.setString('token', responseBody['access_token']);
+                            prefs.setString('name', responseBody['name']);
+                            prefs.setString('email', responseBody['name']);
+                            Navigator.pushNamed(context, EditPage.id);
+                          }
+
                         }
                       }
                       //Implement login functionality.
@@ -253,6 +449,11 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
               ),
+              MaterialButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, LoginScreen.id);
+                  },
+                  child: Text('Already have an account... Sign In')),
             ],
           ),
         ),

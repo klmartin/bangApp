@@ -8,6 +8,7 @@ import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
 import 'package:bangapp/screens/Story/storyview.dart';
 import 'package:bangapp/screens/settings/settings.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/userprovider.dart';
@@ -104,8 +105,34 @@ class _ProfileState extends State<Profile> {
                           )
                         : Container()),
               ),
-              SizedBox(width: 280)
-
+              SizedBox(width: 150),
+              Padding(
+                padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
+                child: InkWell(
+                  onTap: () {
+                    // Navigator.of(context).push(
+                    //
+                    // );
+                  },
+                  child: Column(
+                    children: [
+                      Icon(
+                        Ionicons.person_add_outline,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .secondary,
+                        size: 30,
+                      ),
+                      Text(
+                        'Buy Followers',
+                        style: TextStyle(
+                          fontSize: 14.5,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
           Padding(

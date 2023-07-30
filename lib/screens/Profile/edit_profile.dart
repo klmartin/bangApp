@@ -7,8 +7,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-late String _name;
-late String _descr;
+late String? _name;
+late String? _descr;
 
 Service?  loggedInUser;
 
@@ -28,10 +28,9 @@ class _EditPageState extends State<EditPage> {
 
   Future<void> _getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(Uri.parse('http://192.168.32.229/social-backend-laravel/api/v1/users/getCurrentUser'), headers: {
+    final response = await http.get(Uri.parse('http://192.168.124.229/social-backend-laravel/api/v1/users/getCurrentUser'), headers: {
       'Authorization': '${ prefs.getString('token')}',
     });
-
 
     if (response.statusCode == 200) {
       setState(() {
@@ -45,7 +44,6 @@ class _EditPageState extends State<EditPage> {
   @override
   Widget build(BuildContext context) {
 
-    print('Welcome, $_currentUser');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -81,17 +79,21 @@ class _EditPageState extends State<EditPage> {
                     // mainAxisAlignment: MainAxisAlignment.center,
                     // crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                            color: Colors.red[100],
-                            borderRadius: BorderRadius.circular(32),
-                            image: DecorationImage(
-                                image: CachedNetworkImageProvider(
-                                    'http://via.placeholder.com/200x150'),
-                                fit: BoxFit.cover)),
+                    Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.red[100],
+                        borderRadius: BorderRadius.circular(32),
+                        image: DecorationImage(
+                          image: rimage != null
+                              ? FileImage(rimage) as ImageProvider<Object> // Explicitly cast to ImageProvider<Object>
+                              : CachedNetworkImageProvider(
+                              'http://via.placeholder.com/200x150'),
+                          fit: BoxFit.cover,
+                        ),
                       ),
+                    ),
                       TextButton(
                           onPressed: () {
                             Navigator.push(
@@ -197,7 +199,9 @@ class _EditPageState extends State<EditPage> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: TextButton(
-                        onPressed: () async {},
+                        onPressed: () async {
+                          Service().setUserProfile(_name,_descr, rimage);
+                        },
                         child: Text(
                           'Done',
                           style: TextStyle(

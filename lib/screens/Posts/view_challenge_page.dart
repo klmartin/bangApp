@@ -16,7 +16,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class ViewChallengePage extends StatefulWidget {
   final int? challengeId;
-
   ViewChallengePage({
     Key? key,
     this.challengeId,
@@ -27,50 +26,80 @@ class ViewChallengePage extends StatefulWidget {
 }
 
 class _ViewChallengePageState extends State<ViewChallengePage> {
-  Future<List<dynamic>> getChallenge(int? challengeId) async {
-    var response = await http.get(Uri.parse('http://192.168.166.229/social-backend-laravel/api/getChallenge'));
+  Future<Map<String, dynamic>> getChallenge() async {
+    print(widget.challengeId);
+    var response = await http.get(Uri.parse('http://192.168.124.229/social-backend-laravel/api/getChallenge/${widget.challengeId}'));
     var data = json.decode(response.body);
-    return data['data']['data'];
+    return data['data'];
   }
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.challengeId != null) {
-      getChallenge(widget.challengeId);
-    }
-  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: Container(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: PostCard(widget.challengeId,null,'',null,null,null,null,null,null,null,null,null),
-          ),
+        body: FutureBuilder<Map<String, dynamic>>(
+          future: getChallenge(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // While waiting for data, you can show a loading indicator
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              // If there's an error, show an error message
+              return Center(
+                child: Text('Error fetching data'),
+              );
+            } else {
+              // If data is successfully fetched, pass it to the PostCard widget
+              final challengeData = snapshot.data;
+              if (challengeData != null) {
+                return Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: PostCard(
+                      challengeData['id'],
+                      challengeData['post_id'],
+                      challengeData['user_id'],
+                      challengeData['user']['name'],
+                      challengeData['user']['image'],
+                      challengeData['type'],
+                      challengeData['challenge_img'],
+                      challengeData['body'],
+                      challengeData['created_at'],
+                      challengeData['width'],
+                      challengeData['height'],
+                    ),
+                  ),
+                );
+              } else {
+                return Center(
+                  child: Text('Challenge data is null'),
+                );
+              }
+            }
+          },
         ),
       ),
     );
   }
 }
 
+
 class PostCard extends StatefulWidget {
-  final String postUrl;
-  final name;
-  final caption;
-  final challengeImgUrl;
-  final imgWidth;
-  final imgHeight;
-  final postId;
-  final commentCount;
-  final userId;
-  var isLiked;
-  var likeCount;
-  var type;
-  var followerCount;
-  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type);
+  final id;
+  final post_id;
+  final user_id;
+  final user_name;
+  final user_image;
+  final type;
+  final challenge_img;
+  final body;
+  final created_at;
+  var width;
+  var height;
+  PostCard(this.id,this.post_id,this.user_id,this.user_name, this.user_image, this.type, this.challenge_img, this.body,this.created_at,this.width,this.height);
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -104,7 +133,7 @@ class _PostCardState extends State<PostCard> {
                           context,
                           createRoute(
                             Profile(
-                              id: widget.userId,
+                              id: widget.user_id,
                             ),
                           ),
                         );
@@ -112,7 +141,7 @@ class _PostCardState extends State<PostCard> {
                       child: Row(
                         children: [
                           UserProfile(
-                            url: widget.postUrl,
+                            url: widget.user_image,
                             size: 40,
                           ),
                           const SizedBox(width: 14),
@@ -123,7 +152,7 @@ class _PostCardState extends State<PostCard> {
                               Row(
                                 children: [
                                   Text(
-                                    widget.name,
+                                    widget.user_name,
                                     style: const TextStyle(
                                       fontFamily: 'EuclidTriangle',
                                       fontWeight: FontWeight.bold,
@@ -133,16 +162,7 @@ class _PostCardState extends State<PostCard> {
                                     ),
                                   ),
                                   SizedBox(width: 5),
-                                  Text(
-                                    '        ${widget.followerCount} Followers',
-                                    style: const TextStyle(
-                                      fontFamily: 'EuclidTriangle',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      letterSpacing: 0,
-                                      color: Colors.black,
-                                    ),
-                                  )
+
                                 ],
                               ),
                               const SizedBox(height: 2),
@@ -160,273 +180,49 @@ class _PostCardState extends State<PostCard> {
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      showModalBottomSheet<void>(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        backgroundColor:
-                        const Color.fromARGB(255, 30, 34, 45),
-                        context: context,
-                        builder: (BuildContext ctx) {
-                          return Container(
-                              color: Colors.black26,
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const SizedBox(
-                                      height: 14,
-                                    ),
-                                    Container(
-                                      height: 5,
-                                      width: 100,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                        BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Column(
-                                      children: [
-                                        ListTile(
-                                          onTap: () async{
-                                            try {
-                                              var response = await Service().deletePost(widget.postId);
-                                              if (response["message"] == "Post deleted successfully") {
-                                                Navigator.push(
-                                                  context,
-                                                  createRoute(
-                                                    Profile(
-                                                      id: widget.userId,
-                                                    ),
-                                                  ),
-                                                );
-                                              } else {
-                                                // Show a toast indicating deletion failure
-                                                Fluttertoast.showToast(msg: "Post deletion failed.");
-                                              }
-                                            } catch (e) {
-                                              // Show a toast indicating deletion failure (in case of an error)
-                                              Fluttertoast.showToast(msg: "Post deletion failed.");
-                                            }
-                                          },
-                                          minLeadingWidth: 20,
-                                          leading: Icon(
-                                            CupertinoIcons.delete,
-                                            color: Theme.of(context)
-                                                .primaryColor,
-                                          ),
-                                          title: Text(
-                                            "Delete Post",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1,
-                                          ),
-                                        ),
-                                        Divider(
-                                          height: .5,
-                                          thickness: .5,
-                                          color:
-                                          Colors.grey.shade800,
-                                        )
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        ListTile(
-                                          onTap: () async {
-                                            setState(() {
-                                              _isEditing = !_isEditing;
-                                            });
-                                          },
-                                          minLeadingWidth: 20,
-                                          leading: Icon(
-                                            CupertinoIcons.pencil,
-                                            color: Theme.of(context)
-                                                .primaryColor,
-                                          ),
-                                          title: Text(
-                                            "Edit Post",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1,
-                                          ),
-                                        ),
-                                        Divider(
-                                          height: .5,
-                                          thickness: .5,
-                                          color:
-                                          Colors.grey.shade800,
-                                        )
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        ListTile(
-                                          // onTap: () async {
-                                          //   final url = await getUrl(
-                                          //     description:
-                                          //     state.post.caption,
-                                          //     image: state
-                                          //         .post.postImageUrl,
-                                          //     title:
-                                          //     'Check out this post by ${state.post.name}',
-                                          //     url:
-                                          //     'https://ansh-rathod-blog.netlify.app/socialapp?post_user_id=${state.post.userId}&post_id=${state.post.postId}&type=post',
-                                          //   );
-                                          //   Clipboard.setData(
-                                          //       ClipboardData(
-                                          //           text: url
-                                          //               .toString()));
-                                          //   Navigator.pop(context);
-                                          //   showSnackBarToPage(
-                                          //     context,
-                                          //     'Copied to clipboard',
-                                          //     Colors.green,
-                                          //   );
-                                          // },
-                                          minLeadingWidth: 20,
-                                          leading: Icon(
-                                            CupertinoIcons.link,
-                                            color: Theme.of(context)
-                                                .primaryColor,
-                                          ),
-                                          title: Text(
-                                            "Copy URL",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1,
-                                          ),
-                                        ),
-                                        Divider(
-                                          height: .5,
-                                          thickness: .5,
-                                          color: Colors.grey.shade800,
-                                        )
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        ListTile(
-                                          onTap: () {
-                                            // launch(state
-                                            //     .post.postImageUrl);
-                                          },
-                                          minLeadingWidth: 20,
-                                          leading: Icon(
-                                            CupertinoIcons.photo,
-                                            color: Theme.of(context)
-                                                .primaryColor,
-                                          ),
-                                          title: Text(
-                                            "Challenge Image",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1,
-                                          ),
-                                        ),
-                                        Divider(
-                                          height: .5,
-                                          thickness: .5,
-                                          color: Colors.grey.shade800,
-                                        )
-                                      ],
-                                    ),
-                                  ]));
-                        },
-                      );
-                    },
-                    child: const Icon(
-                      CupertinoIcons.ellipsis,
-                      color: Colors.black,
-                      size: 24,
-                    ),
-                  ),
+
                 ],
               ),
             ),
             InkWell(
               onTap: () {
-                viewImage(context, widget.postUrl);
+                viewImage(context, widget.challenge_img);
               },
               child: AspectRatio(
-                aspectRatio: widget.imgWidth / widget.imgHeight,
-                child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,0),
+                aspectRatio: widget.width / widget.height,
+                child: buildMediaWidget(context, widget.challenge_img,widget.type,widget.width,widget.height,0),
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                SizedBox(width: 280),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      createRoute(
-                        CommentsPage(
-                          postId: widget.postId, userId: widget.userId, messageStreamState: null,
-                          // currentUser: 1,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Icon(
-                    CupertinoIcons.chat_bubble,
-                    color: Colors.black,
-                    size: 29,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Service().acceptChallenge(widget.post_id);
+                        // Add your logic for accepting here
+                      },
+                      child: Text('Accept'),
+                    ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Stack(
-                        // mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          LikeButton(likeCount:0,isLiked:widget.isLiked,),
-                          SizedBox(width: 4),
-                        ],
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        "${widget.likeCount} likes" ,
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Add your logic for declining here
+                      },
+                      child: Text('Decline'),
+                    ),
                   ),
                 ),
               ],
             ),
-            if (widget.caption != null) const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              // child: ReadMoreText(
-              //   widget.caption ?? "",
-              //   trimLines: 2,
-              //   style: Theme.of(context).textTheme.bodyText1!,
-              //   colorClickableText: Theme.of(context).primaryColor,
-              //   trimMode: TrimMode.line,
-              //   trimCollapsedText: '...Show more',
-              //   trimExpandedText: '...Show less',
-              //   userName: widget.name,
-              //   moreStyle: TextStyle(
-              //     fontSize: 15,
-              //     color: Theme.of(context).primaryColor,
-              //   ),
-              // ),
-              child: PostCaptionWidget(caption: widget.caption, isEditing: _isEditing,),
-            ),
 
-            Text("     ${widget.commentCount} comments"),
+
             const SizedBox(height: 20),
           ],
         ));

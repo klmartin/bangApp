@@ -99,7 +99,7 @@ class _UploadProfileState extends State<UploadProfile> {
                           fontFamily: 'Metropolis',
                           fontWeight: FontWeight.bold),
                     )),
-                decoration: BoxDecoration(
+                    decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
                         Colors.purple,

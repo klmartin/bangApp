@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
@@ -83,7 +85,7 @@ class _AuthenticateState extends State<Authenticate> {
 
       if (title != null && body != null) {
         print('this is message');
-        print(message.data.toString());
+        print(message.data['challenge_id']);
         _showLocalNotification(title, body);
       } else {
         print('Received message with missing title or body.');
@@ -93,9 +95,10 @@ class _AuthenticateState extends State<Authenticate> {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       // Handle notification tap when the app is in the background or terminated.
       // Navigate the user to the relevant screen based on the notification data.
-      int? challengeId = message.data['challengeId'] != null
-          ? int.tryParse(message.data['challengeId'])
+      int? challengeId = message.data['challenge_id'] != null
+          ? int.tryParse(message.data['challenge_id'])
           : null;
+      // Pass the challengeId to ViewChallengePage
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => ViewChallengePage(challengeId: challengeId),
       ));

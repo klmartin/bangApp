@@ -6,7 +6,7 @@ import '../../nav.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:bangapp/screens/Authenticate/register_screen.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -144,20 +144,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('http://192.168.166.229/social-backend-laravel/api/v1/login'),
+                                Uri.parse('http://192.168.124.229/social-backend-laravel/api/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,
                                   },
                                 );
                               final responseBody = jsonDecode(response.body);
-                              print('logging user');
-                              print(response.body);
                               if (responseBody != null) {
                                 _firebaseMessaging.getToken().then((token) async {
-                                  print('this is token');
-                                  print(token);
-                                  print(responseBody['user_id']);
                                   Service().sendTokenToBackend(token,responseBody['user_id']);
                                   Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
                                   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -196,6 +191,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(20.0)),
                     ),
                   ),
+                  MaterialButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, Register.id);
+                      },
+                      child: Text('Sign up with Email')),
                 ],
               ),
             ),
