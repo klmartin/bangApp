@@ -144,13 +144,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                                 final response = await http.post(
-                                Uri.parse('http://192.168.124.229/social-backend-laravel/api/v1/login'),
+                                Uri.parse('http://192.168.165.229/social-backend-laravel/api/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,
                                   },
                                 );
                               final responseBody = jsonDecode(response.body);
+                              print(response.body);
                               if (responseBody != null) {
                                 _firebaseMessaging.getToken().then((token) async {
                                   Service().sendTokenToBackend(token,responseBody['user_id']);

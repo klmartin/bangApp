@@ -1,28 +1,10 @@
-import 'dart:io';
-import 'package:bangapp/services/service.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:image_editor_plus/image_editor_plus.dart';
-import '../../services/extension.dart';
-import '../../services/animation.dart';
-import 'package:bangapp/widgets/user_profile.dart';
-import 'package:bangapp/widgets/build_media.dart';
-import 'package:bangapp/screens/Widgets/like_button.dart';
-import '../Comments/commentspage.dart';
-import '../Create/video_editing/video_edit.dart';
-import '../Profile/profile.dart';
-import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'dart:convert';
-import 'dart:typed_data';
-import 'package:mime/mime.dart';
-import 'package:http/http.dart' as http;
+import 'package:chewie/chewie.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:bangapp/models/post.dart';
+import 'package:bangapp/screens/Widgets/post_item.dart';
 import '../Widgets/small_box.dart';
-
-List<String> likedusers = [];
 
 class Home extends StatefulWidget {
   @override
@@ -30,1233 +12,171 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  SizedBox spacing() {
-    return SizedBox(
-      width: 15.0,
-    );
+  late bool _isLastPage;
+  late int _pageNumber;
+  late bool _error;
+   bool _loading = true;
+  final int _numberOfPostsPerRequest = 10;
+  List<Post>? _posts;
+  final int _nextPageTrigger = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageNumber = 0;
+    _posts = [];
+    _isLastPage = false;
+    _loading = true;
+    _error = false;
+    fetchData();
   }
+
   @override
   Widget build(BuildContext context) {
-    return ListView(children: [
-      Column(
-        children: <Widget>[
-          Container(
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                 // SmallBoxCarousel(boxes: boxes),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          PostStream(),
-        ],
-      ),
-    ]);
-  }
-}
-class PostStream extends StatelessWidget {
-
-  void viewImage(BuildContext context, String imageUrl) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: SizedBox.expand(
-            child: Hero(
-              tag: imageUrl,
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        ),
-      ),
+    return Scaffold(
+      body: buildPostsView(),
     );
   }
-  Future<Uint8List> fileToUint8List(File file) async {
-    if (file != null) {
-      List<int> bytes = await file.readAsBytes();
-      return Uint8List.fromList(bytes);
+
+  Widget buildPostsView() {
+    if (_posts == null || _posts!.isEmpty) {
+      if (_loading) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: CircularProgressIndicator(),
+          ),
+        );
+      } else if (_error) {
+        return Center(
+          child: errorDialog(size: 20),
+        );
+      } else {
+        return Center(
+          child: Text("No posts available."),
+        );
+      }
     }
-    return Uint8List(0);
-  }
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Service().getPosts(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.lightBlue,
-            ),
+   return ListView.builder(
+      itemCount: _posts!.length + (_isLastPage ? 0 : 1) + (_posts!.isEmpty ? 0 : 1),
+      itemBuilder: (context, index) {
+        // Calculate the adjusted index to account for inserted carousels
+        int adjustedIndex = index - (index ~/ 8) - (index > 0 && index <= 8 ? 1 : 0);
+        final Post post = _posts![adjustedIndex];
+        if (index == 0 || (index >= 8 && (index - 8) % 8 == 0)) {
+          return Column(
+            children: [
+              SmallBoxCarousel(),
+              PostItem(post.postId,post.userId,post.name,post.image,post.challengeImg,post.caption,post.type,post.width,post.height,post.likeCountA,post.likeCountB,post.commentCount,post.followerCount,post.challenges,post.isLiked,post.isPinned),
+            ],
           );
-        }
-        var postCount = -1;
-        List<BoxData> boxes = [
-          BoxData(
-            imageUrl1: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber1.jpeg',
-            imageUrl2: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/gigi1.jpeg',
-            text: 'Nani Mkali ?',
-          ),
-          BoxData(
-            imageUrl1: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber2.jpeg',
-            imageUrl2: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/gigi2.jpeg',
-            text: 'Nani Mkali ?',
-          ),
-          BoxData(
-            imageUrl1: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber3.jpeg',
-            imageUrl2: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/gigi3.jpeg',
-            text: 'Nani Mkali ?',
-          ),
-          BoxData(
-            imageUrl1: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber3.jpeg',
-            imageUrl2: 'https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber3.jpeg',
-            text: 'Nani Mkali ?',
-          ),
-
-        ];
-        List<Widget> postCards = [];
-        if (snapshot.data != null) {
-          final List<dynamic> dataList = snapshot.data as List<dynamic>;
-          for (var post in dataList) {
-            final name = post['user']['name'];
-            final followerCount = post['user']['followerCount'].toString();
-            final caption = post['body'];
-            final imgurl = post['image'];
-            final challengeImgUrl = post['challenge_img'];
-            final imgWidth = post['width'];
-            final imgHeight = post['height'];
-            final postId = post['id'];
-            final commentCount = post['commentCount'];
-            final userId = post['user']['id'];
-            var isLiked = post['isFavorited']==0 ? false : true ;
-            var likeCount = post['likes'] != null && post['likes'].isNotEmpty ? post['likes'][0]['like_count'] : 0;
-            var type = post['type'];
-            var isPinned = post['pinned'];
-            postCount ++;
-            if(postCount % 8 == 0 || postCount ==0){
-              postCards.add(SmallBoxCarousel(boxes: boxes,));
-            }
-            if (challengeImgUrl != null && post['challenges'].isEmpty ) {
-              postCards.add(
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(1, 30, 34, 45),
-                    ),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 5.0, vertical: 5.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      createRoute(
-                                        Profile(
-                                          id: userId,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Row(
-                                    children: [
-                                      UserProfile(
-                                        url: imgurl,
-                                        size: 40,
-                                      ),
-                                      const SizedBox(width: 14),
-                                      Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                name,
-                                                style: const TextStyle(
-                                                  fontFamily: 'EuclidTriangle',
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15,
-                                                  letterSpacing: 0,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                              SizedBox(width: 5),
-                                              Text(
-                                                '        $followerCount Followers',
-                                                style: const TextStyle(
-                                                  fontFamily: 'EuclidTriangle',
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15,
-                                                  letterSpacing: 0,
-                                                  color: Colors.black,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                              StringExtension
-                                                  .displayTimeAgoFromTimestamp(
-                                                '2023-04-17 13:51:04',
-                                              ),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText1)
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  showModalBottomSheet<void>(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    backgroundColor:
-                                    const Color.fromARGB(255, 30, 34, 45),
-                                    context: context,
-                                    builder: (BuildContext ctx) {
-                                      return Container(
-                                          color: Colors.black26,
-                                          child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const SizedBox(
-                                                  height: 14,
-                                                ),
-                                                Container(
-                                                  height: 5,
-                                                  width: 100,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                    BorderRadius.circular(20),
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 20,
-                                                ),
-                                                // if (widget.currentUser.id ==
-                                                //     widget.post.userId)
-                                                //   Column(
-                                                //     children: [
-                                                //       ListTile(
-                                                //         onTap: () {
-                                                //           BlocProvider.of<
-                                                //               PostCubit>(
-                                                //               context)
-                                                //               .deletePost(
-                                                //               widget
-                                                //                   .currentUser
-                                                //                   .id,
-                                                //               widget.post
-                                                //                   .postId);
-                                                //           Navigator.pop(context);
-                                                //         },
-                                                //         minLeadingWidth: 20,
-                                                //         leading: Icon(
-                                                //           CupertinoIcons.delete,
-                                                //           color: Theme.of(context)
-                                                //               .primaryColor,
-                                                //         ),
-                                                //         title: Text(
-                                                //           "Delete Post",
-                                                //           style: Theme.of(context)
-                                                //               .textTheme
-                                                //               .bodyText1,
-                                                //         ),
-                                                //       ),
-                                                //       Divider(
-                                                //         height: .5,
-                                                //         thickness: .5,
-                                                //         color:
-                                                //         Colors.grey.shade800,
-                                                //       )
-                                                //     ],
-                                                //   ),
-                                                Column(
-                                                  children: [
-                                                    ListTile(
-                                                      // onTap: () async {
-                                                      //   final url = await getUrl(
-                                                      //     description:
-                                                      //     state.post.caption,
-                                                      //     image: state
-                                                      //         .post.postImageUrl,
-                                                      //     title:
-                                                      //     'Check out this post by ${state.post.name}',
-                                                      //     url:
-                                                      //     'https://ansh-rathod-blog.netlify.app/socialapp?post_user_id=${state.post.userId}&post_id=${state.post.postId}&type=post',
-                                                      //   );
-                                                      //   Clipboard.setData(
-                                                      //       ClipboardData(
-                                                      //           text: url
-                                                      //               .toString()));
-                                                      //   Navigator.pop(context);
-                                                      //   showSnackBarToPage(
-                                                      //     context,
-                                                      //     'Copied to clipboard',
-                                                      //     Colors.green,
-                                                      //   );
-                                                      // },
-                                                      minLeadingWidth: 20,
-                                                      leading: Icon(
-                                                        CupertinoIcons.link,
-                                                        color: Theme.of(context)
-                                                            .primaryColor,
-                                                      ),
-                                                      title: Text(
-                                                        "Copy URL",
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyText1,
-                                                      ),
-                                                    ),
-                                                    Divider(
-                                                      height: .5,
-                                                      thickness: .5,
-                                                      color: Colors.grey.shade800,
-                                                    )
-                                                  ],
-                                                ),
-                                              ]));
-                                    },
-                                  );
-                                },
-                                child: const Icon(
-                                  CupertinoIcons.ellipsis,
-                                  color: Colors.black,
-                                  size: 24,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        AspectRatio(
-                          aspectRatio: 190 / 120,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    viewImage(context,imgurl);
-                                  },
-                                  child: CachedNetworkImage(
-                                    imageUrl: imgurl,
-                                    placeholder: (context, url) => AspectRatio(
-                                      aspectRatio: imgWidth / imgHeight,
-                                      child: Shimmer.fromColors(
-                                        baseColor: const Color.fromARGB(255, 30, 34, 45),
-                                        highlightColor:
-                                        const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-                                        child: Container(
-                                            color: const Color.fromARGB(255, 30, 34, 45)),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 5), //Add some spacing between the images
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    viewImage(context,challengeImgUrl);
-                                  },
-                                  child: CachedNetworkImage(
-                                    imageUrl: challengeImgUrl,
-                                    placeholder: (context, url) => AspectRatio(
-                                      aspectRatio: 190 / 250,
-                                      child: Shimmer.fromColors(
-                                        baseColor: const Color.fromARGB(255, 30, 34, 45),
-                                        highlightColor:
-                                        const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-                                        child: Container(
-                                            color: const Color.fromARGB(255, 30, 34, 45)),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),//displaying first challenge picture
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  // Handle the first heart icon tap
-                                },
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Stack(
-                                      // mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 30) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
-                                        SizedBox(width: 4),
-                                        Positioned(
-                                          top: 7.5,
-                                          left: 10.5,
-                                          child: Text(
-                                            'A',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 2),
-                                    Text(
-                                      "$likeCount likes" ,
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),//for liking first picture
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                    width: 15,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        createRoute(
-                                          CommentsPage(
-                                            postId: postId, userId: userId, messageStreamState: null,
-                                            // currentUser: 1,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: const Icon(
-                                      CupertinoIcons.chat_bubble,
-                                      color: Colors.black,
-                                      size: 29,
-                                    ),
-                                  ),//for comments
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      const SizedBox(width: 5),
-                                      GestureDetector(
-                                        onTap: () {
-                                          // Handle the first heart icon tap
-                                        },
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Stack(
-                                              children: [
-                                                !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 30) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
-                                                SizedBox(width: 4),
-                                                Positioned(
-                                                  top: 7.5,
-                                                  left: 11,
-                                                  child: Text(
-                                                    'B',
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 2),
-                                            Text(
-                                              '$likeCount like',
-                                              style: TextStyle(
-                                                fontSize: 12.5,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),//for liking second picture
-                                    ],
-                                  )
-
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (caption != null) SizedBox(height: 16),
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: ReadMoreText(
-                              caption ?? "",
-                              trimLines: 2,
-                              style: Theme.of(context).textTheme.bodyText1!,
-                              colorClickableText: Theme.of(context).primaryColor,
-                              trimMode: TrimMode.line,
-                              trimCollapsedText: '...Show more',
-                              trimExpandedText: '...Show less',
-                              userName: name,
-                              moreStyle: TextStyle(
-                                fontSize: 15,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Text("     $commentCount comments"),
-
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ));
-            }
-            else if(challengeImgUrl == null&& post['challenges'].isEmpty ){
-              postCards.add(
-                  Container(
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(1, 30, 34, 45),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        createRoute(
-                                          Profile(
-                                            id: userId,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        UserProfile(
-                                          url: imgurl,
-                                          size: 40,
-                                        ),
-                                        const SizedBox(width: 14),
-                                        Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  name,
-                                                  style: const TextStyle(
-                                                    fontFamily: 'EuclidTriangle',
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                    letterSpacing: 0,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 5),
-                                                Text(
-                                                  '        $followerCount Followers',
-                                                  style: const TextStyle(
-                                                    fontFamily: 'EuclidTriangle',
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                    letterSpacing: 0,
-                                                    color: Colors.black,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                                StringExtension
-                                                    .displayTimeAgoFromTimestamp(
-                                                  '2023-04-17 13:51:04',
-                                                ),
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText1)
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    showModalBottomSheet<void>(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      backgroundColor:
-                                      const Color.fromARGB(255, 30, 34, 45),
-                                      context: context,
-                                      builder: (BuildContext ctx) {
-                                        return Container(
-                                            color: Colors.black26,
-                                            child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const SizedBox(
-                                                    height: 14,
-                                                  ),
-                                                  Container(
-                                                    height: 5,
-                                                    width: 100,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                      BorderRadius.circular(20),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  // if (widget.currentUser.id ==
-                                                  //     widget.post.userId)
-                                                  //   Column(
-                                                  //     children: [
-                                                  //       ListTile(
-                                                  //         onTap: () {
-                                                  //           BlocProvider.of<
-                                                  //               PostCubit>(
-                                                  //               context)
-                                                  //               .deletePost(
-                                                  //               widget
-                                                  //                   .currentUser
-                                                  //                   .id,
-                                                  //               widget.post
-                                                  //                   .postId);
-                                                  //           Navigator.pop(context);
-                                                  //         },
-                                                  //         minLeadingWidth: 20,
-                                                  //         leading: Icon(
-                                                  //           CupertinoIcons.delete,
-                                                  //           color: Theme.of(context)
-                                                  //               .primaryColor,
-                                                  //         ),
-                                                  //         title: Text(
-                                                  //           "Delete Post",
-                                                  //           style: Theme.of(context)
-                                                  //               .textTheme
-                                                  //               .bodyText1,
-                                                  //         ),
-                                                  //       ),
-                                                  //       Divider(
-                                                  //         height: .5,
-                                                  //         thickness: .5,
-                                                  //         color:
-                                                  //         Colors.grey.shade800,
-                                                  //       )
-                                                  //     ],
-                                                  //   ),
-                                                  Column(
-                                                    children: [
-                                                      ListTile(
-                                                        // onTap: () async {
-                                                        //   final url = await getUrl(
-                                                        //     description:
-                                                        //     state.post.caption,
-                                                        //     image: state
-                                                        //         .post.postImageUrl,
-                                                        //     title:
-                                                        //     'Check out this post by ${state.post.name}',
-                                                        //     url:
-                                                        //     'https://ansh-rathod-blog.netlify.app/socialapp?post_user_id=${state.post.userId}&post_id=${state.post.postId}&type=post',
-                                                        //   );
-                                                        //   Clipboard.setData(
-                                                        //       ClipboardData(
-                                                        //           text: url
-                                                        //               .toString()));
-                                                        //   Navigator.pop(context);
-                                                        //   showSnackBarToPage(
-                                                        //     context,
-                                                        //     'Copied to clipboard',
-                                                        //     Colors.green,
-                                                        //   );
-                                                        // },
-                                                        minLeadingWidth: 20,
-                                                        leading: Icon(
-                                                          CupertinoIcons.link,
-                                                          color: Theme.of(context)
-                                                              .primaryColor,
-                                                        ),
-                                                        title: Text(
-                                                          "Copy URL",
-                                                          style: Theme.of(context)
-                                                              .textTheme
-                                                              .bodyText1,
-                                                        ),
-                                                      ),
-                                                      Divider(
-                                                        height: .5,
-                                                        thickness: .5,
-                                                        color: Colors.grey.shade800,
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Column(
-                                                    children: [
-                                                      ListTile(
-                                                        onTap: () async {
-                                                          FilePickerResult? result = await FilePicker.platform.pickFiles();
-                                                          if (result != null) {
-                                                            File file = File(result.files.first.path!);
-                                                            final mimeType = lookupMimeType(file.path!);
-                                                            if(mimeType!.startsWith('image/')){
-                                                              Uint8List image = await fileToUint8List(file);
-                                                              await Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (context) => ImageEditor(
-                                                                      image: image!,
-                                                                      postId: postId!,
-                                                                      userChallenged:userId,
-                                                                      challengeImg: true,
-                                                                      image2: null,
-                                                                      allowMultiple: true
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }
-                                                            else if(mimeType!.startsWith('video/')){
-                                                              await Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (context) => VideoEditor(
-                                                                    video: File(file.path!),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }
-                                                            else{
-                                                              Fluttertoast.showToast(msg: "Unsupported file type.");
-                                                            }
-                                                          } else {
-                                                            // User canceled the picker
-                                                          }
-                                                        },
-                                                        minLeadingWidth: 20,
-                                                        leading: Icon(
-                                                          CupertinoIcons.photo,
-                                                          color: Theme.of(context)
-                                                              .primaryColor,
-                                                        ),
-                                                        title: Text(
-                                                          "Challenge Image",
-                                                          style: Theme.of(context)
-                                                              .textTheme
-                                                              .bodyText1,
-                                                        ),
-                                                      ),
-                                                      Divider(
-                                                        height: .5,
-                                                        thickness: .5,
-                                                        color: Colors.grey.shade800,
-                                                      )
-                                                    ],
-                                                  ),
-                                                ]));
-                                      },
-                                    );
-                                  },
-                                  child: const Icon(
-                                    CupertinoIcons.ellipsis,
-                                    color: Colors.black,
-                                    size: 24,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              viewImage(context, imgurl);
-                            },
-                            child: AspectRatio(
-                              aspectRatio: imgWidth / imgHeight,
-                              child: buildMediaWidget(context, imgurl,type,imgWidth,imgHeight,isPinned),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              SizedBox(width: 280),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    createRoute(
-                                      CommentsPage(
-                                        postId: postId, userId: userId, messageStreamState: null,
-                                        // currentUser: 1,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: const Icon(
-                                  CupertinoIcons.chat_bubble,
-                                  color: Colors.black,
-                                  size: 29,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Stack(
-                                      // mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        LikeButton(likeCount: 0 ,isLiked:isLiked,postId:postId),
-                                        SizedBox(width: 4),
-                                      ],
-                                    ),
-                                    SizedBox(height: 2),
-                                    Text(
-                                      "$likeCount likes" ,
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-
-                            ],
-                          ),
-                          if (caption != null) const SizedBox(height: 16),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: ReadMoreText(
-                              caption ?? "",
-                              trimLines: 2,
-                              style: Theme.of(context).textTheme.bodyText1!,
-                              colorClickableText: Theme.of(context).primaryColor,
-                              trimMode: TrimMode.line,
-                              trimCollapsedText: '...Show more',
-                              trimExpandedText: '...Show less',
-                              userName: name,
-                              moreStyle: TextStyle(
-                                fontSize: 15,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ),
-
-                          Text("     $commentCount comments"),
-                          const SizedBox(height: 20),
-                        ],
-                      ))
+        } else {
+          if (adjustedIndex == _posts!.length - _nextPageTrigger) {
+            fetchData();
+          }
+          if (adjustedIndex == _posts!.length) {
+            if (_error) {
+              return Center(
+                child: errorDialog(size: 15),
               );
-            }
-            else if(challengeImgUrl == null && !post['challenges'].isEmpty ){
-              postCards.add(
-                  Container(
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(1, 30, 34, 45),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        createRoute(
-                                          Profile(
-                                            id: userId,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        UserProfile(
-                                          url: imgurl,
-                                          size: 40,
-                                        ),
-                                        const SizedBox(width: 14),
-                                        Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  name,
-                                                  style: const TextStyle(
-                                                    fontFamily: 'EuclidTriangle',
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                    letterSpacing: 0,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 5),
-                                                Text(
-                                                  '        $followerCount Followers',
-                                                  style: const TextStyle(
-                                                    fontFamily: 'EuclidTriangle',
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                    letterSpacing: 0,
-                                                    color: Colors.black,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                                StringExtension
-                                                    .displayTimeAgoFromTimestamp(
-                                                  '2023-04-17 13:51:04',
-                                                ),
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText1)
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    showModalBottomSheet<void>(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      backgroundColor:
-                                      const Color.fromARGB(255, 30, 34, 45),
-                                      context: context,
-                                      builder: (BuildContext ctx) {
-                                        return Container(
-                                            color: Colors.black26,
-                                            child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const SizedBox(
-                                                    height: 14,
-                                                  ),
-                                                  Container(
-                                                    height: 5,
-                                                    width: 100,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                      BorderRadius.circular(20),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  // if (widget.currentUser.id ==
-                                                  //     widget.post.userId)
-                                                  //   Column(
-                                                  //     children: [
-                                                  //       ListTile(
-                                                  //         onTap: () {
-                                                  //           BlocProvider.of<
-                                                  //               PostCubit>(
-                                                  //               context)
-                                                  //               .deletePost(
-                                                  //               widget
-                                                  //                   .currentUser
-                                                  //                   .id,
-                                                  //               widget.post
-                                                  //                   .postId);
-                                                  //           Navigator.pop(context);
-                                                  //         },
-                                                  //         minLeadingWidth: 20,
-                                                  //         leading: Icon(
-                                                  //           CupertinoIcons.delete,
-                                                  //           color: Theme.of(context)
-                                                  //               .primaryColor,
-                                                  //         ),
-                                                  //         title: Text(
-                                                  //           "Delete Post",
-                                                  //           style: Theme.of(context)
-                                                  //               .textTheme
-                                                  //               .bodyText1,
-                                                  //         ),
-                                                  //       ),
-                                                  //       Divider(
-                                                  //         height: .5,
-                                                  //         thickness: .5,
-                                                  //         color:
-                                                  //         Colors.grey.shade800,
-                                                  //       )
-                                                  //     ],
-                                                  //   ),
-                                                  Column(
-                                                    children: [
-                                                      ListTile(
-                                                        // onTap: () async {
-                                                        //   final url = await getUrl(
-                                                        //     description:
-                                                        //     state.post.caption,
-                                                        //     image: state
-                                                        //         .post.postImageUrl,
-                                                        //     title:
-                                                        //     'Check out this post by ${state.post.name}',
-                                                        //     url:
-                                                        //     'https://ansh-rathod-blog.netlify.app/socialapp?post_user_id=${state.post.userId}&post_id=${state.post.postId}&type=post',
-                                                        //   );
-                                                        //   Clipboard.setData(
-                                                        //       ClipboardData(
-                                                        //           text: url
-                                                        //               .toString()));
-                                                        //   Navigator.pop(context);
-                                                        //   showSnackBarToPage(
-                                                        //     context,
-                                                        //     'Copied to clipboard',
-                                                        //     Colors.green,
-                                                        //   );
-                                                        // },
-                                                        minLeadingWidth: 20,
-                                                        leading: Icon(
-                                                          CupertinoIcons.link,
-                                                          color: Theme.of(context)
-                                                              .primaryColor,
-                                                        ),
-                                                        title: Text(
-                                                          "Copy URL",
-                                                          style: Theme.of(context)
-                                                              .textTheme
-                                                              .bodyText1,
-                                                        ),
-                                                      ),
-                                                      Divider(
-                                                        height: .5,
-                                                        thickness: .5,
-                                                        color: Colors.grey.shade800,
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Column(
-                                                    children: [
-                                                      ListTile(
-                                                        onTap: () async {
-                                                          FilePickerResult? result = await FilePicker.platform.pickFiles();
-                                                          if (result != null) {
-                                                            File file = File(result.files.first.path!);
-                                                            final mimeType = lookupMimeType(file.path!);
-                                                            if(mimeType!.startsWith('image/')){
-                                                              Uint8List image = await fileToUint8List(file);
-                                                              await Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (context) => ImageEditor(
-                                                                      image: image!,
-                                                                      postId: postId!,
-                                                                      userChallenged:userId,
-                                                                      challengeImg: true,
-                                                                      image2: null,
-                                                                      allowMultiple: true
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }
-                                                            else if(mimeType!.startsWith('video/')){
-                                                              await Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (context) => VideoEditor(
-                                                                    video: File(file.path!),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }
-                                                            else{
-                                                              Fluttertoast.showToast(msg: "Unsupported file type.");
-                                                            }
-                                                          } else {
-                                                            // User canceled the picker
-                                                          }
-                                                        },
-                                                        minLeadingWidth: 20,
-                                                        leading: Icon(
-                                                          CupertinoIcons.photo,
-                                                          color: Theme.of(context)
-                                                              .primaryColor,
-                                                        ),
-                                                        title: Text(
-                                                          "Challenge Image",
-                                                          style: Theme.of(context)
-                                                              .textTheme
-                                                              .bodyText1,
-                                                        ),
-                                                      ),
-                                                      Divider(
-                                                        height: .5,
-                                                        thickness: .5,
-                                                        color: Colors.grey.shade800,
-                                                      )
-                                                    ],
-                                                  ),
-                                                ]));
-                                      },
-                                    );
-                                  },
-                                  child: const Icon(
-                                    CupertinoIcons.ellipsis,
-                                    color: Colors.black,
-                                    size: 24,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 400,
-                            child: PageView.builder(
-                              itemCount: post['challenges'].length,
-                              itemBuilder: (context, index) {
-                                final imageUrl = post['challenges'][index]['challenge_img'];
-                                return InkWell(
-                                  onTap: () {
-                                    viewImage(context, imageUrl);
-                                  },
-                                  child: AspectRatio(
-                                    aspectRatio: imgWidth / imgHeight,
-                                    child: buildMediaWidget(context, imageUrl, type, imgWidth, imgHeight, isPinned),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              SizedBox(width: 280),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    createRoute(
-                                      CommentsPage(
-                                        postId: postId, userId: userId, messageStreamState: null,
-                                        // currentUser: 1,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: const Icon(
-                                  CupertinoIcons.chat_bubble,
-                                  color: Colors.black,
-                                  size: 29,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Stack(
-                                      // mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        LikeButton(likeCount: 0 ,isLiked:isLiked,postId:postId),
-                                        SizedBox(width: 4),
-                                      ],
-                                    ),
-                                    SizedBox(height: 2),
-                                    Text(
-                                      "$likeCount likes" ,
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-
-                            ],
-                          ),
-                          if (caption != null) const SizedBox(height: 16),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: ReadMoreText(
-                              caption ?? "",
-                              trimLines: 2,
-                              style: Theme.of(context).textTheme.bodyText1!,
-                              colorClickableText: Theme.of(context).primaryColor,
-                              trimMode: TrimMode.line,
-                              trimCollapsedText: '...Show more',
-                              trimExpandedText: '...Show less',
-                              userName: name,
-                              moreStyle: TextStyle(
-                                fontSize: 15,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ),
-
-                          Text("     $commentCount comments"),
-                          const SizedBox(height: 20),
-                        ],
-                      ))
+            } else {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: CircularProgressIndicator(),
+                ),
               );
             }
           }
-        }
-        return ListView(
-          shrinkWrap: true,
-          physics: ClampingScrollPhysics(),
-          children: postCards.toList(),
-        );
+          return PostItem(post.postId,post.userId,post.name,post.image,post.challengeImg,post.caption,post.type,post.width,post.height,post.likeCountA,post.likeCountB,post.commentCount,post.followerCount,post.challenges,post.isLiked,post.isPinned);
+      }
       },
     );
   }
-  void setState(Null Function() param0) {}
+
+  Future<void> fetchData() async {
+    try {
+      final response = await get(Uri.parse(
+          "http://192.168.165.229/social-backend-laravel/api/getPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      print(responseData);
+      if (responseData.containsKey('data')) {
+        List<dynamic> responseList = responseData['data']['data']; // Access the nested 'data' array
+        List<Post> postList = responseList.map((data) {
+          print(data);
+          List<dynamic>? challengesList = data['challenges']; // Add '?' to make it nullable
+          List<Challenge> challenges = (challengesList ?? []).map((challengeData) => Challenge(
+            id: challengeData['id'],
+            postId: challengeData['post_id'],
+            userId: challengeData['user_id'],
+            challengeImg: challengeData['challenge_img'],
+            body: challengeData['body'] ?? '',
+            type: challengeData['type'],
+            confirmed: challengeData['confirmed'],
+          )).toList();
+          return Post(
+            postId: data['id'],
+            userId: data['user_id'],
+            name: data['user']['name'],
+            image: data['image'],
+            challengeImg: data['challenge_img'],
+            caption: data['body'] ?? '',
+            type: data['type'],
+            width: data['width'],
+            height: data['height'],
+            likeCountA: data['like_count_A'],
+            likeCountB: data['like_count_B'],
+            commentCount: data['commentCount'],
+            followerCount: data['user']['followerCount'],
+            isLiked: data['isFavorited'] == 0 ? false : true ,
+            isPinned: data['pinned'],
+            challenges: challenges , // Pass the list of challenges to the Post constructor
+          );
+        }).toList();
+        setState(() {
+          _isLastPage = postList.length < _numberOfPostsPerRequest;
+          _loading = false;
+          _pageNumber = _pageNumber + 1;
+          _posts?.addAll(postList);
+        });
+      } else {
+        setState(() {
+          _loading = false;
+          _error = true;
+        });
+      }
+    } catch (e) {
+      errorDialog(size: 30);
+      // ... existing error handling ...
+    }
+  }
+  Widget errorDialog({required double size}){
+    return SizedBox(
+      height: 180,
+      width: 200,
+      child:  Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('An error occurred when fetching the posts.',
+            style: TextStyle(
+                fontSize: size,
+                fontWeight: FontWeight.w500,
+                color: Colors.black
+            ),
+          ),
+          const SizedBox(height: 10,),
+          TextButton(
+              onPressed:  ()  {
+                setState(() {
+                  _loading = true;
+                  _error = false;
+                  fetchData();
+                });
+              },
+              child: const Text("Retry", style: TextStyle(fontSize: 20, color: Colors.purpleAccent),)),
+        ],
+      ),
+    );
+  }
+
 }
-
-
-

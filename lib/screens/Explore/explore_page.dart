@@ -1,13 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/widgets/SearchBox.dart';
 import 'package:bangapp/widgets/buildBangUpdate.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:http/http.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:ui';
-import 'package:flutter/material.dart';
+import '../../models/bang_battle.dart';
+import '../Widgets/small_box.dart';
 
 class Explore extends StatefulWidget {
   @override
@@ -29,56 +28,143 @@ class _ExploreState extends State<Explore> {
   }
 }
 
-class BangUpdates extends StatelessWidget {
-  Future<List<dynamic>> getBangUpdates() async {
-    var response = await http.get(Uri.parse('http://192.168.114.229/social-backend-laravel/api/bang-updates'));
-    var data = json.decode(response.body);
-    return data;
+class BangUpdates extends StatefulWidget {
+  @override
+  _BangUpdatesState createState() => _BangUpdatesState();
+}
+
+class _BangUpdatesState extends State<BangUpdates> {
+  @override
+  void initState() {
+    super.initState();
+    _pageNumber = 0;
+    _posts = [];
+    _isLastPage = false;
+    _loading = true;
+    _error = false;
+    getBangUpdates();
   }
+  late bool _isLastPage;
+  late int _pageNumber;
+  late bool _error;
+  bool _loading = true;
+  final int _numberOfPostsPerRequest = 10;
+  List<BangUpdate>? _posts;
+  final int _nextPageTrigger = 3;
+  Future<void> getBangUpdates() async {
+    try {
+      final response = await get(Uri.parse(
+          "http://192.168.165.229/social-backend-laravel/api/bang-updates?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      print(responseData);
+      if (responseData.containsKey('data')) {
+        List<dynamic> responseList = responseData['data']['data']; // Access the nested 'data' array
+        List<BangUpdate> bangUpdateList = responseList.map((data) {
+          List<dynamic>? bangUpdateLike = data['challenges'];
+          print(data);
+          List<BangUpdateLike> bangBattleLikes = (bangUpdateLike ?? []).map((bangUpdateLikeData) => BangUpdateLike(
+            likeCount: bangUpdateLikeData['like_count'],
+            postId: bangUpdateLikeData['post_id'],
+          )).toList();
+          return BangUpdate(
+            caption: data['caption'],
+            type: data['type'],
+            id: data['id'],
+            filename:data['filename'],
+            createdAt: data['created_at'],
+            bangUpdateLikes: bangBattleLikes,
+          );
+        }).toList();
+        setState(() {
+          _isLastPage = bangUpdateList.length < _numberOfPostsPerRequest;
+          _loading = false;
+          _pageNumber = _pageNumber + 1;
+          _posts?.addAll(bangUpdateList);
+        });
+      } else {
+        setState(() {
+          _loading = false;
+          _error = true;
+        });
+      }
+    } catch (e) {
+      errorDialog(size: 30);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getBangUpdates(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+    if (_posts == null || _posts!.isEmpty) {
+      if (_loading) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(8),
             child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (snapshot.data == null) {
-          return Text('No data available');
-        }
-
-        if (snapshot.data is List) {
-          final List<dynamic> dataList = snapshot.data as List<dynamic>;
-          return PageView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: dataList.length,
-            itemBuilder: (context, index) {
-              final post = dataList[index];
-              final filename = post['filename'];
-              final type = post['type'];
-              final caption = post['caption'];
-              final postId = post['id'];
-              var likeCount = post['bang_update_likes'] != null && post['bang_update_likes'].isNotEmpty ? post['bang_update_likes'][0]['like_count'] : 0;
-              return Container(
-                color: Colors.black,
-                height: MediaQuery.of(context).size.height,
-                child: AspectRatio(
-                  aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
-                  child: buildBangUpdate(context, filename, type, caption, postId, likeCount),
+          ),
+        );
+      } else if (_error) {
+        return Center(
+          child: errorDialog(size: 20),
+        );
+      } else {
+        return Center(
+          child: Text("No posts available."),
+        );
+      }
+    }
+    return ListView.builder(
+      itemCount: _posts!.length + (_isLastPage ? 0 : 1) + (_posts!.isEmpty ? 0 : 1),
+      itemBuilder: (context, index) {
+        // Calculate the adjusted index to account for inserted carousels
+        int adjustedIndex = index - (index ~/ 8) - (index > 0 && index <= 8 ? 1 : 0);
+        final BangUpdate bangBattle = _posts![adjustedIndex];
+          if (adjustedIndex == _posts!.length) {
+            if (_error) {
+              return Center(
+                child: errorDialog(size: 15),
+              );
+            } else {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: CircularProgressIndicator(),
                 ),
               );
-            },
-            controller: PageController(),
-          );
-        } else {
-          return Container();
-        }
+            }
+          }
+          return SmallBoxCarousel();
+
       },
     );
+  }
 
+  Widget errorDialog({required double size}){
+    return SizedBox(
+      height: 180,
+      width: 200,
+      child:  Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('An error occurred when fetching the posts.',
+            style: TextStyle(
+                fontSize: size,
+                fontWeight: FontWeight.w500,
+                color: Colors.black
+            ),
+          ),
+          const SizedBox(height: 10,),
+          TextButton(
+              onPressed:  ()  {
+                setState(() {
+                  _loading = true;
+                  _error = false;
+                  getBangUpdates();
+                });
+              },
+              child: const Text("Retry", style: TextStyle(fontSize: 20, color: Colors.purpleAccent),)),
+        ],
+      ),
+    );
   }
 }
 

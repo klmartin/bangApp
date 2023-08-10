@@ -56,7 +56,7 @@ class _FinaleCreateState extends State<FinalCreate> {
         body:ListView(
           padding: EdgeInsets.symmetric(horizontal: 15.0),
           children: [
-            SizedBox(height: 15.0),
+            SizedBox(height: 35.0),
             Container(
                 child:Column (
                     children:[
@@ -163,7 +163,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 print(filePath);
                                 Map<String, String> body = {
                                   'user_id': prefs.getInt('user_id').toString(),
-                                  'body': caption ?? '',
+                                  'body': caption,
                                   'pinned': pinPost == 1 ? '1' : '0',
                                 };
                                 await service.addImage(body, filePath);
@@ -174,7 +174,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 print(filePath);
                                 Map<String, String> body = {
                                   'user_id': prefs.getInt('user_id').toString(),
-                                  'body': caption ?? '',
+                                  'body': caption,
                                   'post_id':widget.postId.toString(),
                                   'pinned': pinPost == 1 ? '1' : '0',
                                 };
@@ -186,7 +186,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');
                                 Map<String, String> body = {
                                     'user_id': prefs.getInt('user_id').toString(),
-                                    'body': caption ?? '',
+                                    'body': caption,
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
                                   await service.addChallengImage(body, filePath1,filePath2);

@@ -7,22 +7,25 @@ import 'package:flutter/cupertino.dart';
 
 Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
   if ( type == 'image'&& isPinned==0) {
-    return GestureDetector(
-      onTap: () {
-        viewImage(context, mediaUrl);
-      },
-      child: CachedNetworkImage(
-        imageUrl: mediaUrl,
-        placeholder: (context, url) => AspectRatio(
-          aspectRatio: imgWidth / imgHeight,
-          child: Shimmer.fromColors(
-            baseColor: const Color.fromARGB(255, 30, 34, 45),
-            highlightColor: const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-            child: Container(color: const Color.fromARGB(255, 30, 34, 45)),
+    return  GestureDetector(
+        onTap: () {
+          viewImage(context, mediaUrl);
+        },
+        child: CachedNetworkImage(
+          imageUrl: mediaUrl,
+          height: imgHeight.toDouble(),
+          width: imgWidth.toDouble(),
+          fit: BoxFit.cover,
+          placeholder: (context, url) => AspectRatio(
+            aspectRatio: imgWidth / imgHeight,
+            child: Shimmer.fromColors(
+              baseColor: const Color.fromARGB(255, 30, 34, 45),
+              highlightColor: const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
+              child: Container(color: const Color.fromARGB(255, 30, 34, 45)),
+            ),
           ),
         ),
-      ),
-    );
+      );
   }
   else if (type == 'image' && isPinned==1){
     return GestureDetector(
@@ -30,7 +33,8 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
         buildFab(isPinned,context);
       },
       child: CachedNetworkImage(
-        imageUrl: 'http://192.168.124.229/social-backend-laravel/storage/app/images/pinned/PinnedPost.gif',
+        fit: BoxFit.cover,
+        imageUrl: 'http://192.168.165.229/social-backend-laravel/storage/app/images/pinned/PinnedPost.gif',
         placeholder: (context, url) => AspectRatio(
           aspectRatio: imgWidth / imgHeight,
           child: Shimmer.fromColors(

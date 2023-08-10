@@ -1,11 +1,12 @@
+import 'dart:convert';
 import 'package:bangapp/screens/Profile/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:filter_list/filter_list.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
-import 'package:bangapp/screens/Posts/postView_model.dart';
+import 'package:http/http.dart' as http;
 import 'package:bangapp/screens/Story/storyview.dart';
 import 'package:bangapp/screens/settings/settings.dart';
 import 'package:ionicons/ionicons.dart';
@@ -15,20 +16,6 @@ import '../../models/userprovider.dart';
 import 'package:bangapp/services/fetch_post.dart';
 import 'profile_upload.dart';
 late bool _persposts ;
-
-Future<void> myMethod() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? imageUrl = prefs.getString('imageUrl');
-  // pass imageUrl to CachedNetworkImageProvider
-}
-void getProfileData() async {
-  // final info = await FetchPosts().getMyPosts();
-  // Map data = info.data();
-  // followers = data['followers'];
-  // following = data['following'];
-  // descr = data['descr'];
-  // posts = data['posts'];
-}
 
 Future<String?> getUserImage() async {
   try {
@@ -62,11 +49,6 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
   }
-
-// void  getId() async {
-//     final prefs =  await SharedPreferences.getInstance();
-//     ownId = '${prefs.getInt('user_id')}';
-// }
 
   @override
   Widget build(BuildContext context) {
@@ -110,9 +92,7 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
                 child: InkWell(
                   onTap: () {
-                    // Navigator.of(context).push(
-                    //
-                    // );
+                    openFilterDialog();
                   },
                   child: Column(
                     children: [
@@ -157,7 +137,6 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
                   child: Padding(
@@ -268,6 +247,70 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
+  List<Hobby>? selectedHobbyList;
+  List<Hobby> hobbyList = [];
+
+  String selectedHobbiesText = "";
+  List<int> selectedHobbyIds = [];
+
+  loadHobbies() async {
+    try {
+      hobbyList = await fetchHobbies();
+      return hobbyList;
+    } catch (e) {
+      // Handle error, if any
+    }
+  }
+
+  void updateSelectedHobbiesText() {
+    setState(() {
+      selectedHobbiesText = selectedHobbyList!
+          .map((hobby) => hobby.name!)
+          .toList()
+          .join(", "); // Concatenate hobby names with a comma and space
+      selectedHobbyIds = selectedHobbyList!
+          .map((hobby) => hobby.id!) // Access the ID property of the Hobby
+          .toList();
+    });
+  }
+  void openFilterDialog() async {
+    await FilterListDialog.display<Hobby>(
+      context,
+      listData: await loadHobbies()!, // Use hobbyList as the data source
+      selectedListData: selectedHobbyList,
+      choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
+      validateSelectedItem: (list, val) => list!.contains(val),
+      onItemSearch: (hobby, query) {
+        return hobby.name!.toLowerCase().contains(query.toLowerCase());
+      },
+      onApplyButtonClick: (list) {
+        setState(() {
+          selectedHobbyList = List.from(list!);
+        });
+        Navigator.pop(context);
+        buildFab('value', context);
+      },
+    );
+  }
+
+
+
+}
+
+class Hobby {
+  final String? name;
+  final int ?id;
+  final String? avatar;
+
+  Hobby({this.name,this.id, this.avatar});
+
+  factory Hobby.fromJson(Map<String, dynamic> json) {
+    return Hobby(
+      name: json['name'],
+      id: json['id'],
+      avatar: "", // You can set the avatar URL here if needed
+    );
+  }
 }
 
 class Highlights extends StatefulWidget {
@@ -300,6 +343,7 @@ class ProfilePostsStream extends StatefulWidget {
 }
 
 class _ProfilePostsStreamState extends State<ProfilePostsStream> {
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -343,7 +387,6 @@ class _ProfilePostsStreamState extends State<ProfilePostsStream> {
   }
 }
 
-
 class ImagePost extends StatelessWidget {
   final String url;
   final bool isMe = true;
@@ -374,7 +417,176 @@ class ImagePost extends StatelessWidget {
   }
 }
 
+Future<List<Hobby>> fetchHobbies() async {
+  print('fetching hobbies');
+  final response = await http.get(Uri.parse('http://192.168.124.229/social-backend-laravel/api/hobbies'));
 
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
+
+    print(json.decode(response.body));
+    return data.map((json) => Hobby.fromJson(json)).toList();
+
+  } else {
+    throw Exception('Failed to load hobbies');
+  }
+}
+
+
+buildFab(value,BuildContext context) {
+  return showModalBottomSheet(
+    isScrollControlled: true,
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        child:Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Center(
+                child: Text(
+                  'Packages',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color:Colors.orange.shade600,
+                size: 25.0,
+              ),
+              title: Text('Bronze'),
+              trailing: Text('2,500 tshs'),
+              subtitle: Text('500 followers'),
+              onTap: () {
+                Navigator.pop(context);
+                buildPayments('value',context);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color:Colors.grey,
+                size: 25.0,
+              ),
+              title: Text('Silver'),
+              trailing: Text('5,000 tshs'),
+              subtitle: Text('1,100 followers'),
+              onTap: () async {
+                Navigator.pop(context);
+                buildPayments('value',context);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color:Colors.yellowAccent.shade400,
+                size: 25.0,
+              ),
+              title: Text('Gold'),
+              trailing: Text('10,000 tshs'),
+              subtitle: Text('2,300 followers'),
+              onTap: () {
+                Navigator.pop(context);
+                buildPayments('value',context);
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+buildPayments(value,BuildContext context) {
+  return showModalBottomSheet(
+    isScrollControlled: true,
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        child:Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Center(
+                child: Text(
+                  'Packages',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color:Colors.blue.shade600,
+                size: 25.0,
+              ),
+              title: Text('Tigo Pesa'),
+              onTap: () {
+
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color:Colors.red.shade600,
+                size: 25.0,
+              ),
+              title: Text('Airtel Money'),
+              onTap: () {
+
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color:Colors.red,
+                size: 25.0,
+              ),
+              title: Text('M-pesa'),
+
+              onTap: () async {
+
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color:Colors.yellowAccent,
+                size: 25.0,
+              ),
+              title: Text('Halo-pesa'),
+              onTap: () {
+
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 
 class Tagged extends StatelessWidget {
   @override

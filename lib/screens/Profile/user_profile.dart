@@ -201,7 +201,6 @@ class _UserProfileState extends State<UserProfile> {
 }
 class ProfilePosts extends StatefulWidget {
   final int ? userid;
-
   ProfilePosts({ this.userid});
   @override
   _ProfilePostsState createState() => _ProfilePostsState();

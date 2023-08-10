@@ -21,12 +21,10 @@ class Nav extends StatefulWidget {
 
 class _NavState extends State<Nav> {
   bool _isAppBarEnabled = true; // Variable to track app bar state
-
   @override
   void initState() {
     super.initState();
   }
-
   @override
   int _selectedIndex = 0;
   void _onItemTap(int index) {

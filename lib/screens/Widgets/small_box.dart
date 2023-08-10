@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import '../../services/animation.dart';
-import '../Comments/commentspage.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:bangapp/screens/Widgets/battle_like.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:bangapp/services/service.dart';
 
-class SmallBoxCarousel extends StatelessWidget {
-  final List<BoxData> boxes;
-  final isLiked = false;
-  final likeCount = 0;
-  final postId = 1;
-  SmallBoxCarousel({ required this.boxes});
+class SmallBoxCarousel extends StatefulWidget {
+  @override
+  _SmallBoxCarouselState createState() => _SmallBoxCarouselState();
+}
+
+class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
+  List<BoxData> boxes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    List<BoxData> data = await Service().getBangBattle();
+    setState(() {
+      boxes = data;
+    });
+  }
+
   void viewImage(BuildContext context, String imageUrl) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -101,119 +116,7 @@ class SmallBoxCarousel extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  // Handle the first heart icon tap
-                                },
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Stack(
-                                      // mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 30) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
-                                        SizedBox(width: 4),
-                                        Positioned(
-                                          top: 7.5,
-                                          left: 11,
-                                          child: Text(
-                                            'A',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 2),
-                                    Text(
-                                      "$likeCount likes" ,
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),//for liking first picture
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                    width: 15,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        createRoute(
-                                          CommentsPage(
-                                            postId: postId,
-                                            userId: 1, messageStreamState: null,
-                                            // currentUser: 1,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: const Icon(
-                                      CupertinoIcons.chat_bubble,
-                                      color: Colors.black,
-                                      size: 30,
-                                    ),
-                                  ),//for comments
-                                  SizedBox(width: 10),
-                                  Row(
-                                    children: [
-                                      const SizedBox(width: 5),
-                                      GestureDetector(
-                                        onTap: () {
-                                          // Handle the first heart icon tap
-                                        },
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Stack(
-                                              children: [
-                                                !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 30) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
-                                                SizedBox(width: 4),
-                                                Positioned(
-                                                  top: 7.5,
-                                                  left: 11.5,
-                                                  child: Text(
-                                                    'B',
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 2),
-                                            Text(
-                                              "$likeCount like",
-                                              style: TextStyle(
-                                                fontSize: 12.5,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),//for liking second picture
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
+                          child:BattleLike(likeCount: 0,isLiked:false,battleId: box.battleId, bLikeButton: false,)
                         ),
                       ],
                     ),
@@ -250,144 +153,7 @@ class SmallBoxCarousel extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  // Handle the first heart icon tap
-                                },
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Stack(
-                                      // mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 30) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
-                                        SizedBox(width: 4),
-                                        Positioned(
-                                          top: 7.5,
-                                          left: 11,
-                                          child: Text(
-                                            'A',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 2),
-                                    Text(
-                                      "$likeCount likes" ,
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),//for liking first picture
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                    width: 15,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        createRoute(
-                                          CommentsPage(
-                                            postId: postId,
-                                            userId: 1, messageStreamState: null,
-                                            // currentUser: 1,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: const Icon(
-                                      Ionicons.chatbox_outline,
-                                      color: Colors.black,
-                                      size: 30,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 15,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        createRoute(
-                                          CommentsPage(
-                                            postId: postId,
-                                            userId: 1, messageStreamState: null,
-                                            // currentUser: 1,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: const Icon(
-                                      CupertinoIcons.chat_bubble,
-                                      color: Colors.black,
-                                      size: 30,
-                                    ),
-                                  ),//for comments
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      const SizedBox(width: 5),
-                                      GestureDetector(
-                                        onTap: () {
-                                          // Handle the first heart icon tap
-                                        },
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Stack(
-                                              children: [
-                                                !isLiked ?Icon(CupertinoIcons.heart, color: Colors.red, size: 30) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
-                                                SizedBox(width: 4),
-                                                Positioned(
-                                                  top: 7.5,
-                                                  left: 11.5,
-                                                  child: Text(
-                                                    'B',
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 2),
-                                            Text(
-                                              "$likeCount like",
-                                              style: TextStyle(
-                                                fontSize: 12.5,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),//for liking second picture
-                                    ],
-                                  )
-
-                                ],
-                              ),
-                            ],
-                          ),
+                          child: BattleLike(likeCount: 0,isLiked:false,battleId: box.battleId, bLikeButton: true,),
                         ),
                       ],
                     ),
@@ -409,6 +175,16 @@ class BoxData {
   final String imageUrl1;
   final String imageUrl2;
   final String text;
+  final int battleId;
 
-  BoxData({ required this.imageUrl1, required this.imageUrl2,  required this.text});
+  BoxData({ required this.imageUrl1, required this.imageUrl2,  required this.text,required this.battleId});
+
+  factory BoxData.fromJson(Map<String, dynamic> json) {
+    return BoxData(
+      imageUrl1: json['battle1'],
+      imageUrl2: json['battle2'],
+      text: json['body'],
+      battleId: json['id'],
+    );
+  }
 }
