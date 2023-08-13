@@ -8,6 +8,8 @@ import 'package:bangapp/screens/Chat/chat_model.dart';
 import 'package:bangapp/screens/Chat/new_message_chat.dart';
 import 'package:bangapp/widgets/SearchBox.dart';
 // import 'group_chat.dart';
+import 'package:bangapp/models/chat_message.dart';
+import 'package:bangapp/services/service.dart';
 
 
 List<String> docList = [];
@@ -107,19 +109,27 @@ class _ChatHomeState extends State<ChatHome> {
 }
 
 class UserBubble extends StatefulWidget {
-  final String profileUrl;
-  final String name;
-  final String time;
-  final String message;
-  final String selectedUser;
+  final int id;
   final bool isMe;
-  UserBubble(
-      {required this.profileUrl,
-      required this.name,
-      required this.message,
-      required this.time,
-      required this.isMe,
-      required this.selectedUser});
+  final int senderId;
+  final int receiverId;
+  final String message;
+  final String createdAt;
+  final String updatedAt;
+  final UserProfile sender;
+  final UserProfile receiver;
+
+  UserBubble({
+    required this.id,
+    required this.isMe,
+    required this.senderId,
+    required this.receiverId,
+    required this.message,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.sender,
+    required this.receiver,
+  });
 
   @override
   State<UserBubble> createState() => _UserBubbleState();
@@ -133,17 +143,9 @@ class _UserBubbleState extends State<UserBubble> {
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
+            print('tapped');
             setState(() {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PmScreen(
-                    profileUrl: widget.profileUrl,
-                    name: widget.name,
-                    selectedUser: widget.selectedUser,
-                  ),
-                ),
-              );
+              // Handle onTap event if needed
             });
           },
           child: Container(
@@ -160,8 +162,7 @@ class _UserBubbleState extends State<UserBubble> {
                         CircleAvatar(
                           backgroundColor: Colors.blueGrey,
                           radius: 32,
-                          backgroundImage:
-                              CachedNetworkImageProvider(widget.profileUrl),
+                          backgroundImage: CachedNetworkImageProvider(widget.sender.image),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 10.0, left: 20.0),
@@ -169,7 +170,7 @@ class _UserBubbleState extends State<UserBubble> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.name == null ? '' : widget.name,
+                                widget.sender.name,
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.black,
@@ -179,7 +180,9 @@ class _UserBubbleState extends State<UserBubble> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 5.0),
                                 child: Text(
-                                  'Tap to start messaging..',
+                                  widget.message,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                   style: TextStyle(
                                       fontSize: 10, fontFamily: 'Metropolis'),
                                 ),
@@ -206,38 +209,37 @@ class _UserBubbleState extends State<UserBubble> {
   }
 }
 
+
 class UsersStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: null,
+    return FutureBuilder<List<ChatMessage>>(
+      future: Service().getMessage(),
       builder: (context, snapshot) {
-        List<UserBubble> userBubbles = [];
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(
               backgroundColor: Colors.lightBlue,
             ),
           );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Text('No messages'),
+          );
         }
-        final users = snapshot.data?.docs;
+        final List<ChatMessage> messages = snapshot.data!;
 
-        for (var user in users!) {
-          final profile = user['profile'];
-          final name = user['name'];
-          final selectedUid = user['userid'];
-          // final currentUser = _loggedInUser?.displayName;
-          // final userBubble = UserBubble(
-          //   profileUrl: profile,
-          //   selectedUser: selectedUid,
-          //   name: name,
-          //   // isMe: currentUser == name, message: '', time: '',
-          // );
-          // userBubbles.add(userBubble);
-        }
         return Expanded(
-          child: ListView(
-            children: userBubbles,
+          child: ListView.builder(
+            itemCount: messages.length,
+            itemBuilder: (context, index) {
+              final message = messages[index];
+              return UserBubble(message: message.message, id: message.id, isMe: message.isMe, senderId: message.senderId, receiverId: message.receiverId, createdAt: message.createdAt, updatedAt: message.updatedAt, sender: message.sender, receiver: message.receiver,);
+            },
           ),
         );
       },
@@ -245,51 +247,56 @@ class UsersStream extends StatelessWidget {
   }
 }
 
-// class SendersStream extends StatelessWidget {
-//   final List docNames;
+class SendersStream extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<ChatMessage>>(
+      future: Service().getMessage(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.black,
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Text('No messages'),
+          );
+        }
 
-//   SendersStream({this.docNames});
-//   @override
-//   Widget build(BuildContext context) {
-//     return StreamBuilder<QuerySnapshot>(
-//       stream:  _firestore
-//           .collection('users')
-//           .doc(loggedInUser.uid)
-//           .collection('messages')
-//           .doc(selectedUser)
-//           .collection('pms')
-//           .orderBy('timestamp')
-//           .snapshots(),
-//       builder: (context, snapshot) {
-//         List<UserBubble> senderBubbles = [];
-//         if (!snapshot.hasData) {
-//           return Center(
-//             child: CircularProgressIndicator(
-//               backgroundColor: Colors.lightBlue,
-//             ),
-//           );
-//         }
-//         final users = snapshot.data.docs;
+        final List<ChatMessage> messages = snapshot.data!;
 
-//         for (var user in users) {
-//           final profile = user['profile'];
-//           final name = user['name'];
-//           final selectedUid = user['userid'];
-//           final currentUser = _loggedInUser.displayName;
-//           final userBubble = UserBubble(
-//             profileUrl: profile,
-//             selectedUser: selectedUid,
-//             name: name,
-//             isMe: currentUser == name,
-//           );
-//           senderBubbles.add(userBubble);
-//         }
-//         return Expanded(
-//           child: ListView(
-//             children: senderBubbles,
-//           ),
-//         );
-//       },
-//     );
-//   }
-// }
+        return Expanded(
+          child: ListView.builder(
+            itemCount: messages.length,
+            itemBuilder: (context, index) {
+              final message = messages[index];
+
+              // Here, you should create instances of UserBubble widget using the message details.
+              // You can pass in message attributes like id, senderId, receiverId, message, etc.,
+              // along with their corresponding sender and receiver user profiles.
+
+              return UserBubble(
+                id: message.id,
+                senderId: message.senderId,
+                receiverId: message.receiverId,
+                message: message.message,
+                createdAt: message.createdAt,
+                updatedAt: message.updatedAt,
+                sender: message.sender,
+                receiver: message.receiver,
+                isMe: message.isMe,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+

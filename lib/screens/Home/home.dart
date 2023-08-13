@@ -97,7 +97,7 @@ class _HomeState extends State<Home> {
   Future<void> fetchData() async {
     try {
       final response = await get(Uri.parse(
-          "http://192.168.165.229/social-backend-laravel/api/getPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
+          "http://192.168.180.229/social-backend-laravel/api/getPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
       final Map<String, dynamic> responseData = json.decode(response.body);
       print(responseData);
       if (responseData.containsKey('data')) {

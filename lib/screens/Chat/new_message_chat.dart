@@ -87,7 +87,7 @@ class _NewMessageChatState extends State<NewMessageChat> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: SearchBox(),
             ),
             UsersStream(),

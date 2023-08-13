@@ -13,8 +13,6 @@ import 'models/userprovider.dart';
 import 'screens/Authenticate/welcome_screen.dart';
 import 'screens/Profile/edit_profile.dart';
 import 'screens/Authenticate/register_screen.dart';
-import 'root.dart';
-import 'package:bangapp/services/service.dart';
 import 'screens/Chat/chat_home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/screens/Create/final_create.dart';

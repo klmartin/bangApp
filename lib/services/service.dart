@@ -1,19 +1,22 @@
+import 'package:bangapp/screens/Chat/chat_home.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/chat_message.dart';
 import '../screens/Widgets/small_box.dart';
 
 class Service {
-  Object? get uid => null;
+
+
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('http://192.168.165.229/social-backend-laravel/api/getPosts'));
+    var response = await http.get(Uri.parse('http://192.168.180.229/social-backend-laravel/api/getPosts'));
     var data = json.decode(response.body);
     return data['data']['data'];
   }
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     print(body);
-    String addimageUrl = 'http://192.168.165.229/social-backend-laravel/api/imageadd';
+    String addimageUrl = 'http://192.168.180.229/social-backend-laravel/api/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -34,7 +37,7 @@ class Service {
   }
 
   Future<bool> addChallengImage(Map<String, String> body, String filepath,String filepath2) async {
-    String addimageUrl = 'http://192.168.165.229/social-backend-laravel/api/imagechallengadd';
+    String addimageUrl = 'http://192.168.180.229/social-backend-laravel/api/imagechallengadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath))
@@ -54,7 +57,7 @@ class Service {
 
   Future<bool> addChallenge(Map<String, String> body, String filepath, int userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String addimageUrl = 'http://192.168.165.229/social-backend-laravel/api/addChallenge';
+    String addimageUrl = 'http://192.168.180.229/social-backend-laravel/api/addChallenge';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -76,7 +79,7 @@ class Service {
 
   Future<Map<String, dynamic>> getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(Uri.parse('http://192.168.165.229/social-backend-laravel/api/userr'),
+    final response = await http.get(Uri.parse('http://192.168.180.229/social-backend-laravel/api/userr'),
           headers: {
             'Authorization': 'Bearer ${ prefs.getString('token')}',
           });
@@ -90,7 +93,7 @@ class Service {
   void likeAction(likeCount, isLiked, postId,likeType,isALiked,isBLiked) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(Uri.parse('http://192.168.165.229/social-backend-laravel/api/likePost'),
+      final response = await http.post(Uri.parse('http://192.168.180.229/social-backend-laravel/api/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -128,7 +131,7 @@ class Service {
   Future likeBangUpdate(likeCount, isLiked, postId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(Uri.parse('http://192.168.165.229/social-backend-laravel/api/likeBangUpdate'),
+      final response = await http.post(Uri.parse('http://192.168.180.229/social-backend-laravel/api/likeBangUpdate'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -155,7 +158,7 @@ class Service {
   Future<List<dynamic>> getComments(String postId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.165.229/social-backend-laravel/api/getComments/$postId'),
+        Uri.parse('http://192.168.180.229/social-backend-laravel/api/getComments/$postId'),
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -172,7 +175,7 @@ class Service {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('http://192.168.165.229/social-backend-laravel/api/postComment'),
+        Uri.parse('http://192.168.180.229/social-backend-laravel/api/postComment'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -191,7 +194,7 @@ class Service {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('http://192.168.165.229/social-backend-laravel/api/postComment'),
+        Uri.parse('http://192.168.180.229/social-backend-laravel/api/postComment'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -210,7 +213,7 @@ class Service {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.delete(
-        Uri.parse('http://192.168.165.229/social-backend-laravel/api/deletePost/$postId'),
+        Uri.parse('http://192.168.180.229/social-backend-laravel/api/deletePost/$postId'),
       );
       return jsonDecode(response.body);
     }
@@ -238,7 +241,7 @@ class Service {
 
   Future sendTokenToBackend(token,id) async {
     try {
-      final response = await http.post(Uri.parse('http://192.168.165.229/social-backend-laravel/api/storeToken'),
+      final response = await http.post(Uri.parse('http://192.168.180.229/social-backend-laravel/api/storeToken'),
         body: {
           'user_id':id.toString(),
           'device_token':token,
@@ -256,7 +259,7 @@ class Service {
   Future<String> sendNotification(userId, name, body,challengeId) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.165.229/social-backend-laravel/api/sendNotification'),
+        Uri.parse('http://192.168.180.229/social-backend-laravel/api/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -279,7 +282,7 @@ class Service {
   Future<bool> setUserProfile(username,bio, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
-    String addimageUrl = 'http://192.168.165.229/social-backend-laravel/api/setUserProfile';
+    String addimageUrl = 'http://192.168.180.229/social-backend-laravel/api/setUserProfile';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(username)
       ..fields.addAll(user_id as Map<String, String>)
@@ -300,7 +303,7 @@ class Service {
   }
 
   Future<List<BoxData>> getBangBattle() async {
-    var response = await http.get(Uri.parse('http://192.168.165.229/social-backend-laravel/api/getBangBattle'));
+    var response = await http.get(Uri.parse('http://192.168.180.229/social-backend-laravel/api/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
     List<BoxData> boxes = [];
@@ -314,7 +317,7 @@ class Service {
   void likeBattle(postId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(Uri.parse('http://192.168.165.229/social-backend-laravel/api/likePost'),
+      final response = await http.post(Uri.parse('http://192.168.180.229/social-backend-laravel/api/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -338,6 +341,44 @@ class Service {
     }
   }
 
+  Future<List<UserBubble>> getMessages() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await http.post(Uri.parse('http://192.168.180.229/social-backend-laravel/api/getMessages'),
+      body: {
+        'user_id': prefs.getInt('user_id').toString(), // Convert to string
+      },
+    );
+    var data = json.decode(response.body);
+
+    List<UserBubble> messages = [];
+    for (var item in data) {
+      // messages.add(UserBubble.fromJson(item));
+    }
+
+    return messages;
+  }
+
+  Future<List<ChatMessage>> getMessage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await http.post(Uri.parse('http://192.168.180.229/social-backend-laravel/api/getMessages'),
+      body: {
+        'user_id': prefs.getInt('user_id').toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body) as List<dynamic>;
+
+      List<ChatMessage> messages = [];
+      for (var item in data) {
+        messages.add(ChatMessage.fromJson(item));
+      }
+
+      return messages;
+    } else {
+      throw Exception('Failed to load messages');
+    }
+  }
 
   void setState(Null Function() param0) {}
 

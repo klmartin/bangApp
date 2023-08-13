@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +10,7 @@ import '../../services/extension.dart';
 import '../../widgets/user_profile.dart';
 import '../Create/video_editing/video_edit.dart';
 import '../Profile/profile.dart';
+import 'dart:io';
 
 Widget? postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId){
   Future<Uint8List> fileToUint8List(File file) async {
