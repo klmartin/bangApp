@@ -163,11 +163,47 @@ class Service {
         final responseData = json.decode(response.body);
         return responseData['comments'];
       }
+      else{return [];}
     } catch (e) {
       print(e);
+      return ['err'];
       // Handle exceptions, if any
     }
-    return []; // Return an empty list in case of errors
+  }
+
+
+  Future<List<dynamic>> getUpdateComments(String postId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/bangUpdateComment/$postId'),
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData['comments'];
+      }
+      else{return [];}
+    } catch (e) {
+      print(e);
+      return ['err'];
+      // Handle exceptions, if any
+    }
+  }
+
+  Future<List<dynamic>> getBattleComments(String postId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/bangBattleComment/$postId'),
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData['comments'];
+      }
+      else{return [];}
+    } catch (e) {
+      print(e);
+      return ['err'];
+      // Handle exceptions, if any
+    }
   }
 
   Future postComment(postId,commentText) async {
@@ -189,11 +225,31 @@ class Service {
     }
   }
 
+  Future postUpdateComment(postId,commentText) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(
+        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/postUpdateComment'),
+        body: {
+          'post_id': postId.toString(),
+          'user_id': prefs.getInt('user_id').toString(), // Convert to string
+          'body': commentText,
+        },
+      );
+      print('data is saved');
+      return jsonDecode(response.body);
+    }
+    catch (e) {
+      print(e);
+      return e;
+    }
+  }
+
   Future postBattleComment(postId,commentText) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/postComment'),
+        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/postBattleComment'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string

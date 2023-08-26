@@ -30,9 +30,8 @@ class _NavState extends State<Nav> {
   void _onItemTap(int index) {
     setState(() {
       _selectedIndex = index;
-
       // Disable app bar when "Create" tab is clicked
-      _isAppBarEnabled = index != 2;
+      _isAppBarEnabled = index != 2 && index != 1;
     });
   }
 

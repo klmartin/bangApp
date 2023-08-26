@@ -1,24 +1,22 @@
 import 'package:comment_box/comment/comment.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 
-
-class BattleComment extends StatefulWidget {
+class UpdateCommentsPage extends StatefulWidget {
   final int? userId;
   final postId;
 
-  const BattleComment({
+  const UpdateCommentsPage({
     Key? key,
     required this.userId,
     this.postId,
   }) : super(key: key);
   @override
-  _BattleCommentState createState() => _BattleCommentState();
+  _UpdateCommentsPageState createState() => _UpdateCommentsPageState();
 }
 
-class _BattleCommentState extends State<BattleComment> {
+class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController commentController = TextEditingController();
 
@@ -32,7 +30,7 @@ class _BattleCommentState extends State<BattleComment> {
   }
 
   Future<void> _fetchComments() async {
-    final response = await Service().getBattleComments(widget.postId.toString());
+    final response = await Service().getUpdateComments(widget.postId.toString());
     final comments = response;
     setState(() {
       // CircularProgressIndicator()
@@ -114,7 +112,7 @@ class _BattleCommentState extends State<BattleComment> {
           withBorder: false,
           sendButtonMethod: () async {
             if (formKey.currentState!.validate()) {
-              final response = await Service().postBattleComment(
+              final response = await Service().postUpdateComment(
                 widget.postId,
                 commentController.text,
               );

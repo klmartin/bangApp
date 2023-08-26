@@ -330,7 +330,7 @@ class PostItem extends StatelessWidget {
                             context,
                             createRoute(
                               CommentsPage(
-                                postId: postId, userId: userId, messageStreamState: null,
+                                postId: postId, userId: userId,
                                 // currentUser: 1,
                               ),
                             ),
@@ -654,7 +654,7 @@ class PostItem extends StatelessWidget {
                         context,
                         createRoute(
                           CommentsPage(
-                            postId: postId, userId: userId, messageStreamState: null,
+                            postId: postId, userId: userId,
                             // currentUser: 1,
                           ),
                         ),
@@ -980,7 +980,7 @@ class PostItem extends StatelessWidget {
                         context,
                         createRoute(
                           CommentsPage(
-                            postId: postId, userId: userId, messageStreamState: null,
+                            postId: postId, userId: userId,
                             // currentUser: 1,
                           ),
                         ),

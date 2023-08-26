@@ -3,7 +3,7 @@ import 'package:bangapp/services/service.dart';
 import 'package:flutter/cupertino.dart';
 
 class BangUpdateLikeButton extends StatefulWidget {
-  final int likeCount;
+  late final int likeCount;
   final bool isLiked;
   final int postId;
   BangUpdateLikeButton({
@@ -31,6 +31,7 @@ class _BangUpdateLikeButtonState extends State<BangUpdateLikeButton> {
         GestureDetector(
           onTap: () async {
             setState(() {
+
               isLiked = !isLiked; // Update the isLiked state variable
             });
             await Service().likeBangUpdate(widget.likeCount, isLiked, widget.postId); // Use the parameters from the widget

@@ -375,7 +375,7 @@ class _PostCardState extends State<PostCard> {
                       context,
                       createRoute(
                         CommentsPage(
-                          postId: widget.postId, userId: widget.userId, messageStreamState: null,
+                          postId: widget.postId, userId: widget.userId,
                           // currentUser: 1,
                         ),
                       ),

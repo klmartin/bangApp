@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bangapp/models/userprovider.dart';
 import 'package:provider/provider.dart';
@@ -151,7 +152,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                 );
                               final responseBody = jsonDecode(response.body);
-                              if (responseBody != null) {
+                              if (responseBody.containsKey('error') && responseBody['error'] == 'invalid_credentials') {
+                                Fluttertoast.showToast(
+                                  msg: responseBody['error'],
+                                  toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
+                                  gravity: ToastGravity.CENTER, // Toast position
+                                  timeInSecForIosWeb: 1, // Time duration for iOS and web
+                                  backgroundColor: Colors.grey[600],
+                                  textColor: Colors.white,
+                                  fontSize: 16.0,
+                                );
+                                showSpinner = false;
+                              }
+                              else{
                                 _firebaseMessaging.getToken().then((token) async {
                                   Service().sendTokenToBackend(token,responseBody['user_id']);
                                   Provider.of<UserProvider>(context,listen:false).setUser(responseBody);

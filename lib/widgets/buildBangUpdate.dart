@@ -5,16 +5,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
+import 'package:bangapp/widgets/LikeCounterWidget.dart';
 import 'package:bangapp/widgets/user_profile.dart';
 import 'package:bangapp/screens/Explore/bang_updates_like_button.dart';
 
-Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCount) {
+import '../screens/Comments/updateComment.dart';
+import '../services/animation.dart';
+
+Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCount,index) {
   if ( type == 'image') {
     return GestureDetector(
       onTap: () {
       },
       child:  Stack(
         children: [
+          if(index==0)Text("Chemba ya Umbea",style:TextStyle(color: Colors.white,fontSize: 20, fontWeight: FontWeight.w700,fontFamily: 'Metropolis',letterSpacing: -1)),
           Center(
             child: GestureDetector(
               onTap: () {},
@@ -38,16 +43,26 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
               children: [
                 BangUpdateLikeButton(likeCount: 0,isLiked:false,postId:postId),
                 SizedBox(height: 10),
-                Text(
-                  "$likeCount " ,
-                  style: TextStyle(
-                    fontSize: 12.5,
+                LikeCounterWidget(initialLikeCount: likeCount),
+                SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      createRoute(
+                        UpdateCommentsPage(
+                          postId: postId, userId: 6,
+                          // currentUser: 1,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Icon(
+                    CupertinoIcons.chat_bubble,
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    size: 30,
                   ),
                 ),
-                SizedBox(height: 20),
-                Icon(CupertinoIcons.chat_bubble, color: Colors.white, size: 30),
                 SizedBox(height: 10),
                 Text(
                   "0 " ,
@@ -69,22 +84,30 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
               UserProfile(
-                url: 'https://kimjotech.com/BangAppBackend//storage//app//bangInspiration//bang_logo.jpg',
+                url: 'https://alitaafrica.com/social-backend-laravel/storage/app/bangInspiration/bang_logo.jpg',
                 size: 40),
                 SizedBox(width:5),
-                Text('User Name', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14,color: Colors.white)),
+                Text('Bang App', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14,color: Colors.white)),
               ]
               )),
+          SizedBox(height: 20),
           Positioned(
-            bottom: 50,
+            bottom: 40,
             left: 10,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(caption, style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15.0,
-                ) ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.8, // Set the desired width here
+                  child: Text(
+                    caption,
+                    softWrap: true,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15.0,
+                    ),
+                  ),
+                ) ,
               ],
             ),
           ),
@@ -126,11 +149,6 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
             alignment: Alignment.center,
             children: [
               VideoPlayer(_videoPlayerController),
-              Icon(
-                Icons.play_circle_fill,
-                size: 50,
-                color: Colors.white,
-              ),
             ],
         ),
       ),
@@ -141,18 +159,28 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BangUpdateLikeButton(likeCount: 0,isLiked:false,postId:postId),
+                BangUpdateLikeButton(likeCount: likeCount,isLiked:false,postId:postId),
                 SizedBox(height: 10),
-                Text(
-                  "$likeCount" ,
-                  style: TextStyle(
-                    fontSize: 12.5,
+                LikeCounterWidget(initialLikeCount: likeCount),
+                SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      createRoute(
+                        UpdateCommentsPage(
+                          postId: postId, userId:6 ,
+                          // currentUser: 1,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Icon(
+                    CupertinoIcons.chat_bubble,
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    size: 30,
                   ),
                 ),
-                SizedBox(height: 20),
-                Icon(CupertinoIcons.chat_bubble, color: Colors.white, size: 30),
                 SizedBox(height: 10),
                 Text(
                   "0 " ,
@@ -174,22 +202,31 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     UserProfile(
-                        url: 'https://kimjotech.com/BangAppBackend//storage//app//bangInspiration//bang_logo.jpg',
+                        url: 'https://alitaafrica.com/social-backend-laravel/storage/app/bangInspiration/bang_logo.jpg',
                         size: 40),
                     SizedBox(width:5),
                     Text('User Name', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white)),
                   ]
               )),
+          SizedBox(height: 10),
           Positioned(
-            bottom: 50,
+            bottom: 40,
             left: 10,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(caption, style: TextStyle(
+
+              Container(
+              width: MediaQuery.of(context).size.width * 0.8, // Set the desired width here
+              child: Text(
+                caption,
+                softWrap: true,
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 15.0,
-                ) ),
+                ),
+              ),
+              ) ,
               ],
             ),
           ),
