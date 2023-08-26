@@ -35,6 +35,7 @@ class _ViewChallengePageState extends State<ViewChallengePage> {
 
   @override
   Widget build(BuildContext context) {
+    ScrollController _scrollController = ScrollController();
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -70,6 +71,7 @@ class _ViewChallengePageState extends State<ViewChallengePage> {
                       challengeData['created_at'],
                       challengeData['width'],
                       challengeData['height'],
+                      _scrollController,
                     ),
                   ),
                 );
@@ -99,7 +101,8 @@ class PostCard extends StatefulWidget {
   final created_at;
   var width;
   var height;
-  PostCard(this.id,this.post_id,this.user_id,this.user_name, this.user_image, this.type, this.challenge_img, this.body,this.created_at,this.width,this.height);
+  ScrollController _scrollController = ScrollController();
+  PostCard(this.id,this.post_id,this.user_id,this.user_name, this.user_image, this.type, this.challenge_img, this.body,this.created_at,this.width,this.height,this._scrollController);
   @override
   State<PostCard> createState() => _PostCardState();
 }

@@ -1,3 +1,4 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -19,6 +20,7 @@ class FinalCreate extends StatefulWidget {
   final bool? challengeImg;
   final int? userChallenged;
   final int? postId;
+  final String? editedVideo;
   const FinalCreate({
     Key? key,
     this.editedImage,
@@ -26,6 +28,7 @@ class FinalCreate extends StatefulWidget {
     this.challengeImg = false,
     this.editedImage2,
     this.postId,
+    this.editedVideo
   }) : super(key: key);
 
   @override
@@ -62,7 +65,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                     children:[
                       Row(
                         children: [ // Display the first image
-                        if (widget.editedImage != null)
+                        if (widget.editedImage != null && widget.editedVideo == null)
                         Expanded(
                         child: Container(
                         height: MediaQuery.of(context).size.height / 2.2,
@@ -87,7 +90,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                         else
                         Container(), // Empty container if the first image is null
                         // Display the second image if editedImage2 is not null
-                        if (widget.editedImage2 != null)
+                        if (widget.editedImage2 != null && widget.editedVideo == null)
                         Container(
                         height: MediaQuery.of(context).size.height / 2.2,
                         width: size.width * 0.4,
@@ -108,6 +111,29 @@ class _FinaleCreateState extends State<FinalCreate> {
                         ),
                         ),
                         ),
+                        if(widget.editedVideo != null && widget.editedImage == null && widget.editedImage2 == null)
+                          Container(
+                            height: MediaQuery.of(context).size.height / 2.2,
+                            width: size.width * 0.4,
+                            child: InkWell(
+                              child: Container(
+                                width: 190,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  color: Colors.red[200],
+                                  borderRadius: BorderRadius.circular(32),
+                                ),
+                                child: Chewie(
+                                  controller: ChewieController(
+                                    videoPlayerController: VideoPlayerController.network(widget.editedVideo!),
+                                    autoPlay: true,
+                                    looping: true,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          )
                         ],
                       ),
                       SizedBox(height: 15.0),
@@ -179,6 +205,17 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   'pinned': pinPost == 1 ? '1' : '0',
                                 };
                                 await service.addChallenge(body, filePath,widget.userChallenged!);
+                                Navigator.pushNamed(context, Nav.id);
+                              }
+                              else if (widget.editedVideo != null && widget.editedImage2 == null && widget.editedImage==null){
+                                String? filePath1 = widget.editedVideo;
+                                Map<String, String> body = {
+                                  'user_id': prefs.getInt('user_id').toString(),
+                                  'body': caption,
+                                  'type':'video',
+                                  'pinned': pinPost == 1 ? '1' : '0',
+                                };
+                                await service.addImage(body, filePath1!);
                                 Navigator.pushNamed(context, Nav.id);
                               }
                               else{

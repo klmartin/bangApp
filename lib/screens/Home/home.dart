@@ -57,11 +57,16 @@ class _HomeState extends State<Home> {
         );
       }
     }
-   return ListView.builder(
+
+    return ListView.builder(
       itemCount: _posts!.length + (_isLastPage ? 0 : 1) + (_posts!.isEmpty ? 0 : 1),
       itemBuilder: (context, index) {
+        if (index == 0) {
+          return SmallBoxCarousel();
+        }
         // Calculate the adjusted index to account for inserted carousels
-        int adjustedIndex = index - (index ~/ 8) - (index > 0 && index <= 8 ? 1 : 0);
+        //int adjustedIndex = index - (index ~/ 8) - (index > 0 && index <= 8 ? 1 : 0);
+        int adjustedIndex = index - (index ~/ 8);
         final Post post = _posts![adjustedIndex];
         if (index == 0 || (index >= 8 && (index - 8) % 8 == 0)) {
           return Column(
@@ -97,7 +102,7 @@ class _HomeState extends State<Home> {
   Future<void> fetchData() async {
     try {
       final response = await get(Uri.parse(
-          "http://192.168.180.229/social-backend-laravel/api/getPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
+          "https://alitaafrica.com/social-backend-laravel/api/getPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
       final Map<String, dynamic> responseData = json.decode(response.body);
       print(responseData);
       if (responseData.containsKey('data')) {

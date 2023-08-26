@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_editor/video_editor.dart';
 
+import '../final_create.dart';
+
 void main() => runApp(
   MaterialApp(
     title: 'Flutter Video Editor Demo',
@@ -95,16 +97,8 @@ class _VideoEditorState extends State<VideoEditor> {
   void _exportVideo() async {
     _exportingProgress.value = 0;
     _isExporting.value = true;
-
     final config = VideoFFmpegVideoEditorConfig(
       _controller,
-      // format: VideoExportFormat.gif,
-      // commandBuilder: (config, videoPath, outputPath) {
-      //   final List<String> filters = config.getExportFilters();
-      //   filters.add('hflip'); // add horizontal flip
-
-      //   return '-i $videoPath ${config.filtersCmd(filters)} -preset ultrafast $outputPath';
-      // },
     );
 
     await ExportService.runFFmpegCommand(
@@ -116,10 +110,13 @@ class _VideoEditorState extends State<VideoEditor> {
       onCompleted: (file) {
         _isExporting.value = false;
         if (!mounted) return;
-
-        showDialog(
-          context: context,
-          builder: (_) => VideoResultPopup(video: file),
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FinalCreate(
+              editedVideo:file.path,
+            ),
+          ),
         );
       },
     );
@@ -132,13 +129,11 @@ class _VideoEditorState extends State<VideoEditor> {
       _showErrorSnackBar("Error on cover exportation initialization.");
       return;
     }
-
     await ExportService.runFFmpegCommand(
       execute,
       onError: (e, s) => _showErrorSnackBar("Error on cover exportation :("),
       onCompleted: (cover) {
         if (!mounted) return;
-
         showDialog(
           context: context,
           builder: (_) => CoverResultPopup(cover: cover),
@@ -332,13 +327,13 @@ class _VideoEditorState extends State<VideoEditor> {
                 tooltip: 'Open export menu',
                 icon: const Icon(Icons.save),
                 itemBuilder: (context) => [
-                  PopupMenuItem(
-                    onTap: _exportCover,
-                    child: const Text('Export cover'),
-                  ),
+                  // PopupMenuItem(
+                  //   onTap: _exportCover,
+                  //   child: const Text('Export cover'),
+                  // ),
                   PopupMenuItem(
                     onTap: _exportVideo,
-                    child: const Text('Export video'),
+                    child: const Text('Post video'),
                   ),
                 ],
               ),

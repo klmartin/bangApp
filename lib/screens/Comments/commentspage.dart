@@ -154,7 +154,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 child: Icon(Icons.emoji_emotions_outlined),
               ),
               suffixIcon: Icon(Icons.camera_alt),
-              hintText: 'Type aaaa message',
+              hintText: 'Type a message',
               hintStyle: TextStyle(
                 height: 1.5,
               ),
@@ -164,7 +164,7 @@ class _CommentsPageState extends State<CommentsPage> {
         ),
       ),
     ),
-                TextButton(
+    TextButton(
                   onPressed: () {
                     Service().postComment(widget.postId, commentText).then(
                           (response) {
@@ -199,8 +199,6 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 }
-
-
 
 class MessageBubble extends StatelessWidget {
   final String text;

@@ -29,20 +29,24 @@ class _BattleLikeState extends State<BattleLike> {
   void initState() {
     super.initState();
     isLiked = widget.isLiked;
+    battleALike = widget.isLiked;
+    battleBLike = false;
   }
 
-   _handleLikeTap(type) {
-     print(type);
-     print('this is my type');
+  _handleLikeTap(type) {
     Service().likeBattle(widget.battleId);
     setState(() {
-      isLiked = !isLiked;
+      if (type == 'A') {
+        battleALike = !battleALike;
+        battleBLike = false; // Reset B button state
+      } else if (type == 'B') {
+        battleBLike = !battleBLike;
+        battleALike = false; // Reset A button state
+      }
 
-      if(type=='A'){battleALike = !battleALike;}
-      else if(type=='B'){battleBLike = !battleBLike;}
-
+      // Update isLiked based on A and B button states
+      isLiked = battleALike || battleBLike;
     });
-    // Add your code here to handle the like action
   }
 
   @override
@@ -52,13 +56,13 @@ class _BattleLikeState extends State<BattleLike> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: _handleLikeTap('A'),
+            onTap: () => _handleLikeTap('A'),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Stack(
                   children: [
-                    !battleALike
+                    battleALike
                         ? Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30)
                         : Icon(CupertinoIcons.heart, color: Colors.red, size: 30),
                     SizedBox(width: 4),
@@ -111,13 +115,13 @@ class _BattleLikeState extends State<BattleLike> {
               ), //for comments
               SizedBox(width: 10),
               GestureDetector(
-                onTap: _handleLikeTap('B'),
+                onTap: () => _handleLikeTap('B'),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Stack(
                       children: [
-                        !battleBLike
+                        battleBLike
                             ? Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30)
                             : Icon(CupertinoIcons.heart, color: Colors.red, size: 30),
                         SizedBox(width: 4),

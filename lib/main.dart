@@ -3,12 +3,16 @@ import 'dart:convert';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:web_socket_channel/status.dart' as status;
 import 'package:bangapp/screens/Authenticate/login_screen.dart';
 import 'package:bangapp/screens/Chat/calls_chat.dart';
 import 'package:bangapp/screens/Chat/new_message_chat.dart';
 import 'package:bangapp/screens/Comments/commentspage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'models/userprovider.dart';
 import 'screens/Authenticate/welcome_screen.dart';
 import 'screens/Profile/edit_profile.dart';
@@ -20,6 +24,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
+
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
@@ -61,17 +67,17 @@ class Authenticate extends StatefulWidget {
 class _AuthenticateState extends State<Authenticate> {
    FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
    FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+   late IO.Socket socket;
   @override
   void initState() {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
+
   }
 
   void _configureFirebaseMessaging() {
     _firebaseMessaging.getToken().then((token) {
-      // Send the token to your Laravel backend using an API call.
-      // Implement the API call to send the token in your Laravel backend.
       // Example:
       // YourAPIService.sendTokenToBackend(token);
     });

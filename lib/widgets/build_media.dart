@@ -1,9 +1,12 @@
+
+import 'package:bangapp/widgets/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
   if ( type == 'image'&& isPinned==0) {
@@ -34,7 +37,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
       },
       child: CachedNetworkImage(
         fit: BoxFit.cover,
-        imageUrl: 'http://192.168.165.229/social-backend-laravel/storage/app/images/pinned/PinnedPost.gif',
+        imageUrl: 'https://alitaafrica.com/social-backend-laravel/storage/app/images/pinned/PinnedPost.gif',
         placeholder: (context, url) => AspectRatio(
           aspectRatio: imgWidth / imgHeight,
           child: Shimmer.fromColors(
@@ -47,50 +50,9 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
     );
   }
   else if (type == 'video') {
-    VideoPlayerController _videoPlayerController = VideoPlayerController.network(mediaUrl);
-    ChewieController _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      autoPlay: true,
-      looping: true,
-      placeholder: Container(
-        color: const Color.fromARGB(255, 30, 34, 45),
-      ),
-    );
-
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => Scaffold(
-              body: Center(
-                child: Chewie(
-                  controller: _chewieController,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-      child: AspectRatio(
-        aspectRatio: 16 / 9, // Adjust the aspect ratio as per your video's dimensions
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            VideoPlayer(_videoPlayerController),
-            Icon(
-              Icons.play_circle_fill,
-              size: 50,
-              color: Colors.white,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  else {
-    print(type);
-    print('martin is here');
-    return Container(); // Return an empty container if the media type is unknown or unsupported
+    return VideoPlayerPage(mediaUrl: mediaUrl);
+  } else {
+    return Container();
   }
 }
 

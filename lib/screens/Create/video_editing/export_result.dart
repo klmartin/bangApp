@@ -5,6 +5,8 @@ import 'package:fraction/fraction.dart';
 import 'package:path/path.dart' as path;
 import 'package:video_player/video_player.dart';
 
+import '../final_create.dart';
+
 Future<void> _getImageDimension(File file,
     { required Function(Size) onResult}) async {
   var decodedImage = await decodeImageFromList(file.readAsBytesSync());
@@ -22,7 +24,7 @@ class VideoResultPopup extends StatefulWidget {
 }
 
 class _VideoResultPopupState extends State<VideoResultPopup> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   late FileImage _fileImage;
   Size _fileDimension = Size.zero;
   bool _isGif = false;
@@ -55,47 +57,18 @@ class _VideoResultPopupState extends State<VideoResultPopup> {
       );
     } else {
       _controller ??= VideoPlayerController.file(widget.video);
-      _controller.initialize().then((_) {
-        _fileDimension = _controller.value.size ?? Size.zero;
+      _controller?.initialize().then((_) {
+        _fileDimension = _controller?.value.size ?? Size.zero;
         setState(() {});
         _controller?.play();
         _controller?.setLooping(true);
       });
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(30),
-      child: Center(
-        child: Stack(
-          alignment: Alignment.bottomLeft,
-          children: [
-            AspectRatio(
-              aspectRatio:
-              _fileDimension.aspectRatio == 0 ? 1 : _fileDimension.aspectRatio,
-              child: _isGif ? Image.file(widget.video) : VideoPlayer(_controller),
-            ),
-            Positioned(
-              bottom: 0,
-              child: FileDescription(
-                description: {
-                  'Video path': widget.video.path,
-                  if (!_isGif)
-                    'Video duration':
-                    '${((_controller?.value.duration?.inMilliseconds ?? 0) / 1000).toStringAsFixed(2)}s',
-                  'Video ratio': Fraction.fromDouble(_fileDimension.aspectRatio)
-                      .reduce()
-                      .toString(),
-                  'Video dimension': _fileDimension.toString(),
-                  'Video size': _fileMbSize,
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+   return Container();
   }
 }
+
 class CoverResultPopup extends StatefulWidget {
   const CoverResultPopup({key,  required this.cover});
 

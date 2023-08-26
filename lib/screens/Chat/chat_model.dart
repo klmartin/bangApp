@@ -1,21 +1,20 @@
+import 'package:bangapp/services/service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bangapp/widgets/bloc/file_handler_bloc.dart';
-
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../../models/chat_message.dart';
+import '../../models/userprovider.dart';
 
 bool isOpen = false;
-
-// const kSendButtonTextStyle = TextStyle(
-//   color: Colors.lightBlueAccent,
-//   fontWeight: FontWeight.bold,
-//   fontSize: 18.0,
-// );
 
 bool isAllEmoji(String text) {
   if (text != null) {
@@ -31,8 +30,7 @@ InputDecoration kMessageTextFieldDecoration = InputDecoration(
       vertical: 10.0,
       horizontal: 20.0,
     ),
-    prefixIcon:
-        IconButton(onPressed: () {}, icon: Icon(Icons.emoji_emotions_outlined)),
+    prefixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.emoji_emotions_outlined)),
     suffixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt)),
     hintText: 'Type a message',
     hintStyle: TextStyle(
@@ -70,40 +68,36 @@ class PmScreen extends StatefulWidget {
 
 class _PmScreenState extends State<PmScreen> {
   final messageTextController = TextEditingController();
-
-  //initialising firestore
-
   late String messageText;
-
+  late IO.Socket socket;
   @override
+
   void initState() {
+    print('nimeanza');
     super.initState();
-    // getCurrentUser();
+    final channel = WebSocketChannel.connect(
+      Uri.parse('ws://192.168.180.229:6001'),
+    );
+
+    channel.stream.listen((event) {
+      // Handle the received event data here
+      print('Received event: $event');
+    });
+    socket = IO.io('http://192.168.180.229/social-backend-laravel/socket', <String, dynamic>{
+      'transports': ['websocket'],
+    });
+
+    // Listen for events
+    socket.on('newMessage', (data) {
+      // Handle the new message event
+      print('New message received here: $data');
+    });
+    socket.on('connect', (_) {
+      print('WebSocket connected');
+    });
   }
-
-  // void getCurrentUser() {
-  //   try {
-  //     final user = _auth.currentUser;
-  //     if (user != null) {
-  //       loggedInUser = user;
-  //       print(loggedInUser);
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // return BlocListener<FileHandlerBloc, FileHandlerState>(
-    //   listener: (context, state) {
-    //     //var bloc = BlocProvider.of<FileHandlerBloc>(context);
-    //     if (state is OptionsPopupOpened) {
-    //       bloc.add(PickFile(state.type));
-    //       //   }
-    //     }
-    //   },
-    //  child:
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -191,37 +185,11 @@ class _PmScreenState extends State<PmScreen> {
                     ),
                     TextButton(
                       onPressed: () {
+                        Service().sendMessage(widget.selectedUser,messageText);
                         messageTextController.clear();
-                        // _firestore
-                        //     .collection('users')
-                        //     .doc(widget.selectedUser)
-                        //     .collection('messages')
-                        //     .doc(loggedInUser?.uid)
-                        //     .collection('pms')
-                        //     .doc()
-                        //     .set({
-                        //   'text': messageText,
-                        //   'sender': loggedInUser?.email,
-                        //   'timestamp': FieldValue.serverTimestamp()
-                        // });
-                        // _firestore
-                        //     .collection('users')
-                        //     .doc(loggedInUser?.uid)
-                        //     .collection('messages')
-                        //     .doc(widget.selectedUser)
-                        //     .collection('pms')
-                        //     .doc()
-                        //     .set({
-                        //   'text': messageText,
-                        //   'sender': loggedInUser?.email,
-                        //   'timestamp': FieldValue.serverTimestamp()
-                        // });
-                        // .add({
-                        //   'text': messageText,
-                        //   'sender': loggedInUser.email,
-                        //   'timestamp': FieldValue.serverTimestamp()
-                        // });
-                        //Implement send functionality.
+                        setState(() {
+                          MessageBubble(text: messageText, sender: widget.selectedUser, isMe: true);
+                        });
                       },
                       child: CircleAvatar(
                         child: Icon(
@@ -258,7 +226,7 @@ class MessageBubble extends StatelessWidget {
       {required this.text, required this.sender, required this.isMe});
   @override
   Widget build(BuildContext context) {
-    if (isMe) {
+    if(!isMe) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -363,16 +331,40 @@ class MessageBubble extends StatelessWidget {
   }
 }
 
-class MessageStream extends StatelessWidget {
+
+class MessageStream extends StatefulWidget {
   final selectedUser;
 
   MessageStream({required this.selectedUser});
+
+  @override
+  _MessageStreamState createState() => _MessageStreamState();
+}
+
+class _MessageStreamState extends State<MessageStream> {
+  late IO.Socket socket;
+  @override
+  void initState() {
+    super.initState();
+    socket = IO.io('http://192.168.180.229/social-backend-laravel:6001', <String, dynamic>{
+      'transports': ['websocket'],
+    });
+
+    // Listen for events
+    socket.on('newMessage', (data) {
+      // Handle the new message event
+      print('New message received: $data');
+    });
+    socket.on('connect', (_) {
+      print('WebSocket connected');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: null,
+    return FutureBuilder<List<ChatMessage>>(
+      future: Service().getMessages(widget.selectedUser),
       builder: (context, snapshot) {
-        List<MessageBubble> messageBubbles = [];
         if (!snapshot.hasData) {
           return Center(
             child: CircularProgressIndicator(
@@ -380,22 +372,22 @@ class MessageStream extends StatelessWidget {
             ),
           );
         }
-        final messages = snapshot.data?.docs.reversed;
-
-        for (var message in messages!) {
-          final messageText = message['text'];
-          final messageSender = message['sender'];
-          final currentUser =' loggedInUser?.email';
+        final messages = snapshot.data!;
+        final currentUserID = Provider.of<UserProvider>(context).myUser.id;
+        List<MessageBubble> messageBubbles = [];
+        for (var message in messages) {
+          final isMe = currentUserID.toString() == message.receiver.id.toString();
           final messageBubble = MessageBubble(
-            text: messageText,
-            sender: messageSender,
-            isMe: currentUser == messageSender,
+            text: message.message,
+            sender: message.sender.name,
+            isMe: isMe,
           );
           messageBubbles.add(messageBubble);
         }
+
         return Expanded(
           child: ListView(
-            reverse: true,
+            reverse: false,
             children: messageBubbles,
           ),
         );
@@ -403,6 +395,7 @@ class MessageStream extends StatelessWidget {
     );
   }
 }
+
 
 class MenuItem extends StatefulWidget {
   final String value;

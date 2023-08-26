@@ -136,6 +136,13 @@ class UserBubble extends StatefulWidget {
 }
 
 class _UserBubbleState extends State<UserBubble> {
+  String truncateText(String text, int maxLength) {
+    if (text.split(' ').length > maxLength) {
+      List<String> words = text.split(' ');
+      return words.sublist(0, maxLength).join(' ') + '...';
+    }
+    return text;
+  }
   @override
   Widget build(BuildContext context) {
     if (!widget.isMe) {
@@ -145,6 +152,16 @@ class _UserBubbleState extends State<UserBubble> {
           onTap: () {
             print('tapped');
             setState(() {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PmScreen(
+                    profileUrl: widget.sender.image,
+                    name: widget.sender.name,
+                    selectedUser: widget.sender.id.toString(),
+                  ),
+                ),
+              );
               // Handle onTap event if needed
             });
           },
@@ -180,12 +197,15 @@ class _UserBubbleState extends State<UserBubble> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 5.0),
                                 child: Text(
-                                  widget.message,
+                                  truncateText(widget.message, 5),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: TextStyle(
-                                      fontSize: 10, fontFamily: 'Metropolis'),
+                                    fontSize: 10,
+                                    fontFamily: 'Metropolis',
+                                  ),
                                 ),
+
                               ),
                             ],
                           ),
@@ -276,11 +296,9 @@ class SendersStream extends StatelessWidget {
             itemCount: messages.length,
             itemBuilder: (context, index) {
               final message = messages[index];
-
               // Here, you should create instances of UserBubble widget using the message details.
               // You can pass in message attributes like id, senderId, receiverId, message, etc.,
               // along with their corresponding sender and receiver user profiles.
-
               return UserBubble(
                 id: message.id,
                 senderId: message.senderId,

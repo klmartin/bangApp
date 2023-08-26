@@ -13,13 +13,11 @@ class SmallBoxCarousel extends StatefulWidget {
 
 class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
   List<BoxData> boxes = [];
-
   @override
   void initState() {
     super.initState();
     fetchData();
   }
-
   Future<void> fetchData() async {
     List<BoxData> data = await Service().getBangBattle();
     setState(() {
@@ -57,12 +55,11 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
               fontSize: 20.0,
               fontWeight: FontWeight.w700,
               letterSpacing: -1),
-
         ),
 
         CarouselSlider(
           options: CarouselOptions(
-            height: 300,
+            height: 303,
             viewportFraction: 1.0,
             enlargeCenterPage: true,
             autoPlay: true,
@@ -167,8 +164,6 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
       ],
     );
   }
-
-
 }
 
 class BoxData {

@@ -16,11 +16,9 @@ class UserModel {
   });
   factory UserModel.fromJson(Map<dynamic,dynamic> json){
     return UserModel(
-       id: json["user_id"] != null ? json["user_id"] : "",
+      id: json["user_id"] != null ? json["user_id"] : "",
       profileurl:json["user_image"] !=null ?json["user_image"]:"",
       name:json["name"] !=null ?json["name"]:"",
-
-
     );
   }
   Map<dynamic ,dynamic> toJson()=>

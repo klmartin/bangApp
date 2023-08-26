@@ -76,6 +76,7 @@ class PostCard extends StatefulWidget {
   var likeCount;
   var type;
   var followerCount;
+  ScrollController _scrollController = ScrollController();
   PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type);
   @override
   State<PostCard> createState() => _PostCardState();
