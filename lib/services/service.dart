@@ -89,7 +89,7 @@ class Service {
     }
   }
 
-  void likeAction(likeCount, isLiked, postId,likeType,isALiked,isBLiked) async {
+  Future<void> likeAction(likeCount, isLiked, postId,likeType,isALiked,isBLiked) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/likePost'),
@@ -127,7 +127,7 @@ class Service {
     }
   }
 
-  Future likeBangUpdate(likeCount, isLiked, postId) async {
+  Future<void> likeBangUpdate(likeCount, isLiked, postId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/likeBangUpdate'),
@@ -369,7 +369,7 @@ class Service {
     return boxes;
   }
 
-  void likeBattle(postId) async {
+  Future<void> likeBattle(postId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/likePost'),

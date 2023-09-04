@@ -1,12 +1,8 @@
-
 import 'package:bangapp/widgets/video_player.dart';
-import 'package:chewie/chewie.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
   if ( type == 'image'&& isPinned==0) {

@@ -1,25 +1,36 @@
-import 'package:chewie/chewie.dart';
-import 'package:video_player/video_player.dart';
+import 'package:bangapp/services/service.dart';
+import 'package:bangapp/widgets/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:bangapp/screens/Widgets/readmore.dart';
-import 'package:bangapp/widgets/LikeCounterWidget.dart';
+import 'package:like_button/like_button.dart';
 import 'package:bangapp/widgets/user_profile.dart';
-import 'package:bangapp/screens/Explore/bang_updates_like_button.dart';
-
 import '../screens/Comments/updateComment.dart';
 import '../services/animation.dart';
 
-Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCount,index) {
+Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCount,commentCount,index) {
   if ( type == 'image') {
-    return GestureDetector(
+  return GestureDetector(
       onTap: () {
       },
       child:  Stack(
         children: [
-          if(index==0)Text("Chemba ya Umbea",style:TextStyle(color: Colors.white,fontSize: 20, fontWeight: FontWeight.w700,fontFamily: 'Metropolis',letterSpacing: -1)),
+          if(index==0)
+          Positioned(
+            top: 20, // Adjust the top value as needed
+            left: 75, // Adjust the left value as needed
+            child: Text(
+              "CHEMBA ya UMBEA",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 27,
+                fontWeight: FontWeight.w700,
+                fontFamily: 'Metropolis',
+                letterSpacing: -1,
+              ),
+            ),
+          ),
           Center(
             child: GestureDetector(
               onTap: () {},
@@ -41,9 +52,22 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BangUpdateLikeButton(likeCount: 0,isLiked:false,postId:postId),
-                SizedBox(height: 10),
-                LikeCounterWidget(initialLikeCount: likeCount),
+                LikeButton(
+                  onTap: (isLiked) async {
+                    await Service().likeBangUpdate(likeCount, isLiked, postId);
+                    return !isLiked;
+                  },
+                  size: 32,
+                  countPostion:CountPostion.bottom,
+                  likeCount: likeCount,
+                  likeBuilder: (bool isLiked) {
+                    Icon(
+                      isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                      color: isLiked ? Colors.red : Colors.red,
+                      size: 30,
+                    );
+                  },
+                ),
                 SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
@@ -65,7 +89,7 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "0 " ,
+                  commentCount,
                   style: TextStyle(
                     fontSize: 12.5,
                     color: Colors.white,
@@ -116,42 +140,11 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
     );
   }
   else if (type == 'video') {
-    VideoPlayerController _videoPlayerController = VideoPlayerController.network(filename);
-    ChewieController _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      autoPlay: true,
-      looping: true,
-      placeholder: Container(
-        color: const Color.fromARGB(255, 30, 34, 45),
-      ),
-    );
-
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => Scaffold(
-              body: Center(
-                child: Chewie(
-                  controller: _chewieController,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
       child: Stack(
         children: [
           Center(
-            child: AspectRatio(
-        aspectRatio: 16 / 9, // Adjust the aspect ratio as per your video's dimensions
-        child: Stack(
-            alignment: Alignment.center,
-            children: [
-              VideoPlayer(_videoPlayerController),
-            ],
-        ),
-      ),
+            child: VideoPlayerPage(mediaUrl: filename),
           ),
           Positioned(
             bottom: 10,
@@ -159,9 +152,22 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BangUpdateLikeButton(likeCount: likeCount,isLiked:false,postId:postId),
-                SizedBox(height: 10),
-                LikeCounterWidget(initialLikeCount: likeCount),
+                LikeButton(
+                  onTap: (isLiked) async {
+                    await Service().likeBangUpdate(likeCount, isLiked, postId);
+                    return !isLiked;
+                  },
+                  size: 30,
+                  countPostion:CountPostion.bottom,
+                  likeCount: likeCount,
+                  likeBuilder: (bool isLiked) {
+                    Icon(
+                      isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                      color: isLiked ? Colors.red : Colors.red,
+                      size: 30,
+                    );
+                   },
+                ),
                 SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
@@ -183,7 +189,7 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "0 " ,
+                  commentCount,
                   style: TextStyle(
                     fontSize: 12.5,
                     color: Colors.white,

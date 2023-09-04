@@ -4,8 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:bangapp/services/service.dart';
 import '../../nav.dart';
 import 'package:video_player/video_player.dart';
@@ -36,7 +34,6 @@ class FinalCreate extends StatefulWidget {
 }
 
 class _FinaleCreateState extends State<FinalCreate> {
-
   Service service = Service();
   var image;
   bool light = true;
@@ -45,6 +42,7 @@ class _FinaleCreateState extends State<FinalCreate> {
   int pinPost = 0 ;
   XFile? mediaFile;
   VideoPlayerController? videoController;
+
   Future<String> saveUint8ListAsFile(Uint8List data, String fileName) async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String filePath = '${appDocDir.path}/$fileName';
@@ -112,28 +110,19 @@ class _FinaleCreateState extends State<FinalCreate> {
                         ),
                         ),
                         if(widget.editedVideo != null && widget.editedImage == null && widget.editedImage2 == null)
-                          Container(
-                            height: MediaQuery.of(context).size.height / 2.2,
-                            width: size.width * 0.4,
-                            child: InkWell(
-                              child: Container(
-                                width: 190,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  color: Colors.red[200],
-                                  borderRadius: BorderRadius.circular(32),
-                                ),
-                                child: Chewie(
-                                  controller: ChewieController(
-                                    videoPlayerController: VideoPlayerController.network(widget.editedVideo!),
-                                    autoPlay: true,
-                                    looping: true,
-                                  ),
+                          Expanded(
+                            child: Container(
+                              height: videoController?.value.size?.height ,
+                              child: Chewie(
+                                controller: ChewieController(
+                                  videoPlayerController: VideoPlayerController.network(widget.editedVideo!),
+                                  autoPlay: true,
+                                  looping: true,
                                 ),
                               ),
                             ),
+                          ),
 
-                          )
                         ],
                       ),
                       SizedBox(height: 15.0),
@@ -189,7 +178,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 print(filePath);
                                 Map<String, String> body = {
                                   'user_id': prefs.getInt('user_id').toString(),
-                                  'body': caption,
+                                  'body': caption ?? "",
                                   'pinned': pinPost == 1 ? '1' : '0',
                                 };
                                 await service.addImage(body, filePath);
@@ -200,7 +189,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 print(filePath);
                                 Map<String, String> body = {
                                   'user_id': prefs.getInt('user_id').toString(),
-                                  'body': caption,
+                                  'body': caption ?? "",
                                   'post_id':widget.postId.toString(),
                                   'pinned': pinPost == 1 ? '1' : '0',
                                 };
@@ -209,13 +198,16 @@ class _FinaleCreateState extends State<FinalCreate> {
                               }
                               else if (widget.editedVideo != null && widget.editedImage2 == null && widget.editedImage==null){
                                 String? filePath1 = widget.editedVideo;
-                                Map<String, String> body = {
-                                  'user_id': prefs.getInt('user_id').toString(),
-                                  'body': caption,
-                                  'type':'video',
-                                  'pinned': pinPost == 1 ? '1' : '0',
-                                };
-                                await service.addImage(body, filePath1!);
+                                if (filePath1 != null) { // Check if filePath1 is not null before using it
+                                  Map<String, String> body = {
+                                    'user_id': prefs.getInt('user_id').toString(),
+                                    'body': caption ?? "",
+                                    'type': 'video',
+                                    if (videoController != null && videoController!.value.size != null) 'videoHeight': videoController!.value.size!.height.toString(),
+                                    'pinned': pinPost == 1 ? '1' : '0',
+                                  };
+                                  await service.addImage(body, filePath1);
+                                }
                                 Navigator.pushNamed(context, Nav.id);
                               }
                               else{
@@ -223,7 +215,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');
                                 Map<String, String> body = {
                                     'user_id': prefs.getInt('user_id').toString(),
-                                    'body': caption,
+                                    'body': caption ?? "",
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
                                   await service.addChallengImage(body, filePath1,filePath2);

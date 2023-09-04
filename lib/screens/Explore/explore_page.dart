@@ -4,7 +4,6 @@ import 'package:bangapp/widgets/buildBangUpdate.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 class Explore extends StatefulWidget {
   @override
   _ExploreState createState() => _ExploreState();
@@ -61,11 +60,12 @@ class BangUpdates extends StatelessWidget {
               final caption = post['caption'];
               final postId = post['id'];
               var likeCount = post['bang_update_likes'] != null && post['bang_update_likes'].isNotEmpty ? post['bang_update_likes'][0]['like_count'] : 0;
+              var commentCount = post['bang_update_comments'] != null && post['bang_update_comments'].isNotEmpty ? post['bang_update_comments'][0]['comment_count'] : 0;
               return  Container(
                   color: Colors.black,
                   child: AspectRatio(
                     aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
-                    child: buildBangUpdate(context, filename, type, caption, postId, likeCount,index),
+                    child: buildBangUpdate(context, filename, type, caption, postId, likeCount,commentCount.toString(),index),
                   ),
               );
             },

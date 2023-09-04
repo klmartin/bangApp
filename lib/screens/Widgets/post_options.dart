@@ -12,7 +12,7 @@ import '../Create/video_editing/video_edit.dart';
 import '../Profile/profile.dart';
 import 'dart:io';
 
-Widget? postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId){
+Widget? postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type){
   Future<Uint8List> fileToUint8List(File file) async {
     if (file != null) {
       List<int> bytes = await file.readAsBytes();
@@ -92,11 +92,11 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              backgroundColor:Colors.white,
+              backgroundColor:Colors.black,
               context: context,
               builder: (BuildContext ctx) {
                 return Container(
-                    color: Colors.black,
+                    color: Colors.white,
                     child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -107,7 +107,7 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
                             height: 5,
                             width: 100,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Colors.blue,
                               borderRadius:
                               BorderRadius.circular(20),
                             ),
@@ -212,7 +212,7 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => ImageEditor(
-                                              image: imagePost,
+                                              image: image,
                                               postId: imagePostId,
                                               userChallenged:imageUserId,
                                               challengeImg: true,
@@ -246,7 +246,7 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
                                       .primaryColor,
                                 ),
                                 title: Text(
-                                  "Challenge Image",
+                                  "Challenge $type",
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge,

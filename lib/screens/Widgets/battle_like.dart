@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:like_button/like_button.dart';
 import '../Comments/battleComment.dart';
 import 'package:bangapp/services/service.dart';
 
 class BattleLike extends StatefulWidget {
-  final int likeCount;
-  final bool isLiked;
-  final int battleId;
+  int likeCountA;
+  int likeCountB;
+  bool isLiked;
+  int battleId;
   bool bLikeButton = false;
 
   BattleLike({
-    required this.likeCount,
+    required this.likeCountA,
+    required this.likeCountB,
     required this.isLiked,
     required this.battleId,
     required this.bLikeButton,
@@ -21,16 +24,14 @@ class BattleLike extends StatefulWidget {
 }
 
 class _BattleLikeState extends State<BattleLike> {
-  bool isLiked = false;
-  bool battleALike =false;
+  bool battleALike = false;
   bool battleBLike = false;
 
   @override
   void initState() {
     super.initState();
-    isLiked = widget.isLiked;
     battleALike = widget.isLiked;
-    battleBLike = false;
+    battleBLike = widget.isLiked;
   }
 
   _handleLikeTap(type) {
@@ -44,54 +45,57 @@ class _BattleLikeState extends State<BattleLike> {
         battleALike = false; // Reset A button state
       }
 
-      // Update isLiked based on A and B button states
-      isLiked = battleALike || battleBLike;
+      // Update likeCountA and likeCountB based on button states
+      if (battleALike) {
+        widget.likeCountA++; // Increment like count when A is liked
+        if (battleBLike) {
+          widget.likeCountB--; // Decrement like count for B when A is liked
+        }
+      } else if (battleBLike) {
+        widget.likeCountB++; // Increment like count when B is liked
+        if (battleALike) {
+          widget.likeCountA--; // Decrement like count for A when B is liked
+        }
+      }
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
-    if(widget.bLikeButton== false){
+    if (widget.bLikeButton == false) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
-            onTap: () => _handleLikeTap('A'),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  children: [
-                    battleALike
-                        ? Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30)
-                        : Icon(CupertinoIcons.heart, color: Colors.red, size: 30),
-                    SizedBox(width: 4),
-                    Positioned(
-                      top: 7.5,
-                      left: 11,
-                      child: Text(
-                        'A',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 2),
-                Text(
-                  "${widget.likeCount} likes",
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+          LikeButton(
+            onTap: (isLiked) async {
+              await _handleLikeTap('A');
+              return battleALike;
+            },
+            size: 30,
+            countPostion: CountPostion.bottom,
+            likeCount: widget.likeCountA,
+            likeBuilder: (bool isLiked) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    battleALike ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                    color: battleALike ? Colors.red : Colors.red,
+                    size: 32,
                   ),
-                ),
-              ],
-            ),
-          ), //for liking first picture
+                  Text(
+                    'A',
+                    style: TextStyle(
+                      color: battleALike ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13.5,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -112,94 +116,45 @@ class _BattleLikeState extends State<BattleLike> {
                   color: Colors.black,
                   size: 30,
                 ),
-              ), //for comments
+              ),
               SizedBox(width: 10),
-              GestureDetector(
-                onTap: () => _handleLikeTap('B'),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Stack(
-                      children: [
-                        battleBLike
-                            ? Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30)
-                            : Icon(CupertinoIcons.heart, color: Colors.red, size: 30),
-                        SizedBox(width: 4),
-                        Positioned(
-                          top: 7.5,
-                          left: 11.5,
-                          child: Text(
-                            'B',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      "${widget.likeCount} like",
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+              LikeButton(
+                onTap: (isLiked) async {
+                  await _handleLikeTap('B');
+                  return battleBLike;
+                },
+                size: 30,
+                countPostion: CountPostion.bottom,
+                likeCount: widget.likeCountB,
+                likeBuilder: (bool isLiked) {
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        battleBLike ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                        color: battleBLike ? Colors.red : Colors.red,
+                        size: 30,
                       ),
-                    ),
-                  ],
-                ),
-              ), //for liking second picture
+                      Text(
+                        'B',
+                        style: TextStyle(
+                          color: battleBLike ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+
+                      ),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ],
       );
+    } else {
+      return Container();
     }
-    else if(widget.bLikeButton){
-      return  Row(
-        children: [
-          const SizedBox(width: 5),
-          GestureDetector(
-            onTap: () {
-              // Handle the first heart icon tap
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  children: [
-                    !battleBLike ?Icon(CupertinoIcons.heart, color: Colors.red, size: 30) : Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30),
-                    SizedBox(width: 4),
-                    Positioned(
-                      top: 7.5,
-                      left: 11.5,
-                      child: Text(
-                        'B',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 2),
-                Text(
-                  "${widget.likeCount} like",
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),//for liking second picture
-        ],
-      );
-    }
-   else{return Container();}
   }
 }
+
