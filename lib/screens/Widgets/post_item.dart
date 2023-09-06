@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:bangapp/screens/Widgets/readmore.dart';
+import 'package:bangapp/services/service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,7 +17,7 @@ import '../../widgets/user_profile.dart';
 import '../Comments/commentspage.dart';
 import '../Create/video_editing/video_edit.dart';
 import '../Profile/profile.dart';
-import 'like_button.dart';
+import 'package:like_button/like_button.dart';
 import 'dart:io';
 class PostItem extends StatelessWidget {
   final int postId;
@@ -317,7 +318,32 @@ class PostItem extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  LikeButton(likeCount:likeCountA,isLiked:false,postId:postId,isChallenge:true,isButtonA:true,isButtonB:false),//for liking first picture
+                  LikeButton(
+                    onTap:  Service().likeAction(likeCount, isLiked, postId, likeType, isALiked, isBLiked),
+                    size: 30,
+                    countPostion: CountPostion.bottom,
+                    likeCount: likeCountA,
+                    likeBuilder: (bool isLiked) {
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                            color: isLiked ? Colors.red : Colors.red,
+                            size: 32,
+                          ),
+                          Text(
+                            'A',
+                            style: TextStyle(
+                              color: isLiked ? Colors.white : Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13.5,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -345,8 +371,33 @@ class PostItem extends StatelessWidget {
                       const SizedBox(
                         width: 10,
                       ),
-                      LikeButton(likeCount:likeCountB,isLiked:false,postId:postId,isChallenge:true,isButtonA:false,isButtonB:true),
+                      LikeButton(
+                        onTap: ,
+                        size: 30,
+                        countPostion: CountPostion.bottom,
+                        likeCount: likeCountB,
+                        likeBuilder: (bool isLiked) {
+                          return Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Icon(
+                                isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                                color: isLiked ? Colors.red : Colors.red,
+                                size: 30,
+                              ),
+                              Text(
+                                'B',
+                                style: TextStyle(
+                                  color: isLiked ? Colors.white : Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
 
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ],
