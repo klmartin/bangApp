@@ -31,11 +31,9 @@ dependencies:
   cloud_firestore: ^4.5.2
   curved_navigation_bar: ^1.0.1
   dropdown_button2: ^2.1.0
-  emoji_picker_flutter: ^1.6.1
   file_picker: ^5.2.10
   flutter:
     sdk: flutter
-  flutter_emoji: ^2.2.1+1
   loading_overlay: ^0.3.0
   flutter_svg: ^2.0.5
   font_awesome_flutter: ^10.4.0
@@ -70,9 +68,17 @@ dependencies:
   web_socket_channel: ^2.4.0
   visibility_detector: ^0.4.0+2
   comment_box: ^0.0.18
+  shared_preferences: ^2.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_launcher_icons: any
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: 'assets/images/app_icon.jpg'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -83,6 +89,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+    - assets/images/
     - images/
   fonts:
     - family: Pacifico

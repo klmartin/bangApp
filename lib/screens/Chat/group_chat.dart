@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_emoji/flutter_emoji.dart';
 
 
 
@@ -11,15 +10,6 @@ const kSendButtonTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontSize: 18.0,
 );
-
-bool isAllEmoji(String text) {
-  if (text != null) {
-    for (String s in EmojiParser().unemojify(text).split(" "))
-      if (!s.startsWith(":") || !s.endsWith(":")) return false;
-    return true;
-  }
-  return false;
-}
 
 const kMessageTextFieldDecoration = InputDecoration(
   contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
@@ -141,11 +131,7 @@ class MessageBubble extends StatelessWidget {
           children: [
             Container(
               constraints: BoxConstraints(minWidth: 0, maxWidth: 200),
-              decoration: isAllEmoji(text)
-                  ? BoxDecoration(
-                      color: Colors.transparent,
-                    )
-                  : BoxDecoration(
+              decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(30.0),
                           topLeft: Radius.circular(30.0),
@@ -165,9 +151,7 @@ class MessageBubble extends StatelessWidget {
                     vertical: 15.0, horizontal: 20.0),
                 child: Text(
                   text == null ? '' : text,
-                  style: isAllEmoji(text)
-                      ? TextStyle(fontSize: 25)
-                      : TextStyle(
+                  style: TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                           fontFamily: 'Metropolis'),
@@ -193,11 +177,7 @@ class MessageBubble extends StatelessWidget {
             Container(
               // elevation: 5.0,
               constraints: BoxConstraints(minWidth: 0, maxWidth: 200),
-              decoration: isAllEmoji(text)
-                  ? BoxDecoration(
-                      color: Colors.transparent,
-                    )
-                  : BoxDecoration(
+              decoration:BoxDecoration(
                       gradient: LinearGradient(
                         colors: [Colors.pink, Colors.redAccent, Colors.orange],
                         begin: Alignment.bottomRight,
@@ -214,11 +194,7 @@ class MessageBubble extends StatelessWidget {
                     vertical: 10.0, horizontal: 20.0),
                 child: Text(
                   text == null ? '' : text,
-                  style: isAllEmoji(text)
-                      ? TextStyle(
-                          fontSize: 25,
-                        )
-                      : TextStyle(
+                  style:  TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                           fontFamily: 'Metropolis',

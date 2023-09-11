@@ -18,6 +18,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
     super.initState();
     fetchData();
   }
+
   Future<void> fetchData() async {
     List<BoxData> data = await Service().getBangBattle();
     setState(() {
@@ -31,17 +32,20 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
         builder: (context) => Scaffold(
           body: SizedBox.expand(
             child: Hero(
-              tag: imageUrl,
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.contain,
-              ),
-            ),
+                tag: imageUrl,
+                child: Container(
+                  height: 250,
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                )),
           ),
         ),
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -50,30 +54,31 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
       children: [
         Text(
           '     Bang Battle',
-          style: TextStyle(fontFamily: 'Metropolis',
+          style: TextStyle(
+              fontFamily: 'Metropolis',
               color: Colors.black,
               fontSize: 20.0,
               fontWeight: FontWeight.w700,
               letterSpacing: -1),
         ),
-
         CarouselSlider(
           options: CarouselOptions(
-            height: 303,
+            height: 400,
             viewportFraction: 1.0,
             enlargeCenterPage: true,
             autoPlay: true,
             autoPlayInterval: Duration(seconds: 7),
           ),
           items: boxes.map((box) {
-            if(box.imageUrl2 != null){
+            if (box.imageUrl2 != null) {
               return Builder(
                 builder: (BuildContext context) {
                   return Container(
                     margin: EdgeInsets.symmetric(horizontal: 1.0),
                     child: Column(
                       children: [
-                        Row(  // Replace Column with Row
+                        Row(
+                          // Replace Column with Row
                           children: [
                             Expanded(
                               child: GestureDetector(
@@ -81,26 +86,28 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                   viewImage(context, box.imageUrl1);
                                 },
                                 child: Container(
-                                  height: 200,
+                                  height: 290,
                                   child: Image.network(
-                                    box.imageUrl1,  // Replace with the URL of the first image
-                                    fit: BoxFit.cover,
+                                    box.imageUrl1, // Replace with the URL of the first image
+                                    fit: BoxFit.fill,
                                   ),
                                 ),
                               ),
                             ),
 
-                            SizedBox(width: 10),  // Add some spacing between the images
+                            SizedBox(
+                                width:
+                                    10), // Add some spacing between the images
                             Expanded(
                               child: GestureDetector(
                                 onTap: () {
                                   viewImage(context, box.imageUrl2);
                                 },
                                 child: Container(
-                                  height: 200,
+                                  height: 290,
                                   child: Image.network(
-                                    box.imageUrl2,  // Replace with the URL of the first image
-                                    fit: BoxFit.cover,
+                                    box.imageUrl2, // Replace with the URL of the first image
+                                    fit: BoxFit.fill,
                                   ),
                                 ),
                               ),
@@ -109,20 +116,25 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                         ),
                         Text(
                           box.text,
-                          style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child:BattleLike(likeCountA: 0,likeCountB: 0 ,isLiked:false,battleId: box.battleId, bLikeButton: false,)
-                        ),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: BattleLike(
+                              likeCountA: 0,
+                              likeCountB: 0,
+                              isLiked: false,
+                              battleId: box.battleId,
+                              bLikeButton: false,
+                            )),
                       ],
                     ),
                   );
                 },
               );
-
-            }
-            else{
+            } else {
               return Builder(
                 builder: (BuildContext context) {
                   return Container(
@@ -142,7 +154,6 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                             ),
                           ),
                         ),
-
                         SizedBox(height: 10),
                         Text(
                           box.text,
@@ -150,7 +161,13 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: BattleLike(likeCountA: 0,likeCountB: 0 ,isLiked:false,battleId: box.battleId, bLikeButton: true,),
+                          child: BattleLike(
+                            likeCountA: 0,
+                            likeCountB: 0,
+                            isLiked: false,
+                            battleId: box.battleId,
+                            bLikeButton: true,
+                          ),
                         ),
                       ],
                     ),
@@ -158,7 +175,6 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                 },
               );
             }
-
           }).toList(),
         ),
       ],
@@ -172,7 +188,11 @@ class BoxData {
   final String text;
   final int battleId;
 
-  BoxData({ required this.imageUrl1, required this.imageUrl2,  required this.text,required this.battleId});
+  BoxData(
+      {required this.imageUrl1,
+      required this.imageUrl2,
+      required this.text,
+      required this.battleId});
 
   factory BoxData.fromJson(Map<String, dynamic> json) {
     return BoxData(

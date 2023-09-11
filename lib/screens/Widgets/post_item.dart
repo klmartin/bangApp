@@ -1,15 +1,17 @@
 import 'dart:typed_data';
 import 'package:bangapp/screens/Widgets/readmore.dart';
-import 'package:bangapp/services/service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:like_button/like_button.dart';
 import 'package:mime/mime.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import '../../models/post.dart';
+import '../../providers/comment_provider.dart';
 import '../../services/animation.dart';
 import '../../services/extension.dart';
 import '../../widgets/build_media.dart';
@@ -17,8 +19,10 @@ import '../../widgets/user_profile.dart';
 import '../Comments/commentspage.dart';
 import '../Create/video_editing/video_edit.dart';
 import '../Profile/profile.dart';
-import 'package:like_button/like_button.dart';
 import 'dart:io';
+
+import '../mine/mine.dart';
+
 class PostItem extends StatelessWidget {
   final int postId;
   final int userId;
@@ -34,9 +38,25 @@ class PostItem extends StatelessWidget {
   final int commentCount;
   final int followerCount;
   final List<Challenge> challenges;
-  final isLiked ;
+  final isLiked;
   final int isPinned;
-  PostItem(this.postId,this.userId,this.name, this.image,this.challengeImg,this.caption,this.type,this.width,this.height,this.likeCountA,this.likeCountB,this.commentCount,this.followerCount,this.challenges,this.isLiked,this.isPinned);
+  PostItem(
+      this.postId,
+      this.userId,
+      this.name,
+      this.image,
+      this.challengeImg,
+      this.caption,
+      this.type,
+      this.width,
+      this.height,
+      this.likeCountA,
+      this.likeCountB,
+      this.commentCount,
+      this.followerCount,
+      this.challenges,
+      this.isLiked,
+      this.isPinned);
 
   void viewImage(BuildContext context, String imageUrl) {
     Navigator.of(context).push(
@@ -55,6 +75,7 @@ class PostItem extends StatelessWidget {
       ),
     );
   }
+
   Future<Uint8List> fileToUint8List(File file) async {
     if (file != null) {
       List<int> bytes = await file.readAsBytes();
@@ -62,9 +83,9 @@ class PostItem extends StatelessWidget {
     }
     return Uint8List(0);
   }
-  Widget build(BuildContext context)
-  {
-    if (challengeImg != null && challenges.isEmpty ) {
+
+  Widget build(BuildContext context) {
+    if (challengeImg != null && challenges.isEmpty) {
       return Container(
         decoration: const BoxDecoration(
           color: Color.fromARGB(1, 30, 34, 45),
@@ -72,8 +93,8 @@ class PostItem extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 5.0, vertical: 5.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -97,8 +118,7 @@ class PostItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 14),
                           Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
@@ -127,13 +147,10 @@ class PostItem extends StatelessWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                  StringExtension
-                                      .displayTimeAgoFromTimestamp(
+                                  StringExtension.displayTimeAgoFromTimestamp(
                                     '2023-04-17 13:51:04',
                                   ),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge)
+                                  style: Theme.of(context).textTheme.bodyLarge)
                             ],
                           ),
                         ],
@@ -146,7 +163,7 @@ class PostItem extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        backgroundColor:Colors.white,
+                        backgroundColor: Colors.white,
                         context: context,
                         builder: (BuildContext ctx) {
                           return Container(
@@ -162,8 +179,7 @@ class PostItem extends StatelessWidget {
                                       width: 100,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius:
-                                        BorderRadius.circular(20),
+                                        borderRadius: BorderRadius.circular(20),
                                       ),
                                     ),
                                     const SizedBox(
@@ -235,8 +251,8 @@ class PostItem extends StatelessWidget {
                                           minLeadingWidth: 20,
                                           leading: Icon(
                                             CupertinoIcons.link,
-                                            color: Theme.of(context)
-                                                .primaryColor,
+                                            color:
+                                                Theme.of(context).primaryColor,
                                           ),
                                           title: Text(
                                             "Copy URL",
@@ -272,39 +288,50 @@ class PostItem extends StatelessWidget {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        viewImage(context,image);
+                        viewImage(context, image);
                       },
-                      child: CachedNetworkImage(
-                        imageUrl: image,
-                        placeholder: (context, url) => AspectRatio(
-                          aspectRatio: width / height,
-                          child: Shimmer.fromColors(
-                            baseColor: const Color.fromARGB(255, 30, 34, 45),
-                            highlightColor:
-                            const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-                            child: Container(
-                                color: const Color.fromARGB(255, 30, 34, 45)),
+                      child: Container(
+                        height: 250,
+                        child: CachedNetworkImage(
+                          imageUrl: image,
+                          fit: BoxFit.fill,
+                          placeholder: (context, url) => AspectRatio(
+                            aspectRatio: width / height,
+                            child: Shimmer.fromColors(
+                              baseColor: const Color.fromARGB(255, 30, 34, 45),
+                              highlightColor:
+                                  const Color.fromARGB(255, 30, 34, 45)
+                                      .withOpacity(.85),
+                              child: Container(
+                                  color: const Color.fromARGB(255, 30, 34, 45)),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 5), //Add some spacing between the images
+                  SizedBox(width: 5), // Add some spacing between the images
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        viewImage(context,challengeImg);
+                        viewImage(context, challengeImg);
                       },
-                      child: CachedNetworkImage(
-                        imageUrl: challengeImg,
-                        placeholder: (context, url) => AspectRatio(
-                          aspectRatio: 190 / 250,
-                          child: Shimmer.fromColors(
-                            baseColor: const Color.fromARGB(255, 30, 34, 45),
-                            highlightColor:
-                            const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-                            child: Container(
-                                color: const Color.fromARGB(255, 30, 34, 45)),
+                      child: Container(
+                        height: 250, // Set your desired fixed height here
+
+                        child: CachedNetworkImage(
+                          imageUrl: challengeImg,
+                          fit: BoxFit.fill,
+                          placeholder: (context, url) => AspectRatio(
+                            aspectRatio: 190 / 250,
+                            child: Shimmer.fromColors(
+                              baseColor: const Color.fromARGB(255, 30, 34, 45),
+                              highlightColor:
+                                  const Color.fromARGB(255, 30, 34, 45)
+                                      .withOpacity(.85),
+                              child: Container(
+                                  color: const Color.fromARGB(255, 30, 34, 45)),
+                            ),
                           ),
                         ),
                       ),
@@ -312,38 +339,17 @@ class PostItem extends StatelessWidget {
                   ),
                 ],
               ),
-            ),//displaying first challenge picture
+            ),
+            //displaying first challenge picture
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   LikeButton(
-                    onTap:  Service().likeAction(likeCount, isLiked, postId, likeType, isALiked, isBLiked),
-                    size: 30,
-                    countPostion: CountPostion.bottom,
                     likeCount: likeCountA,
-                    likeBuilder: (bool isLiked) {
-                      return Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Icon(
-                            isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-                            color: isLiked ? Colors.red : Colors.red,
-                            size: 32,
-                          ),
-                          Text(
-                            'A',
-                            style: TextStyle(
-                              color: isLiked ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13.5,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),                  
+                    isLiked: false,
+                  ), //for liking first picture
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -367,36 +373,13 @@ class PostItem extends StatelessWidget {
                           color: Colors.black,
                           size: 29,
                         ),
-                      ),//for comments
+                      ), //for comments
                       const SizedBox(
                         width: 10,
                       ),
                       LikeButton(
-                        onTap: ,
-                        size: 30,
-                        countPostion: CountPostion.bottom,
                         likeCount: likeCountB,
-                        likeBuilder: (bool isLiked) {
-                          return Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Icon(
-                                isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-                                color: isLiked ? Colors.red : Colors.red,
-                                size: 30,
-                              ),
-                              Text(
-                                'B',
-                                style: TextStyle(
-                                  color: isLiked ? Colors.white : Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-
-                              ),
-                            ],
-                          );
-                        },
+                        isLiked: false,
                       ),
                     ],
                   ),
@@ -424,15 +407,34 @@ class PostItem extends StatelessWidget {
                 ),
               ),
             ),
-            Text("     $commentCount comments"),
+          // Text("     $commentCount comments"),
+
+   FutureBuilder<void>(
+  future: Provider.of<CommentProvider>(context, listen: false).getCommentCount(postId),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Text('Loading...');
+    } else if (snapshot.hasError) {
+      return Text('An error occurred');
+    } else {
+      return Consumer<CommentProvider>(
+        builder: (context, commentCountProvider, child) {
+          return Text("     ${commentCountProvider.commentCount} comments");
+        },
+      );
+    }
+  },
+)
+,
+
+
 
             const SizedBox(height: 20),
           ],
         ),
       );
-    }
-    else if(challengeImg == null&& challenges.isEmpty ){
-      return  Container(
+    } else if (challengeImg == null && challenges.isEmpty) {
+      return Container(
           decoration: const BoxDecoration(
             color: Color.fromARGB(1, 30, 34, 45),
           ),
@@ -440,8 +442,8 @@ class PostItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -494,11 +496,11 @@ class PostItem extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                    StringExtension
-                                        .displayTimeAgoFromTimestamp(
+                                    StringExtension.displayTimeAgoFromTimestamp(
                                       '2023-04-17 13:51:04',
                                     ),
-                                    style: Theme.of(context).textTheme.bodyLarge)
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge)
                               ],
                             ),
                           ],
@@ -511,7 +513,7 @@ class PostItem extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          backgroundColor:Colors.white,
+                          backgroundColor: Colors.white,
                           context: context,
                           builder: (BuildContext ctx) {
                             return Container(
@@ -528,7 +530,7 @@ class PostItem extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
-                                          BorderRadius.circular(20),
+                                              BorderRadius.circular(20),
                                         ),
                                       ),
                                       const SizedBox(
@@ -621,38 +623,50 @@ class PostItem extends StatelessWidget {
                                         children: [
                                           ListTile(
                                             onTap: () async {
-                                              FilePickerResult? result = await FilePicker.platform.pickFiles();
+                                              FilePickerResult? result =
+                                                  await FilePicker.platform
+                                                      .pickFiles();
                                               if (result != null) {
-                                                File file = File(result.files.first.path!);
-                                                final mimeType = lookupMimeType(file.path);
-                                                if(mimeType!.startsWith('image/')){
-                                                  Uint8List image = await fileToUint8List(file);
+                                                File file = File(
+                                                    result.files.first.path!);
+                                                final mimeType =
+                                                    lookupMimeType(file.path);
+                                                if (mimeType!
+                                                    .startsWith('image/')) {
+                                                  Uint8List image =
+                                                      await fileToUint8List(
+                                                          file);
                                                   await Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) => ImageEditor(
-                                                          image: image,
-                                                          postId: postId,
-                                                          userChallenged:userId,
-                                                          challengeImg: true,
-                                                          image2: null,
-                                                          allowMultiple: true
-                                                      ),
+                                                      builder: (context) =>
+                                                          ImageEditor(
+                                                              image: image,
+                                                              // postId: postId,
+                                                              // userChallenged:
+                                                              //     userId,
+                                                              // challengeImg:
+                                                              //     true,
+                                                              // image2: null,
+                                                              allowMultiple:
+                                                                  true),
                                                     ),
                                                   );
-                                                }
-                                                else if(mimeType.startsWith('video/')){
+                                                } else if (mimeType
+                                                    .startsWith('video/')) {
                                                   await Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) => VideoEditor(
+                                                      builder: (context) =>
+                                                          VideoEditor(
                                                         video: File(file.path),
                                                       ),
                                                     ),
                                                   );
-                                                }
-                                                else{
-                                                  Fluttertoast.showToast(msg: "Unsupported file type.");
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          "Unsupported file type.");
                                                 }
                                               } else {
                                                 // User canceled the picker
@@ -691,10 +705,11 @@ class PostItem extends StatelessWidget {
                   ],
                 ),
               ),
-               AspectRatio(
-                  aspectRatio: width / height,
-                  child: buildMediaWidget(context, image,type,width,height,isPinned),
-               ),
+              AspectRatio(
+                aspectRatio: width / height,
+                child: buildMediaWidget(
+                    context, image, type, width, height, isPinned),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -719,7 +734,10 @@ class PostItem extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child:LikeButton(likeCount:0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
+                    child: LikeButton(
+                      likeCount: 0,
+                      isLiked: false,
+                    ),
                   ),
                 ],
               ),
@@ -727,7 +745,7 @@ class PostItem extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ReadMoreText(
-                  caption ,
+                  caption,
                   trimLines: 2,
                   style: Theme.of(context).textTheme.bodyLarge!,
                   colorClickableText: Theme.of(context).primaryColor,
@@ -744,10 +762,8 @@ class PostItem extends StatelessWidget {
               Text("     $commentCount comments"),
               const SizedBox(height: 20),
             ],
-          )
-      );
-    }
-    else if(challengeImg == null && challenges.isNotEmpty ){
+          ));
+    } else if (challengeImg == null && challenges.isNotEmpty) {
       return Container(
           decoration: const BoxDecoration(
             color: Color.fromARGB(1, 30, 34, 45),
@@ -756,8 +772,8 @@ class PostItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -781,8 +797,7 @@ class PostItem extends StatelessWidget {
                             ),
                             const SizedBox(width: 14),
                             Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
@@ -811,13 +826,11 @@ class PostItem extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                    StringExtension
-                                        .displayTimeAgoFromTimestamp(
+                                    StringExtension.displayTimeAgoFromTimestamp(
                                       '2023-04-17 13:51:04',
                                     ),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge)
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge)
                               ],
                             ),
                           ],
@@ -830,7 +843,7 @@ class PostItem extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          backgroundColor:Colors.white,
+                          backgroundColor: Colors.white,
                           context: context,
                           builder: (BuildContext ctx) {
                             return Container(
@@ -847,7 +860,7 @@ class PostItem extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
-                                          BorderRadius.circular(20),
+                                              BorderRadius.circular(20),
                                         ),
                                       ),
                                       const SizedBox(
@@ -940,38 +953,50 @@ class PostItem extends StatelessWidget {
                                         children: [
                                           ListTile(
                                             onTap: () async {
-                                              FilePickerResult? result = await FilePicker.platform.pickFiles();
+                                              FilePickerResult? result =
+                                                  await FilePicker.platform
+                                                      .pickFiles();
                                               if (result != null) {
-                                                File file = File(result.files.first.path!);
-                                                final mimeType = lookupMimeType(file.path);
-                                                if(mimeType!.startsWith('image/')){
-                                                  Uint8List image = await fileToUint8List(file);
+                                                File file = File(
+                                                    result.files.first.path!);
+                                                final mimeType =
+                                                    lookupMimeType(file.path);
+                                                if (mimeType!
+                                                    .startsWith('image/')) {
+                                                  Uint8List image =
+                                                      await fileToUint8List(
+                                                          file);
                                                   await Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) => ImageEditor(
-                                                          image: image,
-                                                          postId: postId,
-                                                          userChallenged:userId,
-                                                          challengeImg: true,
-                                                          image2: null,
-                                                          allowMultiple: true
-                                                      ),
+                                                      builder: (context) =>
+                                                          ImageEditor(
+                                                              // image: image,
+                                                              // postId: postId,
+                                                              // userChallenged:
+                                                              //     userId,
+                                                              // challengeImg:
+                                                              //     true,
+                                                              // image2: null,
+                                                              allowMultiple:
+                                                                  true),
                                                     ),
                                                   );
-                                                }
-                                                else if(mimeType.startsWith('video/')){
+                                                } else if (mimeType
+                                                    .startsWith('video/')) {
                                                   await Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) => VideoEditor(
+                                                      builder: (context) =>
+                                                          VideoEditor(
                                                         video: File(file.path),
                                                       ),
                                                     ),
                                                   );
-                                                }
-                                                else{
-                                                  Fluttertoast.showToast(msg: "Unsupported file type.");
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          "Unsupported file type.");
                                                 }
                                               } else {
                                                 // User canceled the picker
@@ -985,7 +1010,9 @@ class PostItem extends StatelessWidget {
                                             ),
                                             title: Text(
                                               "Challenge Image",
-                                              style: Theme.of(context).textTheme.bodyLarge,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge,
                                             ),
                                           ),
                                           Divider(
@@ -1014,10 +1041,11 @@ class PostItem extends StatelessWidget {
                   itemCount: challenges.length,
                   itemBuilder: (context, index) {
                     final imageUrl = challenges[index].challengeImg;
-                    return  AspectRatio(
-                        aspectRatio: width / height,
-                        child: buildMediaWidget(context, imageUrl, type, width, height, isPinned),
-                      );
+                    return AspectRatio(
+                      aspectRatio: width / height,
+                      child: buildMediaWidget(
+                          context, imageUrl, type, width, height, isPinned),
+                    );
                   },
                 ),
               ),
@@ -1045,7 +1073,10 @@ class PostItem extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: LikeButton(likeCount: 0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
+                    child: LikeButton(
+                      likeCount: 0,
+                      isLiked: false,
+                    ),
                   ),
                 ],
               ),
@@ -1053,7 +1084,7 @@ class PostItem extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ReadMoreText(
-                  caption ,
+                  caption,
                   trimLines: 2,
                   style: Theme.of(context).textTheme.bodyLarge!,
                   colorClickableText: Theme.of(context).primaryColor,
@@ -1067,14 +1098,12 @@ class PostItem extends StatelessWidget {
                   ),
                 ),
               ),
-
               Text("     $commentCount comments"),
               const SizedBox(height: 20),
             ],
-          )
-      );
+          ));
+    } else {
+      return Container();
     }
-    else{return Container();}
-
   }
 }
