@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:bangapp/providers/comment_provider.dart';
+import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/screens/Home/home.dart';
+import 'package:bangapp/screens/Home/home2.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
@@ -30,7 +32,9 @@ void main() async {
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserProvider()),
-    ChangeNotifierProvider(create: (context) => CommentProvider())
+    ChangeNotifierProvider(create: (context) => CommentProvider()),
+        ChangeNotifierProvider(create: (context) => PostsProvider())
+
   ], child: MyApp()));
 }
 
@@ -140,20 +144,6 @@ class _AuthenticateState extends State<Authenticate> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<SharedPreferences>(
-      future: SharedPreferences.getInstance(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          String? token = snapshot.data?.getString('token');
-          if (token != null) {
-            return LoginScreen();
-          } else {
-            return LoginScreen();
-          }
-        } else {
-          return LoginScreen();
-        }
-      },
-    );
+    return LoginScreen();
   }
 }
