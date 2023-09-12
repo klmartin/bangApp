@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/userprovider.dart';
 import 'package:bangapp/services/fetch_post.dart';
 import 'profile_upload.dart';
+late bool _persposts ;
 
 Future<String?> getUserImage() async {
   try {
@@ -52,6 +53,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     final userData=  Provider.of<UserProvider>(context,listen:false);
+    print(userData.myUser.id);
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: ListView(
@@ -416,11 +418,15 @@ class ImagePost extends StatelessWidget {
 }
 
 Future<List<Hobby>> fetchHobbies() async {
-  final response = await http.get(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/hobbies'));
+  print('fetching hobbies');
+  final response = await http.get(Uri.parse('http://192.168.124.229/social-backend-laravel/api/hobbies'));
+
   if (response.statusCode == 200) {
     final List<dynamic> data = json.decode(response.body);
+
     print(json.decode(response.body));
     return data.map((json) => Hobby.fromJson(json)).toList();
+
   } else {
     throw Exception('Failed to load hobbies');
   }
