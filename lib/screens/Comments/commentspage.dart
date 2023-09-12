@@ -1,5 +1,4 @@
 import 'package:comment_box/comment/comment.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
@@ -39,14 +38,14 @@ class _CommentsPageState extends State<CommentsPage> {
       filedata = comments.map((comment) {
         return {
           'name': comment['user']['name'],
-          'pic': 'YOUR_BASE_URL/${comment['user']['image']}',
+          'pic': NetworkImage(
+              'https://img.icons8.com/fluency/48/user-male-circle--v1.png'),
           'message': comment['body'],
           'date': comment['created_at'],
         };
       }).toList();
     });
   }
-
 
   Widget commentChild(data) {
     return ListView(
@@ -67,9 +66,11 @@ class _CommentsPageState extends State<CommentsPage> {
                       color: Colors.blue,
                       borderRadius: new BorderRadius.all(Radius.circular(50))),
                   child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: CommentBox.commentImageParser(
-                          imageURLorPath: data[i]['pic'])),
+                    radius: 50,
+                    backgroundImage: CommentBox.commentImageParser(
+                      imageURLorPath: data[i]['pic'],
+                    ),
+                  ),
                 ),
               ),
               title: Text(
@@ -106,7 +107,8 @@ class _CommentsPageState extends State<CommentsPage> {
       body: Container(
         child: CommentBox(
           userImage: CommentBox.commentImageParser(
-              imageURLorPath: "assets/img/userpic.jpg"),
+              imageURLorPath:
+                  "https://img.icons8.com/fluency/48/user-male-circle--v1.png"),
           child: commentChild(filedata),
           labelText: 'Write a comment...',
           errorText: 'Comment cannot be blank',
@@ -115,6 +117,7 @@ class _CommentsPageState extends State<CommentsPage> {
           sendButtonMethod: () async {
             if (formKey.currentState!.validate()) {
               final response = await Service().postComment(
+                context,
                 widget.postId,
                 commentController.text,
               );
@@ -122,7 +125,7 @@ class _CommentsPageState extends State<CommentsPage> {
               setState(() {
                 var value = {
                   'name': response['data']['user']['name'],
-                  'pic': response['data']['user']['image'],
+                  'pic': "https://img.icons8.com/fluency/48/user-male-circle--v1.png",
                   'message': commentController.text,
                   'date': '2021-01-01 12:00:00'
                 };

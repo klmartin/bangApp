@@ -1,21 +1,26 @@
+import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/screens/Chat/chat_home.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
+import '../providers/comment_provider.dart';
 import '../screens/Widgets/small_box.dart';
 
 class Service {
-
-
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/getPosts'));
+    var response = await http.get(Uri.parse(
+        '$baseUrl/getPosts'));
     var data = json.decode(response.body);
     return data['data']['data'];
   }
+
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     print(body);
-    String addimageUrl = 'https://alitaafrica.com/social-backend-laravel/api/imageadd';
+    String addimageUrl =
+        '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -26,7 +31,6 @@ class Service {
         var data = json.decode(response.body);
         return data['url'];
       } else {
-
         return false;
       }
     } catch (e) {
@@ -35,8 +39,10 @@ class Service {
     }
   }
 
-  Future<bool> addChallengImage(Map<String, String> body, String filepath,String filepath2) async {
-    String addimageUrl = 'https://alitaafrica.com/social-backend-laravel/api/imagechallengadd';
+  Future<bool> addChallengImage(
+      Map<String, String> body, String filepath, String filepath2) async {
+    String addimageUrl =
+        '$baseUrl/imagechallengadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath))
@@ -54,9 +60,11 @@ class Service {
     }
   }
 
-  Future<bool> addChallenge(Map<String, String> body, String filepath, int userId) async {
+  Future<bool> addChallenge(
+      Map<String, String> body, String filepath, int userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String addimageUrl = 'https://alitaafrica.com/social-backend-laravel/api/addChallenge';
+    String addimageUrl =
+        '$baseUrl/addChallenge';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -64,7 +72,11 @@ class Service {
       var response = await http.Response.fromStream(await request.send());
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        String notificationSent = await sendNotification(userId, prefs.getString('name'), 'Has Challenged Your Post',data['challengeId']);
+        String notificationSent = await sendNotification(
+            userId,
+            prefs.getString('name'),
+            'Has Challenged Your Post',
+            data['challengeId']);
         return true;
       } else {
         return false;
@@ -75,13 +87,13 @@ class Service {
     }
   }
 
-
   Future<Map<String, dynamic>> getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/userr'),
-          headers: {
-            'Authorization': 'Bearer ${ prefs.getString('token')}',
-          });
+    final response = await http.get(
+        Uri.parse('$baseUrl/userr'),
+        headers: {
+          'Authorization': 'Bearer ${prefs.getString('token')}',
+        });
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -89,10 +101,13 @@ class Service {
     }
   }
 
-  Future<void> likeAction(likeCount, isLiked, postId,likeType,isALiked,isBLiked) async {
+  Future<void> likeAction(
+      likeCount, isLiked, postId, likeType, isALiked, isBLiked) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/likePost'),
+      final response = await http.post(
+        Uri.parse(
+            '$baseUrl/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -130,7 +145,9 @@ class Service {
   Future<void> likeBangUpdate(likeCount, isLiked, postId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/likeBangUpdate'),
+      final response = await http.post(
+        Uri.parse(
+            '$baseUrl/likeBangUpdate'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -157,13 +174,16 @@ class Service {
   Future<List<dynamic>> getComments(String postId) async {
     try {
       final response = await http.get(
-        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/getComments/$postId'),
+        Uri.parse('$baseUrl/getComments/$postId'),
       );
+              print('$baseUrl/getComments/$postId');
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['comments'];
+      } else {
+        return [];
       }
-      else{return [];}
     } catch (e) {
       print(e);
       return ['err'];
@@ -171,17 +191,17 @@ class Service {
     }
   }
 
-
   Future<List<dynamic>> getUpdateComments(String postId) async {
     try {
       final response = await http.get(
-        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/bangUpdateComment/$postId'),
+        Uri.parse('$baseUrl/bangUpdateComment/$postId'),
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['comments'];
+      } else {
+        return [];
       }
-      else{return [];}
     } catch (e) {
       print(e);
       return ['err'];
@@ -192,13 +212,14 @@ class Service {
   Future<List<dynamic>> getBattleComments(String postId) async {
     try {
       final response = await http.get(
-        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/bangBattleComment/$postId'),
+        Uri.parse('$baseUrl/bangBattleComment/$postId'),
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['comments'];
+      } else {
+        return [];
       }
-      else{return [];}
     } catch (e) {
       print(e);
       return ['err'];
@@ -206,30 +227,55 @@ class Service {
     }
   }
 
-  Future postComment(postId,commentText) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(
-        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/postComment'),
-        body: {
-          'post_id': postId.toString(),
-          'user_id': prefs.getInt('user_id').toString(), // Convert to string
-          'body': commentText,
-        },
-      );
-      return jsonDecode(response.body);
-    }
-    catch (e) {
-      print(e);
-      return e;
-    }
-  }
+  // Future postComment(postId, commentText) async {
+  //   try {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     final response = await http.post(
+  //       Uri.parse('$baseUrl/postComment'),
+  //       body: {
+  //         'post_id': postId.toString(),
+  //         'user_id': prefs.getInt('user_id').toString(), // Convert to string
+  //         'body': commentText,
+  //       },
+  //     );
+  //     return jsonDecode(response.body);
+  //   } catch (e) {
+  //     print(e);
+  //     return e;
+  //   }
+  // }
 
-  Future postUpdateComment(postId,commentText) async {
+  Future postComment(BuildContext context, postId, commentText) async {
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await http.post(
+      Uri.parse('$baseUrl/postComment'),
+      body: {
+        'post_id': postId.toString(),
+        'user_id': prefs.getInt('user_id').toString(),
+        'body': commentText,
+      },
+    );
+    final responseData = json.decode(response.body);
+      // If the comment was posted successfully, update the comment count
+      final commentProvider = Provider.of<CommentProvider>(context, listen: false);
+      await commentProvider.getCommentCount(postId);
+        // commentProvider.incrementCommentCount();
+
+      return  jsonDecode(response.body);
+
+  } catch (e) {
+    print(e);
+    throw e;
+  }
+}
+
+
+  Future postUpdateComment(postId, commentText) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/postUpdateComment'),
+        Uri.parse('$baseUrl/postUpdateComment'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -238,18 +284,17 @@ class Service {
       );
       print('data is saved');
       return jsonDecode(response.body);
-    }
-    catch (e) {
+    } catch (e) {
       print(e);
       return e;
     }
   }
 
-  Future postBattleComment(postId,commentText) async {
+  Future postBattleComment(postId, commentText) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/postBattleComment'),
+        Uri.parse('$baseUrl/postBattleComment'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -257,8 +302,7 @@ class Service {
         },
       );
       return jsonDecode(response.body);
-    }
-    catch (e) {
+    } catch (e) {
       print(e);
       return e;
     }
@@ -268,11 +312,10 @@ class Service {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.delete(
-        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/deletePost/$postId'),
+        Uri.parse('$baseUrl/deletePost/$postId'),
       );
       return jsonDecode(response.body);
-    }
-    catch (e) {
+    } catch (e) {
       print(e);
       return e;
     }
@@ -281,45 +324,46 @@ class Service {
   Future acceptChallenge(postId) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.109.229/social-backend-laravel/api/acceptChallenge'),
+        Uri.parse('$baseUrl/acceptChallenge'),
         body: {
           'post_id': postId.toString(),
         },
       );
       return jsonDecode(response.body);
-    }
-    catch (e) {
+    } catch (e) {
       print(e);
       return e;
     }
   }
 
-  Future sendTokenToBackend(token,id) async {
+  Future sendTokenToBackend(token, id) async {
     try {
-      final response = await http.post(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/storeToken'),
+      final response = await http.post(
+        Uri.parse(
+            'https://alitaafrica.com/social-backend-laravel/api/storeToken'),
         body: {
-          'user_id':id.toString(),
-          'device_token':token,
+          'user_id': id.toString(),
+          'device_token': token,
         },
       );
       if (response.statusCode == 200) {
-      } else {
-      }
+      } else {}
     } catch (e) {
       print(e);
       // Handle exceptions, if any
     }
   }
 
-  Future<String> sendNotification(userId, name, body,challengeId) async {
+  Future<String> sendNotification(userId, name, body, challengeId) async {
     try {
       final response = await http.post(
-        Uri.parse('https://alitaafrica.com/social-backend-laravel/api/sendNotification'),
+        Uri.parse(
+            'https://alitaafrica.com/social-backend-laravel/api/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
           'body': body,
-          'challengeId':challengeId.toString(),
+          'challengeId': challengeId.toString(),
         },
       );
       if (response.statusCode == 200) {
@@ -334,10 +378,11 @@ class Service {
     }
   }
 
-  Future<bool> setUserProfile(username,bio, String filepath) async {
+  Future<bool> setUserProfile(username, bio, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
-    String addimageUrl = 'https://alitaafrica.com/social-backend-laravel/api/setUserProfile';
+    String addimageUrl =
+        'https://alitaafrica.com/social-backend-laravel/api/setUserProfile';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(username)
       ..fields.addAll(user_id as Map<String, String>)
@@ -358,7 +403,8 @@ class Service {
   }
 
   Future<List<BoxData>> getBangBattle() async {
-    var response = await http.get(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/getBangBattle'));
+    var response = await http.get(Uri.parse(
+        'https://alitaafrica.com/social-backend-laravel/api/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
     List<BoxData> boxes = [];
@@ -372,11 +418,12 @@ class Service {
   Future<void> likeBattle(postId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/likePost'),
+      final response = await http.post(
+        Uri.parse(
+            'https://alitaafrica.com/social-backend-laravel/api/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
-
         },
       );
       print(response.body);
@@ -396,11 +443,11 @@ class Service {
     }
   }
 
-
-
   Future<List<ChatMessage>> getMessage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.post(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/getMessages'),
+    final response = await http.post(
+      Uri.parse(
+          'https://alitaafrica.com/social-backend-laravel/api/getMessages'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
       },
@@ -422,9 +469,11 @@ class Service {
 
   Future<List<ChatMessage>> getMessages(userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.post(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/getMessagesFromUser'),
+    final response = await http.post(
+      Uri.parse(
+          'https://alitaafrica.com/social-backend-laravel/api/getMessagesFromUser'),
       body: {
-        'other_user_id' : userId,
+        'other_user_id': userId,
         'user_id': prefs.getInt('user_id').toString(),
       },
     );
@@ -444,7 +493,8 @@ class Service {
   Future<void> sendMessage(receiverId, String message) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse('https://alitaafrica.com/social-backend-laravel/api/sendMessage'),
+      Uri.parse(
+          'https://alitaafrica.com/social-backend-laravel/api/sendMessage'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
         'receiver_id': receiverId.toString(),
@@ -460,5 +510,4 @@ class Service {
   }
 
   void setState(Null Function() param0) {}
-
 }

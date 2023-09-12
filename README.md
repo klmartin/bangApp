@@ -1,96 +1,86 @@
-<p align="center"><a href="https://cyblogerz.github.io"><img width="100%" alt="bangapp" src="./nalla-header.png" /></a></p>
+<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
 
-
-
-
-A Social media app  created with Flutter and Firebase.(inspired from instagram)
-
-
-
-## Show some ❤️ and star ⭐ the repo to support the project.
-
-
-
-## Note
-This repository is still under development and I will continue to add more features to it.
-
-## Features
-
- * Photo feed based on other user uploads
- * Post photo posts from camera or gallery
-   * Like posts
-   * Comment on posts
-        * View all comments on a post
- 
- * Profile Screen
-   * Follow / Unfollow Users
-   * Edit profile
-   
- * Chat Screen
-    * One on One Chat with any user
-    
- 
-
-
-## Screenshots
-
-
-<p>
-<img src="https://user-images.githubusercontent.com/74711322/136813482-124a01ee-e0ee-4294-b28a-0e43d3f13d2c.jpg" alt="feed example" width = "400">
-  
-  
-  
-<img src="https://user-images.githubusercontent.com/74711322/136813572-e3b76197-7368-4828-b9a2-9d69a1d6b430.jpg" alt="feed example" width = "400" >
-  
-  
-  
-<img src="https://user-images.githubusercontent.com/74711322/136813561-60ab2112-0ccc-4323-b970-cf7d6826409d.jpg" alt="feed example" width = "400" >
-  
-  
-<img src="https://user-images.githubusercontent.com/74711322/136813647-42e59a40-e97b-4118-8cb5-50f3484867c3.jpg" alt="feed example" width = "400" >
-  
-  
-  
- 
-<img src="https://user-images.githubusercontent.com/74711322/136813664-dc0615cc-9c2e-42ab-a96e-eff54ea46981.jpg" alt="feed example" width = "400" >
-  
-  
-<img src="https://user-images.githubusercontent.com/74711322/136813691-d7214997-6f65-410b-98fd-4a7094a84810.jpg" alt="feed example" width = "400" >
-  
-  
-
-
+<p align="center">
+<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
 </p>
 
+## About Laravel
 
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## Learning Laravel
 
-# Upcoming Features
- -  Notificaitons for likes, comments, follows, etc
- -  Searching functionality
- -  Caching of Profiles, Images, Etc.
- -  Filters support for images
- -  Videos support
- -  Custom Camera Implementation
- -  Heart Animation when liking image
- -  Delete Posts
- -  Stories
- -  Send post to chats
- -  Blogging
- -  anonymous browsing
- 
- <h1>Questions?🤔</h1>
- 
- Hit me on
- 
-<a href="https://twitter.com/cyblogerz"><img src="https://user-images.githubusercontent.com/35039342/55471524-8e24cb00-5627-11e9-9389-58f3d4419153.png" width="60"></a>
-<a href="https://www.linkedin.com/in/pranavajay/"><img src="https://user-images.githubusercontent.com/35039342/55471530-94b34280-5627-11e9-8c0e-6fe86a8406d6.png" width="60"></a>
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+
+## Laravel Sponsors
+
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+
+### Premium Partners
+
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Cubet Techno Labs](https://cubettech.com)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[Many](https://www.many.co.uk)**
+- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
+- **[DevSquad](https://devsquad.com)**
+
+### Community Sponsors
+
+<a href="https://op.gg"><img src="http://opgg-static.akamaized.net/icon/t.rectangle.png" width="150"></a>
+
+- [UserInsights](https://userinsights.com)
+- [Fragrantica](https://www.fragrantica.com)
+- [SOFTonSOFA](https://softonsofa.com/)
+- [User10](https://user10.com)
+- [Soumettre.fr](https://soumettre.fr/)
+- [CodeBrisk](https://codebrisk.com)
+- [1Forge](https://1forge.com)
+- [TECPRESSO](https://tecpresso.co.jp/)
+- [Runtime Converter](http://runtimeconverter.com/)
+- [WebL'Agence](https://weblagence.com/)
+- [Invoice Ninja](https://www.invoiceninja.com)
+- [iMi digital](https://www.imi-digital.de/)
+- [Earthlink](https://www.earthlink.ro/)
+- [Steadfast Collective](https://steadfastcollective.com/)
+- [We Are The Robots Inc.](https://watr.mx/)
+- [Understand.io](https://www.understand.io/)
+- [Abdel Elrafa](https://abdelelrafa.com)
+- [Hyper Host](https://hyper.host)
+- [Appoly](https://www.appoly.co.uk)
+- [云软科技](http://www.yunruan.ltd/)
 
 ## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-Please make sure to update tests as appropriate
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
+## Code of Conduct
 
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# BangAppBackend

@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
+import 'dart:io';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
+import '../../services/animation.dart';
 
 class Create extends StatefulWidget {
   Create({Key? key, this.title}) : super(key: key);
@@ -121,7 +123,7 @@ class _CreateState extends State<Create> {
                       MaterialPageRoute(
                         builder: (context) => ImageEditor(
                             image: editedImage,
-                            image2: editedImage2,
+                            // image: editedImage2,
                             allowMultiple: true
                         ),
                       ),

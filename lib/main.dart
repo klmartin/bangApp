@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:bangapp/providers/comment_provider.dart';
+import 'package:bangapp/screens/Home/home.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
@@ -23,12 +25,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => UserProvider())
+    ChangeNotifierProvider(create: (_) => UserProvider()),
+    ChangeNotifierProvider(create: (context) => CommentProvider())
   ], child: MyApp()));
 }
 
@@ -63,15 +65,15 @@ class Authenticate extends StatefulWidget {
 }
 
 class _AuthenticateState extends State<Authenticate> {
-   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-   FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-   late IO.Socket socket;
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  late IO.Socket socket;
   @override
   void initState() {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
-
   }
 
   void _configureFirebaseMessaging() {
@@ -108,21 +110,24 @@ class _AuthenticateState extends State<Authenticate> {
   }
 
   void _configureLocalNotifications() {
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
     _flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   Future<void> _showLocalNotification(String title, String body) async {
-
-    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
       importance: Importance.high,
       priority: Priority.high,
       ticker: 'ticker',
     );
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await _flutterLocalNotificationsPlugin.show(
       0,
@@ -133,7 +138,6 @@ class _AuthenticateState extends State<Authenticate> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<SharedPreferences>(
@@ -142,12 +146,12 @@ class _AuthenticateState extends State<Authenticate> {
         if (snapshot.hasData) {
           String? token = snapshot.data?.getString('token');
           if (token != null) {
-            return Nav();
+            return LoginScreen();
           } else {
-            return Welcome();
+            return LoginScreen();
           }
         } else {
-          return Center(child: CircularProgressIndicator());
+          return LoginScreen();
         }
       },
     );

@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bangapp/models/userprovider.dart';
 import 'package:provider/provider.dart';
+import '../../constants/urls.dart';
 import '../../nav.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -10,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/screens/Authenticate/register_screen.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login';
@@ -27,14 +27,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final userId = null;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    Provider.of<UserProvider>(context,listen:false);
+    Provider.of<UserProvider>(context, listen: false);
   }
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: Colors.white,
       body: ModalProgressHUD(
@@ -141,37 +140,51 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextButton(
                           onPressed: () async {
                             setState(() {
-                              showSpinner = true;
+                              showSpinner = false;
                             });
                             try {
-                                final response = await http.post(
-                                Uri.parse('https://alitaafrica.com/social-backend-laravel/api/v1/login'),
+                              final response = await http.post(
+                                Uri.parse(
+                                    'http://192.168.34.226/bang/api/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,
-                                  },
-                                );
+                                },
+                              );
                               final responseBody = jsonDecode(response.body);
-                              if (responseBody.containsKey('error') && responseBody['error'] == 'invalid_credentials') {
+                              if (responseBody.containsKey('error') &&
+                                  responseBody['error'] ==
+                                      'invalid_credentials') {
                                 Fluttertoast.showToast(
                                   msg: responseBody['error'],
-                                  toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
-                                  gravity: ToastGravity.CENTER, // Toast position
-                                  timeInSecForIosWeb: 1, // Time duration for iOS and web
+                                  toastLength: Toast
+                                      .LENGTH_SHORT, // or Toast.LENGTH_LONG
+                                  gravity:
+                                      ToastGravity.CENTER, // Toast position
+                                  timeInSecForIosWeb:
+                                      1, // Time duration for iOS and web
                                   backgroundColor: Colors.grey[600],
                                   textColor: Colors.white,
                                   fontSize: 16.0,
                                 );
                                 showSpinner = false;
-                              }
-                              else{
-                                _firebaseMessaging.getToken().then((token) async {
-                                  Service().sendTokenToBackend(token,responseBody['user_id']);
-                                  Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
-                                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                                  prefs.setInt('user_id', responseBody['user_id']);
-                                  prefs.setString('token', responseBody['token']);
-                                  prefs.setString('user_image', responseBody['user_image']);
+                              } else {
+                                _firebaseMessaging
+                                    .getToken()
+                                    .then((token) async {
+                                  Service().sendTokenToBackend(
+                                      token, responseBody['user_id']);
+                                  Provider.of<UserProvider>(context,
+                                          listen: false)
+                                      .setUser(responseBody);
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setInt(
+                                      'user_id', responseBody['user_id']);
+                                  prefs.setString(
+                                      'token', responseBody['token']);
+                                  prefs.setString(
+                                      'user_image', responseBody['user_image']);
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);
                                 });
@@ -205,10 +218,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   MaterialButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, Register.id);
-                      },
-                      child: Text('Sign up with Email')),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Register(),
+                        ),
+                      );
+                    },
+                    child: Text('Sign up with Email'),
+                  )
                 ],
               ),
             ),

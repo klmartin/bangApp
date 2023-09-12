@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bangapp/constants/urls.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -102,7 +103,7 @@ class _HomeState extends State<Home> {
   Future<void> fetchData() async {
     try {
       final response = await get(Uri.parse(
-          "https://alitaafrica.com/social-backend-laravel/api/getPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
+          "$baseUrl/getPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
       final Map<String, dynamic> responseData = json.decode(response.body);
       print(responseData);
       if (responseData.containsKey('data')) {
