@@ -324,7 +324,6 @@ class _RegisterState extends State<Register> {
                 textAlign: TextAlign.center,
                 onChanged: (value) {
                   password = value;
-
                   //Do something with the user input.
                 },
                 decoration: InputDecoration(

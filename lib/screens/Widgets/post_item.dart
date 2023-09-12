@@ -319,7 +319,7 @@ class PostItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   LikeButton(
-                    onTap:  Service().likeAction(likeCount, isLiked, postId, likeType, isALiked, isBLiked),
+                    // onTap:  Service().likeAction(likeCount, isLiked, postId, likeType, isALiked, isBLiked),
                     size: 30,
                     countPostion: CountPostion.bottom,
                     likeCount: likeCountA,
@@ -372,7 +372,7 @@ class PostItem extends StatelessWidget {
                         width: 10,
                       ),
                       LikeButton(
-                        onTap: ,
+                        // onTap: ,
                         size: 30,
                         countPostion: CountPostion.bottom,
                         likeCount: likeCountB,
@@ -719,7 +719,8 @@ class PostItem extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child:LikeButton(likeCount:0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
+                    // child:LikeButton(likeCount:0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
+                    child: Container(),
                   ),
                 ],
               ),
@@ -1045,7 +1046,8 @@ class PostItem extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: LikeButton(likeCount: 0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
+                    // child: LikeButton(likeCount: 0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
+                    child: Container(),
                   ),
                 ],
               ),

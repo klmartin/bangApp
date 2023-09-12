@@ -10,7 +10,7 @@ import '../final_create.dart';
 
 void main() => runApp(
   MaterialApp(
-    title: 'Flutter Video Editor Demo',
+    title: 'BangApp Video Editor',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       primarySwatch: Colors.grey,
