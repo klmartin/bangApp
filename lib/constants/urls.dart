@@ -1,1 +1,1 @@
-final baseUrl = 'http://192.168.34.226/bang/api';
+final baseUrl = 'http://192.168.192.9/bang/api';
