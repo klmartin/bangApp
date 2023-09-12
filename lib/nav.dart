@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:bangapp/screens/Explore/explore_page.dart';
 import 'package:bangapp/screens/blog/blog_home.dart';
 import 'screens/Activity/activity_page.dart';
-import 'package:bangapp/screens/Home/home.dart';
+import 'package:bangapp/screens/Home/Home2.dart';
 import 'screens/Create/create_page.dart';
 import 'screens/Chat/chat_home.dart';
 import 'screens/Profile/profile.dart';
@@ -36,7 +36,7 @@ class _NavState extends State<Nav> {
   }
 
   List<Widget> _widgetOptions = [
-    Home(),
+    Home2(),
     Explore(),
     Create(),
     Activity(),
