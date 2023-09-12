@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             try {
                               final response = await http.post(
                                 Uri.parse(
-                                    'http://192.168.34.226/bang/api/v1/login'),
+                                    '$baseUrl/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,

@@ -122,13 +122,14 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                         Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: BattleLike(
-                              likeCountA: 0,
-                              likeCountB: 0,
-                              isLiked: false,
-                              battleId: box.battleId,
-                              bLikeButton: false,
-                            )),
+                            // child: BattleLike(
+                            //   likeCountA: 0,
+                            //   likeCountB: 0,
+                            //   isLiked: false,
+                            //   battleId: box.battleId,
+                            //   bLikeButton: false,
+                            // )),
+                  child:Container()),
                       ],
                     ),
                   );
@@ -161,13 +162,14 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: BattleLike(
-                            likeCountA: 0,
-                            likeCountB: 0,
-                            isLiked: false,
-                            battleId: box.battleId,
-                            bLikeButton: true,
-                          ),
+                          // child: BattleLike(
+                          //   likeCountA: 0,
+                          //   likeCountB: 0,
+                          //   isLiked: false,
+                          //   battleId: box.battleId,
+                          //   bLikeButton: true,
+                          // ),
+                          child: Container(),
                         ),
                       ],
                     ),

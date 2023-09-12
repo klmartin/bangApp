@@ -1,1 +1,1 @@
-final baseUrl = 'http://192.168.34.226/bang/api';
+final baseUrl = 'http://alitaafrica.com/social-backend-laravel/api';
