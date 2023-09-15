@@ -44,6 +44,7 @@ class _FinaleCreateState extends State<FinalCreate> {
   var caption;
   int pinPost = 0 ;
   XFile? mediaFile;
+  bool isLoading = false;
   VideoPlayerController? videoController;
   Future<String> saveUint8ListAsFile(Uint8List data, String fileName) async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -179,60 +180,93 @@ class _FinaleCreateState extends State<FinalCreate> {
                         ],
                       ),
                       SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 46.0),
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg==false){
-                                String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
-                                print(filePath);
-                                Map<String, String> body = {
-                                  'user_id': prefs.getInt('user_id').toString(),
-                                  'body': caption,
-                                  'pinned': pinPost == 1 ? '1' : '0',
-                                };
-                                await service.addImage(body, filePath);
-                                Navigator.pushNamed(context, Nav.id);
-                              }
-                              else if(widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg==true){
-                                String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
-                                print(filePath);
-                                Map<String, String> body = {
-                                  'user_id': prefs.getInt('user_id').toString(),
-                                  'body': caption,
-                                  'post_id':widget.postId.toString(),
-                                  'pinned': pinPost == 1 ? '1' : '0',
-                                };
-                                await service.addChallenge(body, filePath,widget.userChallenged!);
-                                Navigator.pushNamed(context, Nav.id);
-                              }
-                              else if (widget.editedVideo != null && widget.editedImage2 == null && widget.editedImage==null){
-                                String? filePath1 = widget.editedVideo;
-                                Map<String, String> body = {
-                                  'user_id': prefs.getInt('user_id').toString(),
-                                  'body': caption,
-                                  'type':'video',
-                                  'pinned': pinPost == 1 ? '1' : '0',
-                                };
-                                await service.addImage(body, filePath1!);
-                                Navigator.pushNamed(context, Nav.id);
-                              }
-                              else{
-                                String filePath1 = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
-                                String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');
-                                Map<String, String> body = {
-                                    'user_id': prefs.getInt('user_id').toString(),
-                                    'body': caption,
-                                    'pinned': pinPost == 1 ? '1' : '0',
-                                  };
-                                  await service.addChallengImage(body, filePath1,filePath2);
-                                  Navigator.pushNamed(context, Nav.id);
-                                }
-                            },
-                            child: Text('Done')),
-                      )
-                    ]
+    // Initially, loading is set to false
+
+    Padding(
+    padding: const EdgeInsets.only(top: 46.0),
+    child: Container(
+    width: double.infinity,
+    child: ElevatedButton(
+    onPressed: isLoading
+    ? null // Disable the button when loading is true
+        : () async {
+    setState(() {
+    isLoading = true; // Set loading to true when the button is pressed
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+    if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == false) {
+    String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+    print(filePath);
+    Map<String, String> body = {
+    'user_id': prefs.getInt('user_id').toString(),
+    'body': caption ?? "",
+    'pinned': pinPost == 1 ? '1' : '0',
+    };
+    await service.addImage(body, filePath);
+    } else if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == true) {
+    String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+    print(filePath);
+    Map<String, String> body = {
+    'user_id': prefs.getInt('user_id').toString(),
+    'body': caption ?? "",
+    'post_id': widget.postId.toString(),
+    'pinned': pinPost == 1 ? '1' : '0',
+    };
+    await service.addChallenge(body, filePath, widget.userChallenged!);
+    } else if (widget.editedVideo != null && widget.editedImage2 == null && widget.editedImage == null) {
+    String? filePath1 = widget.editedVideo;
+    Map<String, String> body = {
+    'user_id': prefs.getInt('user_id').toString(),
+    'body': caption ?? "",
+    'type': 'video',
+    'pinned': pinPost == 1 ? '1' : '0',
+    };
+    await service.addImage(body, filePath1!);
+    } else {
+    String filePath1 = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+    String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');
+    Map<String, String> body = {
+    'user_id': prefs.getInt('user_id').toString(),
+    'body': caption ?? "",
+    'pinned': pinPost == 1 ? '1' : '0',
+    };
+    await service.addChallengImage(body, filePath1, filePath2);
+    }
+    // Navigator.pushNamed(context, Nav.id);
+    Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => Nav()),
+    );
+    } finally {
+    // After your button logic is done, set loading back to false
+    setState(() {
+    isLoading = false;
+    });
+    }
+    },
+    style: ElevatedButton.styleFrom(
+    primary: Colors.blue, // Set the background color of the button
+    ),
+    child: Stack(
+    alignment: Alignment.center,
+    children: [
+    Visibility(
+    visible: !isLoading, // Show the CircularProgressIndicator when not loading
+    child: Text('Post'), // Display the button text
+    ),
+    Visibility(
+    visible: isLoading, // Show the CircularProgressIndicator when loading
+    child: CircularProgressIndicator(), // Display the CircularProgressIndicator
+    ),
+    ],
+    ),
+    ),
+    ),
+    )
+
+    ]
                 )
             )
           ],

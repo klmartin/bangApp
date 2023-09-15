@@ -144,6 +144,20 @@ class _AuthenticateState extends State<Authenticate> {
 
   @override
   Widget build(BuildContext context) {
-    return LoginScreen();
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          String? token = snapshot.data?.getString('token');
+          if (token != null) {
+            return Nav();
+          } else {
+            return Welcome();
+          }
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
   }
 }

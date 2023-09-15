@@ -24,8 +24,8 @@ class PostsProvider with ChangeNotifier {
   // ... Rest of the properties ...
 
   void fetchData() async {
-   
-   
+
+
    Future<void> fetchData() async {
     try {
       final response = await get(Uri.parse(
@@ -65,51 +65,51 @@ class PostsProvider with ChangeNotifier {
             challenges: challenges ,
           );
         }).toList();
-      notifyListeners(); 
+      notifyListeners();
 
       } else {
-        
+
           _loading = false;
           _error = true;
-      notifyListeners(); 
+      notifyListeners();
 
       }
     } catch (e) {
-      // errorDialog(size: 30);
-    
+       errorDialog(size: 30);
+
     }
   }
 
 
 
-//  Widget errorDialog({required double size}){
-//     return SizedBox(
-//       height: 180,
-//       width: 200,
-//       child:  Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Text('An error occurred when fetching the posts.',
-//             style: TextStyle(
-//                 fontSize: size,
-//                 fontWeight: FontWeight.w500,
-//                 color: Colors.black
-//             ),
-//           ),
-//           const SizedBox(height: 10,),
-//           TextButton(
-//               onPressed:  ()  {
-             
-//                   _loading = true;
-//                   _error = false;
-//                   fetchData();
-//               notifyListeners();
-//               },
-//               child: const Text("Retry", style: TextStyle(fontSize: 20, color: Colors.purpleAccent),)),
-//         ],
-//       ),
-//     );
-//   }
+ Widget errorDialog({required double size}){
+    return SizedBox(
+      height: 180,
+      width: 200,
+      child:  Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('An error occurred when fetching the posts.',
+            style: TextStyle(
+                fontSize: size,
+                fontWeight: FontWeight.w500,
+                color: Colors.black
+            ),
+          ),
+          const SizedBox(height: 10,),
+          TextButton(
+              onPressed:  ()  {
+
+                  _loading = true;
+                  _error = false;
+                  fetchData();
+              notifyListeners();
+              },
+              child: const Text("Retry", style: TextStyle(fontSize: 20, color: Colors.purpleAccent),)),
+        ],
+      ),
+    );
+  }
 
   }
 

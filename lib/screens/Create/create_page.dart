@@ -21,6 +21,8 @@ class _CreateState extends State<Create> {
   List<AssetEntity> _selectedAssets = [];
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
+  int _activePage = 0;
+  final PageController _pageViewController = PageController(initialPage: 0); // set the initial page you want to show
 
   void selectAsset(AssetEntity asset) async {
     setState(() {
@@ -77,6 +79,7 @@ class _CreateState extends State<Create> {
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
     super.dispose();
+    _pageViewController.dispose();
   }
 
   Uint8List fileToUint8List(File file) {
@@ -101,7 +104,7 @@ class _CreateState extends State<Create> {
               if (_selectedAssets.isNotEmpty) {
                 if (_selectedAssets[0].type == AssetType.video) {
                   var editedVideo = await _selectedAssets[0].file;
-                  await Navigator.push(
+                  await Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => VideoEditor(
@@ -118,19 +121,19 @@ class _CreateState extends State<Create> {
                   if (_selectedAssets.length == 2) {
                     var filee2 = await _selectedAssets[1].file;
                     editedImage2 = fileToUint8List(filee2!);
-                    await Navigator.push(
+                    await Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ImageEditor(
                             image: editedImage,
-                            // image: editedImage2,
+                            image2: editedImage2,
                             allowMultiple: true
                         ),
                       ),
                     );
                   }
                   else{
-                    await Navigator.push(
+                    await Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ImageEditor(
@@ -160,46 +163,114 @@ class _CreateState extends State<Create> {
         ],
       ),
       body: SafeArea(
-        child: Row(
+        child: Stack(
           children: [
-            Expanded(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                      height: MediaQuery.of(context).size.height / 2.2,
-                      child: PageView(
-                        scrollDirection: Axis.horizontal, // Set the scroll direction to horizontal
-                        children: _selectedAssets.map((asset) {
-                          if (asset.type == AssetType.video) {
-                            return Container(
-                              height: MediaQuery.of(context).size.height / 2.2,
-                              child: Chewie(
-                                controller: _chewieController!,
-                              ),
-                            );
-                          } else {
-                            return FutureBuilder<Uint8List?>(
-                              future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-                              builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
-                                if (snapshot.connectionState == ConnectionState.done) {
-                                  final thumbnailData = snapshot.data!;
-                                  return Image.memory(
-                                    thumbnailData,
-                                    height: MediaQuery.of(context).size.height,
-                                    width: MediaQuery.of(context).size.width,
-                                    fit: BoxFit.cover,
-                                  );
-                                } else {
-                                  return CircularProgressIndicator();
-                                }
-                              },
-                            );
-                          }
-                        }).toList(),
-                      )
+            Column(
+              children: <Widget>[
+                Container(
+                  height: MediaQuery.of(context).size.height / 2.2,
+                  child: PageView(
+                    controller: _pageViewController,
+                    scrollDirection: Axis.horizontal,
+                    onPageChanged: (int index) {
+                      setState(() {
+                        _activePage = index;
+                      });
+                    },
+                    children: _selectedAssets.map((asset) {
+                      if (asset.type == AssetType.video) {
+                        return Container(
+                          height: MediaQuery.of(context).size.height / 2.2,
+                          child: Chewie(
+                            controller: _chewieController!,
+                          ),
+                        );
+                      } else {
+                        return FutureBuilder<Uint8List?>(
+                          future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+                          builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+                            if (snapshot.connectionState == ConnectionState.done) {
+                              final thumbnailData = snapshot.data!;
+                              return Image.memory(
+                                thumbnailData,
+                                height: MediaQuery.of(context).size.height,
+                                width: MediaQuery.of(context).size.width,
+                                fit: BoxFit.cover,
+                              );
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          },
+                        );
+                      }
+                    }).toList(),
                   ),
-                  Expanded(child: MediaGrid(selectAsset)),
-                ],
+                ),
+                Expanded(
+                  child: MediaGrid(selectAsset),
+                ),
+              ],
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height / 2 - 75,
+              left: 0,
+              right: 0,
+              height: 40,
+              child: Container(
+                color: Colors.black12,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List<Widget>.generate(
+                    _selectedAssets.length,
+                        (index) {
+                      final isASelected = _activePage == 0 && index == 0;
+                      final isBSelected = _activePage == 1 && index == 1;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: InkWell(
+                          onTap: () {
+                            _pageViewController.animateToPage(index,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeIn);
+                          },
+                          child: DefaultTextStyle(
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
+                            ),
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              decoration: BoxDecoration(
+                                boxShadow: isASelected
+                                    ? [
+                                  BoxShadow(
+                                    color: Colors.red, // Change to your highlight color
+                                    blurRadius: 10.0,
+                                    spreadRadius: 5.0,
+                                  ),
+                                ]
+                                    : isBSelected
+                                    ? [
+                                  BoxShadow(
+                                    color: Colors.red, // Change to your highlight color
+                                    blurRadius: 10.0,
+                                    spreadRadius: 5.0,
+                                  ),
+                                ]
+                                    : [],
+                              ),
+                              child: Text(
+                                index == 0 ? 'A' : 'B',
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ],
