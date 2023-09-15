@@ -19,7 +19,8 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
       },
       child:  Stack(
         children: [
-          if(index==0)Text("Chemba ya Umbea",style:TextStyle(color: Colors.white,fontSize: 20, fontWeight: FontWeight.w700,fontFamily: 'Metropolis',letterSpacing: -1)),
+
+          Text("Chemba ya Umbea",style:TextStyle(color: Colors.white,fontSize: 20, fontWeight: FontWeight.w700,fontFamily: 'Metropolis',letterSpacing: -1)),
           Center(
             child: GestureDetector(
               onTap: () {},

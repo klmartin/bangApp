@@ -2,6 +2,9 @@ import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:provider/provider.dart';
+
+import '../Explore/explore_page2.dart';
 
 class UpdateCommentsPage extends StatefulWidget {
   final int? userId;
@@ -37,7 +40,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
       filedata = comments.map((comment) {
         return {
           'name': comment['user']['name'],
-          'pic': 'YOUR_BASE_URL/${comment['user']['image']}',
+          'pic': "https://img.icons8.com/fluency/48/user-male-circle--v1.png",
           'message': comment['body'],
           'date': comment['created_at'],
         };
@@ -67,7 +70,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                   child: CircleAvatar(
                       radius: 50,
                       backgroundImage: CommentBox.commentImageParser(
-                          imageURLorPath: data[i]['pic'])),
+                          imageURLorPath: "https://img.icons8.com/fluency/48/user-male-circle--v1.png")),
                 ),
               ),
               title: Text(
@@ -104,7 +107,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
       body: Container(
         child: CommentBox(
           userImage: CommentBox.commentImageParser(
-              imageURLorPath: "assets/img/userpic.jpg"),
+              imageURLorPath: "https://img.icons8.com/fluency/48/user-male-circle--v1.png"),
           child: commentChild(filedata),
           labelText: 'Write a comment...',
           errorText: 'Comment cannot be blank',
@@ -116,6 +119,9 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                 widget.postId,
                 commentController.text,
               );
+              final up = Provider.of<BangUpdateProvider>(context, listen: false);
+              up.updateCommentCount(widget.postId, 1);
+
               print(commentController.text);
               setState(() {
                 var value = {

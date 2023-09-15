@@ -1,7 +1,11 @@
+import 'package:bangapp/providers/posts_provider.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:provider/provider.dart';
+
+import '../Explore/explore_page2.dart';
 
 
 class BattleComment extends StatefulWidget {
@@ -33,6 +37,11 @@ class _BattleCommentState extends State<BattleComment> {
   Future<void> _fetchComments() async {
     final response = await Service().getBattleComments(widget.postId.toString());
     final comments = response;
+     final bangUpdateProvider =
+                  Provider.of<BangUpdateProvider>(context, listen: false);
+              bangUpdateProvider.updateCommentCount(
+                  widget.postId, filedata.length);
+
     setState(() {
       // CircularProgressIndicator()
       filedata = comments.map((comment) {
@@ -117,6 +126,8 @@ class _BattleCommentState extends State<BattleComment> {
                 widget.postId,
                 commentController.text,
               );
+              final comm = Provider.of<PostsProvider>(context, listen: false );
+              comm.incrementCommentCountByPostId(widget.postId);
               print(commentController.text);
               setState(() {
                 var value = {

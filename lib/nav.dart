@@ -1,3 +1,5 @@
+import 'package:bangapp/screens/Explore/explore_page2.dart';
+import 'package:bangapp/screens/Home/home3.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,12 +13,23 @@ import 'screens/Chat/chat_home.dart';
 import 'screens/Profile/profile.dart';
 import 'package:bangapp/screens/Widgets/fab_container.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 
 class Nav extends StatefulWidget {
   static const String id = 'nav';
   @override
   _NavState createState() => _NavState();
+}
+
+
+
+Future<void> requestMediaPermissions() async {
+  await Permission.storage.request();
+    await Permission.camera.request();
+
+
+
 }
 
 class _NavState extends State<Nav> {
@@ -37,7 +50,7 @@ class _NavState extends State<Nav> {
 
   List<Widget> _widgetOptions = [
     Home2(),
-    Explore(),
+    BangUpdates2(),
     Create(),
     Activity(),
     Profile(),

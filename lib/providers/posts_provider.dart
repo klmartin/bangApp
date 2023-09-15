@@ -21,22 +21,15 @@ class PostsProvider with ChangeNotifier {
 
   num get nextPageTrigger => _nextPageTrigger;
 
-  // ... Rest of the properties ...
-
-  void fetchData() async {
-   
-   
-   Future<void> fetchData() async {
+  Future<void> fetchData() async {
     try {
       final response = await get(Uri.parse(
           "$baseUrl/getPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
       final Map<String, dynamic> responseData = json.decode(response.body);
-      print(responseData);
       if (responseData.containsKey('data')) {
-        List<dynamic> responseList = responseData['data']['data']; // Access the nested 'data' array
-        List<Post> postList = responseList.map((data) {
-          print(data);
-          List<dynamic>? challengesList = data['challenges']; // Add '?' to make it nullable
+        List<dynamic> responseList = responseData['data']['data'];
+        _posts = responseList.map((data) {
+          List<dynamic>? challengesList = data['challenges'];
           List<Challenge> challenges = (challengesList ?? []).map((challengeData) => Challenge(
             id: challengeData['id'],
             postId: challengeData['post_id'],
@@ -62,55 +55,40 @@ class PostsProvider with ChangeNotifier {
             followerCount: data['user']['followerCount'],
             isLiked: data['isFavorited'] == 0 ? false : true ,
             isPinned: data['pinned'],
-            challenges: challenges ,
+            challenges: challenges,
           );
         }).toList();
-      notifyListeners(); 
+        print("listtttttttttttttt");
+        print(posts);
+        print("listtttttttttttttt");
 
+        _loading = false;
+        notifyListeners();
       } else {
-        
-          _loading = false;
-          _error = true;
-      notifyListeners(); 
-
+        _loading = false;
+        _error = true;
+        notifyListeners();
       }
     } catch (e) {
-      // errorDialog(size: 30);
-    
+      // Handle the error here...
+    }
+
+
+
+
+
+  }
+
+  void incrementCommentCountByPostId(int postId) {
+    if (_posts != null) {
+      final post = posts!.firstWhere(
+        (post) => post.postId == postId,
+
+      );
+        post.commentCount++;
+        notifyListeners();
     }
   }
 
-
-
-//  Widget errorDialog({required double size}){
-//     return SizedBox(
-//       height: 180,
-//       width: 200,
-//       child:  Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Text('An error occurred when fetching the posts.',
-//             style: TextStyle(
-//                 fontSize: size,
-//                 fontWeight: FontWeight.w500,
-//                 color: Colors.black
-//             ),
-//           ),
-//           const SizedBox(height: 10,),
-//           TextButton(
-//               onPressed:  ()  {
-             
-//                   _loading = true;
-//                   _error = false;
-//                   fetchData();
-//               notifyListeners();
-//               },
-//               child: const Text("Retry", style: TextStyle(fontSize: 20, color: Colors.purpleAccent),)),
-//         ],
-//       ),
-//     );
-//   }
-
   }
 
-  void refreshData() {}}

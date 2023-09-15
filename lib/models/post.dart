@@ -11,7 +11,7 @@ class Post {
   final int height;
   final int likeCountA;
   final int likeCountB;
-  final int commentCount;
+  late final int commentCount;
   final int followerCount;
   var isLiked ;
   int isPinned;
