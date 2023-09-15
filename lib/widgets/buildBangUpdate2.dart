@@ -47,7 +47,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
               children: [
                 BangUpdateLikeButton(
                     likeCount: bangUpdate.likeCount,
-                    isLiked: false,
+                    isLiked: bangUpdate.isLiked,
                     postId: bangUpdate.postId),
                 SizedBox(height: 10),
                 // Text("Count is: ${bangUpdate.likeCount}"),
@@ -185,7 +185,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
               children: [
                 BangUpdateLikeButton(
                     likeCount: bangUpdate.likeCount,
-                    isLiked: false,
+                    isLiked: bangUpdate.isLiked,
                     postId: bangUpdate.postId),
                 SizedBox(height: 10),
                 // Text("Count is: ${bangUpdate.likeCount}"),
