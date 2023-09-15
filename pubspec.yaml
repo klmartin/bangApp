@@ -74,6 +74,8 @@ dev_dependencies:
     sdk: flutter
 
   flutter_launcher_icons: any
+  permission_handler: any
+
 
 flutter_launcher_icons:
   android: "launcher_icon"

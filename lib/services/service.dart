@@ -163,6 +163,7 @@ class Service {
           isLiked = !isLiked;
         });
       } else {
+
         // Handle API error, if necessary
       }
     } catch (e) {
@@ -257,10 +258,10 @@ class Service {
       },
     );
     final responseData = json.decode(response.body);
-      // If the comment was posted successfully, update the comment count
-      final commentProvider = Provider.of<CommentProvider>(context, listen: false);
-      await commentProvider.getCommentCount(postId);
-        // commentProvider.incrementCommentCount();
+    //   // If the comment was posted successfully, update the comment count
+    //   final commentProvider = Provider.of<CommentProvider>(context, listen: false);
+    //   await commentProvider.getCommentCount(postId);
+    //     // commentProvider.incrementCommentCount();
 
       return  jsonDecode(response.body);
 

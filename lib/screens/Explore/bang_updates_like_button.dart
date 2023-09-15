@@ -1,6 +1,8 @@
+import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 class BangUpdateLikeButton extends StatefulWidget {
   late final int likeCount;
@@ -34,7 +36,9 @@ class _BangUpdateLikeButtonState extends State<BangUpdateLikeButton> {
 
               isLiked = !isLiked; // Update the isLiked state variable
             });
-            await Service().likeBangUpdate(widget.likeCount, isLiked, widget.postId); // Use the parameters from the widget
+        final upt = Provider.of<BangUpdateProvider>(context, listen: false);
+        upt.increaseLikes(widget.postId);
+         await Service().likeBangUpdate(widget.likeCount, isLiked, widget.postId); // Use the parameters from the widget
           },
           child: isLiked
               ? Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30)

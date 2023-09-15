@@ -1,7 +1,9 @@
+import 'package:bangapp/providers/posts_provider.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:provider/provider.dart';
 
 class CommentsPage extends StatefulWidget {
   static const String id = 'comment_screen';
@@ -121,7 +123,9 @@ class _CommentsPageState extends State<CommentsPage> {
                 widget.postId,
                 commentController.text,
               );
-              print(commentController.text);
+               final comm = Provider.of<PostsProvider>(context, listen: false );
+              comm.incrementCommentCountByPostId(widget.postId);
+
               setState(() {
                 var value = {
                   'name': response['data']['user']['name'],

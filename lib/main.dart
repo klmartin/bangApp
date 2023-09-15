@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:bangapp/providers/comment_provider.dart';
+import 'package:bangapp/providers/home_provider.dart';
 import 'package:bangapp/providers/posts_provider.dart';
+import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Home/home.dart';
 import 'package:bangapp/screens/Home/home2.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
@@ -33,8 +35,9 @@ void main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserProvider()),
     ChangeNotifierProvider(create: (context) => CommentProvider()),
-        ChangeNotifierProvider(create: (context) => PostsProvider())
-
+    ChangeNotifierProvider(create: (context) => PostsProvider()),
+    ChangeNotifierProvider(create: (context) => HomeProvider()),
+    ChangeNotifierProvider(create: (context) => BangUpdateProvider()),
   ], child: MyApp()));
 }
 
@@ -142,7 +145,7 @@ class _AuthenticateState extends State<Authenticate> {
     );
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return FutureBuilder<SharedPreferences>(
       future: SharedPreferences.getInstance(),
