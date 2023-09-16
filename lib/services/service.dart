@@ -153,6 +153,9 @@ class Service {
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         },
       );
+      print(postId);
+      print(prefs.getInt('user_id'));
+      print(response.body);
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
