@@ -130,11 +130,11 @@ class BangUpdateProvider extends ChangeNotifier {
       final caption = post['caption'];
       final postId = post['id'];
       final isLiked = post['isLiked'];
-      // var likeCount = post['bang_update_likes'] != null &&
-      //         post['bang_update_likes'].isNotEmpty
-      //     ? post['bang_update_likes'][0]['like_count']
-      //     : 0;
-      var likeCount = post['likeCount'];
+      var likeCount = post['bang_update_like_count'] != null &&
+              post['bang_update_like_count'].isNotEmpty
+          ? post['bang_update_like_count'][0]['like_count']
+          : 0;
+    //   var likeCount = post['likeCount'];
       var commentCount = post['bang_update_comments'] != null &&
               post['bang_update_comments'].isNotEmpty
           ? post['bang_update_comments'][0]['comment_count']
