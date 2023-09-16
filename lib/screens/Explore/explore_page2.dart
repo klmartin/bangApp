@@ -66,15 +66,21 @@ class BangUpdates3 extends StatelessWidget {
           // Wrap the ListView.builder with an Expanded widget
           child: Consumer<BangUpdateProvider>(
             builder: (context, bangUpdateProvider, child) {
-              return ListView.builder(
+              return PageView.builder(
+                scrollDirection: Axis.vertical,
                 itemCount: bangUpdateProvider.bangUpdates.length,
                 itemBuilder: (context, index) {
                   final bangUpdate = bangUpdateProvider.bangUpdates[index];
-                  return buildBangUpdate2(
-                    context, bangUpdate, index,
-                    // context, bangUpdate.filename, bangUpdate.type, bangUpdate.caption, bangUpdate.postId, bangUpdate.likeCount, index+1
+                  return Container(
+                    color: Colors.black,
+                    child: AspectRatio(
+                        aspectRatio: MediaQuery.of(context).size.width /
+                            MediaQuery.of(context).size.height,
+                        child: buildBangUpdate2(
+                          context, bangUpdate, index,
+                          // context, bangUpdate.filename, bangUpdate.type, bangUpdate.caption, bangUpdate.postId, bangUpdate.likeCount, index+1
+                        )),
                   );
-                  //   return buildBangUpdate2(context, bangUpdate, index);
                 },
               );
             },
