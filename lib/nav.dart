@@ -1,3 +1,5 @@
+import 'package:bangapp/screens/Explore/explore_page2.dart';
+import 'package:bangapp/screens/Home/home3.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -5,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:bangapp/screens/Explore/explore_page.dart';
 import 'package:bangapp/screens/blog/blog_home.dart';
 import 'screens/Activity/activity_page.dart';
-import 'package:bangapp/screens/Home/Home.dart';
+import 'package:bangapp/screens/Home/Home2.dart';
 import 'screens/Create/create_page.dart';
 import 'screens/Chat/chat_home.dart';
 import 'screens/Profile/profile.dart';
@@ -37,8 +39,8 @@ class _NavState extends State<Nav> {
   }
 
   List<Widget> _widgetOptions = [
-    Home(),
-    Explore(),
+    Home2(),
+    BangUpdates2(),
     Create(),
     Activity(),
     Profile(),
