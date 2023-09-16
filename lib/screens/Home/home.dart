@@ -6,6 +6,8 @@ import 'package:http/http.dart';
 import 'package:bangapp/models/post.dart';
 import 'package:bangapp/screens/Widgets/post_item.dart';
 import '../Widgets/small_box.dart';
+import 'package:bangapp/constants/urls.dart';
+
 
 class Home extends StatefulWidget {
   @override

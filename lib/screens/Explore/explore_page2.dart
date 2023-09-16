@@ -116,12 +116,12 @@ class BangUpdateProvider extends ChangeNotifier {
 
   Future<void> fetchBangUpdates() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-     final user_id = prefs.getInt('user_id').toString();
+     final userId = prefs.getInt('user_id').toString();
     try {
       var response = await http.get(Uri.parse(
-      'https://alitaafrica.com/social-backend-laravel/api/bang-updates'));
+      'https://alitaafrica.com/social-backend-laravel/api/bang-updates/$userId'));
       var data = json.decode(response.body);
-print('https://alitaafrica.com/social-backend-laravel/api/bang-updates');
+      print('https://alitaafrica.com/social-backend-laravel/api/bang-updates');
       _bangUpdates = List<BangUpdate>.from(data.map((post) {
         final filename = post['filename'];
         final type = post['type'];

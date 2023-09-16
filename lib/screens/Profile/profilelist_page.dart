@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:bangapp/constants/urls.dart';
 
 import '../../services/fetch_post.dart';
 import '../Chat/chat_model.dart';
@@ -55,6 +56,7 @@ class UserBubble extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
+            print("here");
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -144,11 +146,9 @@ class _UsersStreamState extends State<UsersStream> {
   List<Map<String, dynamic>> _searchResults = [];
 
   void _fetchSearchResults(String keyword) async {
-    final baseUrl = 'http://192.168.165.229/social-backend-laravel/api/users/search';
-    final url = Uri.parse('$baseUrl?keyword=$keyword');
+    final url = Uri.parse('$baseUrl/users/search?keyword=$keyword');
     final response = await http.get(url);
-    print('this is search results');
-    print(response.body);
+
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       setState(() {

@@ -1,5 +1,3 @@
-import 'package:bangapp/screens/Explore/explore_page2.dart';
-import 'package:bangapp/screens/Home/home3.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,13 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:bangapp/screens/Explore/explore_page.dart';
 import 'package:bangapp/screens/blog/blog_home.dart';
 import 'screens/Activity/activity_page.dart';
-import 'package:bangapp/screens/Home/Home2.dart';
+import 'package:bangapp/screens/Home/Home.dart';
 import 'screens/Create/create_page.dart';
 import 'screens/Chat/chat_home.dart';
 import 'screens/Profile/profile.dart';
 import 'package:bangapp/screens/Widgets/fab_container.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 
 class Nav extends StatefulWidget {
@@ -23,14 +20,6 @@ class Nav extends StatefulWidget {
 }
 
 
-
-Future<void> requestMediaPermissions() async {
-  await Permission.storage.request();
-    await Permission.camera.request();
-
-
-
-}
 
 class _NavState extends State<Nav> {
   bool _isAppBarEnabled = true; // Variable to track app bar state
@@ -43,14 +32,13 @@ class _NavState extends State<Nav> {
   void _onItemTap(int index) {
     setState(() {
       _selectedIndex = index;
-      // Disable app bar when "Create" tab is clicked
       _isAppBarEnabled = index != 2 && index != 1;
     });
   }
 
   List<Widget> _widgetOptions = [
-    Home2(),
-    BangUpdates2(),
+    Home(),
+    Explore(),
     Create(),
     Activity(),
     Profile(),

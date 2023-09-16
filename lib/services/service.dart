@@ -341,7 +341,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://alitaafrica.com/social-backend-laravel/api/storeToken'),
+            '$baseUrl/storeToken'),
         body: {
           'user_id': id.toString(),
           'device_token': token,
@@ -359,7 +359,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://alitaafrica.com/social-backend-laravel/api/sendNotification'),
+            '$baseUrl/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -382,15 +382,18 @@ class Service {
   Future<bool> setUserProfile(username, bio, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
-    String addimageUrl =
-        'https://alitaafrica.com/social-backend-laravel/api/setUserProfile';
+    Map<String, String> usernameMap = {'username': username};
+    Map<String, String> userIdMap = {'user_id': user_id.toString()};
+    Map<String, String> bioMap = {'bio': bio};
+    String addimageUrl = '$baseUrl/setUserProfile';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
-      ..fields.addAll(username)
-      ..fields.addAll(user_id as Map<String, String>)
-      ..fields.addAll(bio)
+      ..fields.addAll(usernameMap)
+      ..fields.addAll(userIdMap)
+      ..fields.addAll(bioMap)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
+      print(response);
       if (response.statusCode == 201) {
         var data = json.decode(response.body);
         return data['url'];
@@ -405,7 +408,7 @@ class Service {
 
   Future<List<BoxData>> getBangBattle() async {
     var response = await http.get(Uri.parse(
-        'https://alitaafrica.com/social-backend-laravel/api/getBangBattle'));
+        '$baseUrl/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
     List<BoxData> boxes = [];
@@ -421,7 +424,7 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse(
-            'https://alitaafrica.com/social-backend-laravel/api/likePost'),
+            '$baseUrl/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -448,7 +451,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          'https://alitaafrica.com/social-backend-laravel/api/getMessages'),
+          '$baseUrl/getMessages'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
       },
@@ -472,7 +475,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          'https://alitaafrica.com/social-backend-laravel/api/getMessagesFromUser'),
+          '$baseUrl/getMessagesFromUser'),
       body: {
         'other_user_id': userId,
         'user_id': prefs.getInt('user_id').toString(),
@@ -495,7 +498,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          'https://alitaafrica.com/social-backend-laravel/api/sendMessage'),
+          '$baseUrl/sendMessage'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
         'receiver_id': receiverId.toString(),
@@ -508,6 +511,15 @@ class Service {
     } else {
       print('Failed to send message');
     }
+  }
+
+  Future<List<dynamic>> getBangUpdates() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var user_id = prefs.getInt('user_id').toString();
+    var response = await http.get(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/bang-updates/$user_id'));
+    print(user_id);
+    var data = json.decode(response.body);
+    return data;
   }
 
   void setState(Null Function() param0) {}
