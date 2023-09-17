@@ -4,6 +4,7 @@ import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/models/post.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PostsProvider with ChangeNotifier {
   bool _isLastPage = false;
@@ -23,22 +24,26 @@ class PostsProvider with ChangeNotifier {
 
   Future<void> fetchData() async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final user_id = prefs.getInt('user_id').toString();
       final response = await get(Uri.parse(
-          "$baseUrl/getPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest"));
+          "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$user_id"));
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (responseData.containsKey('data')) {
         List<dynamic> responseList = responseData['data']['data'];
         _posts = responseList.map((data) {
           List<dynamic>? challengesList = data['challenges'];
-          List<Challenge> challenges = (challengesList ?? []).map((challengeData) => Challenge(
-            id: challengeData['id'],
-            postId: challengeData['post_id'],
-            userId: challengeData['user_id'],
-            challengeImg: challengeData['challenge_img'],
-            body: challengeData['body'] ?? '',
-            type: challengeData['type'],
-            confirmed: challengeData['confirmed'],
-          )).toList();
+          List<Challenge> challenges = (challengesList ?? [])
+              .map((challengeData) => Challenge(
+                    id: challengeData['id'],
+                    postId: challengeData['post_id'],
+                    userId: challengeData['user_id'],
+                    challengeImg: challengeData['challenge_img'],
+                    body: challengeData['body'] ?? '',
+                    type: challengeData['type'],
+                    confirmed: challengeData['confirmed'],
+                  ))
+              .toList();
           return Post(
             postId: data['id'],
             userId: data['user_id'],
@@ -53,14 +58,14 @@ class PostsProvider with ChangeNotifier {
             likeCountB: data['like_count_B'],
             commentCount: data['commentCount'],
             followerCount: data['user']['followerCount'],
-            isLiked: data['isFavorited'] == 0 ? false : true ,
+            isLiked: data['isLiked'],
             isPinned: data['pinned'],
             challenges: challenges,
           );
         }).toList();
-        print("listtttttttttttttt");
-        print(posts);
-        print("listtttttttttttttt");
+        // print("listtttttttttttttt");
+        // print(posts);
+        // print("listtttttttttttttt");
 
         _loading = false;
         notifyListeners();
@@ -72,23 +77,42 @@ class PostsProvider with ChangeNotifier {
     } catch (e) {
       // Handle the error here...
     }
-
-
-
-
-
   }
 
   void incrementCommentCountByPostId(int postId) {
-    if (_posts != null) {
-      final post = posts!.firstWhere(
-        (post) => post.postId == postId,
+    print("Response isss $_posts");
+    try {
+      // Print the postId being searched for
+      print("Searching for postId: $postId");
+      // ignore: unrelated_type_equality_checks
+      final post = _posts?.firstWhere((update) => update.postId == postId);
 
-      );
+      if (post != null) {
+        print(post.commentCount);
         post.commentCount++;
+        print("Updated comment count for post $postId: ${post.commentCount}");
         notifyListeners();
+      } else {
+        // Iterate through _posts and print all postIds
+        posts?.forEach((post) {
+          print("PostId in _posts: ${post.postId}");
+        });
+        print("Post with postId $postId not found.");
+      }
+    } catch (e) {
+      print("Error updating comment count: $e");
     }
   }
 
+  void increaseLikes(int postId) {
+    final post = _posts?.firstWhere((update) => update.postId == postId);
+    if (post?.isLiked) {
+      post?.likeCountA--;
+      post!.isLiked = false;
+    } else {
+      post!.likeCountA++;
+      post.isLiked = true;
+    }
+    notifyListeners();
   }
-
+}

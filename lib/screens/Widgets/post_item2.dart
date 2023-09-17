@@ -1,5 +1,8 @@
+import 'dart:developer';
 import 'dart:typed_data';
+import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
+import 'package:bangapp/services/service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +20,7 @@ import '../../services/extension.dart';
 import '../../widgets/build_media.dart';
 import '../../widgets/user_profile.dart';
 import '../Comments/commentspage.dart';
+import '../Comments/new_page.dart';
 import '../Create/video_editing/video_edit.dart';
 import '../Profile/profile.dart';
 import 'dart:io';
@@ -40,6 +44,8 @@ class PostItem2 extends StatelessWidget {
   final List<Challenge> challenges;
   final isLiked;
   final int isPinned;
+  PostsProvider myProvider;
+
   PostItem2(
       this.postId,
       this.userId,
@@ -56,7 +62,8 @@ class PostItem2 extends StatelessWidget {
       this.followerCount,
       this.challenges,
       this.isLiked,
-      this.isPinned);
+      this.isPinned,
+      {required this.myProvider});
 
   void viewImage(BuildContext context, String imageUrl) {
     Navigator.of(context).push(
@@ -292,20 +299,44 @@ class PostItem2 extends StatelessWidget {
                       },
                       child: Container(
                         height: 250,
-                        child: CachedNetworkImage(
-                          imageUrl: image,
-                          fit: BoxFit.fill,
-                          placeholder: (context, url) => AspectRatio(
-                            aspectRatio: width / height,
-                            child: Shimmer.fromColors(
-                              baseColor: const Color.fromARGB(255, 30, 34, 45),
-                              highlightColor:
-                                  const Color.fromARGB(255, 30, 34, 45)
-                                      .withOpacity(.85),
-                              child: Container(
-                                  color: const Color.fromARGB(255, 30, 34, 45)),
+                        child: Stack(
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: image,
+                               width: double.infinity,
+                              fit: BoxFit.fill,
+                              height: double.infinity,
+                              placeholder: (context, url) => AspectRatio(
+                                aspectRatio: width / height,
+                                child: Shimmer.fromColors(
+                                  baseColor:
+                                      const Color.fromARGB(255, 30, 34, 45),
+                                  highlightColor:
+                                      const Color.fromARGB(255, 30, 34, 45)
+                                          .withOpacity(.85),
+                                  child: Container(
+                                      color: const Color.fromARGB(
+                                          255, 30, 34, 45)),
+                                ),
+                              ),
                             ),
-                          ),
+                            Positioned(
+                              bottom: 5,
+                              child: Container(
+                                margin: EdgeInsets.only(left: 10),
+                                height: 20,
+                                width: 20,
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(50)),
+                                child: Text(
+                                  "A",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ),
@@ -319,20 +350,45 @@ class PostItem2 extends StatelessWidget {
                       child: Container(
                         height: 250, // Set your desired fixed height here
 
-                        child: CachedNetworkImage(
-                          imageUrl: challengeImg,
-                          fit: BoxFit.fill,
-                          placeholder: (context, url) => AspectRatio(
-                            aspectRatio: 190 / 250,
-                            child: Shimmer.fromColors(
-                              baseColor: const Color.fromARGB(255, 30, 34, 45),
-                              highlightColor:
-                                  const Color.fromARGB(255, 30, 34, 45)
-                                      .withOpacity(.85),
-                              child: Container(
-                                  color: const Color.fromARGB(255, 30, 34, 45)),
+                        child: Stack(
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: challengeImg,
+                              width: double.infinity,
+                              fit: BoxFit.fill,
+                              height: double.infinity,
+                              placeholder: (context, url) => AspectRatio(
+                                aspectRatio: width / height,
+                                child: Shimmer.fromColors(
+                                  baseColor:
+                                      const Color.fromARGB(255, 30, 34, 45),
+                                  highlightColor:
+                                      const Color.fromARGB(255, 30, 34, 45)
+                                          .withOpacity(.85),
+                                  child: Container(
+                                      color: const Color.fromARGB(
+                                          255, 30, 34, 45)),
+                                ),
+                              ),
                             ),
-                          ),
+                            Positioned(
+                              bottom: 5,
+                              right: 0,
+                              child: Container(
+                                margin: EdgeInsets.only(right: 10),
+                                height: 20,
+                                width: 20,
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(50)),
+                                child: Text(
+                                  "B",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ),
@@ -366,6 +422,7 @@ class PostItem2 extends StatelessWidget {
                             createRoute(
                               CommentsPage(
                                 postId: postId, userId: userId,
+                                myProvider: myProvider,
                                 // currentUser: 1,
                               ),
                             ),
@@ -413,7 +470,7 @@ class PostItem2 extends StatelessWidget {
                 ),
               ),
             ),
-        Text("     $commentCount comments"),
+            Text("     $commentCount comments"),
 
             const SizedBox(height: 20),
           ],
@@ -702,15 +759,19 @@ class PostItem2 extends StatelessWidget {
                   SizedBox(width: 280),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        createRoute(
-                          CommentsPage(
-                            postId: postId, userId: userId,
-                            // currentUser: 1,
-                          ),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          //   return CommentDemo(
+                          //     postId,
+                          //     myProvider,
+                          //   );
+                          return CommentsPage(
+                            userId: userId,
+                            postId: postId,
+                            myProvider: myProvider,
+                          );
+                        },
+                      ));
                     },
                     child: const Icon(
                       CupertinoIcons.chat_bubble,
@@ -721,8 +782,33 @@ class PostItem2 extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     // child:LikeButton(likeCount:0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
-                    child: Container(),
-                  ),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            final countUpdate = Provider.of<PostsProvider>(
+                                context,
+                                listen: false);
+                            countUpdate.increaseLikes(postId);
+                            Service().likeAction(postId, "A");
+                          },
+                          child: isLiked
+                              ? Icon(CupertinoIcons.heart_fill,
+                                  color: Colors.red, size: 30)
+                              : Icon(CupertinoIcons.heart,
+                                  color: Colors.red, size: 30),
+                        ),
+                        Text(
+                          "$likeCountA likes",
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
               if (caption != null) const SizedBox(height: 16),
@@ -743,7 +829,15 @@ class PostItem2 extends StatelessWidget {
                   ),
                 ),
               ),
-              Text("     $commentCount comments"),
+              TextButton(
+                  onPressed: () {
+                    final up =
+                        Provider.of<PostsProvider>(context, listen: false);
+                    up.fetchData();
+                    up.incrementCommentCountByPostId(postId);
+                    print("Im hereeeeee");
+                  },
+                  child: Text("$commentCount comments")),
               const SizedBox(height: 20),
             ],
           ));
@@ -1044,6 +1138,7 @@ class PostItem2 extends StatelessWidget {
                         createRoute(
                           CommentsPage(
                             postId: postId, userId: userId,
+                            myProvider: myProvider,
                             // currentUser: 1,
                           ),
                         ),

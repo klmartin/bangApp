@@ -95,7 +95,7 @@ class _Home2ContentState extends State<Home2Content> {
                 post.followerCount,
                 post.challenges,
                 post.isLiked,
-                post.isPinned,
+                post.isPinned, myProvider: postsProvider,
               ),
             ],
           );
@@ -131,6 +131,7 @@ class _Home2ContentState extends State<Home2Content> {
             post.challenges,
             post.isLiked,
             post.isPinned,
+            myProvider: postsProvider,
           );
         }
       },

@@ -7,20 +7,19 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
 import '../providers/comment_provider.dart';
+import '../providers/posts_provider.dart';
 import '../screens/Widgets/small_box.dart';
 
 class Service {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse(
-        '$baseUrl/getPosts'));
+    var response = await http.get(Uri.parse('$baseUrl/getPosts'));
     var data = json.decode(response.body);
     return data['data']['data'];
   }
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     print(body);
-    String addimageUrl =
-        '$baseUrl/imageadd';
+    String addimageUrl = '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -41,8 +40,7 @@ class Service {
 
   Future<bool> addChallengImage(
       Map<String, String> body, String filepath, String filepath2) async {
-    String addimageUrl =
-        '$baseUrl/imagechallengadd';
+    String addimageUrl = '$baseUrl/imagechallengadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath))
@@ -63,8 +61,7 @@ class Service {
   Future<bool> addChallenge(
       Map<String, String> body, String filepath, int userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String addimageUrl =
-        '$baseUrl/addChallenge';
+    String addimageUrl = '$baseUrl/addChallenge';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -89,11 +86,9 @@ class Service {
 
   Future<Map<String, dynamic>> getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(
-        Uri.parse('$baseUrl/userr'),
-        headers: {
-          'Authorization': 'Bearer ${prefs.getString('token')}',
-        });
+    final response = await http.get(Uri.parse('$baseUrl/userr'), headers: {
+      'Authorization': 'Bearer ${prefs.getString('token')}',
+    });
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -101,13 +96,11 @@ class Service {
     }
   }
 
-  Future<void> likeAction(
-      likeCount, isLiked, postId, likeType, isALiked, isBLiked) async {
+  Future<void> likeAction(postId, likeType) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse(
-            '$baseUrl/likePost'),
+        Uri.parse('$baseUrl/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -119,20 +112,7 @@ class Service {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
         final updatedLikeCount = responseData['likeCount'];
-        if (likeType == 'A') {
-          isALiked = true;
-          isBLiked = !isLiked;
-        } else if (likeType == 'B') {
-          isALiked = !isLiked;
-          isBLiked = true;
-        }
-
-        setState(() {
-          likeCount = likeCount;
-          isLiked = isLiked;
-          isALiked = isALiked;
-          isBLiked = isBLiked;
-        });
+        print(postId);
       } else {
         // Handle API error, if necessary
       }
@@ -146,8 +126,7 @@ class Service {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse(
-            '$baseUrl/likeBangUpdate'),
+        Uri.parse('$baseUrl/likeBangUpdate'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -166,7 +145,6 @@ class Service {
           isLiked = !isLiked;
         });
       } else {
-
         // Handle API error, if necessary
       }
     } catch (e) {
@@ -180,7 +158,7 @@ class Service {
       final response = await http.get(
         Uri.parse('$baseUrl/getComments/$postId'),
       );
-              print('$baseUrl/getComments/$postId');
+      print('$baseUrl/getComments/$postId');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -250,30 +228,29 @@ class Service {
   // }
 
   Future postComment(BuildContext context, postId, commentText) async {
-  try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.post(
-      Uri.parse('$baseUrl/postComment'),
-      body: {
-        'post_id': postId.toString(),
-        'user_id': prefs.getInt('user_id').toString(),
-        'body': commentText,
-      },
-    );
-    final responseData = json.decode(response.body);
-    //   // If the comment was posted successfully, update the comment count
-    //   final commentProvider = Provider.of<CommentProvider>(context, listen: false);
-    //   await commentProvider.getCommentCount(postId);
-    //     // commentProvider.incrementCommentCount();
+     
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(
+        Uri.parse('$baseUrl/postComment'),
+        body: {
+          'post_id': postId.toString(),
+          'user_id': prefs.getInt('user_id').toString(),
+          'body': commentText,
+        },
+       );
+    //   final responseData = json.decode(response.body);
+    //   //   // If the comment was posted successfully, update the comment count
+    //   //   final commentProvider = Provider.of<CommentProvider>(context, listen: false);
+    //   //   await commentProvider.getCommentCount(postId);
+    //   //     // commentProvider.incrementCommentCount();
 
-      return  jsonDecode(response.body);
-
-  } catch (e) {
-    print(e);
-    throw e;
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      throw e;
+    }
   }
-}
-
 
   Future postUpdateComment(postId, commentText) async {
     try {

@@ -56,7 +56,7 @@ class _LikeButtonState extends State<LikeButton> {
                       setState(() {
                         isLiked = !isLiked; // Update the isLiked state variable
                       });
-                      Service().likeAction(widget.likeCount, isLiked, widget.postId,'A',isALiked,isBLiked); // Use the parameters from the widget
+                    //   Service().likeAction(widget.likeCount, isLiked, widget.postId,'A',isALiked,isBLiked); // Use the parameters from the widget
                     },
                     child: isLiked
                         ? Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 30)
@@ -94,7 +94,7 @@ class _LikeButtonState extends State<LikeButton> {
                   isBLiked = !isLiked;
                 });
                 updateLikeButtons(isLiked);
-                Service().likeAction(widget.likeCount, isLiked, widget.postId,'B',isALiked,isBLiked); // Use the parameters from the widget
+                // Service().likeAction(widget.likeCount, isLiked, widget.postId,'B',isALiked,isBLiked); // Use the parameters from the widget
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -141,7 +141,7 @@ class _LikeButtonState extends State<LikeButton> {
               isBLiked = !isLiked;
             });
             updateLikeButtons(isLiked);
-            Service().likeAction(widget.likeCount, isLiked, widget.postId,'A',isALiked,isBLiked); // Use the parameters from the widget
+            // Service().likeAction(widget.likeCount, isLiked, widget.postId,'A',isALiked,isBLiked); // Use the parameters from the widget
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
