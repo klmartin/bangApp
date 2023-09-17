@@ -415,23 +415,23 @@ class PostItem extends StatelessWidget {
             ),
           // Text("     $commentCount comments"),
 
-   FutureBuilder<void>(
-  future: Provider.of<CommentProvider>(context, listen: false).getCommentCount(postId),
-  builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return Text('Loading...');
-    } else if (snapshot.hasError) {
-      return Text('An error occurred');
-    } else {
-      return Consumer<CommentProvider>(
-        builder: (context, commentCountProvider, child) {
-          return Text("     ${commentCountProvider.commentCount} comments");
+         FutureBuilder<void>(
+        future: Provider.of<CommentProvider>(context, listen: false).getCommentCount(postId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text('Loading...');
+          } else if (snapshot.hasError) {
+            return Text('An error occurred');
+          } else {
+            return Consumer<CommentProvider>(
+              builder: (context, commentCountProvider, child) {
+                return Text("     ${commentCountProvider.commentCount} comments");
+              },
+            );
+          }
         },
-      );
-    }
-  },
-)
-,
+      )
+      ,
 
 
 

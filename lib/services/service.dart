@@ -101,8 +101,7 @@ class Service {
     }
   }
 
-  Future<void> likeAction(
-      likeCount, isLiked, postId, likeType, isALiked, isBLiked) async {
+  Future<void> likeAction(postId, likeType) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -119,20 +118,7 @@ class Service {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
         final updatedLikeCount = responseData['likeCount'];
-        if (likeType == 'A') {
-          isALiked = true;
-          isBLiked = !isLiked;
-        } else if (likeType == 'B') {
-          isALiked = !isLiked;
-          isBLiked = true;
-        }
 
-        setState(() {
-          likeCount = likeCount;
-          isLiked = isLiked;
-          isALiked = isALiked;
-          isBLiked = isBLiked;
-        });
       } else {
         // Handle API error, if necessary
       }
@@ -141,6 +127,36 @@ class Service {
       // Handle exceptions, if any
     }
   }
+
+  Future<bool> onLikeButtonTapped(bool isLiked,postId,likeType) async{
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(
+        Uri.parse(
+            '$baseUrl/likePost'),
+        body: {
+          'post_id': postId.toString(),
+          'user_id': prefs.getInt('user_id').toString(), // Convert to string
+          'like_type': likeType,
+        },
+      );
+      print(response.body);
+      if (response.statusCode == 200) {
+        // Update the like count based on the response from the API
+        final responseData = json.decode(response.body);
+        final updatedLikeCount = responseData['likeCount'];
+        return !isLiked;
+      } else {
+        return isLiked;
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      return isLiked;
+      print(e);
+      // Handle exceptions, if any
+    }
+  }
+
 
   Future<void> likeBangUpdate(likeCount, isLiked, postId) async {
     try {

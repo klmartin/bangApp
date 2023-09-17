@@ -63,7 +63,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
         ),
         CarouselSlider(
           options: CarouselOptions(
-            height: 400,
+            height: 280,
             viewportFraction: 1.0,
             enlargeCenterPage: true,
             autoPlay: true,
@@ -86,7 +86,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                   viewImage(context, box.imageUrl1);
                                 },
                                 child: Container(
-                                  height: 290,
+                                  height: 200,
                                   child: Image.network(
                                     box.imageUrl1, // Replace with the URL of the first image
                                     fit: BoxFit.fill,
@@ -104,7 +104,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                   viewImage(context, box.imageUrl2);
                                 },
                                 child: Container(
-                                  height: 290,
+                                  height: 200,
                                   child: Image.network(
                                     box.imageUrl2, // Replace with the URL of the first image
                                     fit: BoxFit.fill,
@@ -122,14 +122,13 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                         Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 20.0),
-                            // child: BattleLike(
-                            //   likeCountA: 0,
-                            //   likeCountB: 0,
-                            //   isLiked: false,
-                            //   battleId: box.battleId,
-                            //   bLikeButton: false,
-                            // )),
-                  child:Container()),
+                            child: BattleLike(
+                              likeCountA: 0,
+                              likeCountB: 0,
+                              isLiked: false,
+                              battleId: box.battleId,
+                              bLikeButton: false, likeCount: 0,
+                            )),
                       ],
                     ),
                   );
@@ -162,14 +161,13 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          // child: BattleLike(
-                          //   likeCountA: 0,
-                          //   likeCountB: 0,
-                          //   isLiked: false,
-                          //   battleId: box.battleId,
-                          //   bLikeButton: true,
-                          // ),
-                          child: Container(),
+                          child: BattleLike(
+                            likeCountA: 0,
+                            likeCountB: 0,
+                            isLiked: false,
+                            battleId: box.battleId,
+                            bLikeButton: true, likeCount: 0,
+                          ),
                         ),
                       ],
                     ),

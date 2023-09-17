@@ -20,6 +20,7 @@ import '../Comments/commentspage.dart';
 import '../Create/video_editing/video_edit.dart';
 import '../Profile/profile.dart';
 import 'dart:io';
+import 'package:bangapp/services/service.dart';
 
 import '../mine/mine.dart';
 
@@ -75,6 +76,7 @@ class PostItem2 extends StatelessWidget {
       ),
     );
   }
+
 
   Future<Uint8List> fileToUint8List(File file) async {
     if (file != null) {
@@ -427,6 +429,7 @@ class PostItem2 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -720,8 +723,7 @@ class PostItem2 extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    // child:LikeButton(likeCount:0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
-                    child: Container(),
+                     child: Container(),
                   ),
                 ],
               ),
@@ -1057,8 +1059,7 @@ class PostItem2 extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    // child: LikeButton(likeCount: 0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
-                    child: Container(),
+                    child: LikeButton(likeCount: 0 ,isLiked:false),
                   ),
                 ],
               ),
