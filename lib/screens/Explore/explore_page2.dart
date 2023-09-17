@@ -172,7 +172,9 @@ class BangUpdateProvider extends ChangeNotifier {
     final bangUpdate =
         _bangUpdates.firstWhere((update) => update.postId == postId);
     bangUpdate.commentCount++;
-
+print("hereeeeeeeeeeeee");
+print(postId);
+print(bangUpdate.commentCount);
     notifyListeners();
   }
 }

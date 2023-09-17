@@ -7,20 +7,19 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
 import '../providers/comment_provider.dart';
+import '../providers/posts_provider.dart';
 import '../screens/Widgets/small_box.dart';
 
 class Service {
   Future<List<dynamic>> getPosts() async {
-    var response = await http.get(Uri.parse(
-        '$baseUrl/getPosts'));
+    var response = await http.get(Uri.parse('$baseUrl/getPosts'));
     var data = json.decode(response.body);
     return data['data']['data'];
   }
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     print(body);
-    String addimageUrl =
-        '$baseUrl/imageadd';
+    String addimageUrl = '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -41,8 +40,7 @@ class Service {
 
   Future<bool> addChallengImage(
       Map<String, String> body, String filepath, String filepath2) async {
-    String addimageUrl =
-        '$baseUrl/imagechallengadd';
+    String addimageUrl = '$baseUrl/imagechallengadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath))
@@ -63,8 +61,7 @@ class Service {
   Future<bool> addChallenge(
       Map<String, String> body, String filepath, int userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String addimageUrl =
-        '$baseUrl/addChallenge';
+    String addimageUrl = '$baseUrl/addChallenge';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -89,11 +86,9 @@ class Service {
 
   Future<Map<String, dynamic>> getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(
-        Uri.parse('$baseUrl/userr'),
-        headers: {
-          'Authorization': 'Bearer ${prefs.getString('token')}',
-        });
+    final response = await http.get(Uri.parse('$baseUrl/userr'), headers: {
+      'Authorization': 'Bearer ${prefs.getString('token')}',
+    });
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -105,8 +100,7 @@ class Service {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse(
-            '$baseUrl/likePost'),
+        Uri.parse('$baseUrl/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -118,7 +112,7 @@ class Service {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
         final updatedLikeCount = responseData['likeCount'];
-
+        print(postId);
       } else {
         // Handle API error, if necessary
       }
@@ -127,43 +121,12 @@ class Service {
       // Handle exceptions, if any
     }
   }
-
-  Future<bool> onLikeButtonTapped(bool isLiked,postId,likeType) async{
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(
-        Uri.parse(
-            '$baseUrl/likePost'),
-        body: {
-          'post_id': postId.toString(),
-          'user_id': prefs.getInt('user_id').toString(), // Convert to string
-          'like_type': likeType,
-        },
-      );
-      print(response.body);
-      if (response.statusCode == 200) {
-        // Update the like count based on the response from the API
-        final responseData = json.decode(response.body);
-        final updatedLikeCount = responseData['likeCount'];
-        return !isLiked;
-      } else {
-        return isLiked;
-        // Handle API error, if necessary
-      }
-    } catch (e) {
-      return isLiked;
-      print(e);
-      // Handle exceptions, if any
-    }
-  }
-
 
   Future<void> likeBangUpdate(likeCount, isLiked, postId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse(
-            '$baseUrl/likeBangUpdate'),
+        Uri.parse('$baseUrl/likeBangUpdate'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -182,7 +145,6 @@ class Service {
           isLiked = !isLiked;
         });
       } else {
-
         // Handle API error, if necessary
       }
     } catch (e) {
@@ -196,7 +158,7 @@ class Service {
       final response = await http.get(
         Uri.parse('$baseUrl/getComments/$postId'),
       );
-              print('$baseUrl/getComments/$postId');
+      print('$baseUrl/getComments/$postId');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -266,30 +228,29 @@ class Service {
   // }
 
   Future postComment(BuildContext context, postId, commentText) async {
-  try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.post(
-      Uri.parse('$baseUrl/postComment'),
-      body: {
-        'post_id': postId.toString(),
-        'user_id': prefs.getInt('user_id').toString(),
-        'body': commentText,
-      },
-    );
-    final responseData = json.decode(response.body);
-    //   // If the comment was posted successfully, update the comment count
-    //   final commentProvider = Provider.of<CommentProvider>(context, listen: false);
-    //   await commentProvider.getCommentCount(postId);
-    //     // commentProvider.incrementCommentCount();
+     
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(
+        Uri.parse('$baseUrl/postComment'),
+        body: {
+          'post_id': postId.toString(),
+          'user_id': prefs.getInt('user_id').toString(),
+          'body': commentText,
+        },
+       );
+    //   final responseData = json.decode(response.body);
+    //   //   // If the comment was posted successfully, update the comment count
+    //   //   final commentProvider = Provider.of<CommentProvider>(context, listen: false);
+    //   //   await commentProvider.getCommentCount(postId);
+    //   //     // commentProvider.incrementCommentCount();
 
-      return  jsonDecode(response.body);
-
-  } catch (e) {
-    print(e);
-    throw e;
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      throw e;
+    }
   }
-}
-
 
   Future postUpdateComment(postId, commentText) async {
     try {
@@ -360,7 +321,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            '$baseUrl/storeToken'),
+            'https://alitaafrica.com/social-backend-laravel/api/storeToken'),
         body: {
           'user_id': id.toString(),
           'device_token': token,
@@ -378,7 +339,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            '$baseUrl/sendNotification'),
+            'https://alitaafrica.com/social-backend-laravel/api/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -401,18 +362,15 @@ class Service {
   Future<bool> setUserProfile(username, bio, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
-    Map<String, String> usernameMap = {'username': username};
-    Map<String, String> userIdMap = {'user_id': user_id.toString()};
-    Map<String, String> bioMap = {'bio': bio};
-    String addimageUrl = '$baseUrl/setUserProfile';
+    String addimageUrl =
+        'https://alitaafrica.com/social-backend-laravel/api/setUserProfile';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
-      ..fields.addAll(usernameMap)
-      ..fields.addAll(userIdMap)
-      ..fields.addAll(bioMap)
+      ..fields.addAll(username)
+      ..fields.addAll(user_id as Map<String, String>)
+      ..fields.addAll(bio)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
-      print(response);
       if (response.statusCode == 201) {
         var data = json.decode(response.body);
         return data['url'];
@@ -427,7 +385,7 @@ class Service {
 
   Future<List<BoxData>> getBangBattle() async {
     var response = await http.get(Uri.parse(
-        '$baseUrl/getBangBattle'));
+        'https://alitaafrica.com/social-backend-laravel/api/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
     List<BoxData> boxes = [];
@@ -443,7 +401,7 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse(
-            '$baseUrl/likePost'),
+            'https://alitaafrica.com/social-backend-laravel/api/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -470,7 +428,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          '$baseUrl/getMessages'),
+          'https://alitaafrica.com/social-backend-laravel/api/getMessages'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
       },
@@ -494,7 +452,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          '$baseUrl/getMessagesFromUser'),
+          'https://alitaafrica.com/social-backend-laravel/api/getMessagesFromUser'),
       body: {
         'other_user_id': userId,
         'user_id': prefs.getInt('user_id').toString(),
@@ -517,7 +475,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          '$baseUrl/sendMessage'),
+          'https://alitaafrica.com/social-backend-laravel/api/sendMessage'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
         'receiver_id': receiverId.toString(),
@@ -530,15 +488,6 @@ class Service {
     } else {
       print('Failed to send message');
     }
-  }
-
-  Future<List<dynamic>> getBangUpdates() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var user_id = prefs.getInt('user_id').toString();
-    var response = await http.get(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/bang-updates/$user_id'));
-    print(user_id);
-    var data = json.decode(response.body);
-    return data;
   }
 
   void setState(Null Function() param0) {}

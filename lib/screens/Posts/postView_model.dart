@@ -84,6 +84,8 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool _isEditing = false;
+
+  var myProvider;
   void toggleEditing() {
     setState(() {
       _isEditing = !_isEditing;
@@ -375,7 +377,7 @@ class _PostCardState extends State<PostCard> {
                       context,
                       createRoute(
                         CommentsPage(
-                          postId: widget.postId, userId: widget.userId,
+                          postId: widget.postId, userId: widget.userId, myProvider: myProvider,
                           // currentUser: 1,
                         ),
                       ),

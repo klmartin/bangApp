@@ -140,7 +140,7 @@ class MyApp extends StatelessWidget {
         Welcome.id: (context) => Welcome(),
         EditPage.id: (context) => EditPage(),
         Authenticate.id: (context) => Authenticate(),
-        CommentsPage.id: (context) => CommentsPage(userId: null),
+        // CommentsPage.id: (context) => CommentsPage(userId: null),
         FinalCreate.id: (context) => FinalCreate(),
       },
     );

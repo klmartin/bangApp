@@ -9,9 +9,9 @@ class Post {
   final String caption;
   final int width;
   final int height;
-  final int likeCountA;
+ int likeCountA;
   final int likeCountB;
-  late final int commentCount;
+ int commentCount;
   final int followerCount;
   var isLiked ;
   int isPinned;
