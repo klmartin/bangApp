@@ -200,7 +200,7 @@ class _EditPageState extends State<EditPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: TextButton(
                         onPressed: () async {
-                          Service().setUserProfile(_name,_descr, rimage);
+                          Service().setUserProfile(_name,_descr, rimage.toString());
                         },
                         child: Text(
                           'Done',

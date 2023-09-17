@@ -69,6 +69,8 @@ dependencies:
   visibility_detector: ^0.4.0+2
   comment_box: ^0.0.18
   shared_preferences: ^2.2.1
+  flutter_share: ^2.0.0
+  screenshot: ^2.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

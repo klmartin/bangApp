@@ -7,12 +7,16 @@ class BattleLike extends StatefulWidget {
   final int likeCount;
   final bool isLiked;
   final int battleId;
+  final int likeCountA;
+  final int likeCountB;
   bool bLikeButton = false;
 
   BattleLike({
     required this.likeCount,
     required this.isLiked,
     required this.battleId,
+    required this.likeCountA,
+    required this.likeCountB,
     required this.bLikeButton,
   });
 

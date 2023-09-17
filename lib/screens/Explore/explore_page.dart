@@ -3,6 +3,8 @@ import 'package:bangapp/widgets/SearchBox.dart';
 import 'package:bangapp/widgets/buildBangUpdate.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import "package:bangapp/services/service.dart";
+
 
 
 class Explore extends StatefulWidget {
@@ -30,15 +32,11 @@ class _ExploreState extends State<Explore> {
 }
 
 class BangUpdates extends StatelessWidget {
-  Future<List<dynamic>> getBangUpdates() async {
-    var response = await http.get(Uri.parse('https://alitaafrica.com/social-backend-laravel/api/bang-updates'));
-    var data = json.decode(response.body);
-    return data;
-  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getBangUpdates(),
+      future: Service().getBangUpdates(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(

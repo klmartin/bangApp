@@ -15,6 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/userprovider.dart';
 import 'package:bangapp/services/fetch_post.dart';
 import 'profile_upload.dart';
+import 'package:bangapp/constants/urls.dart';
+
 late bool _persposts ;
 
 Future<String?> getUserImage() async {
@@ -419,7 +421,7 @@ class ImagePost extends StatelessWidget {
 
 Future<List<Hobby>> fetchHobbies() async {
   print('fetching hobbies');
-  final response = await http.get(Uri.parse('http://192.168.124.229/social-backend-laravel/api/hobbies'));
+  final response = await http.get(Uri.parse('$baseUrl/hobbies'));
 
   if (response.statusCode == 200) {
     final List<dynamic> data = json.decode(response.body);

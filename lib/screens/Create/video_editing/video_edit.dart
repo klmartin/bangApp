@@ -110,7 +110,7 @@ class _VideoEditorState extends State<VideoEditor> {
       onCompleted: (file) {
         _isExporting.value = false;
         if (!mounted) return;
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => FinalCreate(

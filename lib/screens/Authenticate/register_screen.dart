@@ -10,6 +10,7 @@ import 'package:bangapp/services/service.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:filter_list/filter_list.dart';
+import 'package:bangapp/constants/urls.dart';
 
 
 class Register extends StatefulWidget {
@@ -36,7 +37,7 @@ class Hobby {
 
 Future<List<Hobby>> fetchHobbies() async {
   print('fetching hobbies');
-  final response = await http.get(Uri.parse('http://192.168.124.229/social-backend-laravel/api/hobbies'));
+  final response = await http.get(Uri.parse('$baseUrl/hobbies'));
 
   if (response.statusCode == 200) {
     final List<dynamic> data = json.decode(response.body);
@@ -407,7 +408,9 @@ class _RegisterState extends State<Register> {
                             prefs.setString('token', responseBody['access_token']);
                             prefs.setString('name', responseBody['name']);
                             prefs.setString('email', responseBody['name']);
-                            Navigator.pushNamed(context, EditPage.id);
+                            Navigator.pushReplacement(context, MaterialPageRoute(
+                              builder: (context) => EditPage(),
+                            ));
                           }
 
                         }

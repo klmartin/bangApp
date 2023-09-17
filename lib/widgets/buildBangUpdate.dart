@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'package:bangapp/widgets/LikeCounterWidget.dart';
 import 'package:bangapp/widgets/user_profile.dart';
 import 'package:bangapp/screens/Explore/bang_updates_like_button.dart';
-
+import 'package:bangapp/constants/urls.dart';
 import '../screens/Comments/updateComment.dart';
 import '../services/animation.dart';
 
@@ -85,7 +84,7 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
               UserProfile(
-                url: 'https://alitaafrica.com/social-backend-laravel/storage/app/bangInspiration/bang_logo.jpg',
+                url: logoUrl,
                 size: 40),
                 SizedBox(width:5),
                 Text('Bang App', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14,color: Colors.white)),

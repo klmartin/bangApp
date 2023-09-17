@@ -188,7 +188,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);
                                 });
-                                Navigator.pushNamed(context, Nav.id);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => Nav()),
+                                );
                               }
                             }
                             //Implement login functionality.

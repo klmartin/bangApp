@@ -13,7 +13,6 @@ import 'screens/Chat/chat_home.dart';
 import 'screens/Profile/profile.dart';
 import 'package:bangapp/screens/Widgets/fab_container.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 
 class Nav extends StatefulWidget {
@@ -23,14 +22,6 @@ class Nav extends StatefulWidget {
 }
 
 
-
-Future<void> requestMediaPermissions() async {
-  await Permission.storage.request();
-    await Permission.camera.request();
-
-
-
-}
 
 class _NavState extends State<Nav> {
   bool _isAppBarEnabled = true; // Variable to track app bar state
@@ -43,7 +34,6 @@ class _NavState extends State<Nav> {
   void _onItemTap(int index) {
     setState(() {
       _selectedIndex = index;
-      // Disable app bar when "Create" tab is clicked
       _isAppBarEnabled = index != 2 && index != 1;
     });
   }
