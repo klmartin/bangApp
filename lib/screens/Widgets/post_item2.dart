@@ -44,7 +44,16 @@ class PostItem2 extends StatelessWidget {
   final List<Challenge> challenges;
   final isLiked;
   final int isPinned;
+  var isLikedA;
+  var isLikedB;
+var like_count_A;
+var like_count_B;
+
+
+
+
   PostsProvider myProvider;
+
 
   PostItem2(
       this.postId,
@@ -63,6 +72,8 @@ class PostItem2 extends StatelessWidget {
       this.challenges,
       this.isLiked,
       this.isPinned,
+      this.isLikedA,
+      this.isLikedB,
       {required this.myProvider});
 
   void viewImage(BuildContext context, String imageUrl) {
@@ -402,13 +413,28 @@ class PostItem2 extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  LikeButton(
-                    // onTap:  Service().likeAction(likeCount, isLiked, postId, likeType, isALiked, isBLiked),
-                    size: 30,
-                    countPostion: CountPostion.bottom,
-                    likeCount: likeCountA,
-                    isLiked: false,
-                  ), //for liking first picture
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                         GestureDetector(
+                          onTap: () {
+                            final countUpdate = Provider.of<PostsProvider>(
+                                context,
+                                listen: false);
+                            countUpdate.increaseLikes2(postId, 1);
+                            Service().likeAction(postId, "A");
+                          },
+                          child: isLikedA
+                              ? Icon(CupertinoIcons.heart_fill,
+                                  color: Colors.red, size: 30)
+                              : Icon(CupertinoIcons.heart,
+                                  color: Colors.red, size: 30),
+                        ),
+                        Text("${likeCountA.toString()} Likes")
+                    ],
+                  )
+                 ,//for liking first picture
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -437,13 +463,36 @@ class PostItem2 extends StatelessWidget {
                       const SizedBox(
                         width: 10,
                       ),
-                      LikeButton(
-                        // onTap: ,
-                        size: 30,
-                        countPostion: CountPostion.bottom,
-                        likeCount: likeCountB,
-                        isLiked: false,
-                      ),
+
+                       Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                         GestureDetector(
+                          onTap: () {
+                            final countUpdate = Provider.of<PostsProvider>(
+                                context,
+                                listen: false);
+                            countUpdate.increaseLikes2(postId, 2);
+                            Service().likeAction(postId, "B");
+                          },
+                          child: isLikedB
+                              ? Icon(CupertinoIcons.heart_fill,
+                                  color: Colors.red, size: 30)
+                              : Icon(CupertinoIcons.heart,
+                                  color: Colors.red, size: 30),
+                        ),
+                        Text("${likeCountB.toString()} Likes")
+                    ],
+                  )
+
+                    //   LikeButton(
+                    //     // onTap: ,
+                    //     size: 30,
+                    //     countPostion: CountPostion.bottom,
+                    //     likeCount: likeCountB,
+                    //     isLiked: false,
+                    //   ),
                     ],
                   ),
                 ],
@@ -829,15 +878,7 @@ class PostItem2 extends StatelessWidget {
                   ),
                 ),
               ),
-              TextButton(
-                  onPressed: () {
-                    final up =
-                        Provider.of<PostsProvider>(context, listen: false);
-                    up.fetchData();
-                    up.incrementCommentCountByPostId(postId);
-                    print("Im hereeeeee");
-                  },
-                  child: Text("$commentCount comments")),
+             Text("$commentCount comments"),
               const SizedBox(height: 20),
             ],
           ));

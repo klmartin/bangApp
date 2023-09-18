@@ -10,12 +10,16 @@ class Post {
   final int width;
   final int height;
  int likeCountA;
-  final int likeCountB;
+ int likeCountB;
  int commentCount;
   final int followerCount;
   var isLiked ;
   int isPinned;
-  final List<Challenge> challenges; // Add a list of challenges to the Post model
+  final List<Challenge> challenges;
+
+  var isLikedA;
+  var  isLikedB;
+
 
   Post({
     required this.postId,
@@ -34,6 +38,9 @@ class Post {
     required this.isLiked,
     required this.isPinned,
     required this.challenges, // Add the challenges parameter to the constructor
+    required this.isLikedA,
+    required this.isLikedB,
+
   });
 }
 

@@ -45,7 +45,7 @@ void main() async {
     ChangeNotifierProvider(create: (_) => UserProvider()),
     ChangeNotifierProvider(create: (context) => CommentProvider()),
     ChangeNotifierProvider(create: (context) => PostsProvider()),
-    ChangeNotifierProvider(create: (context) => HomeProvider()),
+    // ChangeNotifierProvider(create: (context) => HomeProvider()),
     ChangeNotifierProvider(create: (context) => BangUpdateProvider()),
   ], child: MyApp()));
 }
