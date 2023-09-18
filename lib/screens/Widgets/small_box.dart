@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:provider/provider.dart';
+import '../../providers/posts_provider.dart';
 import '../../services/animation.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:bangapp/screens/Widgets/battle_like.dart';
@@ -120,15 +123,33 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                               fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                         Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: BattleLike(
-                              likeCountA: 0,
-                              likeCountB: 0,
-                              isLiked: false,
-                              battleId: box.battleId,
-                              bLikeButton: false, likeCount: 0,
-                            )),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                         child:  GestureDetector(
+                          onTap: () {
+                            final countUpdate = Provider.of<PostsProvider>(
+                                context,
+                                listen: false);
+                            countUpdate.increaseLikes2(postId, 1);
+                            Service().likeAction(postId, "A");
+                          },
+                          child: isLikedA
+                              ? Icon(CupertinoIcons.heart_fill,
+                                  color: Colors.red, size: 30)
+                              : Icon(CupertinoIcons.heart,
+                                  color: Colors.red, size: 30),
+                        ),
+                        // Text("${likeCountA.toString()} Likes")
+
+
+                        // BattleLike(
+                        //     likeCountA: 0,
+                        //     likeCountB: 0,
+                        //     isLiked: false,
+                        //     battleId: box.battleId,
+                        //     bLikeButton: false,
+                        //     likeCount: 0,
+                        //   ),
+                        ),
                       ],
                     ),
                   );
@@ -166,7 +187,8 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                             likeCountB: 0,
                             isLiked: false,
                             battleId: box.battleId,
-                            bLikeButton: true, likeCount: 0,
+                            bLikeButton: true,
+                            likeCount: 0,
                           ),
                         ),
                       ],
