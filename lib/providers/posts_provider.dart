@@ -29,8 +29,7 @@ class PostsProvider with ChangeNotifier {
       final response = await get(Uri.parse(
           "https://bangapp.pro/BangAppBackend/api/getPost?_page=$_pageNumber&_limit=10&user_id=$user_id"));
       final Map<String, dynamic> responseData = json.decode(response.body);
-      print("this is response");
-      print(response.body);
+
       if (responseData.containsKey('data')) {
         List<dynamic> responseList = responseData['data']['data'];
         _posts = responseList.map((data) {
