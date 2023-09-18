@@ -138,7 +138,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
     );
   } else if (bangUpdate.type == 'video') {
     VideoPlayerController _videoPlayerController =
-        VideoPlayerController.networkUrl(bangUpdate.filename);
+        VideoPlayerController.networkUrl(Uri.parse(bangUpdate.filename));
     ChewieController _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
       autoPlay: true,
@@ -240,7 +240,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
               child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 UserProfile(
                     url:
-                        'https://alitaafrica.com/social-backend-laravel/storage/app/bangInspiration/bang_logo.jpg',
+                        'http://137.184.33.100/BangAppBackend/storage/app/bangInspiration/bang_logo.jpg',
                     size: 40),
                 SizedBox(width: 5),
                 Text('User Name',

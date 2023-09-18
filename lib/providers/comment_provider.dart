@@ -29,7 +29,7 @@ class CommentProvider extends ChangeNotifier {
   //     SharedPreferences prefs = await SharedPreferences.getInstance();
   //     final response = await http.post(
   //       Uri.parse(
-  //           'https://alitaafrica.com/social-backend-laravel/api/postComment'),
+  //           'http://137.184.33.100/BangAppBackend/api/postComment'),
   //       body: {
   //         'post_id': postId.toString(),
   //         'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -66,7 +66,7 @@ class CommentProvider extends ChangeNotifier {
       final dynamic data = json.decode(response.body)['data'];
 
       print(data);
-     
+
       notifyListeners();
     } else {
       throw Exception('Failed to add comment');

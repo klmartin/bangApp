@@ -228,7 +228,7 @@ class Service {
   // }
 
   Future postComment(BuildContext context, postId, commentText) async {
-     
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -321,7 +321,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://alitaafrica.com/social-backend-laravel/api/storeToken'),
+            'http://137.184.33.100/BangAppBackend/api/storeToken'),
         body: {
           'user_id': id.toString(),
           'device_token': token,
@@ -339,7 +339,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://alitaafrica.com/social-backend-laravel/api/sendNotification'),
+            'http://137.184.33.100/BangAppBackend/api/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -363,7 +363,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
     String addimageUrl =
-        'https://alitaafrica.com/social-backend-laravel/api/setUserProfile';
+        'http://137.184.33.100/BangAppBackend/api/setUserProfile';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(username)
       ..fields.addAll(user_id as Map<String, String>)
@@ -385,7 +385,7 @@ class Service {
 
   Future<List<BoxData>> getBangBattle() async {
     var response = await http.get(Uri.parse(
-        'https://alitaafrica.com/social-backend-laravel/api/getBangBattle'));
+        'http://137.184.33.100/BangAppBackend/api/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
     List<BoxData> boxes = [];
@@ -401,7 +401,7 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse(
-            'https://alitaafrica.com/social-backend-laravel/api/likePost'),
+            'http://137.184.33.100/BangAppBackend/api/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -428,7 +428,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          'https://alitaafrica.com/social-backend-laravel/api/getMessages'),
+          'http://137.184.33.100/BangAppBackend/api/getMessages'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
       },
@@ -452,7 +452,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          'https://alitaafrica.com/social-backend-laravel/api/getMessagesFromUser'),
+          'http://137.184.33.100/BangAppBackend/api/getMessagesFromUser'),
       body: {
         'other_user_id': userId,
         'user_id': prefs.getInt('user_id').toString(),
@@ -475,7 +475,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          'https://alitaafrica.com/social-backend-laravel/api/sendMessage'),
+          'http://137.184.33.100/BangAppBackend/api/sendMessage'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
         'receiver_id': receiverId.toString(),

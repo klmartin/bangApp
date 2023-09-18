@@ -202,7 +202,7 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     UserProfile(
-                        url: 'https://alitaafrica.com/social-backend-laravel/storage/app/bangInspiration/bang_logo.jpg',
+                        url: 'http://137.184.33.100/BangAppBackend/storage/app/bangInspiration/bang_logo.jpg',
                         size: 40),
                     SizedBox(width:5),
                     Text('User Name', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white)),

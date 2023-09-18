@@ -27,7 +27,7 @@ class PostsProvider with ChangeNotifier {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final user_id = prefs.getInt('user_id').toString();
       final response = await get(Uri.parse(
-          "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$user_id"));
+          "http://137.184.33.100/BangAppBackend/api/getPost?_page=$_pageNumber&_limit=100&user_id=$user_id"));
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (responseData.containsKey('data')) {
         List<dynamic> responseList = responseData['data']['data'];
@@ -65,9 +65,6 @@ class PostsProvider with ChangeNotifier {
             isLikedA: data['isLikedA'],
           );
         }).toList();
-        // print("listtttttttttttttt");
-        // print(posts);
-        // print("listtttttttttttttt");
 
         _loading = false;
         notifyListeners();
