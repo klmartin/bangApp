@@ -193,7 +193,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
 //                 SizedBox(height: 10),
 //                 Text("Counts: ${bangUpdate.likeCount}"),
                 Text(
-                  "$bangUpdate.likeCount",
+                  bangUpdate.likeCount.toString(),
                   style: TextStyle(
                     fontSize: 12.5,
                     color: Colors.white,
@@ -240,7 +240,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
               child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 UserProfile(
                     url:
-                        'http://137.184.33.100/BangAppBackend/storage/app/bangInspiration/bang_logo.jpg',
+                        'https://bangapp.pro/BangAppBackend/storage/app/bangInspiration/bang_logo.jpg',
                     size: 40),
                 SizedBox(width: 5),
                 Text('User Name',

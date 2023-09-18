@@ -95,7 +95,7 @@ class _AuthenticateState extends State<Authenticate> {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
-// For sharing images coming from outside the app while the app is in memory
+    // For sharing images coming from outside the app while the app is in memory
     _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
           (List<SharedMediaFile> value) {
         // Check the first shared file's extension
@@ -103,7 +103,8 @@ class _AuthenticateState extends State<Authenticate> {
         if (firstSharedFile != null) {
           final filePath = firstSharedFile.path;
           if (filePath.toLowerCase().endsWith('.jpg') ||
-              filePath.toLowerCase().endsWith('.png')) {
+              filePath.toLowerCase().endsWith('.png')||
+              filePath.toLowerCase().endsWith('.jpeg'))   {
             // It's an image
             Navigator.pushReplacement(
               context,

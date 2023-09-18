@@ -217,7 +217,7 @@ class _CreateState extends State<Create> {
               right: 0,
               height: 40,
               child: Container(
-                color: Colors.black12,
+                // color: Colors.black12,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List<Widget>.generate(
@@ -225,9 +225,8 @@ class _CreateState extends State<Create> {
                         (index) {
                       final isASelected = _activePage == 0 && index == 0;
                       final isBSelected = _activePage == 1 && index == 1;
-
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
                         child: InkWell(
                           onTap: () {
                             _pageViewController.animateToPage(index,
@@ -238,7 +237,7 @@ class _CreateState extends State<Create> {
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 28,
+                              fontSize: 25,
                             ),
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 300),
@@ -248,7 +247,7 @@ class _CreateState extends State<Create> {
                                   BoxShadow(
                                     color: Colors.red, // Change to your highlight color
                                     blurRadius: 10.0,
-                                    spreadRadius: 5.0,
+                                    spreadRadius: 1.0,
                                   ),
                                 ]
                                     : isBSelected
@@ -256,13 +255,13 @@ class _CreateState extends State<Create> {
                                   BoxShadow(
                                     color: Colors.red, // Change to your highlight color
                                     blurRadius: 10.0,
-                                    spreadRadius: 5.0,
+                                    spreadRadius: 1.0,
                                   ),
                                 ]
                                     : [],
                               ),
                               child: Text(
-                                index == 0 ? 'A' : 'B',
+                                index == 0 ? 'A' : 'B >',
                               ),
                             ),
                           ),

@@ -29,7 +29,7 @@ class CommentProvider extends ChangeNotifier {
   //     SharedPreferences prefs = await SharedPreferences.getInstance();
   //     final response = await http.post(
   //       Uri.parse(
-  //           'http://137.184.33.100/BangAppBackend/api/postComment'),
+  //           'https://bangapp.pro/BangAppBackend/api/postComment'),
   //       body: {
   //         'post_id': postId.toString(),
   //         'user_id': prefs.getInt('user_id').toString(), // Convert to string
