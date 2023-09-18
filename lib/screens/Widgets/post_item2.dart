@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
+import 'package:bangapp/screens/blog/colors.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
@@ -46,14 +47,10 @@ class PostItem2 extends StatelessWidget {
   final int isPinned;
   var isLikedA;
   var isLikedB;
-var like_count_A;
-var like_count_B;
-
-
-
+  var like_count_A;
+  var like_count_B;
 
   PostsProvider myProvider;
-
 
   PostItem2(
       this.postId,
@@ -314,7 +311,7 @@ var like_count_B;
                           children: [
                             CachedNetworkImage(
                               imageUrl: image,
-                               width: double.infinity,
+                              width: double.infinity,
                               fit: BoxFit.fill,
                               height: double.infinity,
                               placeholder: (context, url) => AspectRatio(
@@ -335,15 +332,13 @@ var like_count_B;
                               bottom: 5,
                               child: Container(
                                 margin: EdgeInsets.only(left: 10),
-                                height: 20,
-                                width: 20,
                                 decoration: BoxDecoration(
-                                    color: Colors.black,
                                     borderRadius: BorderRadius.circular(50)),
                                 child: Text(
                                   "A",
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 34),
                                 ),
                               ),
                             )
@@ -387,15 +382,13 @@ var like_count_B;
                               right: 0,
                               child: Container(
                                 margin: EdgeInsets.only(right: 10),
-                                height: 20,
-                                width: 20,
                                 decoration: BoxDecoration(
-                                    color: Colors.black,
                                     borderRadius: BorderRadius.circular(50)),
                                 child: Text(
                                   "B",
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 34),
                                 ),
                               ),
                             )
@@ -417,24 +410,23 @@ var like_count_B;
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                         GestureDetector(
-                          onTap: () {
-                            final countUpdate = Provider.of<PostsProvider>(
-                                context,
-                                listen: false);
-                            countUpdate.increaseLikes2(postId, 1);
-                            Service().likeAction(postId, "A");
-                          },
-                          child: isLikedA
-                              ? Icon(CupertinoIcons.heart_fill,
-                                  color: Colors.red, size: 30)
-                              : Icon(CupertinoIcons.heart,
-                                  color: Colors.red, size: 30),
-                        ),
-                        Text("${likeCountA.toString()} Likes")
+                      GestureDetector(
+                        onTap: () {
+                          final countUpdate = Provider.of<PostsProvider>(
+                              context,
+                              listen: false);
+                          countUpdate.increaseLikes2(postId, 1);
+                          Service().likeAction(postId, "A");
+                        },
+                        child: isLikedA
+                            ? Icon(CupertinoIcons.heart_fill,
+                                color: Colors.red, size: 25)
+                            : Icon(CupertinoIcons.heart,
+                                color: Colors.red, size: 25),
+                      ),
+                      Text("${likeCountA.toString()} Likes")
                     ],
-                  )
-                 ,//for liking first picture
+                  ), //for liking first picture
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -457,42 +449,42 @@ var like_count_B;
                         child: const Icon(
                           CupertinoIcons.chat_bubble,
                           color: Colors.black,
-                          size: 29,
+                          size: 25,
                         ),
                       ), //for comments
                       const SizedBox(
                         width: 10,
                       ),
 
-                       Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                         GestureDetector(
-                          onTap: () {
-                            final countUpdate = Provider.of<PostsProvider>(
-                                context,
-                                listen: false);
-                            countUpdate.increaseLikes2(postId, 2);
-                            Service().likeAction(postId, "B");
-                          },
-                          child: isLikedB
-                              ? Icon(CupertinoIcons.heart_fill,
-                                  color: Colors.red, size: 30)
-                              : Icon(CupertinoIcons.heart,
-                                  color: Colors.red, size: 30),
-                        ),
-                        Text("${likeCountB.toString()} Likes")
-                    ],
-                  )
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              final countUpdate = Provider.of<PostsProvider>(
+                                  context,
+                                  listen: false);
+                              countUpdate.increaseLikes2(postId, 2);
+                              Service().likeAction(postId, "B");
+                            },
+                            child: isLikedB
+                                ? Icon(CupertinoIcons.heart_fill,
+                                    color: Colors.red, size: 25)
+                                : Icon(CupertinoIcons.heart,
+                                    color: Colors.red, size: 25),
+                          ),
+                          Text("${likeCountB.toString()} Likes")
+                        ],
+                      )
 
-                    //   LikeButton(
-                    //     // onTap: ,
-                    //     size: 30,
-                    //     countPostion: CountPostion.bottom,
-                    //     likeCount: likeCountB,
-                    //     isLiked: false,
-                    //   ),
+                      //   LikeButton(
+                      //     // onTap: ,
+                      //     size: 30,
+                      //     countPostion: CountPostion.bottom,
+                      //     likeCount: likeCountB,
+                      //     isLiked: false,
+                      //   ),
                     ],
                   ),
                 ],
@@ -519,7 +511,13 @@ var like_count_B;
                 ),
               ),
             ),
-            Text("     $commentCount comments"),
+            Container(
+                height: 10,
+                width: 20,
+                color: Colors.red,
+              margin: EdgeInsets.only(left: 20),
+              child: Text("$commentCount comments"),
+            ),
 
             const SizedBox(height: 20),
           ],
@@ -825,7 +823,7 @@ var like_count_B;
                     child: const Icon(
                       CupertinoIcons.chat_bubble,
                       color: Colors.black,
-                      size: 29,
+                      size: 25,
                     ),
                   ),
                   Padding(
@@ -843,9 +841,9 @@ var like_count_B;
                           },
                           child: isLiked
                               ? Icon(CupertinoIcons.heart_fill,
-                                  color: Colors.red, size: 30)
+                                  color: Colors.red, size: 25)
                               : Icon(CupertinoIcons.heart,
-                                  color: Colors.red, size: 30),
+                                  color: Colors.red, size: 25),
                         ),
                         Text(
                           "$likeCountA likes",
@@ -878,7 +876,11 @@ var like_count_B;
                   ),
                 ),
               ),
-             Text("$commentCount comments"),
+            Container(
+              margin: EdgeInsets.only(left: 15),
+              child: Text("$commentCount comments"),
+            ),
+
               const SizedBox(height: 20),
             ],
           ));
@@ -1189,7 +1191,7 @@ var like_count_B;
                     child: const Icon(
                       CupertinoIcons.chat_bubble,
                       color: Colors.black,
-                      size: 29,
+                      size: 25,
                     ),
                   ),
                   Padding(
