@@ -1,13 +1,10 @@
-import 'dart:convert';
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:bangapp/providers/comment_provider.dart';
 import 'package:bangapp/providers/home_provider.dart';
 import 'package:bangapp/providers/posts_provider.dart';
-import 'package:bangapp/screens/Create/create_page.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
-import 'package:bangapp/screens/Home/home.dart';
-import 'package:bangapp/screens/Home/home2.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +12,6 @@ import 'package:bangapp/nav.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:web_socket_channel/status.dart' as status;
-import 'package:flutter_share/flutter_share.dart';
 import 'package:bangapp/screens/Authenticate/login_screen.dart';
 import 'package:bangapp/screens/Chat/calls_chat.dart';
 import 'package:bangapp/screens/Chat/new_message_chat.dart';
@@ -24,6 +19,7 @@ import 'package:bangapp/screens/Comments/commentspage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
@@ -39,6 +35,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Listen for shared data when the app starts
   await Firebase.initializeApp();
 
   runApp(MultiProvider(providers: [
@@ -51,80 +48,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  final _controller = ScreenshotController();
 
-  Future<void> share() async {
-    print("object");
-    await FlutterShare.share(
-      title: 'Example share',
-      text: 'Example share text',
-      linkUrl: 'https://flutter.dev/',
-      chooserTitle: 'Example Chooser Title',
-    );
-  }
-  Uint8List fileToUint8List(File file) {
-    final bytes = file.readAsBytesSync();
-    return Uint8List.fromList(bytes);
-  }
-  Future<void> shareFile(BuildContext context) async {
-    print("shared");
-    final result = await FilePicker.platform.pickFiles();
-    if (result == null || result.files.isEmpty) return null;
-
-    // Check the file type here (image or video)
-    final String filePath = result.files[0] as String;
-    final fileType = filePath.endsWith('.png') ? 'image' : 'video';
-
-    if (fileType == 'image') {
-
-       Navigator.pushReplacement(
-        context ,
-        MaterialPageRoute(
-          builder: (context) => ImageEditor(
-              image: fileToUint8List(File(filePath)),
-              allowMultiple: true
-          ),
-        ),
-      );
-    } else if (fileType == 'video') {
-      // Navigate to the VideoEditorPage
-       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoEditor(
-            video: File(filePath)!,
-          ),
-        ),
-      );
-    }
-  }
-
-  Future<void> shareScreenshot(BuildContext context) async {
-    Directory? directory;
-    if (Platform.isAndroid) {
-      directory = await getExternalStorageDirectory();
-    } else {
-      directory = await getApplicationDocumentsDirectory();
-    }
-    final String localPath =
-        '${directory!.path}/${DateTime.now().toIso8601String()}.png';
-
-    await _controller.captureAndSave(localPath);
-
-    await Future.delayed(Duration(seconds: 1));
-    print("shared");
-    // Navigate to the ImageEditorPage with the screenshot as filePath
-
-    Navigator.pushReplacement(
-      context ,
-      MaterialPageRoute(
-        builder: (context) => ImageEditor(
-            image: fileToUint8List(File(localPath)),
-            allowMultiple: true
-        ),
-      ),
-    );
-  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -155,6 +79,13 @@ class Authenticate extends StatefulWidget {
 }
 
 class _AuthenticateState extends State<Authenticate> {
+  late StreamSubscription _intentDataStreamSubscription;
+  List<SharedMediaFile>? _sharedFiles;
+  String? _sharedText;
+  Uint8List fileToUint8List(File file) {
+    final bytes = file.readAsBytesSync();
+    return Uint8List.fromList(bytes);
+  }
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -164,6 +95,92 @@ class _AuthenticateState extends State<Authenticate> {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
+// For sharing images coming from outside the app while the app is in memory
+    _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
+          (List<SharedMediaFile> value) {
+        // Check the first shared file's extension
+        final firstSharedFile = value.isNotEmpty ? value[0] : null;
+        if (firstSharedFile != null) {
+          final filePath = firstSharedFile.path;
+          if (filePath.toLowerCase().endsWith('.jpg') ||
+              filePath.toLowerCase().endsWith('.png')) {
+            // It's an image
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ImageEditor(
+                  image: fileToUint8List(File(filePath)),
+                  allowMultiple: true,
+                ),
+              ),
+            );
+          } else if (filePath.toLowerCase().endsWith('.mp4') ||
+              filePath.toLowerCase().endsWith('.avi')) {
+            // It's a video
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VideoEditor(
+                  video: File(filePath)!,
+                ),
+              ),
+            );
+          } else {
+            // Handle other file types or show an error message
+            print('Unsupported file type: $filePath');
+          }
+        }
+        setState(() {
+          _sharedFiles = value;
+          print("Shared:" + (_sharedFiles?.map((f) => f.path).join(",") ?? ""));
+        });
+      },
+      onError: (err) {
+        print("getIntentDataStream error: $err");
+      },
+    );
+
+// For sharing images coming from outside the app while the app is closed
+    ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
+      // Check the first shared file's extension
+      final firstSharedFile = value.isNotEmpty ? value[0] : null;
+      if (firstSharedFile != null) {
+        final filePath = firstSharedFile.path;
+        if (filePath.toLowerCase().endsWith('.jpg') ||
+            filePath.toLowerCase().endsWith('.png')) {
+          // It's an image
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ImageEditor(
+                image: fileToUint8List(File(filePath)),
+                allowMultiple: true,
+              ),
+            ),
+          );
+        } else if (filePath.toLowerCase().endsWith('.mp4') ||
+            filePath.toLowerCase().endsWith('.avi')) {
+          // It's a video
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VideoEditor(
+                video: File(filePath)!,
+              ),
+            ),
+          );
+        } else {
+          // Handle other file types or show an error message
+          print('Unsupported file type: $filePath');
+        }
+      }
+      setState(() {
+        _sharedFiles = value;
+        print("Shared:" + (_sharedFiles?.map((f) => f.path).join(",") ?? ""));
+      });
+    });
+
+
   }
 
   void _configureFirebaseMessaging() {

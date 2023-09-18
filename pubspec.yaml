@@ -71,6 +71,7 @@ dependencies:
   shared_preferences: ^2.2.1
   flutter_share: ^2.0.0
   screenshot: ^2.1.0
+  receive_sharing_intent: ^1.4.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

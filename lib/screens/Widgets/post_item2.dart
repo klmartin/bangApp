@@ -841,7 +841,8 @@ class PostItem2 extends StatelessWidget {
               const SizedBox(height: 20),
             ],
           ));
-    } else if (challengeImg == null && challenges.isNotEmpty) {
+    }
+    else if (challengeImg == null && challenges.isNotEmpty) {
       return Container(
           decoration: const BoxDecoration(
             color: Color.fromARGB(1, 30, 34, 45),
