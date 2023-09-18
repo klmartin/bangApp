@@ -37,7 +37,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
       },
       child: CachedNetworkImage(
         fit: BoxFit.cover,
-        imageUrl: 'https://alitaafrica.com/social-backend-laravel/storage/app/images/pinned/PinnedPost.gif',
+        imageUrl: 'https://bangapp.pro/BangAppBackend/storage/app/images/pinned/PinnedPost.gif',
         placeholder: (context, url) => AspectRatio(
           aspectRatio: imgWidth / imgHeight,
           child: Shimmer.fromColors(
