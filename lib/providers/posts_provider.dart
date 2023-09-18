@@ -23,6 +23,7 @@ class PostsProvider with ChangeNotifier {
   num get nextPageTrigger => _nextPageTrigger;
 
   Future<void> fetchData() async {
+    print("objecttttttttttttttttttttttttttt");
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final user_id = prefs.getInt('user_id').toString();
@@ -32,6 +33,7 @@ class PostsProvider with ChangeNotifier {
       if (responseData.containsKey('data')) {
         List<dynamic> responseList = responseData['data']['data'];
         _posts = responseList.map((data) {
+
           List<dynamic>? challengesList = data['challenges'];
           List<Challenge> challenges = (challengesList ?? [])
               .map((challengeData) => Challenge(
@@ -44,6 +46,8 @@ class PostsProvider with ChangeNotifier {
                     confirmed: challengeData['confirmed'],
                   ))
               .toList();
+
+
           return Post(
             postId: data['id'],
             userId: data['user_id'],
@@ -65,9 +69,9 @@ class PostsProvider with ChangeNotifier {
             isLikedA: data['isLikedA'],
           );
         }).toList();
-        // print("listtttttttttttttt");
-        // print(posts);
-        // print("listtttttttttttttt");
+        print("listtttttttttttttt");
+        print(posts);
+        print("listtttttttttttttt");
 
         _loading = false;
         notifyListeners();

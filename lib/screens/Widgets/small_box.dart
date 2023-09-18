@@ -124,20 +124,20 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                         child:  GestureDetector(
-                          onTap: () {
-                            final countUpdate = Provider.of<PostsProvider>(
-                                context,
-                                listen: false);
-                            countUpdate.increaseLikes2(postId, 1);
-                            Service().likeAction(postId, "A");
-                          },
-                          child: isLikedA
-                              ? Icon(CupertinoIcons.heart_fill,
-                                  color: Colors.red, size: 30)
-                              : Icon(CupertinoIcons.heart,
-                                  color: Colors.red, size: 30),
-                        ),
+                        //  child:  GestureDetector(
+                        //   onTap: () {
+                        //     final countUpdate = Provider.of<PostsProvider>(
+                        //         context,
+                        //         listen: false);
+                        //     countUpdate.increaseLikes2(postId, 1);
+                        //     Service().likeAction(postId, "A");
+                        //   },
+                        //   child: isLikedA
+                        //       ? Icon(CupertinoIcons.heart_fill,
+                        //           color: Colors.red, size: 30)
+                        //       : Icon(CupertinoIcons.heart,
+                        //           color: Colors.red, size: 30),
+                        // ),
                         // Text("${likeCountA.toString()} Likes")
 
 

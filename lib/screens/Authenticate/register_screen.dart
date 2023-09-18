@@ -365,7 +365,7 @@ class _RegisterState extends State<Register> {
                         print(date_of_birth.toString());
                         print(json.encode(selectedHobbyIds).runtimeType);
                         final response = await http.post(
-                          Uri.parse('https://alitaafrica.com/social-backend-laravel/api/v1/register'),
+                          Uri.parse('$baseUrl/v1/register'),
                           body: {
                             'email': email,
                             'name':name,

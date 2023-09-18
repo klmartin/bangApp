@@ -1,5 +1,6 @@
 import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Home/home3.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -14,14 +15,11 @@ import 'screens/Profile/profile.dart';
 import 'package:bangapp/screens/Widgets/fab_container.dart';
 import 'package:ionicons/ionicons.dart';
 
-
 class Nav extends StatefulWidget {
   static const String id = 'nav';
   @override
   _NavState createState() => _NavState();
 }
-
-
 
 class _NavState extends State<Nav> {
   bool _isAppBarEnabled = true; // Variable to track app bar state
@@ -29,6 +27,7 @@ class _NavState extends State<Nav> {
   void initState() {
     super.initState();
   }
+
   @override
   int _selectedIndex = 0;
   void _onItemTap(int index) {
@@ -59,56 +58,59 @@ class _NavState extends State<Nav> {
     return Scaffold(
       appBar: _isAppBarEnabled // Conditionally show/hide app bar
           ? AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0.0,
-        backgroundColor: Colors.white,
-        title: Text(
-          'BangApp',
-          style: TextStyle(
-            fontFamily: 'Metropolis',
-            color: Colors.black,
-            fontSize: 20.0,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -1,
-          ),
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => BlogHome()),
-              );
-            },
-            child: Container(
-              padding: EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.pink,
-                    Colors.redAccent,
-                    Colors.orange
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+              automaticallyImplyLeading: false,
+              elevation: 0.0,
+              backgroundColor: Colors.white,
+              title: Text(
+                'BangApp',
+                style: TextStyle(
+                  fontFamily: 'Metropolis',
+                  color: Colors.black,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -1,
                 ),
               ),
-              child: Icon(Icons.notes_rounded),
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              Ionicons.chatbox_outline,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, ChatHome.id);
-            },
-          ),
-        ],
-      )
-          : null, // Hide app bar when _isAppBarEnabled is false
+              actions: [
+                //   IconButton(
+                //     icon: Icon(
+                //       Ionicons.chatbubble_outline,
+                //       color: Colors.red,
+                //     ),
+                //     onPressed: () {
+                //       Navigator.pushNamed(context, ChatHome.id);
+                //     },
+                //   ),
+
+                CachedNetworkImage(
+                    height: 10,
+                    width: 33,
+                    imageUrl:
+                        "https://img.icons8.com/fluency-systems-regular/48/chat-message.png"),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => BlogHome()),
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(2),
+                    margin: EdgeInsets.only(right: 10, left: 5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Colors.pink, Colors.redAccent, Colors.orange],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Icon(Icons.notes_rounded),
+                  ),
+                ),
+              ],
+            )
+          : null, // Hide app bar when _isAppBar    Enabled is false
 
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: CurvedNavigationBar(
@@ -147,6 +149,7 @@ class _NavState extends State<Nav> {
       ),
     );
   }
+
   buildFab() {
     return Container(
       height: 45.0,
@@ -158,5 +161,4 @@ class _NavState extends State<Nav> {
       ),
     );
   }
-
 }
