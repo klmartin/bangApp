@@ -117,36 +117,45 @@ class PostsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void increaseLikes2(int postId, postType) {
+void increaseLikes2(int postId, int postType) {
     final post = _posts?.firstWhere((update) => update.postId == postId);
 
-    if (post != null) {
-      if (postType == 1) {
-        if (post.isLikedA) {
-          post.likeCountA--;
-          post.isLikedA = false;
-        } else if (post.isLikedA == false) {
-          post.likeCountA++;
-          post.likeCountB--;
-          post.isLikedA = true;
-          post.isLikedB = false;
-        }
-      }
-      if (postType == 2) {
-        if (post.isLikedB) {
-          post.likeCountB--;
-          post.isLikedB = false;
-        } else if (post.isLikedB == false) {
-          post.likeCountB++;
-          post.likeCountA--;
-          post.isLikedB = true;
-          post.isLikedA = false;
-        }
+  if (post != null) {
+    if (postType == 1) {
+      if (post.isLikedA == false) {
+        post.likeCountA++;
+        post.isLikedA = true;
+      } else {
+        post.likeCountA--;
+        post.isLikedA = false;
       }
 
-      notifyListeners();
-    } else {
-      print("Post with postId $postId not found.");
+      // If the user has previously liked type B, un-like it.
+      if (post.isLikedB == true) {
+        post.likeCountB--;
+        post.isLikedB = false;
+      }
+    } else if (postType == 2) {
+      if (post.isLikedB == false) {
+        post.likeCountB++;
+        post.isLikedB = true;
+      } else {
+        post.likeCountB--;
+        post.isLikedB = false;
+      }
+
+      // If the user has previously liked type A, un-like it.
+      if (post.isLikedA == true) {
+        post.likeCountA--;
+        post.isLikedA = false;
+      }
     }
+
+    notifyListeners();
+  } else {
+    print("Post with postId $postId not found.");
   }
+}
+
+
 }
