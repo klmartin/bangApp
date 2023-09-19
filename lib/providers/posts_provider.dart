@@ -27,6 +27,7 @@ class PostsProvider with ChangeNotifier {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final user_id = prefs.getInt('user_id').toString();
+      print(user_id);
       final response = await get(Uri.parse(
           "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$user_id"));
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -61,6 +62,7 @@ class PostsProvider with ChangeNotifier {
             likeCountA: data['like_count_A'],
             likeCountB: data['like_count_B'],
             commentCount: data['commentCount'],
+
             followerCount: data['user']['followerCount'],
             isLiked: data['isLiked'],
             isPinned: data['pinned'],
@@ -84,6 +86,32 @@ class PostsProvider with ChangeNotifier {
       // Handle the error here...
     }
   }
+
+  void addPost(){
+    Post post = Post(
+        postId: postId,
+        userId: userId,
+        name: name,
+        image: image,
+        challengeImg:
+        challengeImg,
+        caption: caption,
+        type: type,
+        width: width,
+        height: height,
+        likeCountA: likeCountA,
+        likeCountB: likeCountB,
+        commentCount: commentCount,
+        followerCount: followerCount,
+        isLiked: isLiked,
+        isPinned:isPinned,
+        challenges: challenges,
+        isLikedA: isLikedA,
+        isLikedB: isLikedB)
+   _posts!.add(post);
+   notifyListeners();
+  }
+
 
   void incrementCommentCountByPostId(int postId) {
     print("Response isss $_posts");
