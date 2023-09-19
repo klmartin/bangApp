@@ -223,8 +223,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                           'type': 'video',
                           'pinned': pinPost == 1 ? '1' : '0',
                           };
-                          print("video ndo hii");
-                          print(filePath1);
+
                           await service.addImage(body, filePath1!);
                           } else {
                           String filePath1 = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');

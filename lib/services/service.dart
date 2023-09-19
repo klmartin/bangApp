@@ -491,6 +491,19 @@ class Service {
       print('Failed to send message');
     }
   }
+  Future<void> _getCurrentUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await http.get(Uri.parse('$baseUrl/api/v1/users/getCurrentUser'), headers: {
+      'Authorization': '${ prefs.getString('token')}',
+    });
 
+    if (response.statusCode == 200) {
+      setState(() {
+       var  _currentUser = json.decode(response.body);
+      });
+    } else {
+      throw Exception('Failed to load current user');
+    }
+  }
   void setState(Null Function() param0) {}
 }

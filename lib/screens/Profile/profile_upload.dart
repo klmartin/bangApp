@@ -57,7 +57,7 @@ class _UploadProfileState extends State<UploadProfile> {
                           rimage = File(image.path);
                         }
                       });
-                      Navigator.pop(context);
+                      Navigator.pop(context,rimage);
                     },
                     child: Text(
                       'Upload from Gallery',
@@ -90,7 +90,7 @@ class _UploadProfileState extends State<UploadProfile> {
                           rimage = File(image.path);
                         }
                       });
-                      Navigator.pop(context);
+                      Navigator.pop(context,rimage);
                     },
                     child: Text(
                       'Open Camera',

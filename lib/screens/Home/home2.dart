@@ -98,6 +98,7 @@ class _Home2ContentState extends State<Home2Content> {
                 post.isPinned,
                 post.isLikedA,
                 post.isLikedB,
+                post.createdAt,
                 myProvider: postsProvider,
               ),
             ],
@@ -136,6 +137,7 @@ class _Home2ContentState extends State<Home2Content> {
             post.isPinned,
             post.isLikedA,
             post.isLikedB,
+            post.createdAt,
             myProvider: postsProvider,
           );
         }

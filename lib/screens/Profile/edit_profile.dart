@@ -1,3 +1,4 @@
+import 'package:bangapp/constants/urls.dart';
 import  'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +15,6 @@ Service?  loggedInUser;
 
 class EditPage extends StatefulWidget {
   static const String id = 'edit';
-
   _EditPageState createState() => _EditPageState();
 }
 
@@ -23,23 +23,9 @@ class _EditPageState extends State<EditPage> {
   @override
   void initState() {
     super.initState();
-    _getCurrentUser();
   }
 
-  Future<void> _getCurrentUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(Uri.parse('http://192.168.124.229/social-backend-laravel/api/v1/users/getCurrentUser'), headers: {
-      'Authorization': '${ prefs.getString('token')}',
-    });
 
-    if (response.statusCode == 200) {
-      setState(() {
-        _currentUser = json.decode(response.body);
-      });
-    } else {
-      throw Exception('Failed to load current user');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +186,9 @@ class _EditPageState extends State<EditPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: TextButton(
                         onPressed: () async {
-                          Service().setUserProfile(_name,_descr, rimage.toString());
+                          // Service().setUserProfile(_name,_descr, rimage.toString());
+                          print(rimage);
+                          print("pressed");
                         },
                         child: Text(
                           'Done',
