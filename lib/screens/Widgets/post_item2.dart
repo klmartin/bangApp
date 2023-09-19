@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:bangapp/providers/posts_provider.dart';
+import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'package:bangapp/screens/blog/colors.dart';
 import 'package:bangapp/services/service.dart';
@@ -49,6 +50,7 @@ class PostItem2 extends StatelessWidget {
   var isLikedB;
   var like_count_A;
   var like_count_B;
+  var createdAt;
 
   PostsProvider myProvider;
 
@@ -71,6 +73,7 @@ class PostItem2 extends StatelessWidget {
       this.isPinned,
       this.isLikedA,
       this.isLikedB,
+      this.createdAt,
       {required this.myProvider});
 
   void viewImage(BuildContext context, String imageUrl) {
@@ -107,195 +110,7 @@ class PostItem2 extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          createRoute(
-                            Profile(
-                              id: userId,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          UserProfile(
-                            url: image,
-                            size: 40,
-                          ),
-                          const SizedBox(width: 14),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    name,
-                                    style: const TextStyle(
-                                      fontFamily: 'EuclidTriangle',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      letterSpacing: 0,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    '        $followerCount Followers',
-                                    style: const TextStyle(
-                                      fontFamily: 'EuclidTriangle',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      letterSpacing: 0,
-                                      color: Colors.black,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                  StringExtension.displayTimeAgoFromTimestamp(
-                                    '2023-04-17 13:51:04',
-                                  ),
-                                  style: Theme.of(context).textTheme.bodyLarge)
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      showModalBottomSheet<void>(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        backgroundColor: Colors.white,
-                        context: context,
-                        builder: (BuildContext ctx) {
-                          return Container(
-                              color: Colors.black26,
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const SizedBox(
-                                      height: 14,
-                                    ),
-                                    Container(
-                                      height: 5,
-                                      width: 100,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    // if (widget.currentUser.id ==
-                                    //     widget.post.userId)
-                                    //   Column(
-                                    //     children: [
-                                    //       ListTile(
-                                    //         onTap: () {
-                                    //           BlocProvider.of<
-                                    //               PostCubit>(
-                                    //               context)
-                                    //               .deletePost(
-                                    //               widget
-                                    //                   .currentUser
-                                    //                   .id,
-                                    //               widget.post
-                                    //                   .postId);
-                                    //           Navigator.pop(context);
-                                    //         },
-                                    //         minLeadingWidth: 20,
-                                    //         leading: Icon(
-                                    //           CupertinoIcons.delete,
-                                    //           color: Theme.of(context)
-                                    //               .primaryColor,
-                                    //         ),
-                                    //         title: Text(
-                                    //           "Delete Post",
-                                    //           style: Theme.of(context)
-                                    //               .textTheme
-                                    //               .bodyText1,
-                                    //         ),
-                                    //       ),
-                                    //       Divider(
-                                    //         height: .5,
-                                    //         thickness: .5,
-                                    //         color:
-                                    //         Colors.grey.shade800,
-                                    //       )
-                                    //     ],
-                                    //   ),
-                                    Column(
-                                      children: [
-                                        ListTile(
-                                          // onTap: () async {
-                                          //   final url = await getUrl(
-                                          //     description:
-                                          //     state.post.caption,
-                                          //     image: state
-                                          //         .post.postImageUrl,
-                                          //     title:
-                                          //     'Check out this post by ${state.post.name}',
-                                          //     url:
-                                          //     'https://ansh-rathod-blog.netlify.app/socialapp?post_user_id=${state.post.userId}&post_id=${state.post.postId}&type=post',
-                                          //   );
-                                          //   Clipboard.setData(
-                                          //       ClipboardData(
-                                          //           text: url
-                                          //               .toString()));
-                                          //   Navigator.pop(context);
-                                          //   showSnackBarToPage(
-                                          //     context,
-                                          //     'Copied to clipboard',
-                                          //     Colors.green,
-                                          //   );
-                                          // },
-                                          minLeadingWidth: 20,
-                                          leading: Icon(
-                                            CupertinoIcons.link,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                          title: Text(
-                                            "Copy URL",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge,
-                                          ),
-                                        ),
-                                        Divider(
-                                          height: .5,
-                                          thickness: .5,
-                                          color: Colors.grey.shade800,
-                                        )
-                                      ],
-                                    ),
-                                  ]));
-                        },
-                      );
-                    },
-                    child: const Icon(
-                      CupertinoIcons.ellipsis,
-                      color: Colors.black,
-                      size: 24,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            postOptions(context, userId, image, name,followerCount,image,postId,userId,type,createdAt ) ?? Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
               child: Row(
@@ -478,46 +293,29 @@ class PostItem2 extends StatelessWidget {
                         ],
                       )
 
-                      //   LikeButton(
-                      //     // onTap: ,
-                      //     size: 30,
-                      //     countPostion: CountPostion.bottom,
-                      //     likeCount: likeCountB,
-                      //     isLiked: false,
-                      //   ),
                     ],
                   ),
                 ],
               ),
             ),
-            if (caption != null) SizedBox(height: 16),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: ReadMoreText(
-                  caption,
-                  trimLines: 2,
-                  style: Theme.of(context).textTheme.bodyLarge!,
-                  colorClickableText: Theme.of(context).primaryColor,
-                  trimMode: TrimMode.line,
-                  trimCollapsedText: '...Show more',
-                  trimExpandedText: '...Show less',
-                  userName: name,
-                  moreStyle: TextStyle(
-                    fontSize: 15,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
+            SizedBox(height: 5),
+            if (caption != null)
+            ReadMoreText(
+              caption,
+              trimLines: 2,
+              style: Theme.of(context).textTheme.bodyLarge!,
+              colorClickableText: Theme.of(context).primaryColor,
+              trimMode: TrimMode.line,
+              trimCollapsedText: '...Show more',
+              trimExpandedText: '...Show less',
+              userName: name,
+              moreStyle: TextStyle(
+                fontSize: 15,
+                color: Theme.of(context).primaryColor,
               ),
             ),
-            Container(
-                height: 10,
-                width: 20,
-                color: Colors.red,
-              margin: EdgeInsets.only(left: 20),
-              child: Text("$commentCount comments"),
-            ),
+            Text("$commentCount comments"),
+
 
             const SizedBox(height: 20),
           ],
@@ -531,270 +329,7 @@ class PostItem2 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            createRoute(
-                              Profile(
-                                id: userId,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            UserProfile(
-                              url: image,
-                              size: 40,
-                            ),
-                            const SizedBox(width: 14),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      name,
-                                      style: const TextStyle(
-                                        fontFamily: 'EuclidTriangle',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        letterSpacing: 0,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      '        $followerCount Followers',
-                                      style: const TextStyle(
-                                        fontFamily: 'EuclidTriangle',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        letterSpacing: 0,
-                                        color: Colors.black,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                    StringExtension.displayTimeAgoFromTimestamp(
-                                      '2023-04-17 13:51:04',
-                                    ),
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge)
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        showModalBottomSheet<void>(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          backgroundColor: Colors.white,
-                          context: context,
-                          builder: (BuildContext ctx) {
-                            return Container(
-                                color: Colors.black,
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const SizedBox(
-                                        height: 14,
-                                      ),
-                                      Container(
-                                        height: 5,
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      // if (widget.currentUser.id ==
-                                      //     widget.post.userId)
-                                      //   Column(
-                                      //     children: [
-                                      //       ListTile(
-                                      //         onTap: () {
-                                      //           BlocProvider.of<
-                                      //               PostCubit>(
-                                      //               context)
-                                      //               .deletePost(
-                                      //               widget
-                                      //                   .currentUser
-                                      //                   .id,
-                                      //               widget.post
-                                      //                   .postId);
-                                      //           Navigator.pop(context);
-                                      //         },
-                                      //         minLeadingWidth: 20,
-                                      //         leading: Icon(
-                                      //           CupertinoIcons.delete,
-                                      //           color: Theme.of(context)
-                                      //               .primaryColor,
-                                      //         ),
-                                      //         title: Text(
-                                      //           "Delete Post",
-                                      //           style: Theme.of(context)
-                                      //               .textTheme
-                                      //               .bodyText1,
-                                      //         ),
-                                      //       ),
-                                      //       Divider(
-                                      //         height: .5,
-                                      //         thickness: .5,
-                                      //         color:
-                                      //         Colors.grey.shade800,
-                                      //       )
-                                      //     ],
-                                      //   ),
-                                      Column(
-                                        children: [
-                                          ListTile(
-                                            // onTap: () async {
-                                            //   final url = await getUrl(
-                                            //     description:
-                                            //     state.post.caption,
-                                            //     image: state
-                                            //         .post.postImageUrl,
-                                            //     title:
-                                            //     'Check out this post by ${state.post.name}',
-                                            //     url:
-                                            //     'https://ansh-rathod-blog.netlify.app/socialapp?post_user_id=${state.post.userId}&post_id=${state.post.postId}&type=post',
-                                            //   );
-                                            //   Clipboard.setData(
-                                            //       ClipboardData(
-                                            //           text: url
-                                            //               .toString()));
-                                            //   Navigator.pop(context);
-                                            //   showSnackBarToPage(
-                                            //     context,
-                                            //     'Copied to clipboard',
-                                            //     Colors.green,
-                                            //   );
-                                            // },
-                                            minLeadingWidth: 20,
-                                            leading: Icon(
-                                              CupertinoIcons.link,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            title: Text(
-                                              "Copy URL",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge,
-                                            ),
-                                          ),
-                                          Divider(
-                                            height: .5,
-                                            thickness: .5,
-                                            color: Colors.grey.shade800,
-                                          )
-                                        ],
-                                      ),
-                                      Column(
-                                        children: [
-                                          ListTile(
-                                            onTap: () async {
-                                              FilePickerResult? result =
-                                                  await FilePicker.platform
-                                                      .pickFiles();
-                                              if (result != null) {
-                                                File file = File(
-                                                    result.files.first.path!);
-                                                final mimeType =
-                                                    lookupMimeType(file.path);
-                                                if (mimeType!
-                                                    .startsWith('image/')) {
-                                                  Uint8List image =
-                                                      await fileToUint8List(
-                                                          file);
-                                                  await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ImageEditor(
-                                                              image: image,
-                                                              // postId: postId,
-                                                              // userChallenged:
-                                                              //     userId,
-                                                              // challengeImg:
-                                                              //     true,
-                                                              // image2: null,
-                                                              allowMultiple:
-                                                                  true),
-                                                    ),
-                                                  );
-                                                } else if (mimeType
-                                                    .startsWith('video/')) {
-                                                  await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          VideoEditor(
-                                                        video: File(file.path),
-                                                      ),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  Fluttertoast.showToast(
-                                                      msg:
-                                                          "Unsupported file type.");
-                                                }
-                                              } else {
-                                                // User canceled the picker
-                                              }
-                                            },
-                                            minLeadingWidth: 20,
-                                            leading: Icon(
-                                              CupertinoIcons.photo,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            title: Text(
-                                              "Challenge Image",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge,
-                                            ),
-                                          ),
-                                          Divider(
-                                            height: .5,
-                                            thickness: .5,
-                                            color: Colors.grey.shade800,
-                                          )
-                                        ],
-                                      ),
-                                    ]));
-                          },
-                        );
-                      },
-                      child: const Icon(
-                        CupertinoIcons.ellipsis,
-                        color: Colors.black,
-                        size: 24,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              postOptions(context, userId, image, name,followerCount,image,postId,userId,type,createdAt) ?? Container(),
               AspectRatio(
                 aspectRatio: width / height,
                 child: buildMediaWidget(
@@ -876,15 +411,15 @@ class PostItem2 extends StatelessWidget {
                   ),
                 ),
               ),
-            Container(
+              Container(
               margin: EdgeInsets.only(left: 15),
               child: Text("$commentCount comments"),
             ),
-
               const SizedBox(height: 20),
             ],
           ));
-    } else if (challengeImg == null && challenges.isNotEmpty) {
+    }
+    else if (challengeImg == null && challenges.isNotEmpty) {
       return Container(
           decoration: const BoxDecoration(
             color: Color.fromARGB(1, 30, 34, 45),
@@ -892,270 +427,7 @@ class PostItem2 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            createRoute(
-                              Profile(
-                                id: userId,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            UserProfile(
-                              url: image,
-                              size: 40,
-                            ),
-                            const SizedBox(width: 14),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      name,
-                                      style: const TextStyle(
-                                        fontFamily: 'EuclidTriangle',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        letterSpacing: 0,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      '        $followerCount Followers',
-                                      style: const TextStyle(
-                                        fontFamily: 'EuclidTriangle',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        letterSpacing: 0,
-                                        color: Colors.black,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                    StringExtension.displayTimeAgoFromTimestamp(
-                                      '2023-04-17 13:51:04',
-                                    ),
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge)
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        showModalBottomSheet<void>(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          backgroundColor: Colors.white,
-                          context: context,
-                          builder: (BuildContext ctx) {
-                            return Container(
-                                color: Colors.black26,
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const SizedBox(
-                                        height: 14,
-                                      ),
-                                      Container(
-                                        height: 5,
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      // if (widget.currentUser.id ==
-                                      //     widget.post.userId)
-                                      //   Column(
-                                      //     children: [
-                                      //       ListTile(
-                                      //         onTap: () {
-                                      //           BlocProvider.of<
-                                      //               PostCubit>(
-                                      //               context)
-                                      //               .deletePost(
-                                      //               widget
-                                      //                   .currentUser
-                                      //                   .id,
-                                      //               widget.post
-                                      //                   .postId);
-                                      //           Navigator.pop(context);
-                                      //         },
-                                      //         minLeadingWidth: 20,
-                                      //         leading: Icon(
-                                      //           CupertinoIcons.delete,
-                                      //           color: Theme.of(context)
-                                      //               .primaryColor,
-                                      //         ),
-                                      //         title: Text(
-                                      //           "Delete Post",
-                                      //           style: Theme.of(context)
-                                      //               .textTheme
-                                      //               .bodyText1,
-                                      //         ),
-                                      //       ),
-                                      //       Divider(
-                                      //         height: .5,
-                                      //         thickness: .5,
-                                      //         color:
-                                      //         Colors.grey.shade800,
-                                      //       )
-                                      //     ],
-                                      //   ),
-                                      Column(
-                                        children: [
-                                          ListTile(
-                                            // onTap: () async {
-                                            //   final url = await getUrl(
-                                            //     description:
-                                            //     state.post.caption,
-                                            //     image: state
-                                            //         .post.postImageUrl,
-                                            //     title:
-                                            //     'Check out this post by ${state.post.name}',
-                                            //     url:
-                                            //     'https://ansh-rathod-blog.netlify.app/socialapp?post_user_id=${state.post.userId}&post_id=${state.post.postId}&type=post',
-                                            //   );
-                                            //   Clipboard.setData(
-                                            //       ClipboardData(
-                                            //           text: url
-                                            //               .toString()));
-                                            //   Navigator.pop(context);
-                                            //   showSnackBarToPage(
-                                            //     context,
-                                            //     'Copied to clipboard',
-                                            //     Colors.green,
-                                            //   );
-                                            // },
-                                            minLeadingWidth: 20,
-                                            leading: Icon(
-                                              CupertinoIcons.link,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            title: Text(
-                                              "Copy URL",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge,
-                                            ),
-                                          ),
-                                          Divider(
-                                            height: .5,
-                                            thickness: .5,
-                                            color: Colors.grey.shade800,
-                                          )
-                                        ],
-                                      ),
-                                      Column(
-                                        children: [
-                                          ListTile(
-                                            onTap: () async {
-                                              FilePickerResult? result =
-                                                  await FilePicker.platform
-                                                      .pickFiles();
-                                              if (result != null) {
-                                                File file = File(
-                                                    result.files.first.path!);
-                                                final mimeType =
-                                                    lookupMimeType(file.path);
-                                                if (mimeType!
-                                                    .startsWith('image/')) {
-                                                  Uint8List image =
-                                                      await fileToUint8List(
-                                                          file);
-                                                  await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ImageEditor(
-                                                              // image: image,
-                                                              // postId: postId,
-                                                              // userChallenged:
-                                                              //     userId,
-                                                              // challengeImg:
-                                                              //     true,
-                                                              // image2: null,
-                                                              allowMultiple:
-                                                                  true),
-                                                    ),
-                                                  );
-                                                } else if (mimeType
-                                                    .startsWith('video/')) {
-                                                  await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          VideoEditor(
-                                                        video: File(file.path),
-                                                      ),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  Fluttertoast.showToast(
-                                                      msg:
-                                                          "Unsupported file type.");
-                                                }
-                                              } else {
-                                                // User canceled the picker
-                                              }
-                                            },
-                                            minLeadingWidth: 20,
-                                            leading: Icon(
-                                              CupertinoIcons.photo,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            title: Text(
-                                              "Challenge Image",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge,
-                                            ),
-                                          ),
-                                          Divider(
-                                            height: .5,
-                                            thickness: .5,
-                                            color: Colors.grey.shade800,
-                                          )
-                                        ],
-                                      ),
-                                    ]));
-                          },
-                        );
-                      },
-                      child: const Icon(
-                        CupertinoIcons.ellipsis,
-                        color: Colors.black,
-                        size: 24,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              postOptions(context, userId, image, name,followerCount,image,postId,userId,type,createdAt) ?? Container(),
               SizedBox(
                 height: 400,
                 child: PageView.builder(
@@ -1218,7 +490,6 @@ class PostItem2 extends StatelessWidget {
                   ),
                 ),
               ),
-              Text("$commentCount comments"),
               const SizedBox(height: 20),
             ],
           ));

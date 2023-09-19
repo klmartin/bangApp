@@ -25,10 +25,11 @@ class Service {
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
-      print(response);
+      print("this is video response");
+      print(response.body);
       if (response.statusCode == 201) {
-        var data = json.decode(response.body);
-        return data['url'];
+
+        return true;
       } else {
         return false;
       }
@@ -47,6 +48,7 @@ class Service {
       ..files.add(await http.MultipartFile.fromPath('image2', filepath2));
     try {
       var response = await http.Response.fromStream(await request.send());
+      print(response.body);
       if (response.statusCode == 201) {
         return true;
       } else {
@@ -228,7 +230,7 @@ class Service {
   // }
 
   Future postComment(BuildContext context, postId, commentText) async {
-     
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -321,7 +323,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://alitaafrica.com/social-backend-laravel/api/storeToken'),
+            'https://bangapp.pro/BangAppBackend/api/storeToken'),
         body: {
           'user_id': id.toString(),
           'device_token': token,
@@ -339,7 +341,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://alitaafrica.com/social-backend-laravel/api/sendNotification'),
+            'https://bangapp.pro/BangAppBackend/api/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -363,7 +365,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
     String addimageUrl =
-        'https://alitaafrica.com/social-backend-laravel/api/setUserProfile';
+        'https://bangapp.pro/BangAppBackend/api/setUserProfile';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(username)
       ..fields.addAll(user_id as Map<String, String>)
@@ -385,7 +387,7 @@ class Service {
 
   Future<List<BoxData>> getBangBattle() async {
     var response = await http.get(Uri.parse(
-        'https://alitaafrica.com/social-backend-laravel/api/getBangBattle'));
+        'https://bangapp.pro/BangAppBackend/api/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
     List<BoxData> boxes = [];
@@ -401,7 +403,7 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse(
-            'https://alitaafrica.com/social-backend-laravel/api/likePost'),
+            'https://bangapp.pro/BangAppBackend/api/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -428,7 +430,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          'https://alitaafrica.com/social-backend-laravel/api/getMessages'),
+          'https://bangapp.pro/BangAppBackend/api/getMessages'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
       },
@@ -452,7 +454,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          'https://alitaafrica.com/social-backend-laravel/api/getMessagesFromUser'),
+          'https://bangapp.pro/BangAppBackend/api/getMessagesFromUser'),
       body: {
         'other_user_id': userId,
         'user_id': prefs.getInt('user_id').toString(),
@@ -475,7 +477,7 @@ class Service {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse(
-          'https://alitaafrica.com/social-backend-laravel/api/sendMessage'),
+          'https://bangapp.pro/BangAppBackend/api/sendMessage'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
         'receiver_id': receiverId.toString(),
@@ -489,6 +491,19 @@ class Service {
       print('Failed to send message');
     }
   }
+  Future<void> _getCurrentUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await http.get(Uri.parse('$baseUrl/api/v1/users/getCurrentUser'), headers: {
+      'Authorization': '${ prefs.getString('token')}',
+    });
 
+    if (response.statusCode == 200) {
+      setState(() {
+       var  _currentUser = json.decode(response.body);
+      });
+    } else {
+      throw Exception('Failed to load current user');
+    }
+  }
   void setState(Null Function() param0) {}
 }

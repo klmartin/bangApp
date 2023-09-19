@@ -138,7 +138,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
     );
   } else if (bangUpdate.type == 'video') {
     VideoPlayerController _videoPlayerController =
-        VideoPlayerController.networkUrl(bangUpdate.filename);
+        VideoPlayerController.networkUrl(Uri.parse(bangUpdate.filename));
     ChewieController _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
       autoPlay: true,
@@ -193,7 +193,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
 //                 SizedBox(height: 10),
 //                 Text("Counts: ${bangUpdate.likeCount}"),
                 Text(
-                  "$bangUpdate.likeCount",
+                  bangUpdate.likeCount.toString(),
                   style: TextStyle(
                     fontSize: 12.5,
                     color: Colors.white,
@@ -240,7 +240,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
               child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 UserProfile(
                     url:
-                        'https://alitaafrica.com/social-backend-laravel/storage/app/bangInspiration/bang_logo.jpg',
+                        'https://bangapp.pro/BangAppBackend/storage/app/bangInspiration/bang_logo.jpg',
                     size: 40),
                 SizedBox(width: 5),
                 Text('User Name',

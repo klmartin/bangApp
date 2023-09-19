@@ -4,14 +4,14 @@
 // import 'package:http/http.dart' as http;
 // import 'dart:convert';
 // import "package:bangapp/services/service.dart";
-
-
-
+//
+//
+//
 // class Explore extends StatefulWidget {
 //   @override
 //   _ExploreState createState() => _ExploreState();
 // }
-
+//
 // class _ExploreState extends State<Explore> {
 //   @override
 //   Widget build(BuildContext context) {
@@ -30,13 +30,13 @@
 //     );
 //   }
 // }
-
+//
 // class BangUpdates extends StatelessWidget {
-
+//
 //   @override
 //   Widget build(BuildContext context) {
 //     return FutureBuilder(
-//       future: Service().getBangUpdates2(),
+//       future: Service().getBangUpdates(),
 //       builder: (context, snapshot) {
 //         if (snapshot.connectionState == ConnectionState.waiting) {
 //           return Center(
@@ -73,13 +73,13 @@
 //           return Container();
 //         }
 //       },
-
+//
 //     );
-
+//
 //   }
 // }
-
-
-
-
-
+//
+//
+//
+//
+//

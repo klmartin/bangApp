@@ -8,6 +8,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+import '../constants/urls.dart';
+
 Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
   if ( type == 'image'&& isPinned==0) {
     return  GestureDetector(
@@ -37,7 +39,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
       },
       child: CachedNetworkImage(
         fit: BoxFit.cover,
-        imageUrl: 'https://bangapp.pro/BangAppBackend/storage/app/images/pinned/PinnedPost.gif',
+        imageUrl: '$baseUrl/storage/app/images/pinned/PinnedPost.gif',
         placeholder: (context, url) => AspectRatio(
           aspectRatio: imgWidth / imgHeight,
           child: Shimmer.fromColors(

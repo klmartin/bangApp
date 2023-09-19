@@ -1,3 +1,4 @@
+import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/widgets/SearchBox.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +15,8 @@ class BlogHome extends StatefulWidget {
 class _BlogHomeState extends State<BlogHome> {
 
   Future<List<dynamic>> getInspirations() async {
-    var response = await http.get(Uri.parse('http://192.168.180.229/social-backend-laravel/api/get/bangInspirations'));
+    var response = await http.get(Uri.parse('$baseUrl/api/get/bangInspirations'));
     var data = json.decode(response.body);
-    print(data);
     return data;
   }
 

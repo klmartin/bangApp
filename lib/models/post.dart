@@ -16,7 +16,7 @@ class Post {
   var isLiked ;
   int isPinned;
   final List<Challenge> challenges;
-
+var createdAt;
   var isLikedA;
   var  isLikedB;
 
@@ -40,7 +40,7 @@ class Post {
     required this.challenges, // Add the challenges parameter to the constructor
     required this.isLikedA,
     required this.isLikedB,
-
+    required this.createdAt,
   });
 }
 

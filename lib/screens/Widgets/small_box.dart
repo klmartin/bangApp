@@ -122,8 +122,8 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                           style: TextStyle(
                               fontSize: 15, fontWeight: FontWeight.bold),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         //  child:  GestureDetector(
                         //   onTap: () {
                         //     final countUpdate = Provider.of<PostsProvider>(
@@ -138,18 +138,18 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                         //       : Icon(CupertinoIcons.heart,
                         //           color: Colors.red, size: 30),
                         // ),
-                        // Text("${likeCountA.toString()} Likes")
-
-
-                        // BattleLike(
-                        //     likeCountA: 0,
-                        //     likeCountB: 0,
-                        //     isLiked: false,
-                        //     battleId: box.battleId,
-                        //     bLikeButton: false,
-                        //     likeCount: 0,
-                        //   ),
-                        ),
+                        // // Text("${likeCountA.toString()} Likes")
+                        //
+                        //
+                        // // BattleLike(
+                        // //     likeCountA: 0,
+                        // //     likeCountB: 0,
+                        // //     isLiked: false,
+                        // //     battleId: box.battleId,
+                        // //     bLikeButton: false,
+                        // //     likeCount: 0,
+                        // //   ),
+                        // ),
                       ],
                     ),
                   );
