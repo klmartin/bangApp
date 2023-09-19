@@ -61,6 +61,7 @@ class MyApp extends StatelessWidget {
       linkUrl: 'https://flutter.dev/',
       chooserTitle: 'Example Chooser Title',
     );
+
   }
   Uint8List fileToUint8List(File file) {
     final bytes = file.readAsBytesSync();
