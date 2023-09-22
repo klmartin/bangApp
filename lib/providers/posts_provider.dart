@@ -11,9 +11,10 @@ class PostsProvider with ChangeNotifier {
   int _pageNumber = 0;
   bool _error = false;
   bool _loading = true;
-  final int _numberOfPostsPerRequest = 10;
-  List<Post>? _posts;
+  final int _numberOfPostsPerRequest = 200;
   final int _nextPageTrigger = 3;
+
+List<Post> _posts = [];
 
   List<Post>? get posts => _posts;
   bool get isLastPage => _isLastPage;
@@ -28,7 +29,7 @@ class PostsProvider with ChangeNotifier {
       final user_id = prefs.getInt('user_id').toString();
       print(user_id);
       final response = await get(Uri.parse(
-          "https://bangapp.pro/BangAppBackend/api/getPost?_page=$_pageNumber&_limit=10&user_id=$user_id"));
+          "https://bangapp.pro/BangAppBackend/api/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$user_id"));
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       if (responseData.containsKey('data')) {
@@ -71,6 +72,8 @@ class PostsProvider with ChangeNotifier {
           );
         }).toList();
 
+         _pageNumber++;
+
         _loading = false;
         notifyListeners();
       } else {
@@ -83,27 +86,7 @@ class PostsProvider with ChangeNotifier {
     }
   }
 
-  void addPost(){
-    Post post = Post(
-        postId: postId,
-        userId: userId,
-        name: name,
-        image: image,
-        challengeImg:
-        challengeImg,
-        caption: caption,
-        type: type,
-        width: width,
-        height: height,
-        likeCountA: likeCountA,
-        likeCountB: likeCountB,
-        commentCount: commentCount,
-        followerCount: followerCount,
-        isLiked: isLiked,
-        isPinned:isPinned,
-        challenges: challenges,
-        isLikedA: isLikedA,
-        isLikedB: isLikedB)
+  void addPost(Post post){
    _posts!.add(post);
    notifyListeners();
   }
