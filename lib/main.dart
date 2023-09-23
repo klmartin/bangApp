@@ -181,7 +181,6 @@ class _AuthenticateState extends State<Authenticate> {
       });
     });
 
-
   }
 
   void _configureFirebaseMessaging() {

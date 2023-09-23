@@ -1,4 +1,5 @@
 import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/models/post.dart';
 import 'package:bangapp/screens/Chat/chat_home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -28,6 +29,32 @@ class Service {
       print("this is video response");
       print(response.body);
       if (response.statusCode == 201) {
+
+//    Post post = Post(
+//         // postId: postId,
+//         // userId: userId,
+//         // name: name,
+//         // image: image,
+//         // challengeImg:
+//         // challengeImg,
+//         // caption: caption,
+//         // type: type,
+//         // width: width,
+//         // height: height,
+//         // likeCountA: likeCountA,
+//         // likeCountB: likeCountB,
+//         // commentCount: commentCount,
+//         // followerCount: followerCount,
+//         // isLiked: isLiked,
+//         // isPinned:isPinned,
+//         // challenges: challenges,
+//         // isLikedA: isLikedA,
+//         // isLikedB: isLikedB)
+//    );
+
+
+
+
 
         return true;
       } else {

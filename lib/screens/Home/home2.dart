@@ -27,11 +27,22 @@ class Home2Content extends StatefulWidget {
 }
 
 class _Home2ContentState extends State<Home2Content> {
+      late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     postsProvider.fetchData();
+
+    _scrollController = ScrollController()
+      ..addListener(() {
+        // This checks if the ListView has been scrolled all the way to the bottom.
+        if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+          postsProvider.fetchData(); // Load more posts
+        }
+      });
+
   }
 
   @override
@@ -47,6 +58,12 @@ class _Home2ContentState extends State<Home2Content> {
         },
       ),
     );
+  }
+
+@override
+  void dispose() {
+    _scrollController.dispose();  // Dispose the ScrollController when the widget is removed
+    super.dispose();
   }
 
   Widget buildPostsView(PostsProvider postsProvider) {
