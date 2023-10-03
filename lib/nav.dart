@@ -1,4 +1,4 @@
-import 'package:bangapp/inspiration/inspirations.dart';
+// import 'package:bangapp/inspiration/inspirations.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Home/home3.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,7 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:bangapp/screens/blog/blog_home.dart';
 import 'screens/Activity/activity_page.dart';
-import 'package:bangapp/screens/Home/Home2.dart';
+import 'package:bangapp/screens/Home/home2.dart';
 import 'screens/Create/create_page.dart';
 import 'screens/Chat/chat_home.dart';
 import 'screens/Profile/profile.dart';
