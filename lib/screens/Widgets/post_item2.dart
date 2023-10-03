@@ -231,7 +231,7 @@ class PostItem2 extends StatelessWidget {
                               context,
                               listen: false);
                           countUpdate.increaseLikes2(postId, 1);
-                          Service().likeAction(postId, "A");
+                          Service().likeAction(postId, "A",userId);
                         },
                         child: isLikedA
                             ? Icon(CupertinoIcons.heart_fill,
@@ -281,7 +281,7 @@ class PostItem2 extends StatelessWidget {
                                   context,
                                   listen: false);
                               countUpdate.increaseLikes2(postId, 2);
-                              Service().likeAction(postId, "B");
+                              Service().likeAction(postId, "B",userId);
                             },
                             child: isLikedB
                                 ? Icon(CupertinoIcons.heart_fill,
@@ -372,7 +372,7 @@ class PostItem2 extends StatelessWidget {
                                 context,
                                 listen: false);
                             countUpdate.increaseLikes(postId);
-                            Service().likeAction(postId, "A");
+                            Service().likeAction(postId, "A",userId);
                           },
                           child: isLiked
                               ? Icon(CupertinoIcons.heart_fill,

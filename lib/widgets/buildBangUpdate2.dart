@@ -1,3 +1,4 @@
+import 'package:bangapp/widgets/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
                 height: 500,
                 width: double.infinity,
                 child:  CachedNetworkImage(
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                 imageUrl: bangUpdate.filename,
                 placeholder: (context, url) => Shimmer.fromColors(
                   baseColor: const Color.fromARGB(255, 30, 34, 45),
@@ -170,7 +171,8 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  VideoPlayer(_videoPlayerController),
+                  VideoPlayerPage(mediaUrl: bangUpdate.filename),
+                  // VideoPlayer(_videoPlayerController),
                 ],
               ),
             ),

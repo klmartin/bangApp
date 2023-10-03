@@ -278,9 +278,9 @@ class _CommentsPageState extends State<CommentsPage> {
                 context,
                 widget.postId,
                 commentController.text,
+                widget.userId
               );
-    widget.myProvider.incrementCommentCountByPostId(widget.postId);
-              print("Im hereeeeee");
+              widget.myProvider.incrementCommentCountByPostId(widget.postId);
               print(commentController.text);
               setState(() {
                 var value = {

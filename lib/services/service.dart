@@ -27,35 +27,31 @@ class Service {
     try {
       var response = await http.Response.fromStream(await request.send());
       print("this is video response");
+
       print(response.body);
       if (response.statusCode == 201) {
-
-//    Post post = Post(
-//         // postId: postId,
-//         // userId: userId,
-//         // name: name,
-//         // image: image,
-//         // challengeImg:
-//         // challengeImg,
-//         // caption: caption,
-//         // type: type,
-//         // width: width,
-//         // height: height,
-//         // likeCountA: likeCountA,
-//         // likeCountB: likeCountB,
-//         // commentCount: commentCount,
-//         // followerCount: followerCount,
-//         // isLiked: isLiked,
-//         // isPinned:isPinned,
-//         // challenges: challenges,
-//         // isLikedA: isLikedA,
-//         // isLikedB: isLikedB)
-//    );
-
-
-
-
-
+final data = jsonDecode(response.body);
+   Post post = Post(
+     postId: data['id'],
+     userId: data['user_id'],
+     name: data['user']['name'],
+     image: data['image'],
+     challengeImg: data['challenge_img'],
+     caption: data['body'] ?? '',
+     type: data['type'],
+     width: data['width'],
+     height: data['height'],
+     likeCountA: data['like_count_A'],
+     likeCountB: data['like_count_B'],
+     commentCount: data['commentCount'],
+     followerCount: data['user']['followerCount'],
+     isLiked: data['isLiked'],
+     isPinned: data['pinned'],
+     challenges: data['challenges'],
+     isLikedB: data['isLikedB'],
+     isLikedA: data['isLikedA'],
+     createdAt: data['created_at'],
+   );
         return true;
       } else {
         return false;
@@ -125,7 +121,7 @@ class Service {
     }
   }
 
-  Future<void> likeAction(postId, likeType) async {
+  Future<void> likeAction(postId, likeType,userId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -140,7 +136,11 @@ class Service {
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
-        final updatedLikeCount = responseData['likeCount'];
+        if(responseData['message']=='Post liked successfully'){
+          var name = prefs.getString('name');
+          var body = "$name has Liked your post";
+          this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like');
+        }
         print(postId);
       } else {
         // Handle API error, if necessary
@@ -188,7 +188,6 @@ class Service {
         Uri.parse('$baseUrl/getComments/$postId'),
       );
       print('$baseUrl/getComments/$postId');
-
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['comments'];
@@ -256,8 +255,7 @@ class Service {
   //   }
   // }
 
-  Future postComment(BuildContext context, postId, commentText) async {
-
+  Future postComment(BuildContext context, postId, commentText,userId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -268,12 +266,9 @@ class Service {
           'body': commentText,
         },
        );
-    //   final responseData = json.decode(response.body);
-    //   //   // If the comment was posted successfully, update the comment count
-    //   //   final commentProvider = Provider.of<CommentProvider>(context, listen: false);
-    //   //   await commentProvider.getCommentCount(postId);
-    //   //     // commentProvider.incrementCommentCount();
-
+      var name = prefs.getString('name');
+      var body = "$name has Commented on your post";
+      this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'comment');
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -292,7 +287,7 @@ class Service {
           'body': commentText,
         },
       );
-      print('data is saved');
+      print(response.body);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -364,7 +359,7 @@ class Service {
     }
   }
 
-  Future<String> sendNotification(userId, name, body, challengeId) async {
+  Future<String> sendNotification(userId, name, body, challengeId ) async {
     try {
       final response = await http.post(
         Uri.parse(
@@ -387,6 +382,33 @@ class Service {
       // Handle exceptions, if any
     }
   }
+
+
+  Future<String> sendUserNotification(userId, name, body,referenceId,type) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'https://bangapp.pro/BangAppBackend/api/sendUserNotification'),
+        body: {
+          'user_id': userId.toString(),
+          'heading': name,
+          'body': body,
+          'type':type,
+          'reference_id':referenceId,
+        },
+      );
+      if (response.statusCode == 200) {
+        return 'success';
+      } else {
+        return 'error';
+      }
+    } catch (e) {
+      print(e);
+      return 'error';
+      // Handle exceptions, if any
+    }
+  }
+
 
   Future<bool> setUserProfile(username, bio, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
