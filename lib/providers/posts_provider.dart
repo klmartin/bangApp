@@ -75,6 +75,8 @@ List<Post> _posts = [];
          _pageNumber++;
 
         _loading = false;
+        print(posts!.first.postId);
+        print(posts?.last.postId);
         notifyListeners();
       } else {
         _loading = false;
