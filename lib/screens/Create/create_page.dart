@@ -126,7 +126,7 @@ class _CreateState extends State<Create> {
                       MaterialPageRoute(
                         builder: (context) => ImageEditor(
                             image: editedImage,
-                            image2: editedImage2,
+                           // image2: editedImage2,
                             allowMultiple: true
                         ),
                       ),

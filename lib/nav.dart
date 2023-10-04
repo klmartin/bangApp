@@ -1,4 +1,4 @@
-import 'package:bangapp/inspiration/inspirations.dart';
+//import 'package:bangapp/inspiration/inspirations.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Home/home3.dart';
 import 'package:cached_network_image/cached_network_image.dart';
