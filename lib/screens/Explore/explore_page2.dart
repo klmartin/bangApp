@@ -122,8 +122,7 @@ class BangUpdateProvider extends ChangeNotifier {
     var response = await http.get(Uri.parse(
         'https://bangapp.pro/BangAppBackend/api/bang-updates/$user_id'));
     var data = json.decode(response.body);
-    print(
-        'https://bangapp.pro/BangAppBackend/api/bang-updates/$user_id');
+
     _bangUpdates = List<BangUpdate>.from(data.map((post) {
       final filename = post['filename'];
       final type = post['type'];
