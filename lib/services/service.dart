@@ -1,14 +1,10 @@
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/models/post.dart';
-import 'package:bangapp/screens/Chat/chat_home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
-import '../providers/comment_provider.dart';
-import '../providers/posts_provider.dart';
 import '../screens/Widgets/small_box.dart';
 
 class Service {
@@ -109,7 +105,7 @@ final data = jsonDecode(response.body);
     }
   }
 
-  Future<Map<String, dynamic>> getCurrentUser() async {
+Future<Map<String, dynamic>> getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.get(Uri.parse('$baseUrl/userr'), headers: {
       'Authorization': 'Bearer ${prefs.getString('token')}',
@@ -120,6 +116,16 @@ final data = jsonDecode(response.body);
       throw Exception('Failed to load current user');
     }
   }
+
+Future<Map<String, dynamic>> getPostInfo(postId) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id');
+    final response = await http.get(Uri.parse('$baseUrl/getPostInfo/$userId/$postId'));
+    return json.decode(response.body);
+  }
+
+
 
   Future<void> likeAction(postId, likeType,userId) async {
     try {
@@ -139,7 +145,7 @@ final data = jsonDecode(response.body);
         if(responseData['message']=='Post liked successfully'){
           var name = prefs.getString('name');
           var body = "$name has Liked your post";
-          this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like');
+          this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like',postId);
         }
         print(postId);
       } else {
@@ -268,7 +274,7 @@ final data = jsonDecode(response.body);
        );
       var name = prefs.getString('name');
       var body = "$name has Commented on your post";
-      this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'comment');
+      this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'comment',postId);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -384,7 +390,7 @@ final data = jsonDecode(response.body);
   }
 
 
-  Future<String> sendUserNotification(userId, name, body,referenceId,type) async {
+  Future<String> sendUserNotification(userId, name, body,referenceId,type,postId) async {
     try {
       final response = await http.post(
         Uri.parse(
@@ -394,6 +400,7 @@ final data = jsonDecode(response.body);
           'heading': name,
           'body': body,
           'type':type,
+          'post_id':postId,
           'reference_id':referenceId,
         },
       );
