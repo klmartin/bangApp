@@ -38,7 +38,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-        aspectRatio: 16 / 9,
+                aspectRatio: 16 / 9,
           child: Stack(
             children: [
               VisibilityDetector(

@@ -1,3 +1,4 @@
+import 'package:bangapp/message/screens/chats/chats_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -181,7 +182,8 @@ class _UserProfileState extends State<UserProfile> {
                     onPressed: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return PmScreen(selectedUser: widget.userid, name: '', profileUrl: '',);
+                            return ChatsScreen();
+                        // return PmScreen(selectedUser: widget.userid, name: '', profileUrl: '',);
                       }));
                     },
                     child: Text(

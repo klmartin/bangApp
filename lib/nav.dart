@@ -1,4 +1,7 @@
-//import 'package:bangapp/inspiration/inspirations.dart';
+
+import 'package:bangapp/custom_appbar.dart';
+import 'package:bangapp/inspiration/inspirations.dart';
+import 'package:bangapp/message/screens/chats/chats_screen.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Home/home3.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -39,10 +42,14 @@ class _NavState extends State<Nav> {
 
   List<Widget> _widgetOptions = [
     Home2(),
+    // ChatsScreen(),
+    // ChatsScreen(),
+    // ChatPage(),
     BangUpdates2(),
+    Create(),
     Activity(),
     // BangInspiration(),
-    Activity(),
+    // Activity(),
     Profile(),
   ];
 
@@ -57,61 +64,71 @@ class _NavState extends State<Nav> {
     ));
 
     return Scaffold(
-      appBar: _isAppBarEnabled // Conditionally show/hide app bar
-          ? AppBar(
-              automaticallyImplyLeading: false,
-              elevation: 0.0,
-              backgroundColor: Colors.white,
-              title: Text(
-                'BangApp',
-                style: TextStyle(
-                  fontFamily: 'Metropolis',
-                  color: Colors.black,
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -1,
-                ),
-              ),
-              actions: [
-                //   IconButton(
-                //     icon: Icon(
-                //       Ionicons.chatbubble_outline,
-                //       color: Colors.red,
-                //     ),
-                //     onPressed: () {
-                //       Navigator.pushNamed(context, ChatHome.id);
-                //     },
-                //   ),
+        appBar: CustomAppBar(title: 'BangApp', context: context,),
 
-                CachedNetworkImage(
-                    height: 10,
-                    width: 33,
-                    imageUrl:
-                        "https://img.icons8.com/fluency-systems-regular/48/chat-message.png"),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => BlogHome()),
-                    );
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(2),
-                    margin: EdgeInsets.only(right: 10, left: 5),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [Colors.pink, Colors.redAccent, Colors.orange],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: Icon(Icons.notes_rounded),
-                  ),
-                ),
-              ],
-            )
-          : null, // Hide app bar when _isAppBar    Enabled is false
+    //   appBar: _isAppBarEnabled // Conditionally show/hide app bar
+    //       ? AppBar(
+    //           automaticallyImplyLeading: false,
+    //           elevation: 0.0,
+    //           backgroundColor: Colors.white,
+    //           title: Text(
+    //             'BangApp',
+    //             style: TextStyle(
+    //               fontFamily: 'Metropolis',
+    //               color: Colors.black,
+    //               fontSize: 20.0,
+    //               fontWeight: FontWeight.w700,
+    //               letterSpacing: -1,
+    //             ),
+    //           ),
+    //           actions: [
+    //             //   IconButton(
+    //             //     icon: Icon(
+    //             //       Ionicons.chatbubble_outline,
+    //             //       color: Colors.red,
+    //             //     ),
+    //             //     onPressed: () {
+    //             //       Navigator.pushNamed(context, ChatHome.id);
+    //             //     },
+    //             //   ),
+
+    //             CachedNetworkImage(
+    //                 height: 10,
+    //                 width: 33,
+    //                 imageUrl:
+    //                     "https://img.icons8.com/fluency-systems-regular/48/chat-message.png"),
+    //             GestureDetector(
+    //               onTap: () {
+    //                 Navigator.push(
+    //                   context,
+    //                   MaterialPageRoute(builder: (context) => ChatApp()),
+    //                 );
+    //               },
+    //               child: Container(
+    //                 padding: EdgeInsets.all(2),
+    //                 margin: EdgeInsets.only(right: 10, left: 5),
+    //                 decoration: BoxDecoration(
+    //                   shape: BoxShape.circle,
+    //                   gradient: LinearGradient(
+    //                     colors: [Colors.pink, Colors.redAccent, Colors.orange],
+    //                     begin: Alignment.topLeft,
+    //                     end: Alignment.bottomRight,
+    //                   ),
+    //                 ),
+    //                 child: InkWell(
+    //                   child: Icon(Icons.notes_rounded),
+    //                   onTap: () {
+    //                     Navigator.push(context,
+    //                         MaterialPageRoute(builder: (context) {
+    //                       return BangInspiration();
+    //                     }));
+    //                   },
+    //                 ),
+    //               ),
+    //             ),
+    //           ],
+    //         )
+    //       : null, // Hide app bar when _isAppBar    Enabled is false
 
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: CurvedNavigationBar(
