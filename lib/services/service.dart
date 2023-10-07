@@ -14,7 +14,7 @@ class Service {
     return data['data']['data'];
   }
 
-  Future<String> sendUserNotification(userId, name, body,referenceId,type) async {
+  Future<String> sendUserNotification1(userId, name, body,referenceId,type) async {
     try {
       final response = await http.post(
         Uri.parse(
@@ -40,8 +40,7 @@ class Service {
   }
 
 
-  Future<bool> addImage(
-     BuildContext context, Map<String, String> body, String filepath) async {
+  Future<bool> addImage(Map<String, String> body, String filepath) async {
     print(body);
     String addimageUrl = '$baseUrl/imageaddWithResponse';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))

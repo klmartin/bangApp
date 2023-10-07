@@ -109,7 +109,7 @@ GestureDetector _notificationList(NotificationItem notification) {
     ),
   );
 }
-d  
+
 
   @override
   Widget build(BuildContext context) {
