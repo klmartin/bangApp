@@ -80,7 +80,7 @@ class Participants {
 class ChatProvider with ChangeNotifier {
 // late final IO.Socket socket;
 
-  final String baseUrl = 'http://192.168.249.226/BangAppBackend/api';
+  final String baseUrl = 'http://192.168.137.226/BangAppBackend/api';
 
   List<Conversation> _conversations = [];
   List<Message> _messages = [];
@@ -230,7 +230,7 @@ class ChatProvider with ChangeNotifier {
       'recipient_id': recipientId.toString(),
     };
     final response = await http.post(
-        Uri.parse('http://192.168.249.226/BangAppBackend/api/startNewChat'),
+        Uri.parse('http://192.168.137.226/BangAppBackend/api/startNewChat'),
         body: {
           'user_id': userId.toString(),
           'recipient_id': recipientId.toString(),

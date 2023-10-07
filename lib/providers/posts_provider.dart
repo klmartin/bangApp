@@ -29,7 +29,7 @@ List<Post> _posts = [];
       final userId = prefs.getInt('user_id').toString();
       print(userId);
       final response = await get(Uri.parse(
-          "http://192.168.249.226/BangAppBackend/api/getPost?_limit=$_numberOfPostsPerRequest&user_id=$userId"));
+          "http://192.168.137.226/BangAppBackend/api/getPost?_limit=$_numberOfPostsPerRequest&user_id=$userId"));
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       if (responseData.containsKey('data')) {
