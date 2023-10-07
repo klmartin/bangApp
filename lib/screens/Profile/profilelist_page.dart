@@ -1,3 +1,4 @@
+import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,12 @@ import '../Chat/chat_model.dart';
 
 void main() => runApp(ProfileList());
 
-class ProfileList extends StatelessWidget {
+class ProfileList extends StatefulWidget {
+  @override
+  State<ProfileList> createState() => _ProfileListState();
+}
+
+class _ProfileListState extends State<ProfileList> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -46,7 +52,11 @@ class UserBubble extends StatelessWidget {
     required this.profileUrl,
     required this.name,
     required this.bio,
-    required this.selectedUser, required bool isMe, required this.followCount, required this.followingCount, required this.postCount,
+    required this.selectedUser,
+    required bool isMe,
+    required this.followCount,
+    required this.followingCount,
+    required this.postCount,
   });
 
   @override
@@ -71,7 +81,15 @@ class UserBubble extends StatelessWidget {
                       ),
                     ),
                   ),
-                  body: UserProfile(id: this.selectedUser, name: this.name,bio: this.bio, profileUrl: this.profileUrl,followCount: this.followCount,followingCount: this.followingCount,postCount: this.postCount,),
+                  body: UserProfile(
+                    id: this.selectedUser,
+                    name: this.name,
+                    bio: this.bio,
+                    profileUrl: this.profileUrl,
+                    followCount: this.followCount,
+                    followingCount: this.followingCount,
+                    postCount: this.postCount,
+                  ),
                 ),
               ),
             );
@@ -92,7 +110,8 @@ class UserBubble extends StatelessWidget {
                         CircleAvatar(
                           backgroundColor: Colors.blueGrey,
                           radius: 32,
-                          backgroundImage: CachedNetworkImageProvider(this.profileUrl),
+                          backgroundImage:
+                              CachedNetworkImageProvider(this.profileUrl),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 10.0, left: 20.0),
@@ -166,6 +185,7 @@ class _UsersStreamState extends State<UsersStream> {
     _searchController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -201,7 +221,8 @@ class _UsersStreamState extends State<UsersStream> {
                 followCount: user['followCount'],
                 followingCount: user['followCount'],
                 postCount: user['postCount'],
-                isMe: false, // Assuming the logged-in user is not shown in search results
+                isMe:
+                    false, // Assuming the logged-in user is not shown in search results
               );
             },
           ),
@@ -219,7 +240,14 @@ class UserProfile extends StatelessWidget {
   final int followCount;
   final int followingCount;
   final int postCount;
-  UserProfile({required this.id,required this.name,required this.bio,required this.profileUrl, required this.followCount, required this.followingCount, required this.postCount});
+  UserProfile(
+      {required this.id,
+      required this.name,
+      required this.bio,
+      required this.profileUrl,
+      required this.followCount,
+      required this.followingCount,
+      required this.postCount});
 
   @override
   Widget build(BuildContext context) {
@@ -246,168 +274,172 @@ class UserProfile extends StatelessWidget {
         }
         return Padding(
             padding: const EdgeInsets.all(15.0),
-            child: ListView(
-              children: <Widget>[
-            Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                        color: Colors.red.shade100,
-                        borderRadius: BorderRadius.circular(25),
-                        image: DecorationImage(
-                          image: CachedNetworkImageProvider(this.profileUrl),
-                          fit: BoxFit.cover,
-                        )),
-                  ),
-                ),
-                Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: Text(
-                        '${this.postCount}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            fontFamily: 'Metropolis'),
-                      ),
+            child: ListView(children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                          color: Colors.red.shade100,
+                          borderRadius: BorderRadius.circular(25),
+                          image: DecorationImage(
+                            image: CachedNetworkImageProvider(this.profileUrl),
+                            fit: BoxFit.cover,
+                          )),
                     ),
-                    Text(
-                      'Posts',
-                      style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                    )
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: FaIcon(
-                    FontAwesomeIcons.ellipsisV,
-                    size: 10,
-                    color: Colors.grey,
                   ),
-                ),
-                Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: Text(
-                        '${this.followCount}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            fontFamily: 'Metropolis'),
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5.0),
+                        child: Text(
+                          '${this.postCount}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontFamily: 'Metropolis'),
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Followers',
-                      style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                    )
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: FaIcon(
-                    FontAwesomeIcons.ellipsisV,
-                    size: 10,
-                    color: Colors.grey,
+                      Text(
+                        'Posts',
+                        style:
+                            TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                      )
+                    ],
                   ),
-                ),
-                Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4.0),
-                      child: Text(
-                        '${this.followingCount}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            fontFamily: 'Metropolis'),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: FaIcon(
+                      FontAwesomeIcons.ellipsisV,
+                      size: 10,
+                      color: Colors.grey,
                     ),
-                    Text(
-                      'Following',
-                      style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                    )
-                  ],
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                this.name,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Metropolis',
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5.0),
+                        child: Text(
+                          '${this.followCount}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontFamily: 'Metropolis'),
+                        ),
+                      ),
+                      Text(
+                        'Followers',
+                        style:
+                            TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: FaIcon(
+                      FontAwesomeIcons.ellipsisV,
+                      size: 10,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4.0),
+                        child: Text(
+                          '${this.followingCount}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontFamily: 'Metropolis'),
+                        ),
+                      ),
+                      Text(
+                        'Following',
+                        style:
+                            TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  this.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Metropolis',
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Container(
-                // constraints: BoxConstraints(maxWidth: ),
-                  child: Text(this.bio)),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: OutlinedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                              Colors.white,
-                            ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Container(
+                    // constraints: BoxConstraints(maxWidth: ),
+                    child: Text(this.bio)),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: OutlinedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.white,
                           ),
-                          onPressed: () async { //follow or unfollow
-
-                          },
-                          child: Text('Unfollow Follow',
-                            style: TextStyle(
-                                color:Colors.white),
-                          )),
-                    )),
-                SizedBox(width: 10),
-                Expanded(
-                    child: Container(
-                      child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                                  return PmScreen(selectedUser: '2', name: '', profileUrl: '',);
-                                }));
-                          },
-                          child: Text(
-                            'Message',
-                            style: TextStyle(color: Colors.black),
-                          )),
-                    )),
-              ],
-            ),
-           GridView.count(
-            crossAxisCount: 3,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            children: imagePosts.map((imagePost) => KeyedSubtree(
-              key: ValueKey(imagePost.url), // or use ObjectKey(imagePost)
-              child: imagePost,
-            )).toList(),
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-          ),
-
-        ]));
+                        ),
+                        onPressed: () async {
+                          //follow or unfollow
+                        },
+                        child: Text(
+                          'Unfollow Follow',
+                          style: TextStyle(color: Colors.white),
+                        )),
+                  )),
+                  SizedBox(width: 10),
+                  Expanded(
+                      child: Container(
+                    child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return MessagesScreen(this.id!, this.name);
+                            //   return PmScreen(selectedUser: '2', name: '', profileUrl: '',);
+                          }));
+                        },
+                        child: Text(
+                          'Message',
+                          style: TextStyle(color: Colors.black),
+                        )),
+                  )),
+                ],
+              ),
+              GridView.count(
+                crossAxisCount: 3,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                children: imagePosts
+                    .map((imagePost) => KeyedSubtree(
+                          key: ValueKey(
+                              imagePost.url), // or use ObjectKey(imagePost)
+                          child: imagePost,
+                        ))
+                    .toList(),
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+              ),
+            ]));
       },
     );
   }
 }
-
 
 class ImagePost extends StatelessWidget {
   final String url;
@@ -432,8 +464,7 @@ class ImagePost extends StatelessWidget {
           ),
         ),
       );
-    }
-    else {
+    } else {
       return Container();
     }
   }

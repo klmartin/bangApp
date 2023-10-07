@@ -18,9 +18,36 @@ class Service {
     return data['data']['data'];
   }
 
-  Future<bool> addImage(Map<String, String> body, String filepath) async {
+  Future<String> sendUserNotification(userId, name, body,referenceId,type) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'https://bangapp.pro/BangAppBackend/api/sendUserNotification'),
+        body: {
+          'user_id': userId.toString(),
+          'heading': name,
+          'body': body,
+          'type':type,
+          'reference_id':referenceId,
+        },
+      );
+      if (response.statusCode == 200) {
+        return 'success';
+      } else {
+        return 'error';
+      }
+    } catch (e) {
+      print(e);
+      return 'error';
+      // Handle exceptions, if any
+    }
+  }
+
+
+  Future<bool> addImage(
+     BuildContext context, Map<String, String> body, String filepath) async {
     print(body);
-    String addimageUrl = '$baseUrl/imageadd';
+    String addimageUrl = '$baseUrl/imageaddWithResponse';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -29,30 +56,15 @@ class Service {
       print("this is video response");
       print(response.body);
       if (response.statusCode == 201) {
+        print("Created:::::::::::::::");
+        final response2 = jsonDecode(response.body);
 
-//    Post post = Post(
-//         // postId: postId,
-//         // userId: userId,
-//         // name: name,
-//         // image: image,
-//         // challengeImg:
-//         // challengeImg,
-//         // caption: caption,
-//         // type: type,
-//         // width: width,
-//         // height: height,
-//         // likeCountA: likeCountA,
-//         // likeCountB: likeCountB,
-//         // commentCount: commentCount,
-//         // followerCount: followerCount,
-//         // isLiked: isLiked,
-//         // isPinned:isPinned,
-//         // challenges: challenges,
-//         // isLikedA: isLikedA,
-//         // isLikedB: isLikedB)
-//    );
+        if (response2['data']) {
+            print(response2['data']);
 
-
+        } else {
+print("No response.........");
+        }
 
 
 
@@ -257,7 +269,6 @@ class Service {
   // }
 
   Future postComment(BuildContext context, postId, commentText) async {
-
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -267,12 +278,12 @@ class Service {
           'user_id': prefs.getInt('user_id').toString(),
           'body': commentText,
         },
-       );
-    //   final responseData = json.decode(response.body);
-    //   //   // If the comment was posted successfully, update the comment count
-    //   //   final commentProvider = Provider.of<CommentProvider>(context, listen: false);
-    //   //   await commentProvider.getCommentCount(postId);
-    //   //     // commentProvider.incrementCommentCount();
+      );
+      //   final responseData = json.decode(response.body);
+      //   //   // If the comment was posted successfully, update the comment count
+      //   //   final commentProvider = Provider.of<CommentProvider>(context, listen: false);
+      //   //   await commentProvider.getCommentCount(postId);
+      //   //     // commentProvider.incrementCommentCount();
 
       return jsonDecode(response.body);
     } catch (e) {
@@ -282,6 +293,9 @@ class Service {
   }
 
   Future postUpdateComment(postId, commentText) async {
+                    print(Uri.parse('$baseUrl/postUpdateComment'));
+                    print(postId);
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -302,6 +316,7 @@ class Service {
 
   Future postBattleComment(postId, commentText) async {
     try {
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/postBattleComment'),
@@ -349,8 +364,7 @@ class Service {
   Future sendTokenToBackend(token, id) async {
     try {
       final response = await http.post(
-        Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/storeToken'),
+        Uri.parse('https://bangapp.pro/BangAppBackend/api/storeToken'),
         body: {
           'user_id': id.toString(),
           'device_token': token,
@@ -367,8 +381,7 @@ class Service {
   Future<String> sendNotification(userId, name, body, challengeId) async {
     try {
       final response = await http.post(
-        Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/sendNotification'),
+        Uri.parse('https://bangapp.pro/BangAppBackend/api/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -413,8 +426,8 @@ class Service {
   }
 
   Future<List<BoxData>> getBangBattle() async {
-    var response = await http.get(Uri.parse(
-        'https://bangapp.pro/BangAppBackend/api/getBangBattle'));
+    var response = await http
+        .get(Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
     List<BoxData> boxes = [];
@@ -429,8 +442,7 @@ class Service {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/likePost'),
+        Uri.parse('https://bangapp.pro/BangAppBackend/api/likePost'),
         body: {
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
@@ -456,8 +468,7 @@ class Service {
   Future<List<ChatMessage>> getMessage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse(
-          'https://bangapp.pro/BangAppBackend/api/getMessages'),
+      Uri.parse('https://bangapp.pro/BangAppBackend/api/getMessages'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
       },
@@ -480,8 +491,7 @@ class Service {
   Future<List<ChatMessage>> getMessages(userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse(
-          'https://bangapp.pro/BangAppBackend/api/getMessagesFromUser'),
+      Uri.parse('https://bangapp.pro/BangAppBackend/api/getMessagesFromUser'),
       body: {
         'other_user_id': userId,
         'user_id': prefs.getInt('user_id').toString(),
@@ -503,8 +513,7 @@ class Service {
   Future<void> sendMessage(receiverId, String message) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse(
-          'https://bangapp.pro/BangAppBackend/api/sendMessage'),
+      Uri.parse('https://bangapp.pro/BangAppBackend/api/sendMessage'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
         'receiver_id': receiverId.toString(),
@@ -518,19 +527,22 @@ class Service {
       print('Failed to send message');
     }
   }
+
   Future<void> _getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(Uri.parse('$baseUrl/api/v1/users/getCurrentUser'), headers: {
-      'Authorization': '${ prefs.getString('token')}',
+    final response = await http
+        .get(Uri.parse('$baseUrl/api/v1/users/getCurrentUser'), headers: {
+      'Authorization': '${prefs.getString('token')}',
     });
 
     if (response.statusCode == 200) {
       setState(() {
-       var  _currentUser = json.decode(response.body);
+        var _currentUser = json.decode(response.body);
       });
     } else {
       throw Exception('Failed to load current user');
     }
   }
+
   void setState(Null Function() param0) {}
 }

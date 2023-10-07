@@ -66,20 +66,17 @@ class BangUpdates3 extends StatelessWidget {
           // Wrap the ListView.builder with an Expanded widget
           child: Consumer<BangUpdateProvider>(
             builder: (context, bangUpdateProvider, child) {
-              return PageView.builder(
+              return ListView.builder(
                 scrollDirection: Axis.vertical,
                 itemCount: bangUpdateProvider.bangUpdates.length,
                 itemBuilder: (context, index) {
                   final bangUpdate = bangUpdateProvider.bangUpdates[index];
                   return Container(
                     color: Colors.black,
-                    child: AspectRatio(
-                        aspectRatio: MediaQuery.of(context).size.width /
-                            MediaQuery.of(context).size.height,
-                        child: buildBangUpdate2(
-                          context, bangUpdate, index,
-                          // context, bangUpdate.filename, bangUpdate.type, bangUpdate.caption, bangUpdate.postId, bangUpdate.likeCount, index+1
-                        )),
+                    child: buildBangUpdate2(
+                      context, bangUpdate, index,
+                      // context, bangUpdate.filename, bangUpdate.type, bangUpdate.caption, bangUpdate.postId, bangUpdate.likeCount, index+1
+                    ),
                   );
                 },
               );
@@ -118,12 +115,12 @@ class BangUpdateProvider extends ChangeNotifier {
 
   Future<void> fetchBangUpdates() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final user_id = prefs.getInt('user_id').toString();
+    final userId = prefs.getInt('user_id').toString();
     var response = await http.get(Uri.parse(
-        'https://bangapp.pro/BangAppBackend/api/bang-updates/$user_id'));
+        'https://bangapp.pro/BangAppBackend/api/bang-updates/$userId'));
     var data = json.decode(response.body);
     print(
-        'https://bangapp.pro/BangAppBackend/api/bang-updates/$user_id');
+        'https://bangapp.pro/BangAppBackend/api/bang-updates/$userId');
     _bangUpdates = List<BangUpdate>.from(data.map((post) {
       final filename = post['filename'];
       final type = post['type'];

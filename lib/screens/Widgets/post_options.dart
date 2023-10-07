@@ -75,10 +75,9 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
                     ),
                     const SizedBox(height: 2),
                     Text(
-                        StringExtension
-                            .displayTimeAgoFromTimestamp(
-                          '2023-04-17 13:51:04',
-                        ),
+
+                          createdAt.toString(),
+
                         style: Theme.of(context).textTheme.bodyLarge)
                   ],
                 ),

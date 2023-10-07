@@ -11,7 +11,7 @@ class PostsProvider with ChangeNotifier {
   int _pageNumber = 0;
   bool _error = false;
   bool _loading = true;
-  final int _numberOfPostsPerRequest = 200;
+  final int _numberOfPostsPerRequest = 500;
   final int _nextPageTrigger = 3;
 
 List<Post> _posts = [];
@@ -26,10 +26,10 @@ List<Post> _posts = [];
   Future<void> fetchData() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final user_id = prefs.getInt('user_id').toString();
-      print(user_id);
+      final userId = prefs.getInt('user_id').toString();
+      print(userId);
       final response = await get(Uri.parse(
-          "https://bangapp.pro/BangAppBackend/api/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$user_id"));
+          "http://192.168.249.226/BangAppBackend/api/getPost?_limit=$_numberOfPostsPerRequest&user_id=$userId"));
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       if (responseData.containsKey('data')) {
@@ -51,17 +51,16 @@ List<Post> _posts = [];
           return Post(
             postId: data['id'],
             userId: data['user_id'],
-            name: data['user']['name'],
+            name: "image",
             image: data['image'],
             challengeImg: data['challenge_img'],
-            caption: data['body'] ?? '',
-            type: data['type'],
+            caption: data['body'] ?? 'hi',
+            type: "image",
             width: data['width'],
             height: data['height'],
             likeCountA: data['like_count_A'],
             likeCountB: data['like_count_B'],
             commentCount: data['commentCount'],
-
             followerCount: data['user']['followerCount'],
             isLiked: data['isLiked'],
             isPinned: data['pinned'],

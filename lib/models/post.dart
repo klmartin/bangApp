@@ -63,3 +63,4 @@ class Challenge {
     required this.confirmed,
   });
 }
+
