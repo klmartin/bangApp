@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // const url = "http://192.168.194.226/BangAppBackend/api/get/bangInspirations";
-final url = 'https://bangapp.pro/BangAppBackend/api/get/bangInspirations';
+final url = "http://192.168.137.226/BangAppBackend/api/get/bangInspirations";
+
 
 
 class BangInspirationsProvider with ChangeNotifier {
