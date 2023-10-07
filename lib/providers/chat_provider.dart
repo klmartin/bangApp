@@ -207,7 +207,7 @@ class ChatProvider with ChangeNotifier {
             "JUmaaa",
             "This is a test notification",
             prefs.getInt('user_id').toString(),
-            'like');
+            'like',0);
 
         // chatProvider._messages.insert(0, newMessage);
         notifyListeners();
