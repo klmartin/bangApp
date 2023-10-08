@@ -32,6 +32,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
   if (bangUpdate.type == 'image') {
     return Column(
       children: [
+        SizedBox(height: 150),
         Stack(
           children: [
             Center(
@@ -124,7 +125,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                UserProfile(url: bangUpdate.logoUrl, size: 25),
+                UserProfile(url: logoUrl, size: 25),
                 SizedBox(width: 5),
                 Text('Bang App',
                     style: TextStyle(
