@@ -7,9 +7,10 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
+import '../providers/BoxDataProvider.dart';
 import '../providers/comment_provider.dart';
 import '../providers/posts_provider.dart';
-import '../screens/Widgets/small_box.dart';
+import '../screens/Widgets/small_box2.dart';
 
 class Service {
   Future<List<dynamic>> getPosts() async {
@@ -138,6 +139,9 @@ print("No response.........");
   }
 
   Future<void> likeAction(postId, likeType) async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    print("This post liked by ${prefs.getInt('user_id').toString()} $postId");
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -425,18 +429,25 @@ print("No response.........");
     }
   }
 
-  Future<List<BoxData>> getBangBattle() async {
+  Future<void> getBangBattle() async {
     var response = await http
-        .get(Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle'));
+        .get(Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle/11'));
     var data = json.decode(response.body)['data'];
-
-    List<BoxData> boxes = [];
-    for (var item in data) {
-      boxes.add(BoxData.fromJson(item));
-    }
-
-    return boxes;
+    return data;
   }
+
+//    Future<List<BoxData>> getBangBattle() async {
+//     var response = await http
+//         .get(Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle'));
+//     var data = json.decode(response.body)['data'];
+
+//     List<BoxData> boxes = [];
+//     for (var item in data) {
+//       boxes.add(BoxData.fromJson(item));
+//     }
+
+//     return boxes;
+//   }
 
   Future<void> likeBattle(postId) async {
     try {

@@ -29,7 +29,7 @@ List<Post> _posts = [];
       final userId = prefs.getInt('user_id').toString();
       print(userId);
       final response = await get(Uri.parse(
-          "http://192.168.137.226/BangAppBackend/api/getPost?_limit=$_numberOfPostsPerRequest&user_id=$userId"));
+          "$baseUrl/getPost?_limit=$_numberOfPostsPerRequest&user_id=$userId"));
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       if (responseData.containsKey('data')) {
@@ -51,7 +51,7 @@ List<Post> _posts = [];
           return Post(
             postId: data['id'],
             userId: data['user_id'],
-            name: "image",
+            name: data['user']['name'],
             image: data['image'],
             challengeImg: data['challenge_img'],
             caption: data['body'] ?? 'hi',
@@ -128,8 +128,9 @@ List<Post> _posts = [];
   }
 
 void increaseLikes2(int postId, int postType) {
-    final post = _posts?.firstWhere((update) => update.postId == postId);
+    final post = _posts.firstWhere((update) => update.postId == postId);
 
+  // ignore: unnecessary_null_comparison
   if (post != null) {
     if (postType == 1) {
       if (post.isLikedA == false) {

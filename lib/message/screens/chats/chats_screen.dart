@@ -46,7 +46,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 
   void connect() {
-    socket = IO.io('ws://192.168.137.226:3000/', <String, dynamic>{
+    socket = IO.io('wss://bangapp.pro:3000/', <String, dynamic>{
       "transports": ['websocket'],
       "autoconect": false,
     });

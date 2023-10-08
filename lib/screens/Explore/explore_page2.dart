@@ -117,10 +117,10 @@ class BangUpdateProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id').toString();
     var response = await http.get(Uri.parse(
-        'https://bangapp.pro/BangAppBackend/api/bang-updates/$userId'));
+        '$baseUrl/api/bang-updates/$userId'));
     var data = json.decode(response.body);
     print(
-        'https://bangapp.pro/BangAppBackend/api/bang-updates/$userId');
+        '$baseUrl/BangAppBackend/api/bang-updates/$userId');
     _bangUpdates = List<BangUpdate>.from(data.map((post) {
       final filename = post['filename'];
       final type = post['type'];

@@ -76,9 +76,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
       _shouldAutoscroll = false;
     }
   }
-
+// http://137.184.33.100:3000/
   void connect() {
-    socket = IO.io('ws://192.168.137.226:3000/', <String, dynamic>{
+    socket = IO.io('ws://137.184.33.100:3000/', <String, dynamic>{
       "transports": ['websocket'],
       "autoconect": false,
     });
