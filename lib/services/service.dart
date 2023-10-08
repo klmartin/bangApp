@@ -1,16 +1,11 @@
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/models/post.dart';
-import 'package:bangapp/screens/Chat/chat_home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
 import '../providers/BoxDataProvider.dart';
-import '../providers/comment_provider.dart';
-import '../providers/posts_provider.dart';
-import '../screens/Widgets/small_box2.dart';
 
 class Service {
   Future<List<dynamic>> getPosts() async {
@@ -19,11 +14,11 @@ class Service {
     return data['data']['data'];
   }
 
-  Future<String> sendUserNotification(userId, name, body,referenceId,type) async {
+  Future<String> sendUserNotification1(userId, name, body,referenceId,type) async {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/sendUserNotification'),
+            '$baseUrl/sendUserNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -45,16 +40,16 @@ class Service {
   }
 
 
-  Future<bool> addImage(
-     BuildContext context, Map<String, String> body, String filepath) async {
+  Future<bool> addImage(Map<String, String> body, String filepath) async {
     print(body);
-    String addimageUrl = '$baseUrl/imageaddWithResponse';
+    String addimageUrl = '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
-      print("this is video response");
+
+
       print(response.body);
       if (response.statusCode == 201) {
         print("Created:::::::::::::::");
@@ -64,7 +59,7 @@ class Service {
             print(response2['data']);
 
         } else {
-print("No response.........");
+          print("No response.........");
         }
 
 
@@ -126,7 +121,7 @@ print("No response.........");
     }
   }
 
-  Future<Map<String, dynamic>> getCurrentUser() async {
+Future<Map<String, dynamic>> getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.get(Uri.parse('$baseUrl/userr'), headers: {
       'Authorization': 'Bearer ${prefs.getString('token')}',
@@ -138,11 +133,19 @@ print("No response.........");
     }
   }
 
-  Future<void> likeAction(postId, likeType) async {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
+Future<Map<String, dynamic>> getPostInfo(postId) async {
 
-    print("This post liked by ${prefs.getInt('user_id').toString()} $postId");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id');
+    final response = await http.get(Uri.parse('$baseUrl/getPostInfo/$userId/$postId'));
+    return json.decode(response.body);
+  }
+
+
+
+  Future<void> likeAction(postId, likeType,userId) async {
     try {
+      print([likeType,postId]);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/likePost'),
@@ -156,7 +159,12 @@ print("No response.........");
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
-        final updatedLikeCount = responseData['likeCount'];
+        if(responseData['message']=='Post liked successfully'){
+          var name = prefs.getString('name');
+          var body = "$name has Liked your post";
+          print(this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like',postId));
+
+        }
         print(postId);
       } else {
         // Handle API error, if necessary
@@ -203,8 +211,6 @@ print("No response.........");
       final response = await http.get(
         Uri.parse('$baseUrl/getComments/$postId'),
       );
-      print('$baseUrl/getComments/$postId');
-
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['comments'];
@@ -272,7 +278,7 @@ print("No response.........");
   //   }
   // }
 
-  Future postComment(BuildContext context, postId, commentText) async {
+  Future postComment(BuildContext context, postId, commentText,userId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -282,13 +288,9 @@ print("No response.........");
           'user_id': prefs.getInt('user_id').toString(),
           'body': commentText,
         },
-      );
-      //   final responseData = json.decode(response.body);
-      //   //   // If the comment was posted successfully, update the comment count
-      //   //   final commentProvider = Provider.of<CommentProvider>(context, listen: false);
-      //   //   await commentProvider.getCommentCount(postId);
-      //   //     // commentProvider.incrementCommentCount();
-
+       );
+      var name = prefs.getString('name');
+      var body = "$name has Commented on your post";
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -300,6 +302,7 @@ print("No response.........");
                     print(Uri.parse('$baseUrl/postUpdateComment'));
                     print(postId);
 
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -310,7 +313,7 @@ print("No response.........");
           'body': commentText,
         },
       );
-      print('data is saved');
+      print(response.body);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -320,6 +323,8 @@ print("No response.........");
 
   Future postBattleComment(postId, commentText) async {
     try {
+        print(postId);
+        print( Uri.parse('$baseUrl/postBattleComment'));
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -330,6 +335,7 @@ print("No response.........");
           'body': commentText,
         },
       );
+      print(response.body);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -382,7 +388,7 @@ print("No response.........");
     }
   }
 
-  Future<String> sendNotification(userId, name, body, challengeId) async {
+  Future<String> sendNotification(userId, name, body, challengeId ) async {
     try {
       final response = await http.post(
         Uri.parse('https://bangapp.pro/BangAppBackend/api/sendNotification'),
@@ -404,6 +410,34 @@ print("No response.........");
       // Handle exceptions, if any
     }
   }
+
+
+  Future<String> sendUserNotification(userId, name, body,referenceId,type,postId) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            '$baseUrl/sendUserNotification'),
+        body: {
+          'user_id': userId.toString(),
+          'heading': name,
+          'body': body,
+          'type':type,
+          'post_id':postId,
+          'reference_id':referenceId,
+        },
+      );
+      if (response.statusCode == 200) {
+        return 'success';
+      } else {
+        return 'error';
+      }
+    } catch (e) {
+      print(e);
+      return 'error';
+      // Handle exceptions, if any
+    }
+  }
+
 
   Future<bool> setUserProfile(username, bio, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -429,33 +463,27 @@ print("No response.........");
     }
   }
 
-  Future<void> getBangBattle() async {
+  Future<List<BoxData2>> getBangBattle() async {
     var response = await http
-        .get(Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle/11'));
+        .get(Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle'));
     var data = json.decode(response.body)['data'];
-    return data;
+
+    List<BoxData2> boxes = [];
+    for (var item in data) {
+      boxes.add(BoxData2.fromJson(item));
+    }
+
+    return boxes;
   }
 
-//    Future<List<BoxData>> getBangBattle() async {
-//     var response = await http
-//         .get(Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle'));
-//     var data = json.decode(response.body)['data'];
-
-//     List<BoxData> boxes = [];
-//     for (var item in data) {
-//       boxes.add(BoxData.fromJson(item));
-//     }
-
-//     return boxes;
-//   }
-
-  Future<void> likeBattle(postId) async {
+  Future<void> likeBattle(postId,type) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('https://bangapp.pro/BangAppBackend/api/likePost'),
+        Uri.parse('$baseUrl/likeBangBattle'),
         body: {
-          'post_id': postId.toString(),
+          'battle_id': postId.toString(),
+          'like_type': type,
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         },
       );

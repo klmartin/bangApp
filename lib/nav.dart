@@ -64,7 +64,7 @@ class _NavState extends State<Nav> {
     ));
 
     return Scaffold(
-        appBar: CustomAppBar(title: 'BangApp', context: context,),
+        appBar: _isAppBarEnabled ? CustomAppBar(title: 'BangApp', context: context,): null,
 
     //   appBar: _isAppBarEnabled // Conditionally show/hide app bar
     //       ? AppBar(

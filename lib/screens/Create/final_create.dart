@@ -204,7 +204,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                           'body': caption ?? "",
                           'pinned': pinPost == 1 ? '1' : '0',
                           };
-                          await service.addImage(context, body, filePath);
+                          await service.addImage(body, filePath,);
                           } else if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == true) {
                           String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
                           print(filePath);
@@ -224,7 +224,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                           'pinned': pinPost == 1 ? '1' : '0',
                           };
 
-                          await service.addImage(context, body, filePath1!);
+                          await service.addImage(body, filePath1!,);
                           } else {
                           String filePath1 = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
                           String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');

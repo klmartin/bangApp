@@ -1,3 +1,4 @@
+import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,12 +10,10 @@ import '../Explore/explore_page2.dart';
 
 
 class BattleComment extends StatefulWidget {
-  final int? userId;
   final postId;
 
   const BattleComment({
     Key? key,
-    required this.userId,
     this.postId,
   }) : super(key: key);
   @override
@@ -37,10 +36,7 @@ class _BattleCommentState extends State<BattleComment> {
   Future<void> _fetchComments() async {
     final response = await Service().getBattleComments(widget.postId.toString());
     final comments = response;
-     final bangUpdateProvider =
-                  Provider.of<BangUpdateProvider>(context, listen: false);
-              bangUpdateProvider.updateCommentCount(
-                  widget.postId, filedata.length);
+
 
     setState(() {
       // CircularProgressIndicator()
@@ -126,15 +122,16 @@ class _BattleCommentState extends State<BattleComment> {
                 widget.postId,
                 commentController.text,
               );
-              final comm = Provider.of<PostsProvider>(context, listen: false );
-              comm.incrementCommentCountByPostId(widget.postId);
-              print(commentController.text);
+               final battleComment =
+                  Provider.of<BoxDataProvider>(context, listen: false);
+              battleComment.updateCommentCount(
+                  widget.postId);
               setState(() {
                 var value = {
                   'name': response['data']['user']['name'],
                   'pic': response['data']['user']['image'],
                   'message': commentController.text,
-                  'date': '2021-01-01 12:00:00'
+                  'date': '2021-01-01'
                 };
                 filedata.insert(0, value);
               });

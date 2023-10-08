@@ -12,7 +12,7 @@ class BoxDataProvider with ChangeNotifier {
 
   Future<void> fetchData() async {
     final response = await http.get(
-        Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle/11'));
+        Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle/12'));
     final data = jsonDecode(response.body)['data'];
     print(data);
     _boxes = data.map((e) => BoxData2.fromJson(e)).toList();
@@ -21,24 +21,43 @@ class BoxDataProvider with ChangeNotifier {
   }
 
   void increaseLikes(postId, type) {
-  final box = _boxes.firstWhere((element) => element.postId == postId);
+    final box = _boxes.firstWhere((element) => element.postId == postId);
 
-  // Check if the user has already liked the other type, and if so, toggle the like.
-  if (type == 1) {
-    if (box.isLikedB) {
-      box.isLikedB = false; // Unlike the other type
+    // Check if the user has already liked the other type, and if so, toggle the like.
+    if (type == 1) {
+      if (box.isLikedB) {
+        box.likeCountB--; // Decrease the like count for the other type
+        box.isLikedB = false; // Unlike the other type
+      }
+      if (box.isLikedA) {
+        box.likeCountA--; // Decrease the like count for the other type
+        box.isLikedA = false; // Unlike the other type
+      }
+      if (box.isLikedA == false) {
+        box.isLikedA = true; // Toggle the like for type 1
+        box.likeCountA++; // Increase the like count for type 1
+      }
+    } else if (type == 2) {
+      if (box.isLikedA) {
+        box.likeCountA--; // Decrease the like count for the other type
+        box.isLikedA = false; // Unlike the other type
+      }
+      if (box.isLikedB) {
+        box.likeCountB--; // Decrease the like count for the other type
+        box.isLikedB = false; // Unlike the other type
+      }
+      box.isLikedB = true; // Toggle the like for type 2
+      box.likeCountB++; // Increase the like count for type 2
     }
-    box.isLikedA = !box.isLikedA; // Toggle the like for type 1
-  } else if (type == 2) {
-    if (box.isLikedA) {
-      box.isLikedA = false; // Unlike the other type
-    }
-    box.isLikedB = !box.isLikedB; // Toggle the like for type 2
+
+    notifyListeners();
   }
 
-  notifyListeners();
-}
-
+  void updateCommentCount(postId,) {
+    final post = _boxes.firstWhere((element) => element.postId == postId);
+    post.commentCount++;
+    notifyListeners();
+  }
 }
 
 class BoxData2 {
@@ -47,8 +66,8 @@ class BoxData2 {
   final String imageUrl2;
   final String text;
   final int battleId;
-  final int likeCountA;
-  final int likeCountB;
+  int likeCountA;
+  int likeCountB;
   bool isLikedA;
   bool isLikedB;
   int commentCount;

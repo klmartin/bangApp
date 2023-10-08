@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:bangapp/widgets/LikeCounterWidget.dart';
 import 'package:bangapp/widgets/user_profile.dart';
 import 'package:bangapp/screens/Explore/bang_updates_like_button.dart';
 import 'package:bangapp/constants/urls.dart';
@@ -12,6 +11,24 @@ import '../screens/Comments/updateComment.dart';
 import '../services/animation.dart';
 
 Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
+    if (index==0){
+         Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(color: Colors.black),
+            child: Text(
+              "Chemba ya Umbea".toUpperCase(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 4,
+                fontStyle: FontStyle.italic,
+              ),
+            ));
+    }
+
   if (bangUpdate.type == 'image') {
     return Column(
       children: [
@@ -19,6 +36,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
           children: [
             Center(
               child: Container(
+
                 height: 400,
                 width: double.infinity,
                 child: CachedNetworkImage(

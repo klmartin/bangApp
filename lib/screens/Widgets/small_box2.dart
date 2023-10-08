@@ -7,6 +7,7 @@ import 'package:bangapp/providers/BoxDataProvider.dart'; // Import the BoxDataPr
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../services/service.dart';
+import '../Comments/battleComment.dart';
 
 class SmallBoxCarousel extends StatefulWidget {
   @override
@@ -97,7 +98,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                   ],
                                 ),
                                 Text(
-                                  "sdsaaa aaaaaaa aaaaaa safsdaf fdss adfsd D AD FDE AC",
+                                  box.text,
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -110,46 +111,104 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          final countUpdate =
-                                              Provider.of<BoxDataProvider>(
-                                                  context,
-                                                  listen: false);
-                                        countUpdate.increaseLikes(box.postId, 1);
-                                          // Service().likeAction(postId, "A");
-                                        },
-                                        child: box.isLikedA
-                                            ? Icon(CupertinoIcons.heart_fill,
-                                                color: Colors.red, size: 25)
-                                            : Icon(CupertinoIcons.heart,
-                                                color: Colors.red, size: 25),
+                                      child: Column(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              final countUpdate =
+                                                  Provider.of<BoxDataProvider>(
+                                                      context,
+                                                      listen: false);
+                                              Service()
+                                                  .likeBattle(box.postId, "A");
+                                              countUpdate.increaseLikes(
+                                                  box.postId, 1);
+                                              // Service().likeAction(postId, "A");
+                                            },
+                                            child: box.isLikedA
+                                                ? Icon(
+                                                    CupertinoIcons.heart_fill,
+                                                    color: Colors.red,
+                                                    size: 25)
+                                                : Icon(CupertinoIcons.heart,
+                                                    color: Colors.red,
+                                                    size: 25),
+                                          ),
+                                          Text("${box.likeCountA} Likes")
+                                        ],
                                       ),
                                     ),
                                     Column(
                                       children: [
-                                        const Icon(
-                                          CupertinoIcons.chat_bubble,
-                                          color: Colors.black,
-                                          size: 25,
+                                        InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (builder) =>
+                                                        BattleComment(
+                                                          postId: box.postId,
+                                                        )));
+                                          },
+                                          child: Text(
+                                              "${box.commentCount} Comments"),
                                         ),
-                                        Text("23 Comments"),
                                       ],
                                     ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        final countUpdate =
-                                            Provider.of<BoxDataProvider>(
-                                                context,
-                                                listen: false);
-                                        countUpdate.increaseLikes(box.postId, 2);
-                                        // Service().likeAction(postId, "A");
-                                      },
-                                      child: box.isLikedB
-                                          ? Icon(CupertinoIcons.heart_fill,
-                                              color: Colors.red, size: 25)
-                                          : Icon(CupertinoIcons.heart,
-                                              color: Colors.red, size: 25),
+                                    Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (builder) =>
+                                                            BattleComment(
+                                                              postId:
+                                                                  box.postId,
+                                                            )));
+                                              },
+                                              child: const Icon(
+                                                CupertinoIcons.chat_bubble,
+                                                color: Colors.black,
+                                                size: 25,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                final countUpdate = Provider.of<
+                                                        BoxDataProvider>(
+                                                    context,
+                                                    listen: false);
+                                                Service().likeBattle(
+                                                    box.postId, "A");
+                                                Service().likeBattle(
+                                                    box.postId, "B");
+                                                countUpdate.increaseLikes(
+                                                    box.postId, 2);
+                                                // Service().likeAction(postId, "A");
+                                              },
+                                              child: box.isLikedB
+                                                  ? Icon(
+                                                      CupertinoIcons.heart_fill,
+                                                      color: Colors.red,
+                                                      size: 25)
+                                                  : Icon(CupertinoIcons.heart,
+                                                      color: Colors.red,
+                                                      size: 25),
+                                            ),
+                                            SizedBox(
+                                              width: 7,
+                                            ),
+                                          ],
+                                        ),
+                                        Text("${box.likeCountB} Likes")
+                                      ],
                                     ),
                                   ],
                                 )

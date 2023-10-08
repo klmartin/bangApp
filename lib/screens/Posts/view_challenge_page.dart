@@ -12,6 +12,8 @@ import '../Widgets/readmore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:bangapp/constants/urls.dart';
+
 
 
 class ViewChallengePage extends StatefulWidget {
@@ -28,7 +30,7 @@ class ViewChallengePage extends StatefulWidget {
 class _ViewChallengePageState extends State<ViewChallengePage> {
   Future<Map<String, dynamic>> getChallenge() async {
     print(widget.challengeId);
-    var response = await http.get(Uri.parse('http://192.168.124.229/social-backend-laravel/api/getChallenge/${widget.challengeId}'));
+    var response = await http.get(Uri.parse('$baseUrl/getChallenge/${widget.challengeId}'));
     var data = json.decode(response.body);
     return data['data'];
   }
