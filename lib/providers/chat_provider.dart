@@ -6,6 +6,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants/urls.dart';
+
 class Conversation {
   String? receiverName;
   int? receiverId;
@@ -83,7 +85,7 @@ class Participants {
 class ChatProvider with ChangeNotifier {
 // late final IO.Socket socket;
 
-  final String baseUrl = 'http://192.168.249.226/BangAppBackend/api';
+//   final String baseUrl = 'http://192.168.249.226/BangAppBackend/api';
 
   List<Conversation> _conversations = [];
   List<Message> _messages = [];
@@ -100,6 +102,7 @@ class ChatProvider with ChangeNotifier {
   }
 
   Future<void> getAllConversations(BuildContext context, int userId) async {
+    print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
     try {
       final response = await http
           .get(Uri.parse('$baseUrl/getAllConversations?user_id=$userId'));
@@ -109,6 +112,7 @@ class ChatProvider with ChangeNotifier {
         _conversations =
             data.map((json) => Conversation.fromJson(json)).toList();
         notifyListeners();
+        print(conversations);
       } else {
         throw Exception('Failed to load conversations');
       }
