@@ -39,7 +39,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
       },
       child: CachedNetworkImage(
         fit: BoxFit.cover,
-        imageUrl: '$baseUrl/storage/app/images/pinned/PinnedPost.gif',
+        imageUrl: pinnedUrl,
         placeholder: (context, url) => AspectRatio(
           aspectRatio: imgWidth / imgHeight,
           child: Shimmer.fromColors(

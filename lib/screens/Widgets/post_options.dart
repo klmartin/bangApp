@@ -74,11 +74,7 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
                       ],
                     ),
                     const SizedBox(height: 2),
-                    Text(
-
-                          createdAt.toString(),
-
-                        style: Theme.of(context).textTheme.bodyLarge)
+                    Text(createdAt.toString(), style: Theme.of(context).textTheme.bodyLarge)
                   ],
                 ),
               ],

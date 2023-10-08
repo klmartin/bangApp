@@ -329,7 +329,7 @@ class ImagePost extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => POstView(name,caption,imgurl,challengeImgUrl,imgWidth,imgHeight,postId,commentCount,userId,isLiked,likeCount,type)));
+            context, MaterialPageRoute(builder: (context) => POstView(name,caption,imgurl,challengeImgUrl,imgWidth,imgHeight,postId,commentCount,userId,isLiked,likeCount,type,followers)));
       },
       child: Container(
         decoration: BoxDecoration(

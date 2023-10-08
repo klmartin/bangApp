@@ -47,42 +47,40 @@ class _Activity extends State<Activity> {
 GestureDetector _notificationList(NotificationItem notification) {
   return GestureDetector(
     onTap: () async {
-      var postDetails = await Service().getPostInfo(notification.userId);
-      Navigator.pushReplacement(
+      var postDetails = await Service().getPostInfo(notification.postId);
+      print('this is post');
+
+      var firstPost = postDetails[0]['image'];
+      print(firstPost);
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => POstView(
-            postDetails['name'],
-            postDetails['caption'],
-            postDetails['imgurl'],
-            postDetails['challengeImgUrl'],
-            postDetails['imgWidth'],
-            postDetails['imgHeight'],
-            postDetails['postId'],
-            postDetails['commentCount'],
-            postDetails['userId'],
-            postDetails['isLiked'],
-            postDetails['likeCount'],
-            postDetails['type'],
+            postDetails[0]['user']['name'],
+            postDetails[0]['body'] ?? "",
+            postDetails[0]['image'],
+            postDetails[0]['challenge_img'] ?? '',
+            postDetails[0]['width'],
+            postDetails[0]['height'],
+            postDetails[0]['id'],
+            postDetails[0]['commentCount'],
+            postDetails[0]['user_id'],
+            postDetails[0]['isLiked'],
+            postDetails[0]['likeCount'] ?? 0,
+            postDetails[0]['type'],
+            postDetails[0]['user']['followerCount'],
           ),
         ),
-      );
-
-      // Move the Toast.show call here, after the Navigator operation
-      Toast.show(
-        "Following list updated!",
-        duration: Toast.lengthShort,
-        gravity: Toast.bottom,
       );
     },
     child: ListTile(
       leading: CircleAvatar(
         // Update based on notification data
-        backgroundImage: AssetImage(profileUrl + notification.userImage),
+        backgroundImage: NetworkImage(profileUrl+notification.userImage),
         radius: 28.0,
       ),
       title: Text(
-        notification.userId.toString(),
+        notification.userName.toString(),
         style: TextStyle(
           fontFamily: 'Metropolis',
           fontWeight: FontWeight.bold,

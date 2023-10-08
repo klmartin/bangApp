@@ -18,7 +18,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
           children: [
             Center(
               child: Container(
-                
+
                 height: 400,
                 width: double.infinity,
                 child: CachedNetworkImage(
@@ -106,7 +106,7 @@ Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                UserProfile(url: logoUrl, size: 25),
+                UserProfile(url: bangUpdate.logoUrl, size: 25),
                 SizedBox(width: 5),
                 Text('Bang App',
                     style: TextStyle(
