@@ -7,15 +7,15 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Conversation {
-  final String? receiverName;
-  final int? receiverId;
-   String? lastMessage;
-  final String? image;
-   String? time;
-  final bool isActive;
+  String? receiverName;
+  int? receiverId;
+  String? lastMessage;
+  String? image;
+  String? time;
+  bool isActive;
   int unreadCount;
-
-  final int  id;
+  int id;
+  String messageType;
 
   Conversation({
     required this.id,
@@ -26,11 +26,12 @@ class Conversation {
     required this.time,
     required this.isActive,
     required this.unreadCount,
+    required this.messageType,
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(
-        id: json['conversation_id'],
+      id: json['conversation_id'],
       receiverName: json['receiver_name'],
       lastMessage: json['lastMessage'],
       image: json['image'],
@@ -38,6 +39,7 @@ class Conversation {
       isActive: json['isActive'],
       receiverId: json['receiver_id'],
       unreadCount: json['unreadCount'],
+        messageType: json['messageType'],
     );
   }
 }
@@ -48,12 +50,13 @@ class Message {
   final String message;
   final List<Participants>? participants;
   int isReady;
-  Message(
-      {required this.id,
+  Message({
+    required this.id,
       required this.senderId,
       required this.message,
       this.participants,
-      required this.isReady});
+      required this.isReady,
+      });
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
@@ -80,7 +83,7 @@ class Participants {
 class ChatProvider with ChangeNotifier {
 // late final IO.Socket socket;
 
-  final String baseUrl = 'http://192.168.137.226/BangAppBackend/api';
+  final String baseUrl = 'http://192.168.249.226/BangAppBackend/api';
 
   List<Conversation> _conversations = [];
   List<Message> _messages = [];
@@ -95,7 +98,6 @@ class ChatProvider with ChangeNotifier {
     _shouldRefresh = value;
     notifyListeners();
   }
-
 
   Future<void> getAllConversations(BuildContext context, int userId) async {
     try {
@@ -188,16 +190,15 @@ class ChatProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final newMessage = Message.fromJson(jsonDecode(response.body));
         final serv = new Service();
-        final data  = jsonDecode(response.body);
+        final data = jsonDecode(response.body);
         final createdAt = DateTime.parse(data['created_at']);
         final timeAgo = timeago.format(createdAt);
-       final  rawMessage = {
+        final rawMessage = {
           'conversation_id': data['conversation_id'].toString(),
           'sender_id': user1Id.toString(),
           'user2_id': user2Id.toString(),
           'message': data['message'],
           'time': timeAgo,
-
         };
         print(rawMessage);
         socket.emit('updateLastMessageInConversation', rawMessage);
@@ -230,7 +231,7 @@ class ChatProvider with ChangeNotifier {
       'recipient_id': recipientId.toString(),
     };
     final response = await http.post(
-        Uri.parse('http://192.168.137.226/BangAppBackend/api/startNewChat'),
+        Uri.parse('http://192.168.249.226/BangAppBackend/api/startNewChat'),
         body: {
           'user_id': userId.toString(),
           'recipient_id': recipientId.toString(),
@@ -259,40 +260,42 @@ class ChatProvider with ChangeNotifier {
   void updateLastMessageInConverstion(lastMessage) {
     print("updateLastMessageInConverstion");
     print(lastMessage);
-    conversations.forEach((element) { print(element.id); });
+    conversations.forEach((element) {
+      print(element.id);
+    });
 
     final conversation = conversations.firstWhere(
-        (conversation) => conversation.id == int.parse(lastMessage['conversation_id']),
+        (conversation) =>
+            conversation.id == int.parse(lastMessage['conversation_id']),
         orElse: () => Conversation(
-            id: 0,
-            receiverName: "lastMessage['receiver_name']",
-            lastMessage: "lastMessage['message']",
-            image: "assets/images/app_iconw.jpg",
-            time: "lastMessage['time']",
-            isActive: false,
-            receiverId: 11,
-            unreadCount: 11,
-        )
-    );
+              id: 0,
+              receiverName: "lastMessage['receiver_name']",
+              lastMessage: "lastMessage['message']",
+              image: "assets/images/app_iconw.jpg",
+              time: "lastMessage['time']",
+              isActive: false,
+              receiverId: 11,
+              unreadCount: 11,
+               messageType: '',
+            ));
 
     if (conversation.id != 0) {
-        print(conversation);
-        conversation.lastMessage = lastMessage['message'];
-        conversation.time = lastMessage['time'];
-        conversation.unreadCount++;
+      print(conversation);
+      conversation.lastMessage = lastMessage['message'];
+      conversation.time = lastMessage['time'];
+      conversation.unreadCount++;
 
-        // Move the conversation to the top of the list
-        conversations.remove(conversation);
-        conversations.insert(0, conversation);
+      // Move the conversation to the top of the list
+      conversations.remove(conversation);
+      conversations.insert(0, conversation);
 
-        notifyListeners();
+      notifyListeners();
     } else {
-        print('Conversation not found with id: ${lastMessage['conversation_id']}');
+      print(
+          'Conversation not found with id: ${lastMessage['conversation_id']}');
     }
+}
 }
 
 
-
-
-  }
 

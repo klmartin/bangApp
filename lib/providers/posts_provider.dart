@@ -51,7 +51,7 @@ List<Post> _posts = [];
           return Post(
             postId: data['id'],
             userId: data['user_id'],
-            name: "image",
+            name: data['user']['name'],
             image: data['image'],
             challengeImg: data['challenge_img'],
             caption: data['body'] ?? 'hi',
@@ -130,8 +130,9 @@ List<Post> _posts = [];
   }
 
 void increaseLikes2(int postId, int postType) {
-    final post = _posts?.firstWhere((update) => update.postId == postId);
+    final post = _posts.firstWhere((update) => update.postId == postId);
 
+  // ignore: unnecessary_null_comparison
   if (post != null) {
     if (postType == 1) {
       if (post.isLikedA == false) {

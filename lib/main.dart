@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
 import 'package:bangapp/providers/home_provider.dart';
@@ -56,6 +57,7 @@ OneSignal.Notifications.requestPermission(true);
     // ChangeNotifierProvider(create: (context) => HomeProvider()),
     ChangeNotifierProvider(create: (context) => BangUpdateProvider()),
     ChangeNotifierProvider(create: (context) => ChatProvider()),
+    ChangeNotifierProvider(create: (context) => BoxDataProvider()),
   ], child: MyApp()));
 }
 

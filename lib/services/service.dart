@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
-import '../screens/Widgets/small_box.dart';
+import '../providers/BoxDataProvider.dart';
 
 class Service {
   Future<List<dynamic>> getPosts() async {
@@ -292,7 +292,6 @@ Future<List<dynamic>> getPostInfo(postId) async {
        );
       var name = prefs.getString('name');
       var body = "$name has Commented on your post";
-      this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'comment',postId);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -303,6 +302,7 @@ Future<List<dynamic>> getPostInfo(postId) async {
   Future postUpdateComment(postId, commentText) async {
                     print(Uri.parse('$baseUrl/postUpdateComment'));
                     print(postId);
+
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -324,6 +324,8 @@ Future<List<dynamic>> getPostInfo(postId) async {
 
   Future postBattleComment(postId, commentText) async {
     try {
+        print(postId);
+        print( Uri.parse('$baseUrl/postBattleComment'));
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -334,6 +336,7 @@ Future<List<dynamic>> getPostInfo(postId) async {
           'body': commentText,
         },
       );
+      print(response.body);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -461,14 +464,14 @@ Future<List<dynamic>> getPostInfo(postId) async {
     }
   }
 
-  Future<List<BoxData>> getBangBattle() async {
+  Future<List<BoxData2>> getBangBattle() async {
     var response = await http
         .get(Uri.parse('$baseUrl/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
-    List<BoxData> boxes = [];
+    List<BoxData2> boxes = [];
     for (var item in data) {
-      boxes.add(BoxData.fromJson(item));
+      boxes.add(BoxData2.fromJson(item));
     }
 
     return boxes;
