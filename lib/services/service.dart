@@ -18,7 +18,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/sendUserNotification'),
+            '$baseUrl/sendUserNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -42,13 +42,13 @@ class Service {
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     print(body);
-    String addimageUrl = '$baseUrl/imageaddWithResponse';
+    String addimageUrl = '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
-      print("this is video response");
+
 
       print(response.body);
       if (response.statusCode == 201) {
@@ -59,7 +59,7 @@ class Service {
             print(response2['data']);
 
         } else {
-print("No response.........");
+          print("No response.........");
         }
 
 
@@ -145,6 +145,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
 
   Future<void> likeAction(postId, likeType,userId) async {
     try {
+      print([likeType,postId]);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/likePost'),
@@ -161,7 +162,8 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
         if(responseData['message']=='Post liked successfully'){
           var name = prefs.getString('name');
           var body = "$name has Liked your post";
-          this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like',postId);
+          print(this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like',postId));
+
         }
         print(postId);
       } else {
@@ -209,7 +211,6 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
       final response = await http.get(
         Uri.parse('$baseUrl/getComments/$postId'),
       );
-      print('$baseUrl/getComments/$postId');
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['comments'];
@@ -412,7 +413,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/sendUserNotification'),
+            '$baseUrl/sendUserNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -472,13 +473,14 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
     return boxes;
   }
 
-  Future<void> likeBattle(postId) async {
+  Future<void> likeBattle(postId,type) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('https://bangapp.pro/BangAppBackend/api/likePost'),
+        Uri.parse('$baseUrl/likeBangBattle'),
         body: {
-          'post_id': postId.toString(),
+          'battle_id': postId.toString(),
+          'like_type': type,
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         },
       );
