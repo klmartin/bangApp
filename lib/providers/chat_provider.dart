@@ -41,7 +41,7 @@ class Conversation {
       isActive: json['isActive'],
       receiverId: json['receiver_id'],
       unreadCount: json['unreadCount'],
-        messageType: json['messageType'],
+        messageType: "text",
     );
   }
 }
@@ -235,7 +235,7 @@ class ChatProvider with ChangeNotifier {
       'recipient_id': recipientId.toString(),
     };
     final response = await http.post(
-        Uri.parse('http://192.168.249.226/BangAppBackend/api/startNewChat'),
+        Uri.parse('$baseUrl/startNewChat'),
         body: {
           'user_id': userId.toString(),
           'recipient_id': recipientId.toString(),
