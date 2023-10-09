@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bangapp/providers/BoxDataProvider.dart';
+import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
 import 'package:bangapp/providers/home_provider.dart';
+import 'package:bangapp/providers/inprirations_Provider.dart';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
@@ -32,25 +35,44 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/screens/Create/final_create.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Listen for shared data when the app starts
   await Firebase.initializeApp();
 
+
+OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+OneSignal.initialize("20d92df9-89dd-49a4-841c-4407d017edb6");
+// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+OneSignal.Notifications.requestPermission(true);
+      print(OneSignal.User.pushSubscription.token);
+
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserProvider()),
     ChangeNotifierProvider(create: (context) => CommentProvider()),
     ChangeNotifierProvider(create: (context) => PostsProvider()),
+    ChangeNotifierProvider(create: (context) => BangInspirationsProvider()),
     // ChangeNotifierProvider(create: (context) => HomeProvider()),
     ChangeNotifierProvider(create: (context) => BangUpdateProvider()),
+    ChangeNotifierProvider(create: (context) => ChatProvider()),
+    ChangeNotifierProvider(create: (context) => BoxDataProvider()),
   ], child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+Future accosiateUseWithOneSignal() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+     OneSignal.login(userId.toString());
+  }
 
+
+
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: Authenticate.id,
@@ -86,6 +108,7 @@ class _AuthenticateState extends State<Authenticate> {
     final bytes = file.readAsBytesSync();
     return Uint8List.fromList(bytes);
   }
+
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -95,16 +118,18 @@ class _AuthenticateState extends State<Authenticate> {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
+    accosiateUseWithOneSignal();
     // For sharing images coming from outside the app while the app is in memory
-    _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
-          (List<SharedMediaFile> value) {
+    _intentDataStreamSubscription =
+        ReceiveSharingIntent.getMediaStream().listen(
+      (List<SharedMediaFile> value) {
         // Check the first shared file's extension
         final firstSharedFile = value.isNotEmpty ? value[0] : null;
         if (firstSharedFile != null) {
           final filePath = firstSharedFile.path;
           if (filePath.toLowerCase().endsWith('.jpg') ||
-              filePath.toLowerCase().endsWith('.png')||
-              filePath.toLowerCase().endsWith('.jpeg'))   {
+              filePath.toLowerCase().endsWith('.png') ||
+              filePath.toLowerCase().endsWith('.jpeg')) {
             // It's an image
             Navigator.pushReplacement(
               context,
@@ -180,7 +205,6 @@ class _AuthenticateState extends State<Authenticate> {
         print("Shared:" + (_sharedFiles?.map((f) => f.path).join(",") ?? ""));
       });
     });
-
   }
 
   void _configureFirebaseMessaging() {
@@ -245,7 +269,7 @@ class _AuthenticateState extends State<Authenticate> {
     );
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<SharedPreferences>(
       future: SharedPreferences.getInstance(),

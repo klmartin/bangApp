@@ -193,72 +193,47 @@ class ReadMoreTextState extends State<ReadMoreText> {
           linkLongerThanLine = true;
         }
         // ignore: prefer_typing_uninitialized_variables
-        var textSpan;
-        switch (widget.trimMode) {
-          case TrimMode.length:
-            if (widget.trimLength < widget.data!.length) {
-              textSpan = TextSpan(
-                children: [
-                  TextSpan(
-                    text: _readMore
-                        ?widget.userName! + " " + widget.data!.substring(0, widget.trimLength)
-                        : widget.userName! + " " +widget.data!,
-                    children: <TextSpan>[_delimiter, link],
-                    style: userNameStyle,
-                  ),
-                  TextSpan(
-                    text: _readMore
-                        ?widget.userName! + " " + widget.data!.substring(0, widget.trimLength)
-                        : widget.userName! + " " +widget.data!,
-                    children: <TextSpan>[_delimiter, link],
-                    style: dataStyle,
-                  ),
-                ],
-              );
-            } else {
-              textSpan =  TextSpan(
-                children: [
-                  TextSpan(
-                    text: widget.userName,
-                    style: userNameStyle,
-                  ),
-                  TextSpan(
-                    text: " " + widget.data!,
-                    style: dataStyle,
-                  ),
-                ],
-              );
-            }
-            break;
-          case TrimMode.line:
-            if (textPainter.didExceedMaxLines) {
-              textSpan = TextSpan(
-                style: effectiveTextStyle,
-                text: _readMore
-                    ? widget.data!.substring(0, endIndex) +
-                    (linkLongerThanLine ? _kLineSeparator : '')
-                    : widget.data,
-                children: <TextSpan>[_delimiter, link],
-              );
-            } else {
-              textSpan = TextSpan(
-                children: [
-                  TextSpan(
-                    text: widget.userName,
-                    style: userNameStyle,
-                  ),
-                  TextSpan(
-                    text: " " + widget.data!,
-                    style: dataStyle,
-                  ),
-                ],
-              );
-            }
-            break;
-          default:
-            throw Exception(
-                'TrimMode type: ${widget.trimMode} is not supported');
-        }
+       TextSpan textSpan;
+switch (widget.trimMode) {
+  case TrimMode.length:
+    if (widget.trimLength < widget.data!.length) {
+      textSpan = TextSpan(
+        text: _readMore
+            ? widget.userName! +
+                " " +
+                widget.data!.substring(0, widget.trimLength)
+            : widget.userName! + " " + widget.data!,
+        children: <TextSpan>[_delimiter, link],
+        style: dataStyle, // Use dataStyle for the entire text
+      );
+    } else {
+      textSpan = TextSpan(
+        text: widget.userName! + " " + widget.data!, // Combine username and data
+        children: <TextSpan>[_delimiter, link],
+        style: dataStyle, // Use dataStyle for the entire text
+      );
+    }
+    break;
+  case TrimMode.line:
+    if (textPainter.didExceedMaxLines) {
+      textSpan = TextSpan(
+        style: effectiveTextStyle,
+        text: _readMore
+            ? widget.userName! + " " + widget.data!.substring(0, endIndex) +
+                (linkLongerThanLine ? _kLineSeparator : '')
+            : widget.userName! + " " + widget.data!, // Combine username and data
+        children: <TextSpan>[_delimiter, link],
+      );
+    } else {
+      textSpan = TextSpan(
+        text: widget.userName! + " " + widget.data!, // Combine username and data
+        style: dataStyle, // Use dataStyle for the entire text
+      );
+    }
+    break;
+  default:
+    throw Exception('TrimMode type: ${widget.trimMode} is not supported');
+}
 
         return RichText(
           textAlign: textAlign,

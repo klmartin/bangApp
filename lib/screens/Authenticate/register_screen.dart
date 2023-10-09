@@ -19,7 +19,7 @@ class Register extends StatefulWidget {
   _RegisterState createState() => _RegisterState();
 }
 
-class Hobby {
+/*class Hobby {
   final String? name;
   final int ?id;
   final String? avatar;
@@ -33,9 +33,9 @@ class Hobby {
       avatar: "", // You can set the avatar URL here if needed
     );
   }
-}
+}*/
 
-Future<List<Hobby>> fetchHobbies() async {
+/*Future<List<Hobby>> fetchHobbies() async {
   print('fetching hobbies');
   final response = await http.get(Uri.parse('$baseUrl/hobbies'));
 
@@ -48,29 +48,29 @@ Future<List<Hobby>> fetchHobbies() async {
   } else {
     throw Exception('Failed to load hobbies');
   }
-}
+}*/
 
 class _RegisterState extends State<Register> {
   @override
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  DateTime date_of_birth = DateTime.now();
-  TextEditingController _dateController = TextEditingController();
+  //DateTime date_of_birth = DateTime.now();
+  //TextEditingController _dateController = TextEditingController();
   //instance
   late String email;
   late String password;
   late String name;
-  late String phoneNumber;
-  late String occupation;
+  //late String phoneNumber;
+  //late String occupation;
 
   bool showSpinner = false;
   @override
-    List<Hobby>? selectedHobbyList;
-    List<Hobby> hobbyList = [];
+   // List<Hobby>? selectedHobbyList;
+    //List<Hobby> hobbyList = [];
 
-  String selectedHobbiesText = "";
-  List<int> selectedHobbyIds = [];
+  //String selectedHobbiesText = "";
+  //List<int> selectedHobbyIds = [];
 
-   loadHobbies() async {
+   /*loadHobbies() async {
     try {
       hobbyList = await fetchHobbies();
       return hobbyList;
@@ -78,8 +78,8 @@ class _RegisterState extends State<Register> {
       // Handle error, if any
     }
   }
-
-  void updateSelectedHobbiesText() {
+*/
+  /*void updateSelectedHobbiesText() {
     setState(() {
       selectedHobbiesText = selectedHobbyList!
           .map((hobby) => hobby.name!)
@@ -90,8 +90,9 @@ class _RegisterState extends State<Register> {
           .toList();
     });
   }
+*/
 
-  void openFilterDialog() async {
+ /* void openFilterDialog() async {
     await FilterListDialog.display<Hobby>(
       context,
       listData: await loadHobbies()!, // Use hobbyList as the data source
@@ -112,7 +113,7 @@ class _RegisterState extends State<Register> {
       },
     );
   }
-
+*/
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -167,7 +168,7 @@ class _RegisterState extends State<Register> {
               SizedBox(
                 height: 8.0,
               ),
-              TextField(
+              /*TextField(
                 controller: _dateController,
                 onTap: () async {
                   final DateTime? picked = await showDatePicker(
@@ -198,11 +199,11 @@ class _RegisterState extends State<Register> {
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                 ),
-              ),
-              SizedBox(
+              ),*/
+             /* SizedBox(
                 height: 8.0,
-              ),
-              TextField(
+              ),*/
+             /* TextField(
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
@@ -230,8 +231,8 @@ class _RegisterState extends State<Register> {
               ),
               SizedBox(
                 height: 8.0,
-              ),
-              TextField(
+              ),*/
+              /*TextField(
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.emailAddress,
                 onChanged: (value) {
@@ -259,7 +260,7 @@ class _RegisterState extends State<Register> {
               ),
               SizedBox(
                 height: 8.0,
-              ),
+              ),*/
               TextField(
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.emailAddress,
@@ -286,7 +287,7 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
               ),
-              SizedBox(
+             /* SizedBox(
                 height: 8.0,
               ),
                TextField(
@@ -319,7 +320,7 @@ class _RegisterState extends State<Register> {
               ),
               SizedBox(
                 height: 8.0,
-              ),
+              ),*/
               TextField(
                 obscureText: true,
                 textAlign: TextAlign.center,
@@ -362,18 +363,18 @@ class _RegisterState extends State<Register> {
                       });
                       try {
                         print('this is data');
-                        print(date_of_birth.toString());
-                        print(json.encode(selectedHobbyIds).runtimeType);
+                        //print(date_of_birth.toString());
+                        //print(json.encode(selectedHobbyIds).runtimeType);
                         final response = await http.post(
                           Uri.parse('$baseUrl/v1/register'),
                           body: {
                             'email': email,
                             'name':name,
-                            'date_of_birth':date_of_birth.toString(),
-                            'phone_number':phoneNumber,
+                            //'date_of_birth':date_of_birth.toString(),
+                            //'phone_number':phoneNumber,
                             'password': password,
-                            'occupation':occupation,
-                            'hobbies':json.encode(selectedHobbyIds)
+                            //'occupation':occupation,
+                            //'hobbies':json.encode(selectedHobbyIds)
                           },
                         );
                         final responseBody = jsonDecode(response.body);
@@ -421,7 +422,8 @@ class _RegisterState extends State<Register> {
                       } finally {
                         showSpinner = false;
                       }
-                      print(phoneNumber); print(password); },
+                      //print(phoneNumber); print(password);
+                      },
                     minWidth: 200.0,
                     height: 42.0,
                     child: Text(

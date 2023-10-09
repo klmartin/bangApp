@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:bangapp/services/service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +7,7 @@ import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:bangapp/models/notification.dart';
 import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/screens/Posts/postView_model.dart';
 
 class Activity extends StatefulWidget {
   @override
@@ -27,7 +28,7 @@ class _Activity extends State<Activity> {
     final userId = prefs.getInt('user_id');
     print(userId);
     final response =
-    await http.get(Uri.parse('$baseUrl/getNotifications/$userId'));
+        await http.get(Uri.parse('$baseUrl/getNotifications/$userId'));
     print(response.body);
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -43,15 +44,43 @@ class _Activity extends State<Activity> {
     }
   }
 
-  ListTile _notificationList(NotificationItem notification) {
-    return ListTile(
+GestureDetector _notificationList(NotificationItem notification) {
+  return GestureDetector(
+    onTap: () async {
+      var postDetails = await Service().getPostInfo(notification.postId);
+      print('this is post');
+
+      var firstPost = postDetails[0]['image'];
+      print(firstPost);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => POstView(
+            postDetails[0]['user']['name'],
+            postDetails[0]['body'] ?? "",
+            postDetails[0]['image'],
+            postDetails[0]['challenge_img'] ?? '',
+            postDetails[0]['width'],
+            postDetails[0]['height'],
+            postDetails[0]['id'],
+            postDetails[0]['commentCount'],
+            postDetails[0]['user_id'],
+            postDetails[0]['isLiked'],
+            postDetails[0]['likeCount'] ?? 0,
+            postDetails[0]['type'],
+            postDetails[0]['user']['followerCount'],
+          ),
+        ),
+      );
+    },
+    child: ListTile(
       leading: CircleAvatar(
         // Update based on notification data
-        // Example: backgroundImage: AssetImage('images/usr${notification.userId}.jfif'),
+        backgroundImage: NetworkImage(profileUrl+notification.userImage),
         radius: 28.0,
       ),
       title: Text(
-        notification.userId.toString(),
+        notification.userName.toString(),
         style: TextStyle(
           fontFamily: 'Metropolis',
           fontWeight: FontWeight.bold,
@@ -75,31 +104,25 @@ class _Activity extends State<Activity> {
           // Handle the action when the user presses the IconButton
         },
       ),
-      onTap: () {
-        Toast.show(
-          "Following list updated!",
-          duration: Toast.lengthShort,
-          gravity: Toast.bottom,
-        );
-      },
-    );
-  }
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: isLoading
           ? Center(
-        child: CircularProgressIndicator(), // Display a loading indicator
-      )
+              child: CircularProgressIndicator(), // Display a loading indicator
+            )
           : ListView.builder(
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          return _notificationList(notification);
-        },
-      ),
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                final notification = notifications[index];
+                return _notificationList(notification);
+              },
+            ),
     );
   }
 }

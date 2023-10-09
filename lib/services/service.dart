@@ -1,15 +1,11 @@
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/models/post.dart';
-import 'package:bangapp/screens/Chat/chat_home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
-import '../providers/comment_provider.dart';
-import '../providers/posts_provider.dart';
-import '../screens/Widgets/small_box.dart';
+import '../providers/BoxDataProvider.dart';
 
 class Service {
   Future<List<dynamic>> getPosts() async {
@@ -17,6 +13,32 @@ class Service {
     var data = json.decode(response.body);
     return data['data']['data'];
   }
+
+  Future<String> sendUserNotification1(userId, name, body,referenceId,type) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            '$baseUrl/sendUserNotification'),
+        body: {
+          'user_id': userId.toString(),
+          'heading': name,
+          'body': body,
+          'type':type,
+          'reference_id':referenceId,
+        },
+      );
+      if (response.statusCode == 200) {
+        return 'success';
+      } else {
+        return 'error';
+      }
+    } catch (e) {
+      print(e);
+      return 'error';
+      // Handle exceptions, if any
+    }
+  }
+
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     print(body);
@@ -26,32 +48,22 @@ class Service {
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
-      print("this is video response");
+
 
       print(response.body);
       if (response.statusCode == 201) {
-final data = jsonDecode(response.body);
-   Post post = Post(
-     postId: data['id'],
-     userId: data['user_id'],
-     name: data['user']['name'],
-     image: data['image'],
-     challengeImg: data['challenge_img'],
-     caption: data['body'] ?? '',
-     type: data['type'],
-     width: data['width'],
-     height: data['height'],
-     likeCountA: data['like_count_A'],
-     likeCountB: data['like_count_B'],
-     commentCount: data['commentCount'],
-     followerCount: data['user']['followerCount'],
-     isLiked: data['isLiked'],
-     isPinned: data['pinned'],
-     challenges: data['challenges'],
-     isLikedB: data['isLikedB'],
-     isLikedA: data['isLikedA'],
-     createdAt: data['created_at'],
-   );
+        print("Created:::::::::::::::");
+        final response2 = jsonDecode(response.body);
+
+        if (response2['data']) {
+            print(response2['data']);
+
+        } else {
+          print("No response.........");
+        }
+
+
+
         return true;
       } else {
         return false;
@@ -109,7 +121,7 @@ final data = jsonDecode(response.body);
     }
   }
 
-  Future<Map<String, dynamic>> getCurrentUser() async {
+Future<Map<String, dynamic>> getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.get(Uri.parse('$baseUrl/userr'), headers: {
       'Authorization': 'Bearer ${prefs.getString('token')}',
@@ -121,8 +133,20 @@ final data = jsonDecode(response.body);
     }
   }
 
+Future<List<dynamic>> getPostInfo(postId) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id');
+    final response = await http.get(Uri.parse('$baseUrl/getPostInfo/$postId'));
+    print(response.body);
+    return jsonDecode(response.body);
+  }
+
+
+
   Future<void> likeAction(postId, likeType,userId) async {
     try {
+      print([likeType,postId]);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/likePost'),
@@ -139,7 +163,8 @@ final data = jsonDecode(response.body);
         if(responseData['message']=='Post liked successfully'){
           var name = prefs.getString('name');
           var body = "$name has Liked your post";
-          this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like');
+          print(this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like',postId));
+
         }
         print(postId);
       } else {
@@ -187,7 +212,6 @@ final data = jsonDecode(response.body);
       final response = await http.get(
         Uri.parse('$baseUrl/getComments/$postId'),
       );
-      print('$baseUrl/getComments/$postId');
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['comments'];
@@ -268,7 +292,6 @@ final data = jsonDecode(response.body);
        );
       var name = prefs.getString('name');
       var body = "$name has Commented on your post";
-      this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'comment');
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -277,6 +300,10 @@ final data = jsonDecode(response.body);
   }
 
   Future postUpdateComment(postId, commentText) async {
+                    print(Uri.parse('$baseUrl/postUpdateComment'));
+                    print(postId);
+
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -297,6 +324,9 @@ final data = jsonDecode(response.body);
 
   Future postBattleComment(postId, commentText) async {
     try {
+        print(postId);
+        print( Uri.parse('$baseUrl/postBattleComment'));
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/postBattleComment'),
@@ -306,6 +336,7 @@ final data = jsonDecode(response.body);
           'body': commentText,
         },
       );
+      print(response.body);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -315,10 +346,10 @@ final data = jsonDecode(response.body);
 
   Future deletePost(postId) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.delete(
         Uri.parse('$baseUrl/deletePost/$postId'),
       );
+      print([response,postId]);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -344,8 +375,7 @@ final data = jsonDecode(response.body);
   Future sendTokenToBackend(token, id) async {
     try {
       final response = await http.post(
-        Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/storeToken'),
+        Uri.parse('$baseUrl/storeToken'),
         body: {
           'user_id': id.toString(),
           'device_token': token,
@@ -362,8 +392,7 @@ final data = jsonDecode(response.body);
   Future<String> sendNotification(userId, name, body, challengeId ) async {
     try {
       final response = await http.post(
-        Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/sendNotification'),
+        Uri.parse('$baseUrl/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -384,16 +413,17 @@ final data = jsonDecode(response.body);
   }
 
 
-  Future<String> sendUserNotification(userId, name, body,referenceId,type) async {
+  Future<String> sendUserNotification(userId, name, body,referenceId,type,postId) async {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/sendUserNotification'),
+            '$baseUrl/sendUserNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
           'body': body,
           'type':type,
+          'post_id':postId,
           'reference_id':referenceId,
         },
       );
@@ -414,7 +444,7 @@ final data = jsonDecode(response.body);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
     String addimageUrl =
-        'https://bangapp.pro/BangAppBackend/api/setUserProfile';
+        '$baseUrl/setUserProfile';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(username)
       ..fields.addAll(user_id as Map<String, String>)
@@ -434,27 +464,27 @@ final data = jsonDecode(response.body);
     }
   }
 
-  Future<List<BoxData>> getBangBattle() async {
-    var response = await http.get(Uri.parse(
-        'https://bangapp.pro/BangAppBackend/api/getBangBattle'));
+  Future<List<BoxData2>> getBangBattle() async {
+    var response = await http
+        .get(Uri.parse('$baseUrl/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
-    List<BoxData> boxes = [];
+    List<BoxData2> boxes = [];
     for (var item in data) {
-      boxes.add(BoxData.fromJson(item));
+      boxes.add(BoxData2.fromJson(item));
     }
 
     return boxes;
   }
 
-  Future<void> likeBattle(postId) async {
+  Future<void> likeBattle(postId,type) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/likePost'),
+        Uri.parse('$baseUrl/likeBangBattle'),
         body: {
-          'post_id': postId.toString(),
+          'battle_id': postId.toString(),
+          'like_type': type,
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         },
       );
@@ -478,8 +508,7 @@ final data = jsonDecode(response.body);
   Future<List<ChatMessage>> getMessage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse(
-          'https://bangapp.pro/BangAppBackend/api/getMessages'),
+      Uri.parse('$baseUrl/getMessages'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
       },
@@ -502,8 +531,7 @@ final data = jsonDecode(response.body);
   Future<List<ChatMessage>> getMessages(userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse(
-          'https://bangapp.pro/BangAppBackend/api/getMessagesFromUser'),
+      Uri.parse('$baseUrl/getMessagesFromUser'),
       body: {
         'other_user_id': userId,
         'user_id': prefs.getInt('user_id').toString(),
@@ -525,8 +553,7 @@ final data = jsonDecode(response.body);
   Future<void> sendMessage(receiverId, String message) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse(
-          'https://bangapp.pro/BangAppBackend/api/sendMessage'),
+      Uri.parse('$baseUrl/sendMessage'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
         'receiver_id': receiverId.toString(),
@@ -540,19 +567,48 @@ final data = jsonDecode(response.body);
       print('Failed to send message');
     }
   }
+
   Future<void> _getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(Uri.parse('$baseUrl/api/v1/users/getCurrentUser'), headers: {
-      'Authorization': '${ prefs.getString('token')}',
+    final response = await http
+        .get(Uri.parse('$baseUrl/api/v1/users/getCurrentUser'), headers: {
+      'Authorization': '${prefs.getString('token')}',
     });
 
     if (response.statusCode == 200) {
       setState(() {
-       var  _currentUser = json.decode(response.body);
+        var _currentUser = json.decode(response.body);
       });
     } else {
       throw Exception('Failed to load current user');
     }
   }
+
+  Future<int> fetchNotificationCount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id');
+    final url = Uri.parse('$baseUrl/getNotificationCount/$userId');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+
+        if (jsonResponse.containsKey('notification_count')) {
+          final notificationCount = jsonResponse['notification_count'];
+          return notificationCount;
+        } else {
+          // If the 'notification_count' key is not present in the JSON response
+          return 0; // Or handle this case as needed
+        }
+      } else {
+        // If the request was not successful (e.g., 404, 500, etc.)
+        return 0; // Or handle this case as needed
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      return 0; // Or handle this case as needed
+    }
+  }
+
   void setState(Null Function() param0) {}
 }

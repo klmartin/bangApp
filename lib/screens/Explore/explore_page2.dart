@@ -49,19 +49,6 @@ class BangUpdates3 extends StatelessWidget {
 
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(color: Colors.black),
-          child: Text("Chemba ya Umbea",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Metropolis',
-                  letterSpacing: -1)),
-        ),
         Expanded(
           // Wrap the ListView.builder with an Expanded widget
           child: Consumer<BangUpdateProvider>(
@@ -73,13 +60,34 @@ class BangUpdates3 extends StatelessWidget {
                   final bangUpdate = bangUpdateProvider.bangUpdates[index];
                   return Container(
                     color: Colors.black,
-                    child: AspectRatio(
-                        aspectRatio: MediaQuery.of(context).size.width /
-                            MediaQuery.of(context).size.height,
-                        child: buildBangUpdate2(
-                          context, bangUpdate, index,
-                          // context, bangUpdate.filename, bangUpdate.type, bangUpdate.caption, bangUpdate.postId, bangUpdate.likeCount, index+1
-                        )),
+                    child: index != 0
+                        ? buildBangUpdate2(
+                            context, bangUpdate, index,
+                            // context, bangUpdate.filename, bangUpdate.type, bangUpdate.caption, bangUpdate.postId, bangUpdate.likeCount, index+1
+                          )
+                        : Column(
+                            children: [
+                                Container(
+                                    height: 50,
+                            width: double.infinity,
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(color: Colors.black),
+                            child: Text(
+                              "Chemba ya Umbea".toUpperCase(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 4,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            )),
+                             buildBangUpdate2(
+                            context, bangUpdate, index,
+                          )?? Text("No Content Here, Please come agin laiter"),
+                            ],
+                        )
                   );
                 },
               );
@@ -118,11 +126,9 @@ class BangUpdateProvider extends ChangeNotifier {
 
   Future<void> fetchBangUpdates() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final user_id = prefs.getInt('user_id').toString();
-    var response = await http.get(Uri.parse(
-        'https://bangapp.pro/BangAppBackend/api/bang-updates/$user_id'));
+    final userId = prefs.getInt('user_id').toString();
+    var response = await http.get(Uri.parse('$baseUrl/bang-updates/$userId'));
     var data = json.decode(response.body);
-
     _bangUpdates = List<BangUpdate>.from(data.map((post) {
       final filename = post['filename'];
       final type = post['type'];
@@ -133,7 +139,7 @@ class BangUpdateProvider extends ChangeNotifier {
               post['bang_update_like_count'].isNotEmpty
           ? post['bang_update_like_count'][0]['like_count']
           : 0;
-    //   var likeCount = post['likeCount'];
+      //   var likeCount = post['likeCount'];
       var commentCount = post['bang_update_comments'] != null &&
               post['bang_update_comments'].isNotEmpty
           ? post['bang_update_comments'][0]['comment_count']
@@ -171,9 +177,9 @@ class BangUpdateProvider extends ChangeNotifier {
     final bangUpdate =
         _bangUpdates.firstWhere((update) => update.postId == postId);
     bangUpdate.commentCount++;
-print("hereeeeeeeeeeeee");
-print(postId);
-print(bangUpdate.commentCount);
+    print("hereeeeeeeeeeeee");
+    print(postId);
+    print(bangUpdate.commentCount);
     notifyListeners();
   }
 }

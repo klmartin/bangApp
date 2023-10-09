@@ -14,9 +14,12 @@ class NotificationModel {
 class NotificationItem {
   final int id;
   final int userId;
+  final String userName;
   final String message;
   final String type;
   final int referenceId;
+  final int postId;
+  final String userImage;
   final int isRead;
   final String createdAt;
   final String updatedAt;
@@ -24,9 +27,12 @@ class NotificationItem {
   NotificationItem({
     required this.id,
     required this.userId,
+    required this.userName,
     required this.message,
     required this.type,
     required this.referenceId,
+    required this.postId,
+    required this.userImage,
     required this.isRead,
     required this.createdAt,
     required this.updatedAt,
@@ -36,9 +42,12 @@ class NotificationItem {
     return NotificationItem(
       id: json['id'],
       userId: json['user_id'],
+      userName: json['user']['name'],
       message: json['message'],
       type: json['type'],
       referenceId: json['reference_id'],
+      postId: json['post_id'],
+      userImage: json['user']['image'],
       isRead: json['is_read'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],

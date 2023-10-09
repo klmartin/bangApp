@@ -13,18 +13,19 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 
 class POstView extends StatefulWidget {
-  final  name;
-  final  caption;
-  final  imgurl;
-  final  challengeImgUrl;
-  final  imgWidth;
-  final  imgHeight;
-  final  postId;
-  final  commentCount;
-  final  userId;
-  final  isLiked;
-  final  likeCount;
-  final  type;
+  String  name;
+  String  caption;
+  String  imgurl;
+  String  challengeImgUrl;
+  int  imgWidth;
+  int  imgHeight;
+  int  postId;
+  int  commentCount;
+  int  userId;
+  bool  isLiked;
+  int  likeCount;
+  String  type;
+  int followerCount;
 
   POstView(
       this.name,
@@ -39,6 +40,7 @@ class POstView extends StatefulWidget {
       this.isLiked,
       this.likeCount,
       this.type,
+      this.followerCount,
       );
   static const id = 'postview';
   @override
@@ -54,7 +56,7 @@ class _POstViewState extends State<POstView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: PostCard(widget.name,widget.caption,widget.imgurl,widget.challengeImgUrl,widget.imgWidth,widget.imgHeight,widget.postId,widget.commentCount,widget.userId,widget.isLiked,widget.likeCount,widget.type),
+            child: PostCard(widget.name,widget.caption,widget.imgurl,widget.challengeImgUrl,widget.imgWidth,widget.imgHeight,widget.postId,widget.commentCount,widget.userId,widget.isLiked,widget.likeCount,widget.type,widget.followerCount),
           ),
         ),
       ),
@@ -63,21 +65,21 @@ class _POstViewState extends State<POstView> {
 }
 
 class PostCard extends StatefulWidget {
-  final String postUrl;
-  final name;
-  final caption;
-  final challengeImgUrl;
-  final imgWidth;
-  final imgHeight;
-  final postId;
-  final commentCount;
-  final userId;
-  var isLiked;
-  var likeCount;
-  var type;
-  var followerCount;
+   String postUrl;
+  String name;
+   String caption;
+   String challengeImgUrl;
+  int imgWidth;
+  int imgHeight;
+  int postId;
+  int commentCount;
+  int userId;
+  bool isLiked;
+  int likeCount;
+   String type;
+  int followerCount;
   ScrollController _scrollController = ScrollController();
-  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type);
+  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount);
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -206,7 +208,7 @@ class _PostCardState extends State<PostCard> {
                                               try {
                                                 var response = await Service().deletePost(widget.postId);
                                                 if (response["message"] == "Post deleted successfully") {
-                                                  Navigator.push(
+                                                  Navigator.pushReplacement(
                                                     context,
                                                     createRoute(
                                                       Profile(

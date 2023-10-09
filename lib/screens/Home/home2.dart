@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +7,7 @@ import 'package:bangapp/models/post.dart';
 import 'package:bangapp/providers/posts_provider.dart'; // Import your PostsProvider class
 import 'package:bangapp/screens/Widgets/post_item.dart';
 import '../Widgets/post_item2.dart';
-import '../Widgets/small_box.dart';
+import '../Widgets/small_box2.dart';
 import 'package:bangapp/constants/urls.dart';
 
 class Home2 extends StatelessWidget {
@@ -49,6 +50,7 @@ class _Home2ContentState extends State<Home2Content> {
     return RefreshIndicator(
       onRefresh: () async {
         final postsProvider = Provider.of<PostsProvider>(context, listen: false);
+
         // postsProvider.refreshData();
       },
       child: Consumer<PostsProvider>(

@@ -22,7 +22,8 @@ class _CreateState extends State<Create> {
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
   int _activePage = 0;
-  final PageController _pageViewController = PageController(initialPage: 0); // set the initial page you want to show
+  final PageController _pageViewController =
+      PageController(initialPage: 0); // set the initial page you want to show
 
   void selectAsset(AssetEntity asset) async {
     setState(() {
@@ -73,7 +74,6 @@ class _CreateState extends State<Create> {
     _chewieController = null;
   }
 
-
   @override
   void dispose() {
     _videoPlayerController?.dispose();
@@ -104,7 +104,8 @@ class _CreateState extends State<Create> {
               if (_selectedAssets.isNotEmpty) {
                 if (_selectedAssets[0].type == AssetType.video) {
                   var editedVideo = await _selectedAssets[0].file;
-                  await Navigator.pushReplacement(
+                  if (_selectedAssets.length == 2) {
+                    await Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => VideoEditor(
@@ -112,10 +113,11 @@ class _CreateState extends State<Create> {
                       ),
                     ),
                   );
-                }
-                else if (_selectedAssets[0].type == AssetType.image) {
+                  }
+
+                } else if (_selectedAssets[0].type == AssetType.image) {
                   Uint8List? editedImage;
-                  Uint8List ? editedImage2;
+                  Uint8List? editedImage2;
                   var filee = await _selectedAssets[0].file;
                   editedImage = fileToUint8List(filee!);
                   if (_selectedAssets.length == 2) {
@@ -126,13 +128,11 @@ class _CreateState extends State<Create> {
                       MaterialPageRoute(
                         builder: (context) => ImageEditor(
                             image: editedImage,
-                            image2: editedImage2,
-                            allowMultiple: true
-                        ),
+                            // image2: editedImage2,
+                            allowMultiple: true),
                       ),
                     );
-                  }
-                  else{
+                  } else {
                     await Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -142,7 +142,6 @@ class _CreateState extends State<Create> {
                       ),
                     );
                   }
-
                 }
               }
             },
@@ -187,9 +186,12 @@ class _CreateState extends State<Create> {
                         );
                       } else {
                         return FutureBuilder<Uint8List?>(
-                          future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-                          builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
-                            if (snapshot.connectionState == ConnectionState.done) {
+                          future: asset
+                              .thumbnailDataWithSize(ThumbnailSize(200, 200)),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<Uint8List?> snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
                               final thumbnailData = snapshot.data!;
                               return Image.memory(
                                 thumbnailData,
@@ -222,7 +224,7 @@ class _CreateState extends State<Create> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List<Widget>.generate(
                     _selectedAssets.length,
-                        (index) {
+                    (index) {
                       final isASelected = _activePage == 0 && index == 0;
                       final isBSelected = _activePage == 1 && index == 1;
                       return Padding(
@@ -244,21 +246,23 @@ class _CreateState extends State<Create> {
                               decoration: BoxDecoration(
                                 boxShadow: isASelected
                                     ? [
-                                  BoxShadow(
-                                    color: Colors.red, // Change to your highlight color
-                                    blurRadius: 10.0,
-                                    spreadRadius: 1.0,
-                                  ),
-                                ]
+                                        BoxShadow(
+                                          color: Colors
+                                              .red, // Change to your highlight color
+                                          blurRadius: 10.0,
+                                          spreadRadius: 1.0,
+                                        ),
+                                      ]
                                     : isBSelected
-                                    ? [
-                                  BoxShadow(
-                                    color: Colors.red, // Change to your highlight color
-                                    blurRadius: 10.0,
-                                    spreadRadius: 1.0,
-                                  ),
-                                ]
-                                    : [],
+                                        ? [
+                                            BoxShadow(
+                                              color: Colors
+                                                  .red, // Change to your highlight color
+                                              blurRadius: 10.0,
+                                              spreadRadius: 1.0,
+                                            ),
+                                          ]
+                                        : [],
                               ),
                               child: Text(
                                 index == 0 ? 'A' : 'B >',
@@ -310,9 +314,9 @@ class _MediaGridState extends State<MediaGrid> {
     var result = await PhotoManager.requestPermissionExtend();
     if (result != null) {
       List<AssetPathEntity> albums =
-      await PhotoManager.getAssetPathList(onlyAll: true);
+          await PhotoManager.getAssetPathList(onlyAll: true);
       List<AssetEntity> media =
-      await albums[0].getAssetListPaged(page: currentPage, size: 80);
+          await albums[0].getAssetListPaged(page: currentPage, size: 80);
       List<Widget> temp = [];
       for (var asset in media) {
         temp.add(
@@ -322,8 +326,8 @@ class _MediaGridState extends State<MediaGrid> {
             },
             child: FutureBuilder<Uint8List?>(
               future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-              builder: (BuildContext context,
-                  AsyncSnapshot<Uint8List?> snapshot) {
+              builder:
+                  (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
                     return Stack(
@@ -338,8 +342,7 @@ class _MediaGridState extends State<MediaGrid> {
                           Align(
                             alignment: Alignment.bottomRight,
                             child: Padding(
-                              padding:
-                              EdgeInsets.only(right: 5, bottom: 5),
+                              padding: EdgeInsets.only(right: 5, bottom: 5),
                               child: Icon(
                                 Icons.videocam,
                                 color: Colors.white,
@@ -378,7 +381,7 @@ class _MediaGridState extends State<MediaGrid> {
       child: GridView.builder(
         itemCount: _mediaList.length,
         gridDelegate:
-        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         itemBuilder: (BuildContext context, int index) {
           return _mediaList[index];
         },
@@ -386,4 +389,3 @@ class _MediaGridState extends State<MediaGrid> {
     );
   }
 }
-

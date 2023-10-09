@@ -77,7 +77,7 @@ class _ProfileState extends State<Profile> {
                             color: Colors.red.shade100,
                             borderRadius: BorderRadius.circular(25),
                             image: DecorationImage(
-                                image: CachedNetworkImageProvider('https://citsapps.com/social-backend-laravel/storage/app/images/battle/amber1.jpeg') ,
+                                image: CachedNetworkImageProvider('$profileUrl/bang_logo.jpg') ,
                               fit: BoxFit.cover,
                             )),
                     child: rimage != null
