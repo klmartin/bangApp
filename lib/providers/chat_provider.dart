@@ -41,7 +41,7 @@ class Conversation {
       isActive: json['isActive'],
       receiverId: json['receiver_id'],
       unreadCount: json['unreadCount'],
-        messageType: json['messageType'],
+        messageType: "text",
     );
   }
 }
