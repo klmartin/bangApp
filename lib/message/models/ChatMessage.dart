@@ -2,12 +2,11 @@ enum ChatMessageType { text, audio, image, video }
 enum MessageStatus { not_sent, not_view, viewed }
 
 class ChatMessage {
-    final int id;
+  final int id;
   final String text;
   final ChatMessageType messageType;
   final MessageStatus messageStatus;
   final bool isSender;
-
   final int isReady ;
 
   ChatMessage({
@@ -17,6 +16,7 @@ class ChatMessage {
     required this.messageStatus,
     required this.isSender,
      required this.isReady,
+
   });
 }
 

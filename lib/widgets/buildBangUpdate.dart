@@ -84,7 +84,7 @@ Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeC
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
               UserProfile(
-                url: logoUrl,
+                url: 'https://bangapp.pro/BangAppBackend/storage/app/bangInspiration/bang_logo.jpg',
                 size: 40),
                 SizedBox(width:5),
                 Text('Bang App', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14,color: Colors.white)),

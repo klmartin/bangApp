@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
-import '../screens/Widgets/small_box.dart';
+import '../providers/BoxDataProvider.dart';
 
 class Service {
   Future<List<dynamic>> getPosts() async {
@@ -18,7 +18,7 @@ class Service {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/sendUserNotification'),
+            '$baseUrl/sendUserNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -42,13 +42,13 @@ class Service {
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     print(body);
-    String addimageUrl = '$baseUrl/imageaddWithResponse';
+    String addimageUrl = '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
-      print("this is video response");
+
 
       print(response.body);
       if (response.statusCode == 201) {
@@ -59,7 +59,7 @@ class Service {
             print(response2['data']);
 
         } else {
-print("No response.........");
+          print("No response.........");
         }
 
 
@@ -133,18 +133,20 @@ Future<Map<String, dynamic>> getCurrentUser() async {
     }
   }
 
-Future<Map<String, dynamic>> getPostInfo(postId) async {
+Future<List<dynamic>> getPostInfo(postId) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('user_id');
-    final response = await http.get(Uri.parse('$baseUrl/getPostInfo/$userId/$postId'));
-    return json.decode(response.body);
+    final response = await http.get(Uri.parse('$baseUrl/getPostInfo/$postId'));
+    print(response.body);
+    return jsonDecode(response.body);
   }
 
 
 
   Future<void> likeAction(postId, likeType,userId) async {
     try {
+      print([likeType,postId]);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/likePost'),
@@ -161,7 +163,8 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
         if(responseData['message']=='Post liked successfully'){
           var name = prefs.getString('name');
           var body = "$name has Liked your post";
-          this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like',postId);
+          print(this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like',postId));
+
         }
         print(postId);
       } else {
@@ -209,7 +212,6 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
       final response = await http.get(
         Uri.parse('$baseUrl/getComments/$postId'),
       );
-      print('$baseUrl/getComments/$postId');
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['comments'];
@@ -290,7 +292,6 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
        );
       var name = prefs.getString('name');
       var body = "$name has Commented on your post";
-      this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'comment',postId);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -301,6 +302,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
   Future postUpdateComment(postId, commentText) async {
                     print(Uri.parse('$baseUrl/postUpdateComment'));
                     print(postId);
+
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -322,6 +324,8 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
 
   Future postBattleComment(postId, commentText) async {
     try {
+        print(postId);
+        print( Uri.parse('$baseUrl/postBattleComment'));
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -332,6 +336,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
           'body': commentText,
         },
       );
+      print(response.body);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -341,10 +346,10 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
 
   Future deletePost(postId) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.delete(
         Uri.parse('$baseUrl/deletePost/$postId'),
       );
+      print([response,postId]);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -370,7 +375,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
   Future sendTokenToBackend(token, id) async {
     try {
       final response = await http.post(
-        Uri.parse('https://bangapp.pro/BangAppBackend/api/storeToken'),
+        Uri.parse('$baseUrl/storeToken'),
         body: {
           'user_id': id.toString(),
           'device_token': token,
@@ -387,7 +392,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
   Future<String> sendNotification(userId, name, body, challengeId ) async {
     try {
       final response = await http.post(
-        Uri.parse('https://bangapp.pro/BangAppBackend/api/sendNotification'),
+        Uri.parse('$baseUrl/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -412,7 +417,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://bangapp.pro/BangAppBackend/api/sendUserNotification'),
+            '$baseUrl/sendUserNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -439,7 +444,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
     String addimageUrl =
-        'https://bangapp.pro/BangAppBackend/api/setUserProfile';
+        '$baseUrl/setUserProfile';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(username)
       ..fields.addAll(user_id as Map<String, String>)
@@ -459,26 +464,27 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
     }
   }
 
-  Future<List<BoxData>> getBangBattle() async {
+  Future<List<BoxData2>> getBangBattle() async {
     var response = await http
-        .get(Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle'));
+        .get(Uri.parse('$baseUrl/getBangBattle'));
     var data = json.decode(response.body)['data'];
 
-    List<BoxData> boxes = [];
+    List<BoxData2> boxes = [];
     for (var item in data) {
-      boxes.add(BoxData.fromJson(item));
+      boxes.add(BoxData2.fromJson(item));
     }
 
     return boxes;
   }
 
-  Future<void> likeBattle(postId) async {
+  Future<void> likeBattle(postId,type) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('https://bangapp.pro/BangAppBackend/api/likePost'),
+        Uri.parse('$baseUrl/likeBangBattle'),
         body: {
-          'post_id': postId.toString(),
+          'battle_id': postId.toString(),
+          'like_type': type,
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         },
       );
@@ -502,7 +508,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
   Future<List<ChatMessage>> getMessage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse('https://bangapp.pro/BangAppBackend/api/getMessages'),
+      Uri.parse('$baseUrl/getMessages'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
       },
@@ -525,7 +531,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
   Future<List<ChatMessage>> getMessages(userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse('https://bangapp.pro/BangAppBackend/api/getMessagesFromUser'),
+      Uri.parse('$baseUrl/getMessagesFromUser'),
       body: {
         'other_user_id': userId,
         'user_id': prefs.getInt('user_id').toString(),
@@ -547,7 +553,7 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
   Future<void> sendMessage(receiverId, String message) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse('https://bangapp.pro/BangAppBackend/api/sendMessage'),
+      Uri.parse('$baseUrl/sendMessage'),
       body: {
         'user_id': prefs.getInt('user_id').toString(),
         'receiver_id': receiverId.toString(),
@@ -575,6 +581,32 @@ Future<Map<String, dynamic>> getPostInfo(postId) async {
       });
     } else {
       throw Exception('Failed to load current user');
+    }
+  }
+
+  Future<int> fetchNotificationCount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id');
+    final url = Uri.parse('$baseUrl/getNotificationCount/$userId');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+
+        if (jsonResponse.containsKey('notification_count')) {
+          final notificationCount = jsonResponse['notification_count'];
+          return notificationCount;
+        } else {
+          // If the 'notification_count' key is not present in the JSON response
+          return 0; // Or handle this case as needed
+        }
+      } else {
+        // If the request was not successful (e.g., 404, 500, etc.)
+        return 0; // Or handle this case as needed
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      return 0; // Or handle this case as needed
     }
   }
 

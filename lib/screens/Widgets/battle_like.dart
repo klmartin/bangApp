@@ -38,7 +38,7 @@ class _BattleLikeState extends State<BattleLike> {
   }
 
   _handleLikeTap(type) {
-    Service().likeBattle(widget.battleId);
+    Service().likeBattle(widget.battleId,type);
     setState(() {
       if (type == 'A') {
         battleALike = !battleALike;
@@ -107,7 +107,7 @@ class _BattleLikeState extends State<BattleLike> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BattleComment(postId: widget.battleId, userId: 1),
+                      builder: (context) => BattleComment(postId: widget.battleId, ),
                     ),
                   );
                 },

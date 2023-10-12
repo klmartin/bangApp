@@ -110,7 +110,9 @@ class PostItem2 extends StatelessWidget {
         ),
         child: Column(
           children: [
-            postOptions(context, userId, image, name,followerCount,image,postId,userId,type,createdAt ) ?? Container(),
+            postOptions(context, userId, image, name, followerCount, image,
+                    postId, userId, type, createdAt) ??
+                Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
               child: Row(
@@ -231,7 +233,7 @@ class PostItem2 extends StatelessWidget {
                               context,
                               listen: false);
                           countUpdate.increaseLikes2(postId, 1);
-                          Service().likeAction(postId, "A",userId);
+                          Service().likeAction(postId, "A", userId);
                         },
                         child: isLikedA
                             ? Icon(CupertinoIcons.heart_fill,
@@ -281,7 +283,7 @@ class PostItem2 extends StatelessWidget {
                                   context,
                                   listen: false);
                               countUpdate.increaseLikes2(postId, 2);
-                              Service().likeAction(postId, "B",userId);
+                              Service().likeAction(postId, "B", userId);
                             },
                             child: isLikedB
                                 ? Icon(CupertinoIcons.heart_fill,
@@ -292,110 +294,14 @@ class PostItem2 extends StatelessWidget {
                           Text("${likeCountB.toString()} Likes")
                         ],
                       )
-
                     ],
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 5),
             if (caption != null)
-            ReadMoreText(
-              caption,
-              trimLines: 2,
-              style: Theme.of(context).textTheme.bodyLarge!,
-              colorClickableText: Theme.of(context).primaryColor,
-              trimMode: TrimMode.line,
-              trimCollapsedText: '...Show more',
-              trimExpandedText: '...Show less',
-              userName: name,
-              moreStyle: TextStyle(
-                fontSize: 15,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-            Text("$commentCount comments"),
-
-
-            const SizedBox(height: 20),
-          ],
-        ),
-      );
-    } else if (challengeImg == null && challenges.isEmpty) {
-      return Container(
-          decoration: const BoxDecoration(
-            color: Color.fromARGB(1, 30, 34, 45),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              postOptions(context, userId, image, name,followerCount,image,postId,userId,type,createdAt) ?? Container(),
-              AspectRatio(
-                aspectRatio: width / height,
-                child: buildMediaWidget(
-                    context, image, type, width, height, isPinned),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(width: 280),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) {
-                          //   return CommentDemo(
-                          //     postId,
-                          //     myProvider,
-                          //   );
-                          return CommentsPage(
-                            userId: userId,
-                            postId: postId,
-                            myProvider: myProvider,
-                          );
-                        },
-                      ));
-                    },
-                    child: const Icon(
-                      CupertinoIcons.chat_bubble,
-                      color: Colors.black,
-                      size: 25,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    // child:LikeButton(likeCount:0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
-                    child: Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            final countUpdate = Provider.of<PostsProvider>(
-                                context,
-                                listen: false);
-                            countUpdate.increaseLikes(postId);
-                            Service().likeAction(postId, "A",userId);
-                          },
-                          child: isLiked
-                              ? Icon(CupertinoIcons.heart_fill,
-                                  color: Colors.red, size: 25)
-                              : Icon(CupertinoIcons.heart,
-                                  color: Colors.red, size: 25),
-                        ),
-                        Text(
-                          "$likeCountA likes",
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              if (caption != null) const SizedBox(height: 16),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.only(left: 12, top: 2),
                 child: ReadMoreText(
                   caption,
                   trimLines: 2,
@@ -411,15 +317,116 @@ class PostItem2 extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
+            Text("$commentCount comments"),
+
+            const SizedBox(height: 10),
+          ],
+        ),
+      );
+    } else if (challengeImg == null && challenges.isEmpty) {
+      return Container(
+        decoration: const BoxDecoration(
+          color: Color.fromARGB(1, 30, 34, 45),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            postOptions(context, userId, image, name, followerCount, image,
+                    postId, userId, type, createdAt) ??
+                Container(),
+            AspectRatio(
+              aspectRatio: width / height,
+              child: buildMediaWidget(
+                  context, image, type, width, height, isPinned),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                    padding: EdgeInsets.only(left: 10),
+                  width: MediaQuery.of(context).size.width * 0.82,
+                  child: ReadMoreText(
+                    caption,
+                    trimLines: 2,
+                    style: Theme.of(context).textTheme.bodyLarge!,
+                    colorClickableText: Theme.of(context).primaryColor,
+                    trimMode: TrimMode.line,
+                    trimCollapsedText: '...Show more',
+                    trimExpandedText: '...Show less',
+                    userName: name,
+                    moreStyle: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+                Container(
+                    padding: EdgeInsets.only(right: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return CommentsPage(
+                                    userId: userId,
+                                    postId: postId,
+                                    myProvider: myProvider,
+                                  );
+                                },
+                              ));
+                            },
+                            child: const Icon(
+                              CupertinoIcons.chat_bubble,
+                              color: Colors.black,
+                              size: 25,
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  final countUpdate =
+                                      Provider.of<PostsProvider>(context,
+                                          listen: false);
+                                  countUpdate.increaseLikes(postId);
+                                  Service().likeAction(postId, "A", userId);
+                                },
+                                child: isLiked
+                                    ? Icon(CupertinoIcons.heart_fill,
+                                        color: Colors.red, size: 25)
+                                    : Icon(CupertinoIcons.heart,
+                                        color: Colors.red, size: 25),
+                              ),
+                              Text(
+                                "$likeCountA likes",
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Container(
               margin: EdgeInsets.only(left: 15),
               child: Text("$commentCount comments"),
             ),
-              const SizedBox(height: 20),
-            ],
-          ));
-    }
-    else if (challengeImg == null && challenges.isNotEmpty) {
+            const SizedBox(height: 20),
+          ],
+        ),
+      );
+    } else if (challengeImg == null && challenges.isNotEmpty) {
       return Container(
           decoration: const BoxDecoration(
             color: Color.fromARGB(1, 30, 34, 45),
@@ -427,7 +434,9 @@ class PostItem2 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              postOptions(context, userId, image, name,followerCount,image,postId,userId,type,createdAt) ?? Container(),
+              postOptions(context, userId, image, name, followerCount, image,
+                      postId, userId, type, createdAt) ??
+                  Container(),
               SizedBox(
                 height: 400,
                 child: PageView.builder(
@@ -472,24 +481,24 @@ class PostItem2 extends StatelessWidget {
                   ),
                 ],
               ),
-              if (caption != null) const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: ReadMoreText(
-                  caption,
-                  trimLines: 2,
-                  style: Theme.of(context).textTheme.bodyLarge!,
-                  colorClickableText: Theme.of(context).primaryColor,
-                  trimMode: TrimMode.line,
-                  trimCollapsedText: '...Show more',
-                  trimExpandedText: '...Show less',
-                  userName: name,
-                  moreStyle: TextStyle(
-                    fontSize: 15,
-                    color: Theme.of(context).primaryColor,
+              if (caption != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ReadMoreText(
+                    caption,
+                    trimLines: 2,
+                    style: Theme.of(context).textTheme.bodyLarge!,
+                    colorClickableText: Theme.of(context).primaryColor,
+                    trimMode: TrimMode.line,
+                    trimCollapsedText: '...Show more',
+                    trimExpandedText: '...Show less',
+                    userName: name,
+                    moreStyle: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                 ),
-              ),
               const SizedBox(height: 20),
             ],
           ));

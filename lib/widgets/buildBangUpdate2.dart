@@ -11,14 +11,33 @@ import '../screens/Comments/updateComment.dart';
 import '../services/animation.dart';
 
 Widget? buildBangUpdate2(BuildContext context, bangUpdate, index) {
+    if (index==0){
+         Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(color: Colors.black),
+            child: Text(
+              "Chemba ya Umbea".toUpperCase(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 4,
+                fontStyle: FontStyle.italic,
+              ),
+            ));
+    }
+
   if (bangUpdate.type == 'image') {
     return Column(
       children: [
+        SizedBox(height: 150),
         Stack(
           children: [
             Center(
               child: Container(
-                
+
                 height: 400,
                 width: double.infinity,
                 child: CachedNetworkImage(

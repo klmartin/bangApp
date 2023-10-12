@@ -1,15 +1,12 @@
 
 import 'package:bangapp/custom_appbar.dart';
-import 'package:bangapp/inspiration/inspirations.dart';
-import 'package:bangapp/message/screens/chats/chats_screen.dart';
+import 'package:bangapp/services/service.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Home/home3.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
-import 'package:bangapp/screens/blog/blog_home.dart';
 import 'screens/Activity/activity_page.dart';
 import 'package:bangapp/screens/Home/Home2.dart';
 import 'screens/Create/create_page.dart';
@@ -42,14 +39,9 @@ class _NavState extends State<Nav> {
 
   List<Widget> _widgetOptions = [
     Home2(),
-    // ChatsScreen(),
-    // ChatsScreen(),
-    // ChatPage(),
     BangUpdates2(),
     Create(),
     Activity(),
-    // BangInspiration(),
-    // Activity(),
     Profile(),
   ];
 
@@ -64,7 +56,7 @@ class _NavState extends State<Nav> {
     ));
 
     return Scaffold(
-        appBar: CustomAppBar(title: 'BangApp', context: context,),
+        appBar: _isAppBarEnabled ? CustomAppBar(title: 'BangApp', context: context,): null,
 
     //   appBar: _isAppBarEnabled // Conditionally show/hide app bar
     //       ? AppBar(
@@ -152,9 +144,41 @@ class _NavState extends State<Nav> {
             color: Colors.black,
             size: 25.0,
           ),
-          FaIcon(
-            FontAwesomeIcons.heart,
-            size: 25.0,
+          Stack(
+            children:[
+              FaIcon(
+              FontAwesomeIcons.heart,
+              size: 25.0),
+              FutureBuilder<int>(
+                future: Service().fetchNotificationCount(), // Pass the user ID as an argument
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                    // Use the notification count obtained from the API in the child widget.
+                    final notificationCount = snapshot.data ?? 0;
+                    return Positioned(
+                      left: 5,
+                      top: 10,
+                      child: Container(
+                        height: 15,
+                        width: 15,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            notificationCount.toString(),
+                            textAlign: TextAlign.center,
+
+                            style: TextStyle(color: Colors.white,fontSize: 8),
+                          ),
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    );
+                  }
+              )
+
+            ],
           ),
           Icon(
             Icons.person_outline,

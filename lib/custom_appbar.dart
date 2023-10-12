@@ -32,8 +32,8 @@ class CustomAppBar extends AppBar {
                 );
               },
               child: CachedNetworkImage(
-                  height: 10,
-                  width: 33,
+                  height: 8,
+                  width: 25,
                   imageUrl:
                       "https://img.icons8.com/fluency-systems-regular/48/chat-message.png"),
             ),
