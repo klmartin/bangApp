@@ -276,8 +276,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(width: 10),
                       //apple button
                       SquareTile(
+                          imagePath: 'assets/images/apple.png',
                           onTap: () => AuthService().signInWithGoogle(),
-                          imagePath: 'assets/images/apple.jpg'),
+                          ),
 
                     ],
                   ),

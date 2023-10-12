@@ -2,6 +2,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../components/square_tiles.dart';
+import '../../services/auth_services.dart';
 import 'login_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:http/http.dart' as http;
@@ -536,6 +538,28 @@ class _RegisterState extends State<Register> {
 
 
              // ),
+
+              const SizedBox(height: 50),
+              //google + apple sign in buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //google button
+                  SquareTile(
+                    imagePath: 'assets/images/google.png',
+                    onTap: () => AuthService().signInWithGoogle(),),
+
+                  const SizedBox(width: 10),
+                  //apple button
+                  SquareTile(
+                    imagePath: 'assets/images/apple.png',
+                    onTap: () => AuthService().signInWithGoogle(),
+                  ),
+
+                ],
+              ),
+
+              const SizedBox(height: 50),
 
 
               MaterialButton(
