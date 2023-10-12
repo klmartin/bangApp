@@ -191,7 +191,7 @@ class _EditPageState extends State<EditPage> {
                           print("pressed");
                         },
                         child: Text(
-                          'Edit',
+                          'Update',
                           style: TextStyle(
                             color: Colors.white,
                           ),
