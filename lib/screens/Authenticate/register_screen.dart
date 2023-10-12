@@ -417,70 +417,89 @@ class _RegisterState extends State<Register> {
                           showSpinner = true;
                         });
 
+                        if (password == confirmPassword) {
+                          try {
+                            print('this is data');
+                            //print(date_of_birth.toString());
+                            //print(json.encode(selectedHobbyIds).runtimeType);
 
 
-                        try {
-                          print('this is data');
-                          //print(date_of_birth.toString());
-                          //print(json.encode(selectedHobbyIds).runtimeType);
-                          final response = await http.post(
-                            Uri.parse('$baseUrl/v1/register'),
-                            body: {
-                              'email': email,
-                              'name':name,
-                              //'date_of_birth':date_of_birth.toString(),
-                              //'phone_number':phoneNumber,
-                              'password': password,
-                              //'occupation':occupation,
-                              //'hobbies':json.encode(selectedHobbyIds)
-                            },
-                          );
-                          final responseBody = jsonDecode(response.body);
-                          // Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
-                          if (responseBody != null) {
-                            if (responseBody.containsKey('errors')) {
-                              setState(() {
-                                showSpinner = false;
-                              });
-                              // There are validation errors
-                              final errors = responseBody['errors'];
-                              String errorMessage = '';
-                              // Iterate through the error messages and concatenate them into a single string
-                              errors.forEach((key, value) {
-                                errorMessage += value[0] + '\n';
-                              });
-                              // Display a toast message with the error
-                              Fluttertoast.showToast(
-                                msg: errorMessage,
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.CENTER,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                              );
+                            final response = await http.post(
+                              Uri.parse('$baseUrl/v1/register'),
+                              body: {
+                                'email': email,
+                                'name': name,
+                                //'date_of_birth':date_of_birth.toString(),
+                                //'phone_number':phoneNumber,
+                                'password': password,
+                                //'occupation':occupation,
+                                //'hobbies':json.encode(selectedHobbyIds)
+                              },
+                            );
+                            final responseBody = jsonDecode(response.body);
+                            // Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
+                            if (responseBody != null) {
+                              if (responseBody.containsKey('errors')) {
+                                setState(() {
+                                  showSpinner = false;
+                                });
+                                // There are validation errors
+                                final errors = responseBody['errors'];
+                                String errorMessage = '';
+                                // Iterate through the error messages and concatenate them into a single string
+                                errors.forEach((key, value) {
+                                  errorMessage += value[0] + '\n';
+                                });
+                                // Display a toast message with the error
+                                Fluttertoast.showToast(
+                                  msg: errorMessage,
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.CENTER,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                );
+                              }
+                              else {
+                                _firebaseMessaging.getToken().then((
+                                    token) async {
+                                  Service().sendTokenToBackend(
+                                      token, responseBody['id']);
+                                });
+                                SharedPreferences prefs = await SharedPreferences
+                                    .getInstance();
+                                prefs.setInt('user_id', responseBody['id']);
+                                prefs.setString(
+                                    'token', responseBody['access_token']);
+                                prefs.setString('name', responseBody['name']);
+                                prefs.setString('email', responseBody['name']);
+                                Navigator.pushReplacement(
+                                    context, MaterialPageRoute(
+                                  builder: (context) => EditPage(),
+                                ));
+                              }
                             }
-                            else{
-                              _firebaseMessaging.getToken().then((token) async {
-                                Service().sendTokenToBackend(token,responseBody['id']);
-                              });
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              prefs.setInt('user_id', responseBody['id']);
-                              prefs.setString('token', responseBody['access_token']);
-                              prefs.setString('name', responseBody['name']);
-                              prefs.setString('email', responseBody['name']);
-                              Navigator.pushReplacement(context, MaterialPageRoute(
-                                builder: (context) => EditPage(),
-                              ));
-                            }
-
                           }
-                        }
-                        //Implement login functionality.
-                        catch (e) {
-                          print(e);
-                        } finally {
+                          //Implement login functionality.
+                          catch (e) {
+                            print(e);
+                          } finally {
+                            showSpinner = false;
+                          }
+                        }else{
+
+                          Fluttertoast.showToast(
+                            msg: "Password and Confirm Password do not Match",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.CENTER,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+
+
+                          );
                           showSpinner = false;
+
                         }
-                        //print(phoneNumber); print(password);
+                          //print(phoneNumber); print(password);
                         },
                       minWidth: 200.0,
                       height: 42.0,

@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bangapp/models/userprovider.dart';
 import 'package:provider/provider.dart';
+import '../../components/square_tiles.dart';
 import '../../constants/urls.dart';
 import '../../nav.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/screens/Authenticate/register_screen.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+
+import '../../services/auth_services.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login';
@@ -229,6 +232,61 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(20.0)),
                     ),
                   ),
+
+
+                  const SizedBox(height: 50),
+
+                  //or continue with
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child:  Text('Or continue with',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),),
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 50),
+                  //google + apple sign in buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //google button
+                      SquareTile(
+                        imagePath: 'assets/images/google.png',
+                        onTap: () => AuthService().signInWithGoogle(),),
+
+                      const SizedBox(width: 10),
+                      //apple button
+                      SquareTile(
+                          onTap: () => AuthService().signInWithGoogle(),
+                          imagePath: 'assets/images/apple.jpg'),
+
+                    ],
+                  ),
+
+                  const SizedBox(height: 50),
+
+
+
+
                   MaterialButton(
                     onPressed: () {
                       Navigator.push(

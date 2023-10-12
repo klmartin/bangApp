@@ -100,7 +100,13 @@ class _WelcomeState extends State<Welcome> {
                       onPressed: () {
                         Navigator.pushNamed(context, Register.id);
                       },
-                      child: Text('Sign up with Email')),
+                      child: Text('Sign Up',
+                        style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      ),
+                  ),
                   SizedBox(
                     height: 80.0,
                   ),

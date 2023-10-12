@@ -80,6 +80,7 @@ dependencies:
   emoji_regex: ^0.0.5
   timeago: ^3.5.0
   onesignal_flutter: ^5.0.2
+  google_sign_in: ^6.1.5
 
 dev_dependencies:
   flutter_test:
