@@ -102,9 +102,15 @@ class _UploadProfileState extends State<UploadProfile> {
                     decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.purple,
+
+                        Colors.deepOrange,
                         Colors.deepPurple,
-                        Colors.blueAccent
+                        Colors.redAccent
+
+                       /* Colors.purple,
+                        Colors.deepPurple,
+                        Colors.blueAccent*/
+
                       ],
                       begin: Alignment.bottomRight,
                       end: Alignment.topLeft,

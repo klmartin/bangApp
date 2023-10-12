@@ -191,7 +191,7 @@ class _EditPageState extends State<EditPage> {
                           print("pressed");
                         },
                         child: Text(
-                          'Done',
+                          'Edit',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -200,9 +200,15 @@ class _EditPageState extends State<EditPage> {
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.purple,
+
+                          Colors.deepOrange,
                           Colors.deepPurple,
-                          Colors.blueAccent
+                          Colors.redAccent
+
+
+                          /*Colors.purple,
+                          Colors.deepPurple,
+                          Colors.blueAccent*/
                         ],
                         begin: Alignment.bottomRight,
                         end: Alignment.topLeft,
