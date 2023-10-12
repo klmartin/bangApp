@@ -20,6 +20,12 @@ class _WelcomeState extends State<Welcome> {
             SizedBox(
               height: 50,
             ),
+
+            Image.asset(
+              "images/app_icon.jpg",
+              height: 60,
+            ),
+
             Center(
               child: Hero(
                 tag: 'logo',
@@ -29,9 +35,13 @@ class _WelcomeState extends State<Welcome> {
                       color: Colors.black,
                       fontSize: 70.0,
                       fontWeight: FontWeight.w500,
-                    )),
+                    ),
+                ),
               ),
+
+
             ),
+
             Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -54,9 +64,9 @@ class _WelcomeState extends State<Welcome> {
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.purple,
+                              Colors.deepOrange,
                               Colors.deepPurple,
-                              Colors.blueAccent
+                              Colors.redAccent
                             ],
                             begin: Alignment.bottomRight,
                             end: Alignment.topLeft,

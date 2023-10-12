@@ -51,7 +51,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 100,
                   ),
                   Center(
-                    child: Hero(
+
+                    child: Image.asset(
+                      "images/app_icon.jpg",
+                      height: 60,
+                    ),
+                    /*child: Hero(
                       tag: 'logo',
                       child: Text('Bang App',
                           style: TextStyle(
@@ -60,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontSize: 50.0,
                             fontWeight: FontWeight.w500,
                           )),
-                    ),
+                    ),*/
                   ),
                   SizedBox(
                     height: 100.0,
