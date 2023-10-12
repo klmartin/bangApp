@@ -215,9 +215,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.purple,
+                              /*Colors.purple,
                               Colors.deepPurple,
-                              Colors.blueAccent
+                              Colors.blueAccent*/
+
+                              Colors.deepOrange,
+                              Colors.deepPurple,
+                              Colors.redAccent
                             ],
                             begin: Alignment.bottomRight,
                             end: Alignment.topLeft,
@@ -234,7 +238,26 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       );
                     },
-                    child: Text('Sign up with Email'),
+                    //child: Text('Sign Up', style: TextStyle(color: Colors.indigo)),
+
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Not a member?',
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                        const SizedBox(width: 4),
+                        const Text(
+                          'SignUp',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ],
+                    ),
+
                   )
                 ],
               ),

@@ -346,7 +346,7 @@ class _RegisterState extends State<Register> {
                   //Do something with the user input.
                 },
                 decoration: InputDecoration(
-                  hintText: 'Enter a 6 digit password',
+                  hintText: 'Enter a password',
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                   border: OutlineInputBorder(
@@ -402,7 +402,7 @@ class _RegisterState extends State<Register> {
 
               Container(
 
-                child: Padding(
+               /* child: Padding(
 
                   padding: EdgeInsets.symmetric(vertical: 16.0),
 
@@ -410,7 +410,7 @@ class _RegisterState extends State<Register> {
 
                     color: Colors.redAccent,
                     borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                    elevation: 5.0,
+                    elevation: 5.0,*/
                     child: MaterialButton(
                       onPressed: () async {
                         setState(() {
@@ -492,16 +492,60 @@ class _RegisterState extends State<Register> {
                         ),
 
                       ),
+
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        /*Colors.purple,
+                              Colors.deepPurple,
+                              Colors.blueAccent*/
+
+                        Colors.deepOrange,
+                        Colors.deepPurple,
+                        Colors.redAccent
+                      ],
+                      begin: Alignment.bottomRight,
+                      end: Alignment.topLeft,
                     ),
-                  ),
-              ),
+                    borderRadius: BorderRadius.circular(20.0)),
+                    ),
+
+
+
+
+                 // ),
+
+
+             // ),
 
 
               MaterialButton(
                   onPressed: () {
                     Navigator.pushNamed(context, LoginScreen.id);
                   },
-                  child: Text('Already have an account... Sign In')),
+                  //child: Text('Already have an account Sign In')
+
+
+
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Already have an account?',
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text(
+                    'Login',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+
+              ),
             ],
           ),
         ),
