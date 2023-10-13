@@ -1,4 +1,5 @@
 import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/screens/Home/Home2.dart';
 import  'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import 'package:bangapp/services/service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
 
 late String? _name;
 late String? _descr;
@@ -60,20 +62,67 @@ class _EditPageState extends State<EditPage> {
           child: Column(
             children: <Widget>[
               Center(
-                child: Container(
+
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    rimage != null
+                        ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+
+
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+
+                          child: Image.file(
+                            //to show image, you type like this.
+                            File(rimage!.path),
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
+
+                          ),
+                        ),
+                      ),
+                    )
+                        : Text(
+                      "No Image",
+                      style: TextStyle(fontSize: 20),
+                    ),
+
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UploadProfile()));
+                        },
+                        child: Text(
+                          'Change Profile photo',
+                          style: TextStyle(color: Colors.purple),
+                        ))
+                  ],
+                ),
+
+                /*child: Container(
                   child: Column(
                     // mainAxisAlignment: MainAxisAlignment.center,
                     // crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                     Container(
+
                       height: 100,
                       width: 100,
                       decoration: BoxDecoration(
                         color: Colors.red[100],
                         borderRadius: BorderRadius.circular(32),
+
                         image: DecorationImage(
                           image: rimage != null
-                              ? FileImage(rimage) as ImageProvider<Object> // Explicitly cast to ImageProvider<Object>
+                              ?  File(rimage!.path),
+
+                              //FileImage(rimage) as ImageProvider<Object> // Explicitly cast to ImageProvider<Object>
                               : CachedNetworkImageProvider(
                               'http://via.placeholder.com/200x150'),
                           fit: BoxFit.cover,
@@ -93,7 +142,7 @@ class _EditPageState extends State<EditPage> {
                           ))
                     ],
                   ),
-                ),
+                ),*/
               ),
               Container(
                 child: Column(
@@ -105,7 +154,7 @@ class _EditPageState extends State<EditPage> {
                     ),
                     TextField(
                       textAlign: TextAlign.center,
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.text,
                       onChanged: (value) {
                         _name = value;
                         //Do something with the user input.
@@ -186,7 +235,13 @@ class _EditPageState extends State<EditPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: TextButton(
                         onPressed: () async {
-                           //Service().setUserProfile(_name,_descr, rimage.toString());
+                           Service().setUserProfile(_name,_descr, rimage.toString());
+                           Navigator.push(
+                             context,
+                             MaterialPageRoute(
+                               builder: (context) => Home2(),
+                             ),
+                           );
                           print(rimage);
                           print("pressed");
                         },
