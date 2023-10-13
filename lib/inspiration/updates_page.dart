@@ -96,8 +96,8 @@ class _BangInspirationBuilderState extends State<BangInspirationBuilder> {
 
                       return VideoContainer(
                         inspirationVideoId: inspiration.id,
-                        videoLink:  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
-                        // videoLink: inspiration.videoUrl ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                        // videoLink:  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
+                        videoLink: inspiration.videoUrl ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
                         thumbnail:
                             inspiration.thumbnail ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
                         channelName: 'The Codeholic',

@@ -3,8 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../constants/urls.dart';
+
 // const url = "http://192.168.194.226/BangAppBackend/api/get/bangInspirations";
-final url = "http://192.168.137.226/BangAppBackend/api/get/bangInspirations";
+// final url = "http://192.168.137.226/BangAppBackend/api/get/bangInspirations";
 
 
 
@@ -20,7 +22,7 @@ class BangInspirationsProvider with ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse('$baseUrl/get/bangInspirations'));
       print(response.body);
 
       if (response.statusCode == 200) {
@@ -47,7 +49,7 @@ class BangInspirationsProvider with ChangeNotifier {
   }
 Future<BangInspiration?> getSingleVideo(int id) async {
     try {
-        final response = await http.get(Uri.parse('$url/$id'));
+        final response = await http.get(Uri.parse('$baseUrl/get/bangInspirations/$id'));
         if (response.statusCode == 200) {
             final dynamic data = jsonDecode(response.body);
             return BangInspiration.fromJson(data);
