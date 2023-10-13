@@ -53,9 +53,7 @@ class _UploadProfileState extends State<UploadProfile> {
                         source: ImageSource.gallery,
                       );
                       setState(() {
-                        if (image.path != null) {
-                          rimage = File(image.path);
-                        }
+                        rimage = File(image.path);
                       });
                       Navigator.pop(context,rimage);
                     },
@@ -86,9 +84,7 @@ class _UploadProfileState extends State<UploadProfile> {
                         source: ImageSource.camera,
                       );
                       setState(() {
-                        if (image.path != null) {
-                          rimage = File(image.path);
-                        }
+                        rimage = File(image.path);
                       });
                       Navigator.pop(context,rimage);
                     },
@@ -102,9 +98,15 @@ class _UploadProfileState extends State<UploadProfile> {
                     decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.purple,
+
+                        Colors.deepOrange,
                         Colors.deepPurple,
-                        Colors.blueAccent
+                        Colors.redAccent
+
+                       /* Colors.purple,
+                        Colors.deepPurple,
+                        Colors.blueAccent*/
+
                       ],
                       begin: Alignment.bottomRight,
                       end: Alignment.topLeft,

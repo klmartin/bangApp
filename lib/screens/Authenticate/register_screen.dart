@@ -1,7 +1,9 @@
-import 'dart:ffi';
+//import 'dart:ffi';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../components/square_tiles.dart';
+import '../../services/auth_services.dart';
 import 'login_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:http/http.dart' as http;
@@ -58,6 +60,7 @@ class _RegisterState extends State<Register> {
   //instance
   late String email;
   late String password;
+  late String confirmPassword;
   late String name;
   //late String phoneNumber;
   //late String occupation;
@@ -121,11 +124,23 @@ class _RegisterState extends State<Register> {
         inAsyncCall: showSpinner,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
+
           child: ListView(
+
             children: <Widget>[
+
+              SizedBox(
+                height: 100,
+              ),
               Center(
-                child: Hero(
+                child: Image.asset(
+                  "images/app_icon.jpg",
+                  height: 60,
+                ),
+                /*child: Hero(
+
                   tag: 'logo',
+
                   child: Text('Bang App',
                       style: TextStyle(
                         fontFamily: 'Billabong',
@@ -133,7 +148,7 @@ class _RegisterState extends State<Register> {
                         fontSize: 70.0,
                         fontWeight: FontWeight.w500,
                       )),
-                ),
+                ),*/
               ),
 
               SizedBox(
@@ -155,12 +170,12 @@ class _RegisterState extends State<Register> {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                    BorderSide(color: Colors.blueAccent, width: 1.0),
+                    BorderSide(color: Colors.purple, width: 1.0),
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                    BorderSide(color: Colors.blueAccent, width: 2.0),
+                    BorderSide(color: Colors.purple, width: 2.0),
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                 ),
@@ -277,12 +292,12 @@ class _RegisterState extends State<Register> {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Colors.blueAccent, width: 1.0),
+                        BorderSide(color: Colors.purple, width: 1.0),
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Colors.blueAccent, width: 2.0),
+                        BorderSide(color: Colors.purple, width: 2.0),
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                 ),
@@ -318,9 +333,13 @@ class _RegisterState extends State<Register> {
                 controller: TextEditingController(text: selectedHobbiesText),
                  // Show the selected hobbies in the TextField
               ),
+
+              */
+
               SizedBox(
                 height: 8.0,
-              ),*/
+              ),
+
               TextField(
                 obscureText: true,
                 textAlign: TextAlign.center,
@@ -329,7 +348,7 @@ class _RegisterState extends State<Register> {
                   //Do something with the user input.
                 },
                 decoration: InputDecoration(
-                  hintText: 'Enter a 6 digit password',
+                  hintText: 'Enter a password',
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                   border: OutlineInputBorder(
@@ -337,12 +356,12 @@ class _RegisterState extends State<Register> {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Colors.blueAccent, width: 1.0),
+                        BorderSide(color: Colors.purple, width: 1.0),
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Colors.blueAccent, width: 2.0),
+                        BorderSide(color: Colors.purple, width: 2.0),
                     borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                 ),
@@ -350,94 +369,226 @@ class _RegisterState extends State<Register> {
               SizedBox(
                 height: 24.0,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
-                child: Material(
-                  color: Colors.blueAccent,
-                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                  elevation: 5.0,
-                  child: MaterialButton(
-                    onPressed: () async {
-                      setState(() {
-                        showSpinner = true;
-                      });
-                      try {
-                        print('this is data');
-                        //print(date_of_birth.toString());
-                        //print(json.encode(selectedHobbyIds).runtimeType);
-                        final response = await http.post(
-                          Uri.parse('$baseUrl/v1/register'),
-                          body: {
-                            'email': email,
-                            'name':name,
-                            //'date_of_birth':date_of_birth.toString(),
-                            //'phone_number':phoneNumber,
-                            'password': password,
-                            //'occupation':occupation,
-                            //'hobbies':json.encode(selectedHobbyIds)
-                          },
-                        );
-                        final responseBody = jsonDecode(response.body);
-                        // Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
-                        if (responseBody != null) {
-                          if (responseBody.containsKey('errors')) {
-                            setState(() {
-                              showSpinner = false;
-                            });
-                            // There are validation errors
-                            final errors = responseBody['errors'];
-                            String errorMessage = '';
-                            // Iterate through the error messages and concatenate them into a single string
-                            errors.forEach((key, value) {
-                              errorMessage += value[0] + '\n';
-                            });
-                            // Display a toast message with the error
-                            Fluttertoast.showToast(
-                              msg: errorMessage,
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.CENTER,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.white,
-                            );
-                          }
-                          else{
-                            _firebaseMessaging.getToken().then((token) async {
-                              Service().sendTokenToBackend(token,responseBody['id']);
-                            });
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
-                            prefs.setInt('user_id', responseBody['id']);
-                            prefs.setString('token', responseBody['access_token']);
-                            prefs.setString('name', responseBody['name']);
-                            prefs.setString('email', responseBody['name']);
-                            Navigator.pushReplacement(context, MaterialPageRoute(
-                              builder: (context) => EditPage(),
-                            ));
-                          }
 
-                        }
-                      }
-                      //Implement login functionality.
-                      catch (e) {
-                        print(e);
-                      } finally {
-                        showSpinner = false;
-                      }
-                      //print(phoneNumber); print(password);
-                      },
-                    minWidth: 200.0,
-                    height: 42.0,
-                    child: Text(
-                      'Register',
-                      style: TextStyle(color: Colors.white),
-                    ),
+
+              //confirm password
+              TextField(
+                obscureText: true,
+                textAlign: TextAlign.center,
+                onChanged: (value) {
+                  confirmPassword = value;
+                  //Do something with the user input.
+                },
+                decoration: InputDecoration(
+                  hintText: 'Confirm password',
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.purple, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.purple, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
                   ),
                 ),
               ),
+              SizedBox(
+                height: 24.0,
+              ),
+
+              Container(
+
+               /* child: Padding(
+
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+
+                  child: Material(
+
+                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                    elevation: 5.0,*/
+                    child: MaterialButton(
+                      onPressed: () async {
+                        setState(() {
+                          showSpinner = true;
+                        });
+
+                        if (password == confirmPassword) {
+                          try {
+                            print('this is data');
+                            //print(date_of_birth.toString());
+                            //print(json.encode(selectedHobbyIds).runtimeType);
+
+
+                            final response = await http.post(
+                              Uri.parse('$baseUrl/v1/register'),
+                              body: {
+                                'email': email,
+                                'name': name,
+                                //'date_of_birth':date_of_birth.toString(),
+                                //'phone_number':phoneNumber,
+                                'password': password,
+                                //'occupation':occupation,
+                                //'hobbies':json.encode(selectedHobbyIds)
+                              },
+                            );
+                            final responseBody = jsonDecode(response.body);
+                            // Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
+                            if (responseBody != null) {
+                              if (responseBody.containsKey('errors')) {
+                                setState(() {
+                                  showSpinner = false;
+                                });
+                                // There are validation errors
+                                final errors = responseBody['errors'];
+                                String errorMessage = '';
+                                // Iterate through the error messages and concatenate them into a single string
+                                errors.forEach((key, value) {
+                                  errorMessage += value[0] + '\n';
+                                });
+                                // Display a toast message with the error
+                                Fluttertoast.showToast(
+                                  msg: errorMessage,
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.CENTER,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                );
+                              }
+                              else {
+                                _firebaseMessaging.getToken().then((
+                                    token) async {
+                                  Service().sendTokenToBackend(
+                                      token, responseBody['id']);
+                                });
+                                SharedPreferences prefs = await SharedPreferences
+                                    .getInstance();
+                                prefs.setInt('user_id', responseBody['id']);
+                                prefs.setString(
+                                    'token', responseBody['access_token']);
+                                prefs.setString('name', responseBody['name']);
+                                prefs.setString('email', responseBody['name']);
+                                Navigator.pushReplacement(
+                                    context, MaterialPageRoute(
+                                  builder: (context) => EditPage(),
+                                ));
+                              }
+                            }
+                          }
+                          //Implement login functionality.
+                          catch (e) {
+                            print(e);
+                          } finally {
+                            showSpinner = false;
+                          }
+                        }else{
+
+                          Fluttertoast.showToast(
+                            msg: "Password and Confirm Password do not Match",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.CENTER,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+
+
+                          );
+                          showSpinner = false;
+
+                        }
+                          //print(phoneNumber); print(password);
+                        },
+                      minWidth: 200.0,
+                      height: 42.0,
+
+                        child: Text(
+                          'Register',
+                          style: TextStyle(color: Colors.white),
+
+                        ),
+
+                      ),
+
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        /*Colors.purple,
+                              Colors.deepPurple,
+                              Colors.blueAccent*/
+
+                        Colors.deepOrange,
+                        Colors.deepPurple,
+                        Colors.redAccent
+                      ],
+                      begin: Alignment.bottomRight,
+                      end: Alignment.topLeft,
+                    ),
+                    borderRadius: BorderRadius.circular(20.0)),
+                    ),
+
+
+
+
+                 // ),
+
+
+             // ),
+
+              const SizedBox(height: 50),
+              //google + apple sign in buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //google button
+                  SquareTile(
+                    imagePath: 'assets/images/google.png',
+                    onTap: () => AuthService().signInWithGoogle(),),
+
+                  const SizedBox(width: 10),
+                  //apple button
+                  SquareTile(
+                    imagePath: 'assets/images/apple.png',
+                    onTap: () => AuthService().signInWithGoogle(),
+                  ),
+
+                ],
+              ),
+
+              const SizedBox(height: 50),
+
+
               MaterialButton(
                   onPressed: () {
                     Navigator.pushNamed(context, LoginScreen.id);
                   },
-                  child: Text('Already have an account... Sign In')),
+                  //child: Text('Already have an account Sign In')
+
+
+
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Already have an account?',
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text(
+                    'Login',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+
+              ),
             ],
           ),
         ),
@@ -445,3 +596,6 @@ class _RegisterState extends State<Register> {
     );
   }
 }
+
+
+
