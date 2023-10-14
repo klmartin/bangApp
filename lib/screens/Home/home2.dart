@@ -94,77 +94,31 @@ class _Home2ContentState extends State<Home2Content> {
       SmallBoxCarousel(),
 
         PostItem2(
-        post.postId,
-        post.userId,
-        post.name,
-        post.image,
-        post.challengeImg,
-        post.caption,
-        post.type,
-        post.width,
-        post.height,
-        post.likeCountA,
-        post.likeCountB,
-        post.commentCount,
-        post.followerCount,
-        post.challenges,
-        post.isLiked,
-        post.isPinned,
-        post.isLikedA,
-        post.isLikedB,
-        post.createdAt,
-        myProvider: postsProvider,
+          post.postId,
+          post.userId,
+          post.name,
+          post.image,
+          post.challengeImg,
+          post.caption,
+          post.type,
+          post.width,
+          post.height,
+          post.likeCountA,
+          post.likeCountB,
+          post.commentCount,
+          post.followerCount,
+          post.challenges,
+          post.isLiked,
+          post.isPinned,
+          post.isLikedA,
+          post.isLikedB,
+          post.createdAt,
+          myProvider: postsProvider,
         )
     ],
   );
 }
-        // int adjustedIndex = index - (index ~/ 8);
-        // if (adjustedIndex < 0 || adjustedIndex >= postsProvider.posts!.length) {
-        //   return const SizedBox(); // Return an empty widget if the index is out of bounds
-        // }
-        // if (index == 0 || (index >= 8 && (index - 8) % 8 == 0)) {
-        //   return Column(
-        //     children: [
-        //       SmallBoxCarousel(),
-        //       PostItem2(
-        //         post.postId,
-        //         post.userId,
-        //         post.name,
-        //         post.image,
-        //         post.challengeImg,
-        //         post.caption,
-        //         post.type,
-        //         post.width,
-        //         post.height,
-        //         post.likeCountA,
-        //         post.likeCountB,
-        //         post.commentCount,
-        //         post.followerCount,
-        //         post.challenges,
-        //         post.isLiked,
-        //         post.isPinned,
-        //         post.isLikedA,
-        //         post.isLikedB,
-        //         post.createdAt,
-        //         myProvider: postsProvider,
-        //       ),
-        //     ],
-        //   );
-        // } else {
-        //   if (adjustedIndex == postsProvider.posts!.length - postsProvider.nextPageTrigger) {
-        //     postsProvider.fetchData();
-        //   }
-        //   if (adjustedIndex == postsProvider.posts!.length) {
-        //     if (postsProvider.isError) {
-        //       return Center(
-        //         child: errorDialog(size: 15),
-        //       );
-        //     } else {
-        //       return const Center(
-        //         child: CircularProgressIndicator(),
-        //       );
-        //     }
-        //   }
+
 else{
 
   return PostItem2(
