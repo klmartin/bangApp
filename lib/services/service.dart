@@ -41,7 +41,8 @@ class Service {
 
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
-    print(body);
+    print('this is video');
+    print([body,filepath]);
     String addimageUrl = '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
