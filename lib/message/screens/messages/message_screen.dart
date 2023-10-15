@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bangapp/message/constants.dart';
 import 'package:bangapp/message/models/ChatMessage.dart';
@@ -14,11 +15,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
-
 
 import 'components/body.dart';
 
@@ -76,6 +75,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       _shouldAutoscroll = false;
     }
   }
+
 // http://137.184.33.100:3000/
   void connect() {
     socket = IO.io('ws://137.184.33.100:3000/', <String, dynamic>{
@@ -118,20 +118,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Future<void> _sendMessageToSocket(Map<String, dynamic> rawMessage) async {
     if (socket.connected) {
       try {
-        final participants = {
-          "participant1_id": await getUserId(),
-          "participant2_id": widget.receiverId,
-        };
-        socket.emit('join', participants);
+
         rawMessage['participant1_id'] = await getUserId();
         rawMessage['participant2_id'] = widget.receiverId;
-
-        rawMessage['participants'] = participants;
         rawMessage['is_read'] = 0;
         socket.emit('chat_message', rawMessage);
         print("Message sent via WebSocket");
-
-
       } catch (e) {
         print("Error sending message via WebSocket: $e");
       }
@@ -163,17 +155,26 @@ class _MessagesScreenState extends State<MessagesScreen> {
     });
   }
 
-  void _sendMessage(String messageText) async {
+  void _sendMessage(messageText, String messageType) async {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    chatProvider.sendMessage(context, await getUserId(), widget.receiverId,
+
+    if (messageType == "text") {
+        chatProvider.sendMessage(context, await getUserId(), widget.receiverId,
         messageText, chatProvider, socket);
+      print("huuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
+    } else {
+      chatProvider.sendImageMessage(context, await getUserId(),
+          widget.receiverId, File(messageText), chatProvider, socket);
+    }
+
     final rawMessage = {
       "id": 22222,
       "sender_id": await getUserId(),
       "message": messageText,
+      "message_type": messageType,
     };
-    _sendMessageToSocket(rawMessage);
-    setState((  ) {
+    // _sendMessageToSocket(rawMessage);
+    setState(() {
       if (_scrollController.hasClients && _shouldAutoscroll) {
         _scrollToBottom();
       }
@@ -184,8 +185,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
     });
   }
 
-  void markMessageAsReadHere(message) async{
-    if (message.isReady == 0  && message.senderId != await getUserId()) {
+  void markMessageAsReadHere(message) async {
+    if (message.isReady == 0 && message.senderId != await getUserId()) {
       print("Marking message as read");
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
       chatProvider.markMessageAsRead(message.id);
@@ -218,18 +219,22 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           // Use FutureBuilder to handle the asynchronous operation
                           future: userIdFuture,
                           builder: (context, userIdSnapshot) {
-                           if (userIdSnapshot.hasError) {
+                            if (userIdSnapshot.hasError) {
                               // Handle errors if the user ID future fails
                               return Text('Error: ${userIdSnapshot.error}');
                             } else {
                               // The user ID future has completed successfully
                               final userId = userIdSnapshot.data;
                               final isSender = message.senderId == userId;
+                              print("object");
+                              print(messages[index].messageType);
                               return MSG.Message(
                                 message: ChatMessage(
                                   text: messages[index].message,
-                                  messageType: ChatMessageType.text,
-                                  messageStatus:   message.isReady == 0 ? MessageStatus.not_view : MessageStatus.viewed,
+                                  messageType: messages[index].messageType == "image" ? ChatMessageType.image  :ChatMessageType.text,
+                                  messageStatus: message.isReady == 0
+                                      ? MessageStatus.not_view
+                                      : MessageStatus.viewed,
                                   isSender: isSender,
                                   id: messages[index].id,
                                   isReady: messages[index].isReady,
@@ -305,14 +310,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
               border: InputBorder.none,
             ),
             onSubmitted: (_) {
-              _sendMessage(_textEditingController.text);
+              _sendMessage(_textEditingController.text, "text");
               _textEditingController.clear();
             }, // Submit action
           ),
         ),
         GestureDetector(
           onTap: () {
-            _sendMessage(_textEditingController.text);
+            _sendMessage(_textEditingController.text, "text");
             _textEditingController.clear();
           }, // Send message on button tap
           child: Icon(
@@ -334,8 +339,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
             child: InkWell(
               onTap: () {
                 Navigator.pop(context);
-                Provider.of<ChatProvider>(context, listen: false).setShouldRefresh(true);
-
+                Provider.of<ChatProvider>(context, listen: false)
+                    .setShouldRefresh(true);
               },
               child: Icon(Icons.arrow_back, color: Colors.white, size: 33),
             ),
@@ -373,7 +378,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
-
   void _handleAttachmentPressed() {
     showModalBottomSheet<void>(
       context: context,
@@ -393,7 +397,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   child: Text('Photo'),
                 ),
               ),
-                TextButton(
+              TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   _handleVideoSelection();
@@ -403,16 +407,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   child: Text('Video'),
                 ),
               ),
-            //   TextButton(
-            //     onPressed: () {
-            //       Navigator.pop(context);
-            //       _handleFileSelection();
-            //     },
-            //     child: const Align(
-            //       alignment: AlignmentDirectional.centerStart,
-            //       child: Text('File'),
-            //     ),
-            //   ),
+              //   TextButton(
+              //     onPressed: () {
+              //       Navigator.pop(context);
+              //       _handleFileSelection();
+              //     },
+              //     child: const Align(
+              //       alignment: AlignmentDirectional.centerStart,
+              //       child: Text('File'),
+              //     ),
+              //   ),
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Align(
@@ -427,26 +431,44 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
-
   void _handleFileSelection() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
 
     if (result != null && result.files.single.path != null) {
-    //   final message = types.FileMessage(
-    //     author: _user,
-    //     createdAt: DateTime.now().millisecondsSinceEpoch,
-    //     id: const Uuid().v4(),
-    //     mimeType: lookupMimeType(result.files.single.path!),
-    //     name: result.files.single.name,
-    //     size: result.files.single.size,
-    //     uri: result.files.single.path!,
-    //   );
+      //   final message = types.FileMessage(
+      //     author: _user,
+      //     createdAt: DateTime.now().millisecondsSinceEpoch,
+      //     id: const Uuid().v4(),
+      //     mimeType: lookupMimeType(result.files.single.path!),
+      //     name: result.files.single.name,
+      //     size: result.files.single.size,
+      //     uri: result.files.single.path!,
+      //   );
 
-    //   _addMessage(message);
+      //   _addMessage(message);
     }
   }
+
+//   void _handleImageSelection() async {
+//     final result = await ImagePicker().pickImage(
+//       imageQuality: 70,
+//       maxWidth: 1440,
+//       source: ImageSource.gallery,
+//     );
+
+//     if (result != null) {
+//       final bytes = await result.readAsBytes();
+//       final imageSize = await decodeImageFromList(bytes);
+//     //   final message = ChatMessage(id: 000, text: image.toString(), messageType: ChatMessageType.image, messageStatus: MessageStatus.not_view, isSender: true, isReady: 0);
+//     //   final mess = Message(id: 000, senderId: 12, message: result.path, isReady: 0, messageType: 'image');
+//       _sendMessage(result.path, 'image');
+//     //   print(mess.message);
+//       print("Message up trere.............");
+//     //   _addMessage(message);
+//     }
+//   }
 
   void _handleImageSelection() async {
     final result = await ImagePicker().pickImage(
@@ -456,28 +478,41 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
 
     if (result != null) {
-      final bytes = await result.readAsBytes();
-      final image = await decodeImageFromList(bytes);
-      final message = ChatMessage(id: 000, text: image.toString(), messageType: ChatMessageType.image, messageStatus: MessageStatus.not_view, isSender: true, isReady: 0);
-      final mess = Message(id: 000, senderId: 12, message: image.toString(), isReady: 0);
-
-    //   final message = types.ImageMessage(
-    //     author: _user,
-    //     createdAt: DateTime.now().millisecondsSinceEpoch,
-    //     height: image.height.toDouble(),
-    //     id: const Uuid().v4(),
-    //     name: result.name,
-    //     size: bytes.length,
-    //     uri: result.path,
-    //     width: image.width.toDouble(),
-    //   );
-
-    //   _addMessage(message);
+      _previewImageAndSend(result.path);
     }
   }
 
+  void _previewImageAndSend(String imagePath) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Image.file(File(imagePath)),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Send"),
+              onPressed: () async {
+                final cp = Provider.of<ChatProvider>(context, listen: false);
+                // cp.sendImageMessage(context, await getUserId(), widget.receiverId, File imagePath, cp, socket);
+                _sendMessage(imagePath, 'image');
+                print("Message sent.");
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _handleVideoSelection() async {
-    final result = await ImagePicker().pickVideo (
+    final result = await ImagePicker().pickVideo(
       source: ImageSource.gallery,
     );
 
@@ -485,19 +520,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
 
-    //   final message = types.ImageMessage(
-    //     author: _user,
-    //     createdAt: DateTime.now().millisecondsSinceEpoch,
-    //     height: image.height.toDouble(),
-    //     id: const Uuid().v4(),
-    //     name: result.name,
-    //     size: bytes.length,
-    //     uri: result.path,
-    //     width: image.width.toDouble(),
-    //   );
+      //   final message = types.ImageMessage(
+      //     author: _user,
+      //     createdAt: DateTime.now().millisecondsSinceEpoch,
+      //     height: image.height.toDouble(),
+      //     id: const Uuid().v4(),
+      //     name: result.name,
+      //     size: bytes.length,
+      //     uri: result.path,
+      //     width: image.width.toDouble(),
+      //   );
 
-    //   _addMessage(message);
+      //   _addMessage(message);
     }
   }
-
 }

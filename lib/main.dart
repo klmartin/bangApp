@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
-import 'package:bangapp/providers/home_provider.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
