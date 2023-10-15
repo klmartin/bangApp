@@ -70,11 +70,8 @@ class _EditPageState extends State<EditPage> {
                         ? Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Container(
-
-
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-
                           child: Image.file(
                             //to show image, you type like this.
                             File(rimage!.path),
