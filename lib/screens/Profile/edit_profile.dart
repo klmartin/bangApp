@@ -15,7 +15,7 @@ import 'dart:io';
 
 import 'edit_profile.dart';
 
-late String? _name;
+//late String? _name;
 late String? _descr;
 late String phoneNumber;
 late String occupation;
@@ -387,7 +387,7 @@ class _EditPageState extends State<EditPage> {
               ),
               TextField(
                 textAlign: TextAlign.center,
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.text,
                 onChanged: (value) {
                   //Do something with the user input.
                   occupation = value;
@@ -426,7 +426,7 @@ class _EditPageState extends State<EditPage> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Text('Bio'),
+                        //child: Text('Bio'),
                       ),
                       TextField(
                         minLines: 6,
@@ -472,7 +472,7 @@ class _EditPageState extends State<EditPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: TextButton(
                         onPressed: () async {
-                           Service().setUserProfile(_name,_descr, rimage.toString());
+                           Service().setUserProfile(date_of_birth, phoneNumber, selectedHobbiesText, occupation,_descr, rimage.toString());
                            Navigator.push(
                              context,
                              MaterialPageRoute(
