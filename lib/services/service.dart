@@ -1,5 +1,6 @@
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/models/post.dart';
+import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -410,13 +411,16 @@ Future<List<dynamic>> getPostInfo(postId) async {
   }
 
 
-  Future<bool> setUserProfile(username, bio, String filepath) async {
+  Future<bool> setUserProfile(DateTime date_of_birth, phoneNumber,String selectedHobbiesText, occupation, bio, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
     String addimageUrl =
         '$baseUrl/setUserProfile';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
-      ..fields.addAll(username)
+      ..fields.addAll(date_of_birth as Map<String, String>)
+      ..fields.addAll(phoneNumber)
+      ..fields.addAll(selectedHobbiesText as Map<String, String>)
+      ..fields.addAll(occupation)
       ..fields.addAll(user_id as Map<String, String>)
       ..fields.addAll(bio)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
