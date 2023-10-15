@@ -2,6 +2,7 @@ import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/screens/Home/Home2.dart';
 import  'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
+import 'package:date_formatter/date_formatter.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -287,8 +288,15 @@ class _EditPageState extends State<EditPage> {
                   if (picked != null) {
                     setState(() {
                       date_of_birth = picked;
-                      _dateController.text = formatDate(DateTime(date_of_birth as int), [yyyy, '-', mm, '-', dd]);
+                      //_dateController.text = formatDate(DateTime(date_of_birth.toString() as int), [yyyy, '-', mm, '-', dd]);
                        //_dateController.text = DateFormat.yMMMd().format(date_of_birth.toString());
+                      //_dateController.text = date_of_birth.toString();
+
+                      _dateController.text = DateFormatter.formatDateTime(
+                        dateTime: date_of_birth,
+                        outputFormat: 'dd/MM/yyyy',
+                      );
+
                     });
                   }
                 },

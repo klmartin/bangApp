@@ -82,6 +82,7 @@ dependencies:
   onesignal_flutter: ^5.0.2
   google_sign_in: ^6.1.5
   date_format: ^2.0.7
+  date_formatter: ^0.0.4
 
 
 dev_dependencies:
