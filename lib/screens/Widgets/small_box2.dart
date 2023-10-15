@@ -23,11 +23,27 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
   }
 
   void viewImage(BuildContext context, String imageUrl) {
-    // ... (your viewImage function remains the same)
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          body: SizedBox.expand(
+            child: Hero(
+                tag: imageUrl,
+                child: Container(
+                  height: 250,
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                )),
+          ),
+        ),
+      ),
+    );
   }
-
   @override
   Widget build(BuildContext context) {
+    double halfScreenWidth = MediaQuery.of(context).size.width / 2;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,42 +78,84 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                             margin: EdgeInsets.symmetric(horizontal: 1.0),
                             child: Column(
                               children: [
-                                Row(
-                                  // Replace Column with Row
-                                  children: [
-                                    Expanded(
-                                        child: GestureDetector(
-                                      onTap: () {
-                                        viewImage(context, box.imageUrl1);
-                                      },
-                                      child: Container(
-                                        height: 200,
-                                        child: Image.network(
-                                          box.imageUrl1,
-                                          fit: BoxFit.fill,
-                                        ),
-                                      ),
-                                    )),
-                                    SizedBox(
-                                        width:
-                                            10), // Add some spacing between the images
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          viewImage(context, box.imageUrl2);
-                                        },
-                                        child: Container(
-                                          height: 200,
-                                          child: Image.network(
-                                            box.imageUrl2,
-                                            fit: BoxFit.fill,
-                                          ),
-                                        ),
+                            Row(
+                            children: [
+                            GestureDetector(
+                                onTap: () {
+                                  print('this is prin');
+                          viewImage(context, box.imageUrl1);
+                          },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  height: 200,
+                                  width: halfScreenWidth - 8 ,
+                                  child: Image.network(
+                                    box.imageUrl1,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 5,
+                                  child: Container(
+                                    margin: EdgeInsets.only(left: 10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Text(
+                                      "A",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 34,
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                                Text(
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          GestureDetector(
+                          onTap: () {
+                          viewImage(context, box.imageUrl2);
+                          },
+                          child: Stack(
+                          children: [
+                          Container(
+                          height: 200,
+                          width:halfScreenWidth - 5 ,
+                          child: Image.network(
+                          box.imageUrl2,
+                          fit: BoxFit.fill,
+                          ),
+                          ),
+                          Positioned(
+                          bottom: 5, right: 0,
+                          child: Align(
+                          alignment: Alignment.bottomRight,
+                          child: Container(
+                          margin: EdgeInsets.only(right: 10),
+                          decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Text(
+                          "B",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 34,
+                          ),
+                          ),
+                          ),
+                          ),
+                          ),
+                          ],
+                          ),
+                          ),
+                          ],
+                          ),
+                          Text(
                                   box.text,
                                   style: TextStyle(
                                     fontSize: 15,
@@ -119,8 +177,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                                   Provider.of<BoxDataProvider>(
                                                       context,
                                                       listen: false);
-                                              Service()
-                                                  .likeBattle(box.postId, "A");
+                                              Service().likeBattle(box.postId, "A");
                                               countUpdate.increaseLikes(
                                                   box.postId, 1);
                                               // Service().likeAction(postId, "A");
@@ -185,8 +242,6 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                                         BoxDataProvider>(
                                                     context,
                                                     listen: false);
-                                                Service().likeBattle(
-                                                    box.postId, "A");
                                                 Service().likeBattle(
                                                     box.postId, "B");
                                                 countUpdate.increaseLikes(

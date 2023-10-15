@@ -1,14 +1,10 @@
-import 'dart:convert';
-import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/post.dart';
 import 'package:bangapp/providers/posts_provider.dart'; // Import your PostsProvider class
-import 'package:bangapp/screens/Widgets/post_item.dart';
 import '../Widgets/post_item2.dart';
 import '../Widgets/small_box2.dart';
-import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/services/service.dart';
 
 class Home2 extends StatelessWidget {
   @override
@@ -35,7 +31,6 @@ class _Home2ContentState extends State<Home2Content> {
     super.initState();
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     postsProvider.fetchData();
-
     _scrollController = ScrollController()
       ..addListener(() {
         // This checks if the ListView has been scrolled all the way to the bottom.
@@ -50,7 +45,6 @@ class _Home2ContentState extends State<Home2Content> {
     return RefreshIndicator(
       onRefresh: () async {
         final postsProvider = Provider.of<PostsProvider>(context, listen: false);
-
         // postsProvider.refreshData();
       },
       child: Consumer<PostsProvider>(
@@ -86,42 +80,40 @@ class _Home2ContentState extends State<Home2Content> {
       itemCount: postsProvider.posts!.length,
       itemBuilder: (context, index) {
         final Post post = postsProvider.posts![index];
-
+        Service().updateIsSeen(post.postId);
+        print('Current Post ID: ${post.postId}');
         if(index == 0){
+        return Column(
+          children: [
+            SmallBoxCarousel(),
+            PostItem2(
+                post.postId,
+                post.userId,
+                post.name,
+                post.image,
+                post.challengeImg,
+                post.caption,
+                post.type,
+                post.width,
+                post.height,
+                post.likeCountA,
+                post.likeCountB,
+                post.commentCount,
+                post.followerCount,
+                post.challenges,
+                post.isLiked,
+                post.isPinned,
+                post.isLikedA,
+                post.isLikedB,
+                post.createdAt,
+                myProvider: postsProvider,
+              )
+          ],
+        );
+      }
 
-  return Column(
-    children: [
-      SmallBoxCarousel(),
-
-        PostItem2(
-          post.postId,
-          post.userId,
-          post.name,
-          post.image,
-          post.challengeImg,
-          post.caption,
-          post.type,
-          post.width,
-          post.height,
-          post.likeCountA,
-          post.likeCountB,
-          post.commentCount,
-          post.followerCount,
-          post.challenges,
-          post.isLiked,
-          post.isPinned,
-          post.isLikedA,
-          post.isLikedB,
-          post.createdAt,
-          myProvider: postsProvider,
-        )
-    ],
-  );
-}
-
-else{
-
-  return PostItem2(
+    else{
+      return PostItem2(
     post.postId,
     post.userId,
     post.name,
@@ -143,12 +135,9 @@ else{
     post.createdAt,
     myProvider: postsProvider,
   );
-}
+    }
         }
-
-
-    );
-  }
+        );}
 
   Widget errorDialog({required double size}) {
     return SizedBox(

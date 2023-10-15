@@ -36,7 +36,6 @@ class FinalCreate extends StatefulWidget {
 }
 
 class _FinaleCreateState extends State<FinalCreate> {
-
   Service service = Service();
   var image;
   bool light = true;
@@ -224,7 +223,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                           'pinned': pinPost == 1 ? '1' : '0',
                           };
 
-                          await service.addImage(body, filePath1!,);
+                          await service.addImage(body, filePath1!);
                           } else {
                           String filePath1 = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
                           String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');

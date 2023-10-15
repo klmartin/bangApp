@@ -4,6 +4,7 @@ import 'package:bangapp/screens/Widgets/small_box2.dart';
 import 'package:flutter/material.dart';
 import '../services/service.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class BoxDataProvider with ChangeNotifier {
@@ -11,8 +12,10 @@ class BoxDataProvider with ChangeNotifier {
   List<dynamic> get boxes => _boxes;
 
   Future<void> fetchData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id');
     final response = await http.get(
-        Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle/12'));
+        Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle/$userId'));
     final data = jsonDecode(response.body)['data'];
     print(data);
     _boxes = data.map((e) => BoxData2.fromJson(e)).toList();

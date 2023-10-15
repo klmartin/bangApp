@@ -274,7 +274,6 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
         trimMode: TrimMode.line,
         trimCollapsedText: '...Show more',
         trimExpandedText: '...Show less',
-        userName: widget.name,
         moreStyle: TextStyle(
           fontSize: 15,
           color: Theme.of(context).primaryColor,

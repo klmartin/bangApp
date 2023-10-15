@@ -17,8 +17,7 @@ class Service {
   Future<String> sendUserNotification1(userId, name, body,referenceId,type) async {
     try {
       final response = await http.post(
-        Uri.parse(
-            '$baseUrl/sendUserNotification'),
+        Uri.parse('$baseUrl/sendUserNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
@@ -39,7 +38,6 @@ class Service {
     }
   }
 
-
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     print('this is video');
     print([body,filepath]);
@@ -49,22 +47,12 @@ class Service {
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
-
-
-      print(response.body);
       if (response.statusCode == 201) {
-        print("Created:::::::::::::::");
         final response2 = jsonDecode(response.body);
-
         if (response2['data']) {
-            print(response2['data']);
-
         } else {
           print("No response.........");
         }
-
-
-
         return true;
       } else {
         return false;
@@ -262,23 +250,6 @@ Future<List<dynamic>> getPostInfo(postId) async {
     }
   }
 
-  // Future postComment(postId, commentText) async {
-  //   try {
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     final response = await http.post(
-  //       Uri.parse('$baseUrl/postComment'),
-  //       body: {
-  //         'post_id': postId.toString(),
-  //         'user_id': prefs.getInt('user_id').toString(), // Convert to string
-  //         'body': commentText,
-  //       },
-  //     );
-  //     return jsonDecode(response.body);
-  //   } catch (e) {
-  //     print(e);
-  //     return e;
-  //   }
-  // }
 
   Future postComment(BuildContext context, postId, commentText,userId) async {
     try {
@@ -291,8 +262,6 @@ Future<List<dynamic>> getPostInfo(postId) async {
           'body': commentText,
         },
        );
-      var name = prefs.getString('name');
-      var body = "$name has Commented on your post";
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -479,6 +448,7 @@ Future<List<dynamic>> getPostInfo(postId) async {
   }
 
   Future<void> likeBattle(postId,type) async {
+    print(['this is type', type,postId]);
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
@@ -489,16 +459,15 @@ Future<List<dynamic>> getPostInfo(postId) async {
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         },
       );
+      print('this is response');
       print(response.body);
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
         print(responseData);
         setState(() {
-          // likeCount = likeCount;
         });
       } else {
-        // Handle API error, if necessary
       }
     } catch (e) {
       print(e);
@@ -608,6 +577,27 @@ Future<List<dynamic>> getPostInfo(postId) async {
     } catch (e) {
       // Handle any exceptions that may occur during the request
       return 0; // Or handle this case as needed
+    }
+  }
+
+  Future<void> updateIsSeen(int postId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id');
+    final apiUrl = '$baseUrl/updateIsSeen/$postId/$userId'; // Replace with your actual API URL
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      print(response.body);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final status = data['status'];
+        print('Post $postId updated status: $status');
+      } else {
+        // Handle errors if needed
+        print('Failed to update post $postId');
+      }
+    } catch (e) {
+      // Handle exceptions if needed
+      print('Exception: $e');
     }
   }
 
