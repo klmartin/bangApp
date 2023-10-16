@@ -27,7 +27,6 @@ List<Post> _posts = [];
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final userId = prefs.getInt('user_id').toString();
-      print(userId);
       final response = await get(Uri.parse(
           "$baseUrl/getPost?_limit=$_numberOfPostsPerRequest&user_id=$userId"));
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -55,7 +54,7 @@ List<Post> _posts = [];
             image: data['image'],
             challengeImg: data['challenge_img'],
             caption: data['body'] ?? 'hi',
-            type: "image",
+            type: data['type'],
             width: data['width'],
             height: data['height'],
             likeCountA: data['like_count_A'],
@@ -74,8 +73,7 @@ List<Post> _posts = [];
          _pageNumber++;
 
         _loading = false;
-        print(posts!.first.postId);
-        print(posts?.last.postId);
+
         notifyListeners();
       } else {
         _loading = false;
@@ -96,24 +94,20 @@ List<Post> _posts = [];
   void incrementCommentCountByPostId(int postId) {
     try {
       // Print the postId being searched for
-      print("Searching for postId: $postId");
+
       // ignore: unrelated_type_equality_checks
       final post = _posts?.firstWhere((update) => update.postId == postId);
 
       if (post != null) {
-        print(post.commentCount);
+
         post.commentCount++;
-        print("Updated comment count for post $postId: ${post.commentCount}");
         notifyListeners();
       } else {
         // Iterate through _posts and print all postIds
         posts?.forEach((post) {
-          print("PostId in _posts: ${post.postId}");
         });
-        print("Post with postId $postId not found.");
       }
     } catch (e) {
-      print("Error updating comment count: $e");
     }
   }
 
@@ -166,7 +160,6 @@ void increaseLikes2(int postId, int postType) {
 
     notifyListeners();
   } else {
-    print("Post with postId $postId not found.");
   }
 }
 

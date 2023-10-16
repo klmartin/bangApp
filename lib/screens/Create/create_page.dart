@@ -102,9 +102,9 @@ class _CreateState extends State<Create> {
           GestureDetector(
             onTap: () async {
               if (_selectedAssets.isNotEmpty) {
-                if (_selectedAssets[0].type == AssetType.video) {
+                if ( _selectedAssets[0].type == AssetType.video) {
                   var editedVideo = await _selectedAssets[0].file;
-                  if (_selectedAssets.length == 2) {
+                  if (_selectedAssets.length == 1) {
                     await Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -128,7 +128,7 @@ class _CreateState extends State<Create> {
                       MaterialPageRoute(
                         builder: (context) => ImageEditor(
                             image: editedImage,
-                            // image2: editedImage2,
+                            image2: editedImage2,
                             allowMultiple: true),
                       ),
                     );

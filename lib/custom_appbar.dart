@@ -1,5 +1,6 @@
-import 'package:bangapp/inspiration/inspirations.dart';
+import 'package:bangapp/inspiration/inspirations.dart' as IN;
 import 'package:bangapp/message/screens/chats/chats_screen.dart';
+import 'package:bangapp/providers/inprirations_Provider.dart';
 import 'package:bangapp/screens/Chat/chat_home.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class CustomAppBar extends AppBar {
                 child: Icon(Icons.notes_rounded),
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return BangInspiration();
+                    return IN.BangInspiration();
                   }));
                 },
               ),

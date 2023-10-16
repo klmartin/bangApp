@@ -22,12 +22,7 @@ import '../../services/extension.dart';
 import '../../widgets/build_media.dart';
 import '../../widgets/user_profile.dart';
 import '../Comments/commentspage.dart';
-import '../Comments/new_page.dart';
-import '../Create/video_editing/video_edit.dart';
-import '../Profile/profile.dart';
 import 'dart:io';
-
-import '../mine/mine.dart';
 
 class PostItem2 extends StatelessWidget {
   final int postId;
@@ -302,19 +297,30 @@ class PostItem2 extends StatelessWidget {
             if (caption != null)
               Padding(
                 padding: const EdgeInsets.only(left: 12, top: 2),
-                child: ReadMoreText(
-                  caption,
-                  trimLines: 2,
-                  style: Theme.of(context).textTheme.bodyLarge!,
-                  colorClickableText: Theme.of(context).primaryColor,
-                  trimMode: TrimMode.line,
-                  trimCollapsedText: '...Show more',
-                  trimExpandedText: '...Show less',
-                  userName: name,
-                  moreStyle: TextStyle(
-                    fontSize: 15,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      name, // Add your username here
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 5), // Add some spacing between the username and caption
+                    ReadMoreText(
+                      caption,
+                      trimLines: 1,
+                      style: Theme.of(context).textTheme.bodyLarge!,
+                      colorClickableText: Theme.of(context).primaryColor,
+                      trimMode: TrimMode.line,
+                      trimCollapsedText: '...Show more',
+                      trimExpandedText: '...Show less',
+                      moreStyle: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             Text("$commentCount comments"),
@@ -323,7 +329,7 @@ class PostItem2 extends StatelessWidget {
           ],
         ),
       );
-    } else if (challengeImg == null && challenges.isEmpty) {
+    } else if (challengeImg == null && challenges.isEmpty) { //single post
       return Container(
         decoration: const BoxDecoration(
           color: Color.fromARGB(1, 30, 34, 45),
@@ -331,35 +337,47 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            postOptions(context, userId, image, name, followerCount, image,
-                    postId, userId, type, createdAt) ??
-                Container(),
+            postOptions(context, userId, image, name, followerCount, image, postId, userId, type, createdAt) ?? Container(),
             AspectRatio(
               aspectRatio: width / height,
-              child: buildMediaWidget(
-                  context, image, type, width, height, isPinned),
+              child: buildMediaWidget(context, image, type, width, height, isPinned),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+
                 Container(
-                    padding: EdgeInsets.only(left: 10),
+                  padding: EdgeInsets.only(left: 10),
                   width: MediaQuery.of(context).size.width * 0.82,
-                  child: ReadMoreText(
-                    caption,
-                    trimLines: 2,
-                    style: Theme.of(context).textTheme.bodyLarge!,
-                    colorClickableText: Theme.of(context).primaryColor,
-                    trimMode: TrimMode.line,
-                    trimCollapsedText: '...Show more',
-                    trimExpandedText: '...Show less',
-                    userName: name,
-                    moreStyle: TextStyle(
-                      fontSize: 15,
-                      color: Theme.of(context).primaryColor,
-                    ),
+                  child: Row(
+                    children: [
+                      Text(
+                        name, // Add your username here
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width: 5), // Add some spacing between the username and caption
+                      Expanded(
+                        child: ReadMoreText(
+                          caption,
+                          trimLines: 1,
+                          style: Theme.of(context).textTheme.bodyLarge!,
+                          colorClickableText: Theme.of(context).primaryColor,
+                          trimMode: TrimMode.line,
+                          trimCollapsedText: '...Show more',
+                          trimExpandedText: '...Show less',
+                          moreStyle: TextStyle(
+                            fontSize: 15,
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+
                 Container(
                     padding: EdgeInsets.only(right: 10),
                   child: Row(
@@ -427,6 +445,7 @@ class PostItem2 extends StatelessWidget {
         ),
       );
     } else if (challengeImg == null && challenges.isNotEmpty) {
+
       return Container(
           decoration: const BoxDecoration(
             color: Color.fromARGB(1, 30, 34, 45),
@@ -486,15 +505,15 @@ class PostItem2 extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ReadMoreText(
                     caption,
-                    trimLines: 2,
+                    trimLines: 1,
                     style: Theme.of(context).textTheme.bodyLarge!,
                     colorClickableText: Theme.of(context).primaryColor,
                     trimMode: TrimMode.line,
                     trimCollapsedText: '...Show more',
                     trimExpandedText: '...Show less',
-                    userName: name,
                     moreStyle: TextStyle(
                       fontSize: 15,
+                      fontWeight: FontWeight.bold,
                       color: Theme.of(context).primaryColor,
                     ),
                   ),

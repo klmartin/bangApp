@@ -35,10 +35,17 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     super.dispose();
   }
 
+  Widget buildVideoPlayer() => AspectRatio(
+    aspectRatio: _videoPlayerController.value.aspectRatio,
+    child: VideoPlayer(_videoPlayerController),
+  );
+
+
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-                aspectRatio: 16 / 9,
+                //aspectRatio: 16 / 9,
+      aspectRatio: _videoPlayerController.value.aspectRatio,
           child: Stack(
             children: [
               VisibilityDetector(
