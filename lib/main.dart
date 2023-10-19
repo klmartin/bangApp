@@ -12,6 +12,7 @@ import 'package:bangapp/screens/Posts/view_challenge_page.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -70,7 +71,11 @@ Future accosiateUseWithOneSignal() async {
 
 
 class MyApp extends StatelessWidget {
+
+  late final GoogleSignInAccount user;
   @override
+
+
   Widget build(BuildContext context) {
 
     return MaterialApp(
@@ -84,7 +89,7 @@ class MyApp extends StatelessWidget {
         Nav.id: (context) => Nav(),
         Register.id: (context) => Register(),
         Welcome.id: (context) => Welcome(),
-        EditPage.id: (context) => EditPage(),
+        EditPage.id: (context) => EditPage(user: user),
         Authenticate.id: (context) => Authenticate(),
         // CommentsPage.id: (context) => CommentsPage(userId: null),
         FinalCreate.id: (context) => FinalCreate(),

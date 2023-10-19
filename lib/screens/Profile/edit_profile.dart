@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bangapp/screens/Profile/profile_upload.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +26,14 @@ TextEditingController _dateController = TextEditingController();
 Service?  loggedInUser;
 
 class EditPage extends StatefulWidget {
+  final GoogleSignInAccount user;
   static const String id = 'edit';
+
+  EditPage({
+    Key? key,
+    required this.user,
+}): super(key: key);
+
   _EditPageState createState() => _EditPageState();
 }
 
@@ -118,9 +126,10 @@ class _EditPageState extends State<EditPage> {
       },
     );
   }
-
+  late final GoogleSignInAccount user;
 
   Widget build(BuildContext context) {
+
 
     return Scaffold(
       appBar: AppBar(
@@ -148,49 +157,62 @@ class _EditPageState extends State<EditPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
+
           padding: const EdgeInsets.all(20.0),
+
           child: Column(
+
             children: <Widget>[
               Center(
 
+
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    rimage != null
-                        ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            //to show image, you type like this.
-                            File(rimage!.path),
-                            fit: BoxFit.cover,
-                            width: 100,
-                            height: 100,
 
-                          ),
-                        ),
-                      ),
-                    )
-                        : Text(
-                      "No Image",
-                      style: TextStyle(fontSize: 20),
-                    ),
+        children: [
+        rimage == null
+          ? CircleAvatar(backgroundImage: NetworkImage(user.photoUrl!),) :
+        rimage != null
+        ? Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Container(
+        child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.file(
+        //to show image, you type like this.
+        File(rimage!.path),
+        fit: BoxFit.cover,
+        width: 100,
+        height: 100,
 
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => UploadProfile()));
-                        },
-                        child: Text(
-                          'Change Profile photo',
-                          style: TextStyle(color: Colors.purple),
-                        ))
-                  ],
+        ),
+        ),
+        ),
+        )
+
+
+            : Text(
+        "No Image",
+        style: TextStyle(fontSize: 20),
+        ),
+
+
+        TextButton(
+        onPressed: () {
+        Navigator.push(
+        context,
+        MaterialPageRoute(
+        builder: (context) => UploadProfile()));
+        },
+        child: Text(
+        'Change Profile photo',
+        style: TextStyle(color: Colors.purple),
+        ))
+        ],
+
                 ),
+
+
 
                 /*child: Container(
                   child: Column(

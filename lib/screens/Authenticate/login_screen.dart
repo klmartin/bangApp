@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bangapp/models/userprovider.dart';
 import 'package:provider/provider.dart';
+import '../../api/google_signin_api.dart';
 import '../../components/square_tiles.dart';
 import '../../constants/urls.dart';
 import '../../nav.dart';
@@ -14,6 +17,7 @@ import 'package:bangapp/services/service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../../services/auth_services.dart';
+import '../Profile/edit_profile.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login';
@@ -27,12 +31,24 @@ class _LoginScreenState extends State<LoginScreen> {
   bool showSpinner = false;
   late String email;
   late String password;
-  final userId = null;
+  final user = GoogleSignInAccount;
 
   @override
   void initState() {
     super.initState();
     Provider.of<UserProvider>(context, listen: false);
+  }
+
+  Future signIn() async {
+   final user =  await GoogleSignInApi.login();
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign in Failed'),));
+    } else {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => EditPage(user: user),));
+    }
   }
 
   @override
@@ -269,19 +285,76 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       //google button
-                      SquareTile(
+                     /* SquareTile(
                         imagePath: 'assets/images/google.png',
-                        onTap: () => AuthService().signInWithGoogle(),),
+                        //onTap: () => AuthService().signInWithGoogle(),),
+                        onTap: () => AuthService().signIn(),
+
+                      ),
+
+
 
                       const SizedBox(width: 10),
                       //apple button
                       SquareTile(
                           imagePath: 'assets/images/apple.png',
-                          onTap: () => AuthService().signInWithGoogle(),
+                          onTap: () => AuthService().signIn(),
                           ),
+*/
+
+                      MaterialButton(
+                          onPressed: signIn,
+                          child:  Container(
+                      padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.grey[200],
+              ),
+              child: Image.asset(
+                'assets/images/google.png',
+                height: 40,
+              ),
+            ),),
+
+                      const SizedBox(width: 10),
+
+                      MaterialButton(
+                        onPressed: signIn,
+                        child:  Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.grey[200],
+                          ),
+                          child: Image.asset(
+                            'assets/images/apple.png',
+                            height: 40,
+                          ),
+                        ),),
+
 
                     ],
                   ),
+
+                  SizedBox(height: 20),
+
+               /*   ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.white,
+                      onPrimary: Colors.black,
+                      minimumSize: Size(double.infinity, 50),
+                    ),
+                    icon: FaIcon(
+                      FontAwesomeIcons.google,
+                      color: Colors.red,
+                    ),
+                    label: Text('Sign Up with Google'),
+                    onPressed: signIn,
+
+                  ),*/
+
 
                   const SizedBox(height: 50),
 

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:bangapp/screens/Story/storyview.dart';
 import 'package:bangapp/screens/settings/settings.dart';
@@ -51,6 +52,8 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
   }
+
+  late final GoogleSignInAccount user;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +149,7 @@ class _ProfileState extends State<Profile> {
                 child: OutlinedButton(
                     onPressed: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => EditPage()));
+                          MaterialPageRoute(builder: (context) => EditPage(user: user)));
                     },
                     child: Text(
                       'Edit profile',

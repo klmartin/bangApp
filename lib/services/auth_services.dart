@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+/*
 class AuthService {
 
   //Google Sign In
@@ -27,3 +28,12 @@ class AuthService {
   }
 
 }
+*/
+ class  AuthService {
+    signIn() async {
+   final _googleSignIn = GoogleSignIn();
+   Future<GoogleSignInAccount?> login() => _googleSignIn.signIn();
+ }
+
+ }
+

@@ -2,6 +2,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../components/square_tiles.dart';
 import '../../services/auth_services.dart';
 import 'login_screen.dart';
@@ -66,6 +67,8 @@ class _RegisterState extends State<Register> {
   //late String occupation;
 
   bool showSpinner = false;
+
+  late final GoogleSignInAccount user;
   @override
    // List<Hobby>? selectedHobbyList;
     //List<Hobby> hobbyList = [];
@@ -476,7 +479,7 @@ class _RegisterState extends State<Register> {
                                 prefs.setString('email', responseBody['name']);
                                 Navigator.pushReplacement(
                                     context, MaterialPageRoute(
-                                  builder: (context) => EditPage(),
+                                  builder: (context) => EditPage(user: user),
                                 ));
                               }
                             }
@@ -547,13 +550,13 @@ class _RegisterState extends State<Register> {
                   //google button
                   SquareTile(
                     imagePath: 'assets/images/google.png',
-                    onTap: () => AuthService().signInWithGoogle(),),
+                    onTap: () => AuthService().signIn(),),
 
                   const SizedBox(width: 10),
                   //apple button
                   SquareTile(
                     imagePath: 'assets/images/apple.png',
-                    onTap: () => AuthService().signInWithGoogle(),
+                    onTap: () => AuthService().signIn(),
                   ),
 
                 ],
