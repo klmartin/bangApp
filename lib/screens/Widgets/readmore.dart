@@ -17,7 +17,6 @@ class ReadMoreText extends StatefulWidget {
         this.trimLines = 2,
         this.trimMode = TrimMode.length,
          this.style,
-         this.userName,
          this.textAlign,
          this.textDirection,
          this.locale,
@@ -52,7 +51,6 @@ class ReadMoreText extends StatefulWidget {
 
   final String? delimiter;
   final String? data;
-  final String? userName;
   final String? trimExpandedText;
   final String? trimCollapsedText;
   final Color? colorClickableText;
@@ -82,11 +80,6 @@ class ReadMoreTextState extends State<ReadMoreText> {
   @override
   Widget build(BuildContext context) {
     final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
-    final userNameStyle = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-      color: Colors.black,
-    );
 
     final dataStyle = TextStyle(
       fontWeight: FontWeight.normal,
@@ -138,10 +131,6 @@ class ReadMoreTextState extends State<ReadMoreText> {
         final text = TextSpan(
 
           children: [
-            TextSpan(
-              text: widget.userName,
-              style: userNameStyle,
-            ),
             TextSpan(
               text: " " + widget.data!,
               style: dataStyle,
@@ -199,16 +188,14 @@ switch (widget.trimMode) {
     if (widget.trimLength < widget.data!.length) {
       textSpan = TextSpan(
         text: _readMore
-            ? widget.userName! +
-                " " +
-                widget.data!.substring(0, widget.trimLength)
-            : widget.userName! + " " + widget.data!,
+            ? widget.data!.substring(0, widget.trimLength)
+            :  widget.data!,
         children: <TextSpan>[_delimiter, link],
         style: dataStyle, // Use dataStyle for the entire text
       );
     } else {
       textSpan = TextSpan(
-        text: widget.userName! + " " + widget.data!, // Combine username and data
+        text: widget.data!, // Combine username and data
         children: <TextSpan>[_delimiter, link],
         style: dataStyle, // Use dataStyle for the entire text
       );
@@ -219,14 +206,14 @@ switch (widget.trimMode) {
       textSpan = TextSpan(
         style: effectiveTextStyle,
         text: _readMore
-            ? widget.userName! + " " + widget.data!.substring(0, endIndex) +
+            ?  widget.data!.substring(0, endIndex) +
                 (linkLongerThanLine ? _kLineSeparator : '')
-            : widget.userName! + " " + widget.data!, // Combine username and data
+            :  widget.data!, // Combine username and data
         children: <TextSpan>[_delimiter, link],
       );
     } else {
       textSpan = TextSpan(
-        text: widget.userName! + " " + widget.data!, // Combine username and data
+        text:  widget.data!, // Combine username and data
         style: dataStyle, // Use dataStyle for the entire text
       );
     }
@@ -234,7 +221,6 @@ switch (widget.trimMode) {
   default:
     throw Exception('TrimMode type: ${widget.trimMode} is not supported');
 }
-
         return RichText(
           textAlign: textAlign,
           textDirection: textDirection,

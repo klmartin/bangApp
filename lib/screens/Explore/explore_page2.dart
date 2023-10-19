@@ -66,9 +66,8 @@ class BangUpdates3 extends StatelessWidget {
                             // context, bangUpdate.filename, bangUpdate.type, bangUpdate.caption, bangUpdate.postId, bangUpdate.likeCount, index+1
                           )
                         : Column(
-                            children: [
-                                Container(
-                                    height: 50,
+                            children: [Container(
+                            height: 50,
                             width: double.infinity,
                             padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(color: Colors.black),
@@ -85,7 +84,7 @@ class BangUpdates3 extends StatelessWidget {
                             )),
                              buildBangUpdate2(
                             context, bangUpdate, index,
-                          )?? Text("No Content Here, Please come agin laiter"),
+                          )?? Text("No Content Here, Please come again laiter"),
                             ],
                         )
                   );

@@ -1,17 +1,13 @@
-
 import 'package:bangapp/widgets/video_player.dart';
-import 'package:chewie/chewie.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 import '../constants/urls.dart';
 
 Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
-  if ( type == 'image'&& isPinned==0) {
+  if ( type == 'image' && isPinned==0) {
     return  GestureDetector(
         onTap: () {
           viewImage(context, mediaUrl);
@@ -52,6 +48,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
     );
   }
   else if (type == 'video') {
+    print('this is a video for play');
     return VideoPlayerPage(mediaUrl: mediaUrl);
   } else {
     return Container();
@@ -121,9 +118,6 @@ buildFab(value,BuildContext context) {
               title: Text('M-pesa'),
               onTap: () async {
                 print(value);
-                // Navigator.pop(context);
-                // await viewModel.pickImage(context: context);
-
               },
             ),
             ListTile(
