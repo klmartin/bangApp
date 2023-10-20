@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(content: Text('Sign in Failed'),));
     } else {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => EditPage(user: user),));
+        builder: (context) => EditPage(),));
     }
   }
 

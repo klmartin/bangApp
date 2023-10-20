@@ -89,7 +89,7 @@ class MyApp extends StatelessWidget {
         Nav.id: (context) => Nav(),
         Register.id: (context) => Register(),
         Welcome.id: (context) => Welcome(),
-        EditPage.id: (context) => EditPage(user: user),
+        EditPage.id: (context) => EditPage(),
         Authenticate.id: (context) => Authenticate(),
         // CommentsPage.id: (context) => CommentsPage(userId: null),
         FinalCreate.id: (context) => FinalCreate(),

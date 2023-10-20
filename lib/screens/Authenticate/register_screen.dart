@@ -68,7 +68,7 @@ class _RegisterState extends State<Register> {
 
   bool showSpinner = false;
 
-  late final GoogleSignInAccount user;
+  //late final GoogleSignInAccount user;
   @override
    // List<Hobby>? selectedHobbyList;
     //List<Hobby> hobbyList = [];
@@ -479,7 +479,7 @@ class _RegisterState extends State<Register> {
                                 prefs.setString('email', responseBody['name']);
                                 Navigator.pushReplacement(
                                     context, MaterialPageRoute(
-                                  builder: (context) => EditPage(user: user),
+                                  builder: (context) => EditPage(),
                                 ));
                               }
                             }

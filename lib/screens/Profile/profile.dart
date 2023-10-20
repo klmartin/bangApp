@@ -53,7 +53,7 @@ class _ProfileState extends State<Profile> {
     super.initState();
   }
 
-  late final GoogleSignInAccount user;
+  //late final GoogleSignInAccount user;
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +149,7 @@ class _ProfileState extends State<Profile> {
                 child: OutlinedButton(
                     onPressed: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => EditPage(user: user)));
+                          MaterialPageRoute(builder: (context) => EditPage()));
                     },
                     child: Text(
                       'Edit profile',

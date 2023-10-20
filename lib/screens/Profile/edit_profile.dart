@@ -26,12 +26,12 @@ TextEditingController _dateController = TextEditingController();
 Service?  loggedInUser;
 
 class EditPage extends StatefulWidget {
-  final GoogleSignInAccount user;
+  //final GoogleSignInAccount user;
   static const String id = 'edit';
 
   EditPage({
     Key? key,
-    required this.user,
+    //required this.user,
 }): super(key: key);
 
   _EditPageState createState() => _EditPageState();
@@ -126,7 +126,7 @@ class _EditPageState extends State<EditPage> {
       },
     );
   }
-  late final GoogleSignInAccount user;
+  //late final GoogleSignInAccount user;
 
   Widget build(BuildContext context) {
 
@@ -170,8 +170,8 @@ class _EditPageState extends State<EditPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
 
         children: [
-        rimage == null
-          ? CircleAvatar(backgroundImage: NetworkImage(user.photoUrl!),) :
+       // rimage == null
+          //? CircleAvatar(backgroundImage: NetworkImage(user.photoUrl!),) :
         rimage != null
         ? Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
