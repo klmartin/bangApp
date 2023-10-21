@@ -19,6 +19,7 @@ class Create extends StatefulWidget {
 
 class _CreateState extends State<Create> {
   List<AssetEntity> _selectedAssets = [];
+  List<ChewieController?> chewieControllerList = [];
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
   int _activePage = 0;
@@ -36,7 +37,6 @@ class _CreateState extends State<Create> {
           // Show a message or alert that only two images can be selected
         }
       }
-
       if (_selectedAssets.isNotEmpty) {
         if (_selectedAssets[0].type == AssetType.video) {
           _initializeVideoPlayer();
@@ -55,16 +55,22 @@ class _CreateState extends State<Create> {
   }
 
   Future<void> _initializeVideoPlayer() async {
-    var file = await _selectedAssets[0].file;
-    _videoPlayerController = VideoPlayerController.file(File(file!.path));
-    await _videoPlayerController!.initialize();
-    setState(() {
-      _chewieController = ChewieController(
-        videoPlayerController: _videoPlayerController!,
-        autoPlay: true,
-        looping: true,
-      );
-    });
+    if (_selectedAssets.isNotEmpty) {
+      var videoControllers = <VideoPlayerController>[];
+      for (var asset in _selectedAssets) {
+        var file = await asset.file;
+        var controller = VideoPlayerController.file(File(file!.path));
+        await controller.initialize();
+        videoControllers.add(controller);
+      }
+      setState(() {
+        _chewieController = ChewieController(
+          videoPlayerController: videoControllers[0], // Display the first video
+          autoPlay: true,
+          looping: true,
+        );
+      });
+    }
   }
 
   @override
@@ -102,17 +108,32 @@ class _CreateState extends State<Create> {
           GestureDetector(
             onTap: () async {
               if (_selectedAssets.isNotEmpty) {
-                if ( _selectedAssets[0].type == AssetType.video) {
+                if (_selectedAssets[0].type == AssetType.video) {
                   var editedVideo = await _selectedAssets[0].file;
-                  if (_selectedAssets.length == 1) {
+                  if (_selectedAssets.length == 2) {
+                    var editedVideo2 = await _selectedAssets[1].file;
+
+                    print([editedVideo,editedVideo2]);
+                    print('these are the selected items');
                     await Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => VideoEditor(
-                        video: editedVideo!,
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VideoEditor(
+                          video: editedVideo!,
+                          video2: editedVideo2!,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
+                  else{
+                    await Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VideoEditor(
+                          video: editedVideo!,
+                        ),
+                      ),
+                    );
                   }
 
                 } else if (_selectedAssets[0].type == AssetType.image) {
@@ -128,7 +149,7 @@ class _CreateState extends State<Create> {
                       MaterialPageRoute(
                         builder: (context) => ImageEditor(
                             image: editedImage,
-                            //image2: editedImage2,
+                            image2: editedImage2,
                             allowMultiple: true),
                       ),
                     );
@@ -168,7 +189,7 @@ class _CreateState extends State<Create> {
               children: <Widget>[
                 Container(
                   height: MediaQuery.of(context).size.height / 2.2,
-                  child: PageView(
+                  child: PageView.builder(
                     controller: _pageViewController,
                     scrollDirection: Axis.horizontal,
                     onPageChanged: (int index) {
@@ -176,22 +197,41 @@ class _CreateState extends State<Create> {
                         _activePage = index;
                       });
                     },
-                    children: _selectedAssets.map((asset) {
+                    itemCount: _selectedAssets.length,
+                    itemBuilder: (context, index) {
+                      final asset = _selectedAssets[index];
                       if (asset.type == AssetType.video) {
-                        return Container(
-                          height: MediaQuery.of(context).size.height / 2.2,
-                          child: Chewie(
-                            controller: _chewieController!,
-                          ),
+                        return FutureBuilder<File?>(
+                          future: asset.file,
+                          builder: (BuildContext context, AsyncSnapshot<File?> fileSnapshot) {
+                            if (fileSnapshot.connectionState == ConnectionState.done && fileSnapshot.hasData) {
+                              final videoController = VideoPlayerController.file(fileSnapshot.data!);
+                              final chewieController = ChewieController(
+                                videoPlayerController: videoController,
+                                autoPlay: true,
+                                looping: true,
+                              );
+                              videoController.initialize().then((_) {
+                                setState(() {
+                                  // Update the Chewie controller once the video is initialized
+                                  chewieControllerList[index] = chewieController;
+                                });
+                              });
+                              return Container(
+                                height: MediaQuery.of(context).size.height / 2.2,
+                                width: MediaQuery.of(context).size.width,
+                                child: Chewie(controller: chewieController),
+                              );
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          },
                         );
                       } else {
                         return FutureBuilder<Uint8List?>(
-                          future: asset
-                              .thumbnailDataWithSize(ThumbnailSize(200, 200)),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<Uint8List?> snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
+                          future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+                          builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+                            if (snapshot.connectionState == ConnectionState.done) {
                               final thumbnailData = snapshot.data!;
                               return Image.memory(
                                 thumbnailData,
@@ -205,9 +245,11 @@ class _CreateState extends State<Create> {
                           },
                         );
                       }
-                    }).toList(),
+                    },
                   ),
                 ),
+
+
                 Expanded(
                   child: MediaGrid(selectAsset),
                 ),
