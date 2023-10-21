@@ -1,6 +1,7 @@
 import 'package:bangapp/message/models/ChatMessage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ImageMessage extends StatelessWidget {
   final ChatMessage? message;
@@ -28,7 +29,7 @@ class ImageMessage extends StatelessWidget {
     print(message!.text);
     print("jjjjjjjjjjjjjjjjjjj");
     print("Tyopof");
-    
+
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.45, // 45% of total width
       child: AspectRatio(
@@ -42,7 +43,21 @@ class ImageMessage extends StatelessWidget {
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: CachedNetworkImage(imageUrl: message!.text),
+                child: CachedNetworkImage(
+                  imageUrl: message!.text,
+                  placeholder: (context, url) {
+                    return Container(
+                        width: 100,
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.grey,
+                        highlightColor: Colors.grey[200]!,
+                        child: Container(
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ],
