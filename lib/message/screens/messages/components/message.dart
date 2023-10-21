@@ -1,5 +1,6 @@
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/models/ChatMessage.dart';
+import 'package:bangapp/message/screens/messages/components/image_message.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +42,8 @@ class _MessageState extends State<Message> {
           return AudioMessage(message: message);
         case ChatMessageType.video:
           return const VideoMessage();
+           case ChatMessageType.image:
+          return ImageMessage(message: message,);
         default:
           return const SizedBox();
       }

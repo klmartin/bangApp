@@ -1,13 +1,20 @@
 import 'package:bangapp/custom_appbar.dart';
-import 'package:bangapp/services/service.dart';
-import 'package:bangapp/screens/Explore/bang_update.dart';
+import 'package:bangapp/inspiration/inspirations.dart';
+import 'package:bangapp/message/screens/chats/chats_screen.dart';
+import 'package:bangapp/providers/chat_provider.dart';
+import 'package:bangapp/screens/Explore/explore_page2.dart';
+import 'package:bangapp/screens/Home/home3.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:bangapp/screens/blog/blog_home.dart';
+import 'package:provider/provider.dart';
 import 'screens/Activity/activity_page.dart';
 import 'package:bangapp/screens/Home/Home2.dart';
-import 'screens/Create/create_page.dart';
+import 'screens/Create/create_page.dart' as CR;
+import 'screens/Chat/chat_home.dart';
 import 'screens/Profile/profile.dart';
 import 'package:bangapp/screens/Widgets/fab_container.dart';
 import 'package:ionicons/ionicons.dart';
@@ -24,7 +31,10 @@ class _NavState extends State<Nav> {
   @override
   void initState() {
     super.initState();
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    chatProvider.getTotalUnreadMessages();
   }
+
 
   @override
   int _selectedIndex = 0;
@@ -54,7 +64,7 @@ class _NavState extends State<Nav> {
     ));
 
     return Scaffold(
-        appBar: _isAppBarEnabled ? CustomAppBar(title: 'BangApp', context: context,): null,
+        appBar: _isAppBarEnabled ? CustomAppBar(title: 'BangApp', context: context,  ): null,
 
     //   appBar: _isAppBarEnabled // Conditionally show/hide app bar
     //       ? AppBar(
