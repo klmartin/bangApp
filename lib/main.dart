@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bangapp/message/screens/chats/chats_screen.dart';
+import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
@@ -34,19 +36,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/screens/Create/final_create.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Listen for shared data when the app starts
   await Firebase.initializeApp();
-
-
-OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
-OneSignal.initialize("20d92df9-89dd-49a4-841c-4407d017edb6");
-// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
-OneSignal.Notifications.requestPermission(true);
-      print(OneSignal.User.pushSubscription.token);
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserProvider()),
@@ -60,18 +54,9 @@ OneSignal.Notifications.requestPermission(true);
   ], child: MyApp()));
 }
 
-Future accosiateUseWithOneSignal() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('user_id');
-     OneSignal.login(userId.toString());
-  }
-
-
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: Authenticate.id,
@@ -117,7 +102,6 @@ class _AuthenticateState extends State<Authenticate> {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
-    accosiateUseWithOneSignal();
     // For sharing images coming from outside the app while the app is in memory
     _intentDataStreamSubscription =
         ReceiveSharingIntent.getMediaStream().listen(
@@ -207,15 +191,32 @@ class _AuthenticateState extends State<Authenticate> {
   }
 
   void _configureFirebaseMessaging() {
+    print('hereeeeeeeee');
     _firebaseMessaging.getToken().then((token) {
       // Example:
       // YourAPIService.sendTokenToBackend(token);
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print(message.data["type"]);
       // Handle incoming messages when the app is in the foreground.
       String? title = message.notification?.title;
       String? body = message.notification?.body;
+
+      if (message.data["type"] == "message") {
+        int notificationId = int.parse(message.data['notification_id']);
+        String? userName = message.data['user_name'];
+      print("THis is of object type ${notificationId.runtimeType} and is $notificationId user is $userName");
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MessagesScreen(
+                notificationId,
+                message.data['user_name'] ?? "Username"),
+          ),
+        );
+      }
 
       if (title != null && body != null) {
         print('this is message');
@@ -229,13 +230,32 @@ class _AuthenticateState extends State<Authenticate> {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       // Handle notification tap when the app is in the background or terminated.
       // Navigate the user to the relevant screen based on the notification data.
-      int? challengeId = message.data['challenge_id'] != null
-          ? int.tryParse(message.data['challenge_id'])
-          : null;
-      // Pass the challengeId to ViewChallengePage
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => ViewChallengePage(challengeId: challengeId),
-      ));
+      print(message.data["type"]);
+
+      if (message.data["type"] == "message") {
+        int notificationId = int.parse(message.data['notification_id']);
+        String? userName = message.data['user_name'];
+      print("THis is of object type ${notificationId.runtimeType} and is $notificationId user is $userName");
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MessagesScreen(
+                notificationId,
+                userName ?? "Username"),
+          ),
+        );
+      }
+
+      if (message.data["type"] == "challange") {
+        int? challengeId = message.data['challenge_id'] != null
+            ? int.tryParse(message.data['challenge_id'])
+            : null;
+        // Pass the challengeId to ViewChallengePage
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ViewChallengePage(challengeId: challengeId),
+        ));
+      }
     });
   }
 
