@@ -561,7 +561,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
       final cp = Provider.of<ChatProvider>(context, listen: false);
       _sendMessage(result.path, 'video');
       print("Message sent.");
-      Navigator.of(context).pop();
     } catch (error) {
       final snackBar = SnackBar(
         content: Text('Error: $error'),
