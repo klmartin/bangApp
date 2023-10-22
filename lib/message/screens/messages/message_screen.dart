@@ -18,6 +18,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:video_player/video_player.dart';
 
 import 'components/body.dart';
 
@@ -118,7 +119,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Future<void> _sendMessageToSocket(Map<String, dynamic> rawMessage) async {
     if (socket.connected) {
       try {
-
         rawMessage['participant1_id'] = await getUserId();
         rawMessage['participant2_id'] = widget.receiverId;
         rawMessage['is_read'] = 0;
@@ -159,11 +159,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
     if (messageType == "text") {
-        chatProvider.sendMessage(context, await getUserId(), widget.receiverId,
-        messageText, chatProvider, socket);
+      chatProvider.sendMessage(context, await getUserId(), widget.receiverId,
+          messageText, chatProvider, socket);
       print("huuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
-    } else {
+    } else if (messageType == "image") {
       chatProvider.sendImageMessage(context, await getUserId(),
+          widget.receiverId, File(messageText), chatProvider, socket);
+    } else {
+      chatProvider.sendVideoMessage(context, await getUserId(),
           widget.receiverId, File(messageText), chatProvider, socket);
     }
 
@@ -231,7 +234,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               return MSG.Message(
                                 message: ChatMessage(
                                   text: messages[index].message,
-                                  messageType: messages[index].messageType == "image" ? ChatMessageType.image  :ChatMessageType.text,
+                                  messageType: messages[index].messageType ==
+                                          "image"
+                                      ? ChatMessageType.image
+                                      : messages[index].messageType == "video"
+                                          ? ChatMessageType.video
+                                          : ChatMessageType.text,
                                   messageStatus: message.isReady == 0
                                       ? MessageStatus.not_view
                                       : MessageStatus.viewed,
@@ -516,22 +524,49 @@ class _MessagesScreenState extends State<MessagesScreen> {
       source: ImageSource.gallery,
     );
 
-    if (result != null) {
-      final bytes = await result.readAsBytes();
-      final image = await decodeImageFromList(bytes);
+    if (result == null) {
+      return;
+    }
 
-      //   final message = types.ImageMessage(
-      //     author: _user,
-      //     createdAt: DateTime.now().millisecondsSinceEpoch,
-      //     height: image.height.toDouble(),
-      //     id: const Uuid().v4(),
-      //     name: result.name,
-      //     size: bytes.length,
-      //     uri: result.path,
-      //     width: image.width.toDouble(),
-      //   );
+    // Check video size
+    File videoFile = File(result.path);
+    int videoSizeInBytes = await videoFile.length();
+    double videoSizeInMB = videoSizeInBytes / (1024 * 1024);
 
-      //   _addMessage(message);
+    // Check video duration
+    final videoPlayerController = VideoPlayerController.file(videoFile);
+    await videoPlayerController.initialize();
+    final duration = videoPlayerController.value.duration;
+    print(result);
+    print(
+        "The selected vide00000 is ${videoSizeInMB}MB and its duration is ${duration.inSeconds} seconds.");
+
+    if (videoSizeInMB > 10) {
+      final snackBar = SnackBar(
+        content: Text('Video size should not be more than 10MB.'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    if (duration > Duration(minutes: 3)) {
+      final snackBar = SnackBar(
+        content: Text('Video duration should not be more than 3 minutes.'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    try {
+      final cp = Provider.of<ChatProvider>(context, listen: false);
+      _sendMessage(result.path, 'video');
+      print("Message sent.");
+      Navigator.of(context).pop();
+    } catch (error) {
+      final snackBar = SnackBar(
+        content: Text('Error: $error'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 }

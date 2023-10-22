@@ -41,7 +41,7 @@ class _MessageState extends State<Message> {
         case ChatMessageType.audio:
           return AudioMessage(message: message);
         case ChatMessageType.video:
-          return const VideoMessage();
+          return  VideoMessage(message: message);
            case ChatMessageType.image:
           return ImageMessage(message: message,);
         default:
