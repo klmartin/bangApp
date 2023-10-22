@@ -6,6 +6,7 @@ import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'package:bangapp/screens/blog/colors.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
+import 'package:video_player/video_player.dart';
 import '../../models/post.dart';
 import '../../providers/comment_provider.dart';
 import '../../services/animation.dart';
@@ -98,7 +100,7 @@ class PostItem2 extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
-    if (challengeImg != null && challenges.isEmpty) {
+    if (challengeImg != null && challenges.isEmpty && type=='image') {
       return Container(
         decoration: const BoxDecoration(
           color: Color.fromARGB(1, 30, 34, 45),
@@ -329,7 +331,219 @@ class PostItem2 extends StatelessWidget {
           ],
         ),
       );
-    } else if (challengeImg == null && challenges.isEmpty) { //single post
+    } else if(challengeImg != null && challenges.isEmpty && type=='video'){
+      return Container(
+        decoration: const BoxDecoration(
+          color: Color.fromARGB(1, 30, 34, 45),
+        ),
+        child: Column(
+          children: [
+            postOptions(context, userId, image, name, followerCount, image,
+                postId, userId, type, createdAt) ??
+                Container(),
+            AspectRatio(
+              aspectRatio: 190 / 120,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        viewImage(context, image);
+                      },
+                      child: Container(
+                        height: 250,
+                        child: Stack(
+                          children: [
+                            Chewie(
+                          controller: ChewieController(
+                          videoPlayerController: VideoPlayerController.network(image),
+                          autoPlay: false,
+                          looping: true,
+                          showControls: true, // Hide controls if needed
+                        ),
+                       ),
+                            Positioned(
+                              bottom: 5,
+                              child: Container(
+                                margin: EdgeInsets.only(left: 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50)),
+                                child: Text(
+                                  "A",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 34),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5), // Add some spacing between the images
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        viewImage(context, challengeImg);
+                      },
+                      child: Container(
+                        height: 250, // Set your desired fixed height here
+                        child: Stack(
+                          children: [
+                            Chewie(
+                              controller: ChewieController(
+                                videoPlayerController: VideoPlayerController.network(challengeImg),
+                                autoPlay: false,
+                                looping: true,
+                                showControls: true, // Hide controls if needed
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 5,
+                              right: 0,
+                              child: Container(
+                                margin: EdgeInsets.only(right: 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50)),
+                                child: Text(
+                                  "B",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 34),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            //displaying first challenge picture
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          final countUpdate = Provider.of<PostsProvider>(
+                              context,
+                              listen: false);
+                          countUpdate.increaseLikes2(postId, 1);
+                          Service().likeAction(postId, "A", userId);
+                        },
+                        child: isLikedA
+                            ? Icon(CupertinoIcons.heart_fill,
+                            color: Colors.red, size: 25)
+                            : Icon(CupertinoIcons.heart,
+                            color: Colors.red, size: 25),
+                      ),
+                      Text("${likeCountA.toString()} Likes")
+                    ],
+                  ), //for liking first picture
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        width: 15,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            createRoute(
+                              CommentsPage(
+                                postId: postId, userId: userId,
+                                myProvider: myProvider,
+                                // currentUser: 1,
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Icon(
+                          CupertinoIcons.chat_bubble,
+                          color: Colors.black,
+                          size: 25,
+                        ),
+                      ), //for comments
+                      const SizedBox(
+                        width: 10,
+                      ),
+
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              final countUpdate = Provider.of<PostsProvider>(
+                                  context,
+                                  listen: false);
+                              countUpdate.increaseLikes2(postId, 2);
+                              Service().likeAction(postId, "B", userId);
+                            },
+                            child: isLikedB
+                                ? Icon(CupertinoIcons.heart_fill,
+                                color: Colors.red, size: 25)
+                                : Icon(CupertinoIcons.heart,
+                                color: Colors.red, size: 25),
+                          ),
+                          Text("${likeCountB.toString()} Likes")
+                        ],
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (caption != null)
+              Padding(
+                padding: const EdgeInsets.only(left: 12, top: 2),
+                child: Row(
+                  children: [
+                    Text(
+                      name, // Add your username here
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 5), // Add some spacing between the username and caption
+                    Expanded( // Wrap the ReadMoreText with an Expanded widget
+                      child: ReadMoreText(
+                        caption,
+                        trimLines: 1,
+                        style: Theme.of(context).textTheme.bodyLarge!,
+                        colorClickableText: Theme.of(context).primaryColor,
+                        trimMode: TrimMode.line,
+                        trimCollapsedText: '...Show more',
+                        trimExpandedText: '...Show less',
+                        moreStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            Text("$commentCount comments"),
+
+            const SizedBox(height: 10),
+          ],
+        ),
+      );
+    }
+    else if (challengeImg == null && challenges.isEmpty) { //single post
       return Container(
         decoration: const BoxDecoration(
           color: Color.fromARGB(1, 30, 34, 45),
@@ -377,7 +591,6 @@ class PostItem2 extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 Container(
                     padding: EdgeInsets.only(right: 10),
                   child: Row(
@@ -445,7 +658,6 @@ class PostItem2 extends StatelessWidget {
         ),
       );
     } else if (challengeImg == null && challenges.isNotEmpty) {
-
       return Container(
           decoration: const BoxDecoration(
             color: Color.fromARGB(1, 30, 34, 45),

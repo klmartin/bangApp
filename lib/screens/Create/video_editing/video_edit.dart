@@ -149,6 +149,8 @@ class _VideoEditorState extends State<VideoEditor> {
                 editedVideo:file.path,
                 challengeImg: false,
                 type: 'video',
+                editedImage: null,
+                editedImage2: null,
               ),
             ),
           );

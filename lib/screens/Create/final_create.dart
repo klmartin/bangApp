@@ -60,7 +60,15 @@ class _FinaleCreateState extends State<FinalCreate> {
 
   @override
   Widget build(BuildContext context) {
-    List<Uint8List> images = [widget.editedImage, widget.editedImage2];
+    List<Uint8List> images = [];
+    List<String> videos = [];
+    if(widget.editedImage != null && widget.editedImage2 != null && widget.type=='image') {
+      List<Uint8List> images = [widget.editedImage!, widget.editedImage2!];
+    }
+    if(widget.editedVideo != null && widget.editedVideo2 != null) {
+       videos.add(widget.editedVideo!);
+       videos.add(widget.editedVideo2!);
+    }
     Size size= MediaQuery.of(context).size;
     return  Scaffold(
         appBar: AppBar(
@@ -104,7 +112,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                       Row(
                         children: [ // Display the first image
                         if (widget.editedImage != null && widget.editedImage2 == null )
-                        Expanded(
+                          Expanded(
                         child: InkWell(
                             child: Container(
                               width: size.width,
@@ -118,48 +126,69 @@ class _FinaleCreateState extends State<FinalCreate> {
                           ),
                         )
                         else if (widget.editedImage2 != null && widget.editedImage != null)
-                        Expanded(
-                          child: InkWell(
-                          child: PageView.builder(
-                            itemCount: images.length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                width: 190,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  color: Colors.red[200],
-                                  borderRadius: BorderRadius.circular(32),
-                                ),
-                                child: Image.memory(
-                                  images[index],
-                                  width: 190.0,
-                                  height: 200.0,
-                                  fit: BoxFit.cover,
-                                ),
-                              );
-                            },
-                          ),
-                          ),
-                        ),
-                        if(widget.editedVideo != null && widget.editedImage == null && widget.editedImage2 == null)
+                          Expanded(
+                            child: SizedBox(
+                              height: size.height/2, // Specify the desired height
+                              child: PageView.builder(
+                                itemCount: images.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    width: 190,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red[200],
+                                      borderRadius: BorderRadius.circular(32),
+                                    ),
+                                    child: Image.memory(
+                                      images[index],
+                                      width: 190.0,
+                                      height: 200.0,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          )
+                        else if(widget.editedVideo != null && widget.editedVideo2 == null && widget.editedImage2 == null)
                           InkWell(
                             child: Container(
-                              width: 190,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                color: Colors.red[200],
-                                borderRadius: BorderRadius.circular(32),
-                              ),
+                              width: size.width -4,
+                              height: size.height / 2 ,
                               child: Chewie(
                                 controller: ChewieController(
                                   videoPlayerController: VideoPlayerController.network(widget.editedVideo!),
                                   autoPlay: true,
-                                  looping: true,
+                                  looping: false,
                                 ),
                               ),
                             ),
                           )
-                        ],
+                        else if(widget.editedVideo != null && widget.editedVideo2 != null)
+                              Expanded(
+                                child: SizedBox(
+                                  height: size.height / 2, // Specify the desired height
+                                  child: PageView.builder(
+                                    itemCount: videos.length,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        width: size.width - 4,
+                                        height: size.height / 2,
+                                        child: Chewie(
+                                          controller: ChewieController(
+                                            videoPlayerController: VideoPlayerController.file(
+                                              File(videos[index]),
+                                            ),
+                                            autoPlay: true,
+                                            looping: true,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              )
+                            ],
                       ),
                       SizedBox(height: 15.0),
                       Text(
@@ -205,91 +234,109 @@ class _FinaleCreateState extends State<FinalCreate> {
                       ),
                       SizedBox(height: 15),
                       // Initially, loading is set to false
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 46.0),
+                          child: Container(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: isLoading
+                                ? null : () async
+                                {
+                                  setState(() {isLoading = true;});
 
-                      Padding(
-                        padding: const EdgeInsets.only(top: 46.0),
-                        child: Container(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                          onPressed: isLoading
-                          ? null // Disable the button when loading is true
-                              : () async {
-                          setState(() {
-                          isLoading = true; // Set loading to true when the button is pressed
-                          });
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                try {
+                                  if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == false) {
+                                    print('this is one');
 
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          try {
-                          if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == false) {
-                          String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
-                          print(filePath);
-                          Map<String, String> body = {
-                          'user_id': prefs.getInt('user_id').toString(),
-                          'body': caption ?? "",
-                          'pinned': pinPost == 1 ? '1' : '0',
-                          'type': widget.type!,
-                          };
-                          await service.addImage(body, filePath,);
-                          } else if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == true) {
-                          String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
-                          print(filePath);
-                          Map<String, String> body = {
-                          'user_id': prefs.getInt('user_id').toString(),
-                          'body': caption ?? "",
-                          'post_id': widget.postId.toString(),
-                          'pinned': pinPost == 1 ? '1' : '0',
-                          'type': widget.type!,
-                          };
-                          await service.addChallenge(body, filePath, widget.userChallenged!);
-                          } else if (widget.editedVideo != null && widget.editedImage2 == null && widget.editedImage == null) {
-                          String? filePath1 = widget.editedVideo;
-                          Map<String, String> body = {
-                          'user_id': prefs.getInt('user_id').toString(),
-                          'body': caption ?? "",
-                          'type': widget.type!,
-                          'pinned': pinPost == 1 ? '1' : '0',
-                          };
+                                    String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+                                    print(filePath);
+                                    Map<String, String> body = {
+                                      'user_id': prefs.getInt('user_id').toString(),
+                                      'body': caption ?? "",
+                                      'pinned': pinPost == 1 ? '1' : '0',
+                                      'type': widget.type!,
+                                    };
+                                  await service.addImage(body, filePath,);
+                                  }
+                                  else if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == true) {
+                                    print('this is two');
 
-                          await service.addImage(body, filePath1!);
-                          } else {
-                          String filePath1 = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
-                          String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');
-                          Map<String, String> body = {
-                          'user_id': prefs.getInt('user_id').toString(),
-                          'body': caption ?? "",
-                          'pinned': pinPost == 1 ? '1' : '0',
-                          'type': widget.type!,
-                          };
-                          await service.addChallengImage(body, filePath1, filePath2);
-                          }
-                          // Navigator.pushNamed(context, Nav.id);
-                          Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => Nav()),
-                          );
-                          } finally {
-                          // After your button logic is done, set loading back to false
-                          setState(() {
-                          isLoading = false;
-                          });
-                          }
-                          },
-                          style: ElevatedButton.styleFrom(
-                          primary: Colors.blue, // Set the background color of the button
-                          ),
-                          child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                          Visibility(
-                          visible: !isLoading, // Show the CircularProgressIndicator when not loading
-                          child: Text('Post'), // Display the button text
-                          ),
-                          Visibility(
-                          visible: isLoading, // Show the CircularProgressIndicator when loading
-                          child: CircularProgressIndicator(), // Display the CircularProgressIndicator
-                          ),
-                          ],
-                          ),
+                                    String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+                                    print(filePath);
+                                    Map<String, String> body = {
+                                      'user_id': prefs.getInt('user_id').toString(),
+                                      'body': caption ?? "",
+                                      'post_id': widget.postId.toString(),
+                                      'pinned': pinPost == 1 ? '1' : '0',
+                                      'type': widget.type!,
+                                    };
+                                  await service.addChallenge(body, filePath, widget.userChallenged!);
+                                  }
+                                  else if (widget.editedVideo != null && widget.editedVideo2 == null && widget.type == 'video') {
+                                    print('this is three');
+
+                                    String? filePath1 = widget.editedVideo;
+                                    Map<String, String> body = {
+                                      'user_id': prefs.getInt('user_id').toString(),
+                                      'body': caption ?? "",
+                                      'type': widget.type!,
+                                      'pinned': pinPost == 1 ? '1' : '0',
+                                    };
+                                    await service.addImage(body, filePath1!);
+                                  }
+                                  else if(widget.editedVideo != null && widget.editedVideo2 != null && widget.type == 'video') {
+                                    print('this is four');
+
+                                    String? filePath1 = widget.editedVideo;
+                                    Map<String, String> body = {
+                                      'user_id': prefs.getInt('user_id').toString(),
+                                      'body': caption ?? "",
+                                      'type': widget.type!,
+                                      'pinned': pinPost == 1 ? '1' : '0',
+                                    };
+                                    await service.addChallengImage(body, widget.editedVideo!,widget.editedVideo2!);
+                                  }
+                                  else {
+                                    print('this is five');
+
+                                    String filePath1 = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+                                    String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');
+                                    Map<String, String> body = {
+                                      'user_id': prefs.getInt('user_id').toString(),
+                                      'body': caption ?? "",
+                                      'pinned': pinPost == 1 ? '1' : '0',
+                                      'type': widget.type!,
+                                    };
+                                    await service.addChallengImage(body, filePath1, filePath2);
+                                }
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Nav()),);
+                                } finally {
+                                // After your button logic is done, set loading back to false
+                                setState(() {
+                                isLoading = false;
+                                });
+                                }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue, // Set the background color of the button
+                                ),
+                                child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                Visibility(
+                                visible: !isLoading, // Show the CircularProgressIndicator when not loading
+                                child: Text('Post'), // Display the button text
+                                ),
+                                Visibility(
+                                visible: isLoading, // Show the CircularProgressIndicator when loading
+                                child: CircularProgressIndicator(), // Display the CircularProgressIndicator
+                                ),
+                                ],
+                                ),
+                                ),
                           ),
                         ),
                       )
