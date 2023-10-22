@@ -415,7 +415,66 @@ Future<void> sendImageMessage(
       print(
           'Conversation not found with id: ${lastMessage['conversation_id']}');
     }
+    }
+
+
+
+  Future<void> sendVideoMessage(
+  BuildContext context,
+  int user1Id,
+  int user2Id,
+  File imageFile, // Assuming you have a File object for the image
+  ChatProvider chatProvider,
+  socket,
+) async {
+  print("The above is image response.................");
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  final userId = prefs.getInt('user_id');
+  try {
+    // You may need to adjust the URL and parameters based on your API
+    final url = Uri.parse('$baseUrl/sendVideoMessage');
+    var request = http.MultipartRequest('POST', url);
+    request.fields['sender_id'] = user1Id.toString();
+    request.fields['user2_id'] = user2Id.toString();
+
+    // Add the image file to the request
+    request.files.add(await http.MultipartFile.fromPath('attachment', imageFile.path));
+
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      final data = jsonDecode(await response.stream.bytesToString()); // Corrected this line
+      final newMessage = Message.fromJson(data);
+      final createdAt = DateTime.parse(data['created_at']);
+      final timeAgo = timeago.format(createdAt);
+      print("Datttttttttttttttttta");
+      print(data);
+      print("End dataaaaaaaaaaaaa");
+      final rawMessage = {
+        'conversation_id': data['conversation_id'].toString(),
+        'sender_id': user1Id.toString(),
+        'user2_id': user2Id.toString(),
+        'message': data['message'],
+        'time': timeAgo,
+      };
+      print("The above is image response.................");
+
+    //  _sendMessageToSocket(rawMessage);
+
+      socket.emit('updateLastMessageInConversation', rawMessage);
+      chatProvider._messages.insert(0, newMessage);
+      notifyListeners();
+      // _showSnackbar('Image message sent successfully', context); // Add your Snackbar logic here
+    } else {
+      print(response.statusCode);
+      throw Exception('Failed to send image message');
+    }
+  } catch (error) {
+    _showSnackbar('Error sending image message: $error', context); // You need to define this function
+  }
 }
+
+
 }
 
 
