@@ -203,15 +203,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                       .setUser(responseBody);
                                   SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
-                                  prefs.setInt(
-                                      'user_id', responseBody['user_id']);
-                                  prefs.setString(
-                                      'token', responseBody['token']);
-                                  prefs.setString(
-                                      'user_image', responseBody['user_image']);
+                                  prefs.setInt('user_id', responseBody['user_id']);
+                                  prefs.setString('token', responseBody['token']);
+                                  prefs.setString('user_image', responseBody['user_image']);
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);
+                                  prefs.setString('role', responseBody['role']);
                                 });
+                                print('this is role');
+                                print(responseBody['role']);
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(builder: (context) => Nav()),

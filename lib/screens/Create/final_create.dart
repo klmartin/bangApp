@@ -46,6 +46,7 @@ class _FinaleCreateState extends State<FinalCreate> {
   var image;
   bool light = true;
   var caption;
+  int bangUpdate = 0;
   int pinPost = 0 ;
   XFile? mediaFile;
   bool isLoading = false;
@@ -230,6 +231,46 @@ class _FinaleCreateState extends State<FinalCreate> {
                               });
                             },
                           ),
+                          FutureBuilder(
+                            future: SharedPreferences.getInstance(),
+                            builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+                              if (snapshot.connectionState == ConnectionState.done) {
+                                final sharedPreferences = snapshot.data;
+                                final userRole = sharedPreferences?.getString("role"); // Replace "user_role" with the actual key for the role in shared preferences.
+                                print('this is role');
+                                print(userRole);
+                                bool isAdmin = userRole == "admin";
+                                return isAdmin
+                                    ? Container(
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Chemba ya Umbea',
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                      Switch(
+                                        value: pinPost == 1,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            bangUpdate = value ? 1 : 0;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                    : Container(); // Return an empty container if the user is not an admin
+                              }
+
+                              // Handle other connection states (loading, etc.) if needed
+                              return CircularProgressIndicator(); // Return a loading indicator while fetching shared preferences.
+                            },
+                          )
+
                         ],
                       ),
                       SizedBox(height: 15),
@@ -249,10 +290,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 SharedPreferences prefs = await SharedPreferences.getInstance();
                                 try {
                                   if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == false) {
-                                    print('this is one');
-
                                     String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
-                                    print(filePath);
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
                                       'body': caption ?? "",
@@ -262,10 +300,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   await service.addImage(body, filePath,);
                                   }
                                   else if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == true) {
-                                    print('this is two');
-
                                     String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
-                                    print(filePath);
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
                                       'body': caption ?? "",
@@ -276,8 +311,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   await service.addChallenge(body, filePath, widget.userChallenged!);
                                   }
                                   else if (widget.editedVideo != null && widget.editedVideo2 == null && widget.type == 'video') {
-                                    print('this is three');
-
                                     String? filePath1 = widget.editedVideo;
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
@@ -288,8 +321,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     await service.addImage(body, filePath1!);
                                   }
                                   else if(widget.editedVideo != null && widget.editedVideo2 != null && widget.type == 'video') {
-                                    print('this is four');
-
                                     String? filePath1 = widget.editedVideo;
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
@@ -300,8 +331,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     await service.addChallengImage(body, widget.editedVideo!,widget.editedVideo2!);
                                   }
                                   else {
-                                    print('this is five');
-
                                     String filePath1 = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
                                     String filePath2 = await saveUint8ListAsFile(widget.editedImage2!, 'image2.jpg');
                                     Map<String, String> body = {
