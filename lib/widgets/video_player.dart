@@ -1,3 +1,4 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
@@ -13,6 +14,7 @@ class VideoPlayerPage extends StatefulWidget {
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
+
 
   @override
   void initState() {
@@ -43,10 +45,14 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   Widget build(BuildContext context) {
+    //final screenSize = MediaQuery.of(context).size;
+    print(_videoPlayerController.value.aspectRatio);
+
     return AspectRatio(
                 //aspectRatio: 16 / 9,
       aspectRatio: _videoPlayerController.value.aspectRatio,
-          child: Stack(
+
+      child: Stack(
             children: [
               VisibilityDetector(
                 key: Key('chewie_key'), // Provide a unique key
@@ -57,12 +63,18 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                     _chewieController.play();
                   }
                 },
+
+
                 child: Chewie(
                   controller: _chewieController,
+
                 ),
               ),
+
+
             ],
           ),
+
       );
   }
 }

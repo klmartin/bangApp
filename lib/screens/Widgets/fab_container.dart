@@ -1,10 +1,17 @@
+
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 // import '../posts/create_post.dart';
 
-class FabContainer extends StatelessWidget {
+//var rimage;
+//var imagePicker;
+enum ImageSourceType { gallery, camera }
+
+
+class FabContainer extends StatefulWidget {
   final Widget? page;
   final IconData? icon;
   final bool? mini;
@@ -12,11 +19,23 @@ class FabContainer extends StatelessWidget {
   FabContainer({ this.page,   this.icon, this.mini = false});
 
   @override
+  State<FabContainer> createState() => _FabContainerState();
+}
+
+class _FabContainerState extends State<FabContainer> {
+
+  @override
+  void initState() {
+    super.initState();
+    //imagePicker = ImagePicker();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return OpenContainer(
       transitionType: ContainerTransitionType.fade,
       openBuilder: (BuildContext context, VoidCallback _) {
-        return page!;
+        return widget.page!;
       },
       closedElevation: 4.0,
       closedShape: const RoundedRectangleBorder(
@@ -29,13 +48,13 @@ class FabContainer extends StatelessWidget {
         return FloatingActionButton(
           backgroundColor: Theme.of(context).primaryColor,
           child: Icon(
-            icon,
+            widget.icon,
             color: Theme.of(context).colorScheme.secondary,
           ),
           onPressed: () {
             chooseUpload(context);
           },
-          mini: mini!,
+          mini: widget.mini!,
         );
       },
     );
@@ -57,6 +76,18 @@ class FabContainer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Center(
+
+                 /* child: TextButton(
+                    onPressed: () async {
+                      XFile image = await imagePicker.pickImage(
+                        source: ImageSource.gallery,
+                      );
+                      setState(() {
+                        rimage = File(image.path);
+                      });
+                      Navigator.pop(context,rimage);
+                    },*/
+
                   child: Text(
                     'Choose Upload',
                     textAlign: TextAlign.center,

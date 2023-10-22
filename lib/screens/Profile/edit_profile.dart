@@ -1,15 +1,18 @@
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/screens/Home/Home2.dart';
+import 'package:bangapp/screens/Widgets/fab_container.dart';
 import  'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
 import 'package:date_formatter/date_formatter.dart';
 import 'package:filter_list/filter_list.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bangapp/screens/Profile/profile_upload.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
@@ -20,10 +23,24 @@ import 'edit_profile.dart';
 late String? _descr;
 late String phoneNumber;
 late String occupation;
+String selectedHobbiesText = "";
 DateTime date_of_birth = DateTime.now();
 TextEditingController _dateController = TextEditingController();
 
 Service?  loggedInUser;
+
+/*Map<String, String> body = {
+  //'user_id': prefs.getInt('user_id').toString(),
+  'hobbies': selectedHobbiesText,
+  //'date_of_birth': date_of_birth,
+  'phone_number': phoneNumber,
+  'occupation': occupation,
+  //'bio': _descr,
+};*/
+
+//var rimage;
+var imagePicker;
+enum ImageSourceType { gallery, camera }
 
 class EditPage extends StatefulWidget {
   //final GoogleSignInAccount user;
@@ -68,11 +85,13 @@ Future<List<Hobby>> fetchHobbies() async {
   }
 }
 
+
 class _EditPageState extends State<EditPage> {
   late Map<String, dynamic> _currentUser;
   @override
   void initState() {
     super.initState();
+    imagePicker = ImagePicker();
   }
 
   bool showSpinner = false;
@@ -80,7 +99,7 @@ class _EditPageState extends State<EditPage> {
    List<Hobby>? selectedHobbyList;
   List<Hobby> hobbyList = [];
 
-  String selectedHobbiesText = "";
+  //String selectedHobbiesText = "";
   List<int> selectedHobbyIds = [];
 
   loadHobbies() async {
@@ -105,7 +124,8 @@ class _EditPageState extends State<EditPage> {
   }
 
 
-   void openFilterDialog() async {
+
+  void openFilterDialog() async {
     await FilterListDialog.display<Hobby>(
       context,
       listData: await loadHobbies()!, // Use hobbyList as the data source
@@ -127,6 +147,158 @@ class _EditPageState extends State<EditPage> {
     );
   }
   //late final GoogleSignInAccount user;
+
+
+  chooseUploadFile(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          heightFactor: .4,
+          child: Column(
+           /* crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Center(
+
+                  *//* child: TextButton(
+                    onPressed: () async {
+                      XFile image = await imagePicker.pickImage(
+                        source: ImageSource.gallery,
+                      );
+                      setState(() {
+                        rimage = File(image.path);
+                      });
+                      Navigator.pop(context,rimage);
+                    },*//*
+
+                  child: Text(
+                    'Choose Upload',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                leading: Icon(
+                  CupertinoIcons.camera_on_rectangle,
+                  size: 25.0,
+                ),
+                title: Text('Choose From Gallery'),
+                onTap: () {
+                  // Navigator.pop(context);
+                  // Navigator.of(context).push(
+                  //   CupertinoPageRoute(
+                  //     builder: (_) => CreatePost(),
+                  //   ),
+                  // );
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  CupertinoIcons.camera_on_rectangle,
+                  size: 25.0,
+                ),
+                title: Text('Upload From Camera'),
+                onTap: () async {
+                  // Navigator.pop(context);
+                  // await viewModel.pickImage(context: context);
+
+                },
+              ),*/
+
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+            Padding(
+            padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
+        child: Container(
+        // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
+        child: TextButton(
+        onPressed: () async {
+        XFile image = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+        );
+        setState(() {
+        rimage = File(image.path);
+        });
+        Navigator.pop(context,rimage);
+        },
+        child: Text(
+        'Upload from Gallery',
+        style: TextStyle(
+        color: Colors.white,
+        fontFamily: 'Metropolis',
+        fontWeight: FontWeight.bold),
+        )),
+        decoration: BoxDecoration(
+        gradient: LinearGradient(
+        colors: [Colors.pink, Colors.redAccent, Colors.orange],
+        begin: Alignment.bottomRight,
+        end: Alignment.topLeft,
+        ),
+        borderRadius: BorderRadius.circular(20.0)),
+        ),
+        ),
+        Padding(
+        padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
+        child: Container(
+        // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
+        child: TextButton(
+        onPressed: () async {
+        // _handleURLButtonPress(context, ImageSourceType.camera);
+        XFile image = await imagePicker.pickImage(
+        source: ImageSource.camera,
+        );
+        setState(() {
+        rimage = File(image.path);
+        });
+        Navigator.pop(context,rimage);
+        },
+        child: Text(
+        'Open Camera',
+        style: TextStyle(
+        color: Colors.white,
+        fontFamily: 'Metropolis',
+        fontWeight: FontWeight.bold),
+        )),
+        decoration: BoxDecoration(
+        gradient: LinearGradient(
+        colors: [
+
+        Colors.deepOrange,
+        Colors.deepPurple,
+        Colors.redAccent
+
+        /* Colors.purple,
+                        Colors.deepPurple,
+                        Colors.blueAccent*/
+
+        ],
+        begin: Alignment.bottomRight,
+        end: Alignment.topLeft,
+        ),
+        borderRadius: BorderRadius.circular(20.0)),
+        ),
+        ),
+
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
 
   Widget build(BuildContext context) {
 
@@ -199,10 +371,7 @@ class _EditPageState extends State<EditPage> {
 
         TextButton(
         onPressed: () {
-        Navigator.push(
-        context,
-        MaterialPageRoute(
-        builder: (context) => UploadProfile()));
+          chooseUploadFile(context);
         },
         child: Text(
         'Change Profile photo',
@@ -317,7 +486,9 @@ class _EditPageState extends State<EditPage> {
                       _dateController.text = DateFormatter.formatDateTime(
                         dateTime: date_of_birth,
                         outputFormat: 'dd/MM/yyyy',
+
                       );
+                      //String date = dateFormat.format(dateTime);
 
                     });
                   }
@@ -374,6 +545,7 @@ class _EditPageState extends State<EditPage> {
                 height: 8.0,
               ),
                TextField(
+                 textAlign: TextAlign.center,
                 onTap: () async {
                    openFilterDialog();
 
@@ -492,9 +664,12 @@ class _EditPageState extends State<EditPage> {
                   // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
+
                     child: TextButton(
                         onPressed: () async {
-                           Service().setUserProfile(date_of_birth, phoneNumber, selectedHobbiesText, occupation,_descr, rimage.toString());
+
+
+                          Service().setUserProfile2(date_of_birth,phoneNumber,selectedHobbiesText, occupation,_descr, rimage.toString());
                            Navigator.push(
                              context,
                              MaterialPageRoute(
@@ -537,3 +712,5 @@ class _EditPageState extends State<EditPage> {
     );
   }
 }
+
+
