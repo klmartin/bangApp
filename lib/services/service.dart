@@ -411,30 +411,86 @@ Future<List<dynamic>> getPostInfo(postId) async {
   }
 
 
-  Future<bool> setUserProfile(DateTime date_of_birth, phoneNumber,String selectedHobbiesText, occupation, bio, String filepath) async {
+    Future<bool> setUserProfile(date_of_birth,phoneNumber,String Hobbies, occupation, bio, String filepath) async {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('user_id');
     String addimageUrl =
         '$baseUrl/setUserProfile';
-    var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
+
+   var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
+      /*
+       ..fields.addAll(user_id as Map<String, String>)
       ..fields.addAll(date_of_birth as Map<String, String>)
-      ..fields.addAll(phoneNumber)
-      ..fields.addAll(selectedHobbiesText as Map<String, String>)
-      ..fields.addAll(occupation)
-      ..fields.addAll(user_id as Map<String, String>)
-      ..fields.addAll(bio)
+      ..fields.addAll(phoneNumber as Map<String, String>)
+      ..fields.addAll(Hobbies as Map<String, String>)
+      ..fields.addAll(occupation as Map<String, String>)
+      ..fields.addAll(bio as Map<String, String>)
+      */
+    /*body: {
+      'user_id': user_id.toString(),
+    'date_of_birth': date_of_birth,
+    'phoneNumber': phoneNumber,
+    'Hobbies':Hobbies,
+    'occupation':occupation,
+    'reference_id':referenceId,
+    'body': body
+  },*/
+
+      //..fields.addAll(body)
+     ..fields.addAll(user_id as Map<String, String>)
+     //..fields.addAll(date_of_birth as Map<String, String>)
+     ..fields.addAll(phoneNumber as Map<String, String>)
+     ..fields.addAll(Hobbies as Map<String, String>)
+     ..fields.addAll(occupation as Map<String, String>)
+     ..fields.addAll(bio as Map<String, String>)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
+
       if (response.statusCode == 201) {
         var data = json.decode(response.body);
+        print(data);
         return data['url'];
+
       } else {
         return false;
       }
     } catch (e) {
       print(e);
       return false;
+    }
+  }
+
+  Future<void> setUserProfile2(date_of_birth, String phoneNumber,String Hobbies, occupation, bio, String filepath) async {
+    print(['this is type', date_of_birth,phoneNumber, Hobbies, occupation, bio, filepath]);
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(
+        Uri.parse('$baseUrl/setUserProfile'),
+          body: {
+            'user_id': prefs.getInt('user_id').toString(),
+            'phone_number': phoneNumber.toString(),
+            'hobbies': selectedHobbiesText,
+            'date_of_birth': date_of_birth.toString(),
+            'image' : filepath,
+            'occupation': occupation,
+            'bio': bio,
+          },
+      );
+      print('this is response');
+      print(response.body);
+      if (response.statusCode == 200) {
+        // Update the like count based on the response from the API
+        final responseData = json.decode(response.body);
+        print(responseData);
+        setState(() {
+        });
+      } else {
+      }
+    } catch (e) {
+      print(e);
+      // Handle exceptions, if any
     }
   }
 

@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 var rimage;
-var imagePicker;
+var imagePicker2;
 enum ImageSourceType { gallery, camera }
 
 class UploadProfile extends StatefulWidget {
@@ -18,7 +18,7 @@ class _UploadProfileState extends State<UploadProfile> {
   @override
   void initState() {
     super.initState();
-    imagePicker = ImagePicker();
+    imagePicker2= ImagePicker();
   }
 
   @override
@@ -49,7 +49,7 @@ class _UploadProfileState extends State<UploadProfile> {
                 // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
                 child: TextButton(
                     onPressed: () async {
-                      XFile image = await imagePicker.pickImage(
+                      XFile image = await imagePicker2.pickImage(
                         source: ImageSource.gallery,
                       );
                       setState(() {
@@ -80,7 +80,7 @@ class _UploadProfileState extends State<UploadProfile> {
                 child: TextButton(
                     onPressed: () async {
                       // _handleURLButtonPress(context, ImageSourceType.camera);
-                      XFile image = await imagePicker.pickImage(
+                      XFile image = await imagePicker2.pickImage(
                         source: ImageSource.camera,
                       );
                       setState(() {

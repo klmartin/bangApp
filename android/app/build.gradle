@@ -101,5 +101,6 @@ android {
         implementation 'com.google.firebase:firebase-analytics-ktx'
         implementation 'com.google.firebase:firebase-messaging:14.6.5'
         implementation 'com.android.support:multidex:1.0.3'
+        implementation 'com.google.android.gms:play-services-auth:20.4.1'
     }
 }
