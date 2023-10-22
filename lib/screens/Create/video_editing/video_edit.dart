@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_editor/video_editor.dart';
 
 import '../final_create.dart';
+import '../create_page.dart';
 
 void main() => runApp(
   MaterialApp(
@@ -40,9 +41,7 @@ class _VideoEditorExampleState extends State<VideoEditorExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Video Picker")),
-      body: Center(
-
-      ),
+      body: Center(),
     );
   }
 }
@@ -51,12 +50,15 @@ class _VideoEditorExampleState extends State<VideoEditorExample> {
 //VIDEO EDITOR SCREEN//
 //-------------------//
 class VideoEditor extends StatefulWidget {
-  final File video;
+  File video;
+  File? video2;
+  bool? isVideoChallenge;
 
   VideoEditor({
     required this.video,
+    this.video2,
+    this.isVideoChallenge,
   });
-
   @override
   State<VideoEditor> createState() => _VideoEditorState();
 }
@@ -110,14 +112,47 @@ class _VideoEditorState extends State<VideoEditor> {
       onCompleted: (file) {
         _isExporting.value = false;
         if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FinalCreate(
-              editedVideo:file.path,
+
+        print('this is where video is being posted');
+        print([widget.video2,widget.video, widget.isVideoChallenge]);
+
+        if(widget.video2 != null  && widget.isVideoChallenge==null){
+           Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VideoEditor(
+                video:File(widget.video2!.path),
+                video2: file,
+                isVideoChallenge:true,
+              ),
             ),
-          ),
-        );
+          );
+        }
+        else if(widget.video2 != null && widget.isVideoChallenge==true){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FinalCreate(
+                editedVideo:file.path,
+                editedVideo2:widget.video2?.path,
+                challengeImg: true,
+                type: 'video',
+              ),
+            ),
+          );
+        }
+        else if(widget.video2 == null && widget.isVideoChallenge==null){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FinalCreate(
+                editedVideo:file.path,
+                challengeImg: false,
+                type: 'video',
+              ),
+            ),
+          );
+        }
       },
     );
   }
@@ -287,7 +322,12 @@ class _VideoEditorState extends State<VideoEditor> {
           children: [
             Expanded(
               child: IconButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Create(),
+                  ),
+                ),
                 icon: const Icon(Icons.exit_to_app),
                 tooltip: 'Leave editor',
               ),

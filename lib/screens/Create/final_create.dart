@@ -11,6 +11,8 @@ import '../../nav.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'create_page.dart';
+
 enum ImageSourceType { gallery, camera }
 
 class FinalCreate extends StatefulWidget {
@@ -21,6 +23,8 @@ class FinalCreate extends StatefulWidget {
   final int? userChallenged;
   final int? postId;
   final String? editedVideo;
+  final String ? editedVideo2;
+  final String? type;
   const FinalCreate({
     Key? key,
     this.editedImage,
@@ -28,7 +32,9 @@ class FinalCreate extends StatefulWidget {
     this.challengeImg = false,
     this.editedImage2,
     this.postId,
-    this.editedVideo
+    this.editedVideo,
+    this.editedVideo2,
+    this.type,
   }) : super(key: key);
 
   @override
@@ -39,7 +45,6 @@ class _FinaleCreateState extends State<FinalCreate> {
   Service service = Service();
   var image;
   bool light = true;
-  var type;
   var caption;
   int pinPost = 0 ;
   XFile? mediaFile;
@@ -52,24 +57,92 @@ class _FinaleCreateState extends State<FinalCreate> {
     await file.writeAsBytes(data);
     return filePath;
   }
+
   @override
   Widget build(BuildContext context) {
+    List<Uint8List> images = [widget.editedImage, widget.editedImage2];
     Size size= MediaQuery.of(context).size;
-    return new Scaffold(
+    return  Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Post',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          backgroundColor: Colors.white,
+          actions: [
+            GestureDetector(
+              onTap: () async {  Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Create(),
+                ),
+              );},
+              child: Container(
+                padding: EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Colors.pink, Colors.redAccent, Colors.orange],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Icon(Icons.arrow_back_rounded, size: 30),
+              ),
+            ),
+            SizedBox(width: 10)
+          ],
+        ),
         body:ListView(
-          padding: EdgeInsets.symmetric(horizontal: 15.0),
+          padding: EdgeInsets.symmetric(horizontal: 1.0),
           children: [
-            SizedBox(height: 35.0),
             Container(
                 child:Column (
                     children:[
                       Row(
                         children: [ // Display the first image
-                        if (widget.editedImage != null && widget.editedVideo == null)
+                        if (widget.editedImage != null && widget.editedImage2 == null )
                         Expanded(
-                        child: Container(
-                        height: MediaQuery.of(context).size.height / 2.2,
                         child: InkWell(
+                            child: Container(
+                              width: size.width,
+                              height: size.height /2 ,
+                              child: Image.memory(
+                                widget.editedImage!,
+                                width: size.width,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        )
+                        else if (widget.editedImage2 != null && widget.editedImage != null)
+                        Expanded(
+                          child: InkWell(
+                          child: PageView.builder(
+                            itemCount: images.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                width: 190,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  color: Colors.red[200],
+                                  borderRadius: BorderRadius.circular(32),
+                                ),
+                                child: Image.memory(
+                                  images[index],
+                                  width: 190.0,
+                                  height: 200.0,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
+                          ),
+                          ),
+                        ),
+                        if(widget.editedVideo != null && widget.editedImage == null && widget.editedImage2 == null)
+                          InkWell(
                             child: Container(
                               width: 190,
                               height: 200,
@@ -77,62 +150,14 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 color: Colors.red[200],
                                 borderRadius: BorderRadius.circular(32),
                               ),
-                              child: Image.memory(
-                                widget.editedImage!,
-                                width: 190.0,
-                                height: 200.0,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                        )
-                        else
-                        Container(), // Empty container if the first image is null
-                        // Display the second image if editedImage2 is not null
-                        if (widget.editedImage2 != null && widget.editedVideo == null)
-                        Container(
-                        height: MediaQuery.of(context).size.height / 2.2,
-                        width: size.width * 0.4,
-                        child: InkWell(
-                        child: Container(
-                        width: 190,
-                        height: 200,
-                        decoration: BoxDecoration(
-                        color: Colors.red[200],
-                        borderRadius: BorderRadius.circular(32),
-                        ),
-                        child: Image.memory(
-                        widget.editedImage2!,
-                        width: 190.0,
-                        height: 200.0,
-                        fit: BoxFit.cover,
-                        ),
-                        ),
-                        ),
-                        ),
-                        if(widget.editedVideo != null && widget.editedImage == null && widget.editedImage2 == null)
-                          Container(
-                            height: MediaQuery.of(context).size.height / 2.2,
-                            width: size.width * 0.4,
-                            child: InkWell(
-                              child: Container(
-                                width: 190,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  color: Colors.red[200],
-                                  borderRadius: BorderRadius.circular(32),
-                                ),
-                                child: Chewie(
-                                  controller: ChewieController(
-                                    videoPlayerController: VideoPlayerController.network(widget.editedVideo!),
-                                    autoPlay: true,
-                                    looping: true,
-                                  ),
+                              child: Chewie(
+                                controller: ChewieController(
+                                  videoPlayerController: VideoPlayerController.network(widget.editedVideo!),
+                                  autoPlay: true,
+                                  looping: true,
                                 ),
                               ),
                             ),
-
                           )
                         ],
                       ),
@@ -202,6 +227,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                           'user_id': prefs.getInt('user_id').toString(),
                           'body': caption ?? "",
                           'pinned': pinPost == 1 ? '1' : '0',
+                          'type': widget.type!,
                           };
                           await service.addImage(body, filePath,);
                           } else if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == true) {
@@ -212,6 +238,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                           'body': caption ?? "",
                           'post_id': widget.postId.toString(),
                           'pinned': pinPost == 1 ? '1' : '0',
+                          'type': widget.type!,
                           };
                           await service.addChallenge(body, filePath, widget.userChallenged!);
                           } else if (widget.editedVideo != null && widget.editedImage2 == null && widget.editedImage == null) {
@@ -219,7 +246,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                           Map<String, String> body = {
                           'user_id': prefs.getInt('user_id').toString(),
                           'body': caption ?? "",
-                          'type': 'video',
+                          'type': widget.type!,
                           'pinned': pinPost == 1 ? '1' : '0',
                           };
 
@@ -231,6 +258,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                           'user_id': prefs.getInt('user_id').toString(),
                           'body': caption ?? "",
                           'pinned': pinPost == 1 ? '1' : '0',
+                          'type': widget.type!,
                           };
                           await service.addChallengImage(body, filePath1, filePath2);
                           }
