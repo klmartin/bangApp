@@ -253,7 +253,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                         ),
                                       ),
                                       Switch(
-                                        value: pinPost == 1,
+                                        value: bangUpdate == 1,
                                         onChanged: (value) {
                                           setState(() {
                                             bangUpdate = value ? 1 : 0;
@@ -267,7 +267,28 @@ class _FinaleCreateState extends State<FinalCreate> {
                               }
 
                               // Handle other connection states (loading, etc.) if needed
-                              return CircularProgressIndicator(); // Return a loading indicator while fetching shared preferences.
+                              return Container(
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Chemba ya Umbea',
+                                      style: TextStyle(
+                                        fontSize: 15.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                    Switch(
+                                      value: bangUpdate == 1,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          bangUpdate = value ? 1 : 0;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ); // Return a loading indicator while fetching shared preferences.
                             },
                           )
 
@@ -293,11 +314,19 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
-                                      'body': caption ?? "",
+                                      'body': caption ?? " ",
                                       'pinned': pinPost == 1 ? '1' : '0',
                                       'type': widget.type!,
                                     };
-                                  await service.addImage(body, filePath,);
+                                    if(bangUpdate==1){
+                                      print('naenda kwenye bangupdate');
+                                      print(body);
+                                      await service.addBangUpdate(body, filePath);
+                                    }
+                                    else{
+                                      await service.addImage(body, filePath,);
+                                    }
+
                                   }
                                   else if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == true) {
                                     String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
@@ -311,14 +340,20 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   await service.addChallenge(body, filePath, widget.userChallenged!);
                                   }
                                   else if (widget.editedVideo != null && widget.editedVideo2 == null && widget.type == 'video') {
-                                    String? filePath1 = widget.editedVideo;
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
                                       'body': caption ?? "",
                                       'type': widget.type!,
                                       'pinned': pinPost == 1 ? '1' : '0',
                                     };
-                                    await service.addImage(body, filePath1!);
+                                    if(bangUpdate==1){
+                                      print('naenda kwenye bangupdate kwenye video');
+                                      print(body);
+                                      await service.addBangUpdate(body, widget.editedVideo.toString());
+                                    }
+                                    else{
+                                      await service.addImage(body, widget.editedVideo.toString());
+                                    }
                                   }
                                   else if(widget.editedVideo != null && widget.editedVideo2 != null && widget.type == 'video') {
                                     String? filePath1 = widget.editedVideo;

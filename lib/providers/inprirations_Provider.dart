@@ -28,7 +28,6 @@ class BangInspirationsProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         _inspirations = data.map((json) => BangInspiration.fromJson(json)).toList();
-
         print(inspirations);
         notifyListeners();
 

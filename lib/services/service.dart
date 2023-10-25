@@ -49,6 +49,7 @@ class Service {
     try {
       var response = await http.Response.fromStream(await request.send());
       if (response.statusCode == 201) {
+        print("immeenda hivo");
         final response2 = jsonDecode(response.body);
         if (response2['data']) {
         } else {
@@ -63,6 +64,35 @@ class Service {
       return false;
     }
   }
+
+  Future<bool> addBangUpdate(Map<String, String> body, String filepath) async {
+    print('this is addBangUpdate');
+    print([body,filepath]);
+    String addimageUrl = '$baseUrl/addBangUpdate';
+    var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
+      ..fields.addAll(body)
+      ..files.add(await http.MultipartFile.fromPath('image', filepath));
+    try {
+      var response = await http.Response.fromStream(await request.send());
+      print("this is addBangUpdate response");
+      print(response.body);
+      if (response.statusCode == 201) {
+        final response2 = jsonDecode(response.body);
+
+        if (response2['data']) {
+        } else {
+          print("No response.........");
+        }
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
 
   Future<bool> addChallengImage(
       Map<String, String> body, String filepath, String filepath2) async {
