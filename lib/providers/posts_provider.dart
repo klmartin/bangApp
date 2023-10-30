@@ -11,10 +11,11 @@ class PostsProvider with ChangeNotifier {
   int _pageNumber = 0;
   bool _error = false;
   bool _loading = true;
-  final int _numberOfPostsPerRequest = 500;
+  final int _numberOfPostsPerRequest = 3;
   final int _nextPageTrigger = 3;
 
 List<Post> _posts = [];
+List<Post> _allPosts = [];
 
   List<Post>? get posts => _posts;
   bool get isLastPage => _isLastPage;
@@ -28,13 +29,12 @@ List<Post> _posts = [];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final userId = prefs.getInt('user_id').toString();
       final response = await get(Uri.parse(
-          "$baseUrl/getPost?_limit=$_numberOfPostsPerRequest&user_id=$userId"));
+          "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"));
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       if (responseData.containsKey('data')) {
         List<dynamic> responseList = responseData['data']['data'];
         _posts = responseList.map((data) {
-
           List<dynamic>? challengesList = data['challenges'];
           List<Challenge> challenges = (challengesList ?? [])
               .map((challengeData) => Challenge(

@@ -3,7 +3,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 import '../../components/square_tiles.dart';
+import '../../constants/colors.dart';
+import '../../models/userprovider.dart';
 import '../../services/auth_services.dart';
 import 'login_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -22,104 +25,15 @@ class Register extends StatefulWidget {
   _RegisterState createState() => _RegisterState();
 }
 
-/*class Hobby {
-  final String? name;
-  final int ?id;
-  final String? avatar;
-
-  Hobby({this.name,this.id, this.avatar});
-
-  factory Hobby.fromJson(Map<String, dynamic> json) {
-    return Hobby(
-      name: json['name'],
-      id: json['id'],
-      avatar: "", // You can set the avatar URL here if needed
-    );
-  }
-}*/
-
-/*Future<List<Hobby>> fetchHobbies() async {
-  print('fetching hobbies');
-  final response = await http.get(Uri.parse('$baseUrl/hobbies'));
-
-  if (response.statusCode == 200) {
-    final List<dynamic> data = json.decode(response.body);
-
-    print(json.decode(response.body));
-    return data.map((json) => Hobby.fromJson(json)).toList();
-
-  } else {
-    throw Exception('Failed to load hobbies');
-  }
-}*/
-
 class _RegisterState extends State<Register> {
   @override
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  //DateTime date_of_birth = DateTime.now();
-  //TextEditingController _dateController = TextEditingController();
-  //instance
   late String email;
   late String password;
   late String confirmPassword;
   late String name;
-  //late String phoneNumber;
-  //late String occupation;
-
   bool showSpinner = false;
-
-  //late final GoogleSignInAccount user;
   @override
-   // List<Hobby>? selectedHobbyList;
-    //List<Hobby> hobbyList = [];
-
-  //String selectedHobbiesText = "";
-  //List<int> selectedHobbyIds = [];
-
-   /*loadHobbies() async {
-    try {
-      hobbyList = await fetchHobbies();
-      return hobbyList;
-    } catch (e) {
-      // Handle error, if any
-    }
-  }
-*/
-  /*void updateSelectedHobbiesText() {
-    setState(() {
-      selectedHobbiesText = selectedHobbyList!
-          .map((hobby) => hobby.name!)
-          .toList()
-          .join(", "); // Concatenate hobby names with a comma and space
-      selectedHobbyIds = selectedHobbyList!
-          .map((hobby) => hobby.id!) // Access the ID property of the Hobby
-          .toList();
-    });
-  }
-*/
-
- /* void openFilterDialog() async {
-    await FilterListDialog.display<Hobby>(
-      context,
-      listData: await loadHobbies()!, // Use hobbyList as the data source
-      selectedListData: selectedHobbyList,
-      choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
-      validateSelectedItem: (list, val) => list!.contains(val),
-      onItemSearch: (hobby, query) {
-        return hobby.name!.toLowerCase().contains(query.toLowerCase());
-      },
-      onApplyButtonClick: (list) {
-
-        setState(() {
-          selectedHobbyList = List.from(list!);
-          updateSelectedHobbiesText();
-        });
-
-        Navigator.pop(context);
-      },
-    );
-  }
-*/
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -129,9 +43,7 @@ class _RegisterState extends State<Register> {
           padding: EdgeInsets.symmetric(horizontal: 24.0),
 
           child: ListView(
-
             children: <Widget>[
-
               SizedBox(
                 height: 100,
               ),
@@ -140,20 +52,7 @@ class _RegisterState extends State<Register> {
                   "images/app_icon.jpg",
                   height: 60,
                 ),
-                /*child: Hero(
-
-                  tag: 'logo',
-
-                  child: Text('Bang App',
-                      style: TextStyle(
-                        fontFamily: 'Billabong',
-                        color: Colors.black,
-                        fontSize: 70.0,
-                        fontWeight: FontWeight.w500,
-                      )),
-                ),*/
               ),
-
               SizedBox(
                 height: 48.0,
               ),
@@ -165,120 +64,24 @@ class _RegisterState extends State<Register> {
                   name = value;
                 },
                 decoration: InputDecoration(
-                  hintText: 'Enter your name',
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  labelText: 'Enter your name',
+                  labelStyle: TextStyle(color: Colors.black),
+                  prefixIcon: Icon(
+                      Icons.person
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.black,
               ),
               SizedBox(
                 height: 8.0,
               ),
-              /*TextField(
-                controller: _dateController,
-                onTap: () async {
-                  final DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: date_of_birth,
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2100),
-                  );
-                  if (picked != null && picked != date_of_birth) {
-                    setState(() {
-                      date_of_birth = picked;
-                      // _dateController. = date_of_birth ;
-                    });
-                  }
-                },
-                decoration: InputDecoration(
-                  hintText: 'Enter your Date of Birth',
-                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blueAccent, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blueAccent, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                ),
-              ),*/
-             /* SizedBox(
-                height: 8.0,
-              ),*/
-             /* TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  //Do something with the user input.
-                  phoneNumber = value;
-                },
-                decoration: InputDecoration(
-                  hintText: 'Enter your phone number',
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.blueAccent, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.blueAccent, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),*/
-              /*TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.emailAddress,
-                onChanged: (value) {
-                  //Do something with the user input.
-                  occupation = value;
-                },
-                decoration: InputDecoration(
-                  hintText: 'Occupation',
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.blueAccent, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.blueAccent, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),*/
               TextField(
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.emailAddress,
@@ -287,57 +90,21 @@ class _RegisterState extends State<Register> {
                   email = value;
                 },
                 decoration: InputDecoration(
-                  hintText: 'Enter your email',
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  labelText: 'Enter your email',
+                  labelStyle: TextStyle(color: Colors.black),
+                  prefixIcon: Icon(
+                      Icons.mail_outline
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.purple, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.purple, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.black,
               ),
-             /* SizedBox(
-                height: 8.0,
-              ),
-               TextField(
-                onTap: () async {
-                   openFilterDialog();
-
-                },
-                readOnly: true, // Make the TextField read-only to prevent manual input
-                decoration: InputDecoration(
-                  labelText: "Select Hobbies",
-                  suffixIcon: Icon(Icons.arrow_drop_down),
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.blueAccent, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.blueAccent, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),// Add an icon at the end of the TextField
-                ),
-                controller: TextEditingController(text: selectedHobbiesText),
-                 // Show the selected hobbies in the TextField
-              ),
-
-              */
 
               SizedBox(
                 height: 8.0,
@@ -351,23 +118,21 @@ class _RegisterState extends State<Register> {
                   //Do something with the user input.
                 },
                 decoration: InputDecoration(
-                  hintText: 'Enter a password',
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  labelText: 'Password',
+                  labelStyle: TextStyle(color: Colors.black),
+                  prefixIcon: Icon(
+                      Icons.lock_person
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.purple, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.purple, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
+                keyboardType: TextInputType.text,
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.black,
               ),
               SizedBox(
                 height: 24.0,
@@ -383,39 +148,26 @@ class _RegisterState extends State<Register> {
                   //Do something with the user input.
                 },
                 decoration: InputDecoration(
-                  hintText: 'Confirm password',
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  labelText: 'Confirm Password',
+                  labelStyle: TextStyle(color: Colors.black),
+                  prefixIcon: Icon(
+                      Icons.lock_person
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
+                keyboardType: TextInputType.text,
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.black,
               ),
               SizedBox(
                 height: 24.0,
               ),
-
               Container(
-
-               /* child: Padding(
-
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-
-                  child: Material(
-
-                    color: Colors.redAccent,
-                    borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                    elevation: 5.0,*/
                     child: MaterialButton(
                       onPressed: () async {
                         setState(() {
@@ -425,24 +177,16 @@ class _RegisterState extends State<Register> {
                         if (password == confirmPassword) {
                           try {
                             print('this is data');
-                            //print(date_of_birth.toString());
-                            //print(json.encode(selectedHobbyIds).runtimeType);
-
-
                             final response = await http.post(
                               Uri.parse('$baseUrl/v1/register'),
                               body: {
                                 'email': email,
                                 'name': name,
-                                //'date_of_birth':date_of_birth.toString(),
-                                //'phone_number':phoneNumber,
                                 'password': password,
-                                //'occupation':occupation,
-                                //'hobbies':json.encode(selectedHobbyIds)
                               },
                             );
                             final responseBody = jsonDecode(response.body);
-                            // Provider.of<UserProvider>(context,listen:false).setUser(responseBody);
+                            print(responseBody);
                             if (responseBody != null) {
                               if (responseBody.containsKey('errors')) {
                                 setState(() {
@@ -451,7 +195,6 @@ class _RegisterState extends State<Register> {
                                 // There are validation errors
                                 final errors = responseBody['errors'];
                                 String errorMessage = '';
-                                // Iterate through the error messages and concatenate them into a single string
                                 errors.forEach((key, value) {
                                   errorMessage += value[0] + '\n';
                                 });
@@ -491,24 +234,19 @@ class _RegisterState extends State<Register> {
                             showSpinner = false;
                           }
                         }else{
-
                           Fluttertoast.showToast(
                             msg: "Password and Confirm Password do not Match",
                             toastLength: Toast.LENGTH_LONG,
                             gravity: ToastGravity.CENTER,
                             backgroundColor: Colors.red,
                             textColor: Colors.white,
-
-
                           );
                           showSpinner = false;
 
                         }
-                          //print(phoneNumber); print(password);
                         },
                       minWidth: 200.0,
                       height: 42.0,
-
                         child: Text(
                           'Register',
                           style: TextStyle(color: Colors.white),
@@ -520,10 +258,6 @@ class _RegisterState extends State<Register> {
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        /*Colors.purple,
-                              Colors.deepPurple,
-                              Colors.blueAccent*/
-
                         Colors.deepOrange,
                         Colors.deepPurple,
                         Colors.redAccent
@@ -533,14 +267,6 @@ class _RegisterState extends State<Register> {
                     ),
                     borderRadius: BorderRadius.circular(20.0)),
                     ),
-
-
-
-
-                 // ),
-
-
-             // ),
 
               const SizedBox(height: 50),
               //google + apple sign in buttons
@@ -563,16 +289,10 @@ class _RegisterState extends State<Register> {
               ),
 
               const SizedBox(height: 50),
-
-
               MaterialButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, LoginScreen.id);
-                  },
-                  //child: Text('Already have an account Sign In')
-
-
-
+              onPressed: () {
+                Navigator.pushNamed(context, LoginScreen.id);
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

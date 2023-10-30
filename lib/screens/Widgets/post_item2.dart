@@ -108,7 +108,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, image, name, followerCount, image,
-                    postId, userId, type, createdAt) ??
+                    postId, userId, type) ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -308,18 +308,20 @@ class PostItem2 extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 5), // Add some spacing between the username and caption
-                    ReadMoreText(
-                      caption,
-                      trimLines: 1,
-                      style: Theme.of(context).textTheme.bodyLarge!,
-                      colorClickableText: Theme.of(context).primaryColor,
-                      trimMode: TrimMode.line,
-                      trimCollapsedText: '...Show more',
-                      trimExpandedText: '...Show less',
-                      moreStyle: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
+                    Expanded(
+                      child: ReadMoreText(
+                        caption,
+                        trimLines: 1,
+                        style: Theme.of(context).textTheme.bodyLarge!,
+                        colorClickableText: Theme.of(context).primaryColor,
+                        trimMode: TrimMode.line,
+                        trimCollapsedText: '...Show more',
+                        trimExpandedText: '...Show less',
+                        moreStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                     ),
                   ],
@@ -339,7 +341,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, image, name, followerCount, image,
-                postId, userId, type, createdAt) ??
+                postId, userId, type) ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -551,7 +553,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            postOptions(context, userId, image, name, followerCount, image, postId, userId, type, createdAt) ?? Container(),
+            postOptions(context, userId, image, name, followerCount, image, postId, userId, type) ?? Container(),
             AspectRatio(
               aspectRatio: width / height,
               child: buildMediaWidget(context, image, type, width, height, isPinned),
@@ -666,7 +668,7 @@ class PostItem2 extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               postOptions(context, userId, image, name, followerCount, image,
-                      postId, userId, type, createdAt) ??
+                      postId, userId, type) ??
                   Container(),
               SizedBox(
                 height: 400,

@@ -117,12 +117,50 @@ GestureDetector _notificationList(NotificationItem notification) {
               child: CircularProgressIndicator(), // Display a loading indicator
             )
           : ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return _notificationList(notification);
-              },
+        itemCount: notifications.length,
+        itemBuilder: (context, index) {
+          final notification = notifications[index];
+          return Dismissible(
+            key: Key(notification.id.toString()), // Use a unique key
+            onDismissed: (direction) {
+              // Remove the notification from the list when swiped
+              if (direction == DismissDirection.startToEnd) {
+                // Swiped from right to left
+                // Perform your action (e.g., delete notification)
+                Service().deleteNotification(notification.id.toString());
+              } else if (direction == DismissDirection.endToStart) {
+                // Swiped from left to right
+                // Perform a different action (if needed)
+                // For example, mark the notification as read
+                Service().notificationIsRead(notification.id.toString());
+              }
+              setState(() {
+                notifications.removeAt(index);
+              });
+            },
+            background: Container(
+              color: Colors.red, // Background color when swiped left
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.only(left: 20),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
             ),
+            secondaryBackground: Container(
+              color: Colors.green, // Background color when swiped right
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.only(right: 20),
+              child: Icon(
+                Icons.check,
+                color: Colors.white,
+              ),
+            ),
+            child: _notificationList(notification),
+          );
+        },
+      )
+
     );
   }
 }

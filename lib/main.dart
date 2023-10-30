@@ -235,12 +235,27 @@ class _AuthenticateState extends State<Authenticate> {
       if (message.data["type"] == "message") {
         int notificationId = int.parse(message.data['notification_id']);
         String? userName = message.data['user_name'];
-      print("THis is of object type ${notificationId.runtimeType} and is $notificationId user is $userName");
+        print("THis is of object type ${notificationId.runtimeType} and is $notificationId user is $userName");
 
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => MessagesScreen(
+                notificationId,
+                userName ?? "Username"),
+          ),
+        );
+      }
+
+      if (message.data["type"] == "like" || message.data["type"] == "comment") {
+        int notificationId = int.parse(message.data['notification_id']);
+        String? userName = message.data['user_name'];
+        print("THis is of object type ${notificationId.runtimeType} and is $notificationId user is $userName");
+        await Servi
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => POstView(
                 notificationId,
                 userName ?? "Username"),
           ),

@@ -1,3 +1,4 @@
+import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'package:bangapp/widgets/buildBangUpdate2.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -94,7 +95,7 @@ class BangUpdates3 extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                VideoDescription('7', '8'), // Remove the quotes
+                VideoDescription('7', 'haya ni maneno marefu dssdsadsdsjvbjhvbhcbdsjhdbsjhbsdhdsd dsv vvjhdsbfd sbnd dsf dsfds fds fds fdsfefbsjhfukshd febnf hsjvgdsgdshf dsv chjvbdsvdsfuhdsfd sbds fbdfhdsukfdvsjh dsdshyvdsyfghdskfbdsb ds'), // Remove the quotes
                 ActionsToolbar(2.toString(),5.toString(), logoUrl), // Remove the quotes
               ],
             ),
@@ -136,9 +137,9 @@ class BangUpdateProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id').toString();
     var response = await http.get(Uri.parse('$baseUrl/bang-updates/$userId'));
-
+    print(response.body);
     var data = json.decode(response.body);
-    print(data);
+    print('$baseUrl/bang-updates/$userId');
     _bangUpdates = List<BangUpdate>.from(data.map((post) {
       final filename = post['filename'];
       final type = post['type'];
@@ -187,9 +188,7 @@ class BangUpdateProvider extends ChangeNotifier {
     final bangUpdate =
         _bangUpdates.firstWhere((update) => update.postId == postId);
     bangUpdate.commentCount++;
-    print("hereeeeeeeeeeeee");
-    print(postId);
-    print(bangUpdate.commentCount);
+
     notifyListeners();
   }
 }
@@ -221,10 +220,17 @@ class VideoDescription extends StatelessWidget {
                   SizedBox(
                     height: 7,
                   ),
-                  Text(
+                  ReadMoreText(
                     videtoTitle,
-                    style: TextStyle(
-                      fontSize: 16,
+                    trimLines: 2,
+                    style: Theme.of(context).textTheme.bodyText1,
+                    colorClickableText: Theme.of(context).primaryColor,
+                    trimMode: TrimMode.line,
+                    trimCollapsedText: '...Show more',
+                    trimExpandedText: '...Show less',
+                    moreStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
@@ -238,10 +244,8 @@ class VideoDescription extends StatelessWidget {
 class ActionsToolbar extends StatelessWidget {
   // Full dimensions of an action
   static const double ActionWidgetSize = 60.0;
-
 // The size of the icon showen for Social Actions
   static const double ActionIconSize = 35.0;
-
 // The size of the share social icon
   static const double ShareActionIconSize = 25.0;
 
@@ -311,7 +315,6 @@ class ActionsToolbar extends StatelessWidget {
       ]),
     );
   }
-
 
   Widget _getFollowAction({required String pictureUrl}) {
     return Container(

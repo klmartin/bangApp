@@ -1,3 +1,5 @@
+import 'package:bangapp/constants/urls.dart';
+
 class NotificationModel {
   final List<NotificationItem> notifications;
   NotificationModel({required this.notifications});
@@ -47,7 +49,7 @@ class NotificationItem {
       type: json['type'],
       referenceId: json['reference_id'],
       postId: json['post_id'],
-      userImage: json['user']['image'],
+      userImage: json['user']['image'] ?? logoUrl,
       isRead: json['is_read'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],

@@ -112,7 +112,6 @@ class _CreateState extends State<Create> {
                   var editedVideo = await _selectedAssets[0].file;
                   if (_selectedAssets.length == 2) {
                     var editedVideo2 = await _selectedAssets[1].file;
-
                     print([editedVideo,editedVideo2]);
                     print('these are the selected items');
                     await Navigator.pushReplacement(
@@ -210,6 +209,7 @@ class _CreateState extends State<Create> {
                                 videoPlayerController: videoController,
                                 autoPlay: true,
                                 looping: true,
+                                aspectRatio:_chewieController?.aspectRatio
                               );
                               videoController.initialize().then((_) {
                                 setState(() {
@@ -235,9 +235,9 @@ class _CreateState extends State<Create> {
                               final thumbnailData = snapshot.data!;
                               return Image.memory(
                                 thumbnailData,
-                                height: MediaQuery.of(context).size.height,
-                                width: MediaQuery.of(context).size.width,
-                                fit: BoxFit.cover,
+                                height: _selectedAssets[index].height.toDouble(),
+                                width:  _selectedAssets[index].width.toDouble(),
+                                fit: BoxFit.contain,
                               );
                             } else {
                               return CircularProgressIndicator();
@@ -248,72 +248,49 @@ class _CreateState extends State<Create> {
                     },
                   ),
                 ),
-
-
                 Expanded(
                   child: MediaGrid(selectAsset),
                 ),
               ],
             ),
+            if( _selectedAssets.length > 1)
             Positioned(
               top: MediaQuery.of(context).size.height / 2 - 75,
               left: 0,
               right: 0,
               height: 40,
-              child: Container(
-                // color: Colors.black12,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List<Widget>.generate(
-                    _selectedAssets.length,
-                    (index) {
-                      final isASelected = _activePage == 0 && index == 0;
-                      final isBSelected = _activePage == 1 && index == 1;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                        child: InkWell(
-                          onTap: () {
-                            _pageViewController.animateToPage(index,
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeIn);
-                          },
-                          child: DefaultTextStyle(
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25,
-                            ),
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              decoration: BoxDecoration(
-                                boxShadow: isASelected
-                                    ? [
-                                        BoxShadow(
-                                          color: Colors
-                                              .red, // Change to your highlight color
-                                          blurRadius: 10.0,
-                                          spreadRadius: 1.0,
-                                        ),
-                                      ]
-                                    : isBSelected
-                                        ? [
-                                            BoxShadow(
-                                              color: Colors
-                                                  .red, // Change to your highlight color
-                                              blurRadius: 10.0,
-                                              spreadRadius: 1.0,
-                                            ),
-                                          ]
-                                        : [],
-                              ),
-                              child: Text(
-                                index == 0 ? 'A' : 'B >',
-                              ),
-                            ),
-                          ),
+              child:Container(
+                width: 50,
+                height: 34,
+                decoration: ShapeDecoration(
+                  color: Color.fromRGBO(255, 255, 255, 0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                child: InkWell(
+                  onTap: () {
+                    _pageViewController.animateToPage(1,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeIn);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center, // Center the text and icon horizontally
+                    children: [
+                      Text(
+                        "Swipe to View B",
+                        style: TextStyle(
+                          color: Colors.black, // Change text color if needed
+                          fontWeight: FontWeight.bold, // Add any desired text styles
                         ),
-                      );
-                    },
+                      ),
+                      Icon(
+                        Icons.navigate_next_outlined, // Replace with the desired icon
+                        color: Colors.redAccent, // Set the icon color
+                        size: 24, // Set the icon size
+                      ),
+                      SizedBox(width: 8),// Add some spacing between the icon and text
+                    ],
                   ),
                 ),
               ),
@@ -324,7 +301,6 @@ class _CreateState extends State<Create> {
     );
   }
 }
-
 class MediaGrid extends StatefulWidget {
   final Function(AssetEntity) onSelectAsset;
   MediaGrid(this.onSelectAsset);

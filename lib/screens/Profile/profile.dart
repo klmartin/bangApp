@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:bangapp/screens/Story/storyview.dart';
 import 'package:bangapp/screens/settings/settings.dart';
@@ -15,10 +14,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/userprovider.dart';
 import 'package:bangapp/services/fetch_post.dart';
+import '../Posts/postView_model.dart';
 import 'profile_upload.dart';
 import 'package:bangapp/constants/urls.dart';
-
-late bool _persposts ;
 
 Future<String?> getUserImage() async {
   try {
@@ -30,16 +28,13 @@ Future<String?> getUserImage() async {
   }
 }
 
-late int posts;
-var descr;
-late int followers;
-late int following;
+
 
 class Profile extends StatefulWidget {
   final int? id;
   const Profile({
-     Key? key,
-     this.id,
+    Key? key,
+    this.id,
   }) : super(key: key);
 
   @override
@@ -47,21 +42,77 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  @override
-
+  ScrollController? _scrollController;
+  bool _isLoading = false;
+  final int _numberOfPostsPerRequest = 20;
+  int _pageNumber = 1;
+  List<ImagePost> allImagePosts = [];
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController?.addListener(_scrollListener);
+    // _loadPosts();
   }
 
-  //late final GoogleSignInAccount user;
+  void _scrollListener() {
+    if (!_isLoading && _scrollController!.position.extentAfter < 200.0) {
+      // Load more posts when the user is close to the end of the list
+      _pageNumber++;
+      _loadMorePosts();
+    }
+  }
+
+  void _loadMorePosts() async {
+    if (_isLoading) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final List<dynamic> newPosts = await getMyPosts(_pageNumber);
+
+    setState(() {
+      _isLoading = false;
+      // Append the newly loaded posts to the existing list
+      allImagePosts.addAll(newPosts.map((post) {
+        return ImagePost(post['user']['name'],
+            post['body'],
+            post['image'],
+            post['challenge_img'],
+            post['width'],
+            post['height'],
+            post['id'],
+            post['commentCount'],
+            post['user_id'],
+            post['isLikedA'],
+            post['like_count_A'],
+            post['type'],
+            post['user']['followerCount'],
+            post['created_at']
+        );
+      }));
+    });
+  }
+
+  Future<List<dynamic>> getMyPosts(int pageNumber) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print(prefs.getInt('user_id').toString());
+    var userId = prefs.getInt('user_id').toString();
+    var response = await http.get(Uri.parse("$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"));
+    print(response.body);
+    var data = json.decode(response.body);
+    return data['data']['data'];
+  }
 
   @override
   Widget build(BuildContext context) {
-    final userData=  Provider.of<UserProvider>(context,listen:false);
-    print(userData.myUser.id);
+    // Build your UI using the imagePosts list
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: ListView(
+        controller: _scrollController,
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -73,32 +124,32 @@ class _ProfileState extends State<Profile> {
                     height: 80,
                     decoration: rimage != null
                         ? BoxDecoration(
-                            color: Colors.red.shade100,
-                            borderRadius: BorderRadius.circular(25),
-                          )
+                      color: Colors.red.shade100,
+                      borderRadius: BorderRadius.circular(25),
+                    )
                         : BoxDecoration(
-                            color: Colors.red.shade100,
-                            borderRadius: BorderRadius.circular(25),
-                            image: DecorationImage(
-                                image: CachedNetworkImageProvider('$profileUrl/bang_logo.jpg') ,
-                              fit: BoxFit.cover,
-                            )),
+                        color: Colors.red.shade100,
+                        borderRadius: BorderRadius.circular(25),
+                        image: DecorationImage(
+                          image: CachedNetworkImageProvider('$profileUrl/bang_logo.jpg') ,
+                          fit: BoxFit.cover,
+                        )),
                     child: rimage != null
                         ? Image.file(
-                            rimage,
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          )
+                      rimage,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    )
                         : Container()),
               ),
               SizedBox(width: 150),
               Padding(
                 padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
                 child: InkWell(
-                  onTap: () {
-                    openFilterDialog();
-                  },
+                  // onTap: () {
+                  //   openFilterDialog();
+                  // },
                   child: Column(
                     children: [
                       Icon(
@@ -123,7 +174,7 @@ class _ProfileState extends State<Profile> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              userData.myUser.name??"",
+              "martin",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Metropolis',
@@ -137,169 +188,225 @@ class _ProfileState extends State<Profile> {
               strutStyle: StrutStyle(fontSize: 12.0),
               text: TextSpan(
                   style:
-                      TextStyle(color: Colors.black, fontFamily: 'Metropolis'),
-                  text: descr),
+                  TextStyle(color: Colors.black, fontFamily: 'Metropolis'),
+                  text: 'descr'),
             ),
           ),
           Row(
             children: <Widget>[
               Expanded(
                   child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => EditPage()));
-                    },
-                    child: Text(
-                      'Edit profile',
-                      style: TextStyle(color: Colors.black),
-                    )),
-              )),
+                    padding: const EdgeInsets.all(8.0),
+                    child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => EditPage()));
+                        },
+                        child: Text(
+                          'Edit profile',
+                          style: TextStyle(color: Colors.black),
+                        )),
+                  )),
               SizedBox(width: 10),
               Expanded(
                   child: Container(
-                child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) =>  AppSettings(),) );
-                    },
-                    child: Text(
-                      'Settings',
-                      style: TextStyle(color: Colors.black),
-                    )),
-              )),
+                    child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) =>  AppSettings(),) );
+                        },
+                        child: Text(
+                          'Settings',
+                          style: TextStyle(color: Colors.black),
+                        )),
+                  )),
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-            Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: Text(
-                  // '$posts',
-                  '76',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      fontFamily: 'Metropolis'),
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0),
+                      child: Text(
+                        // '$posts',
+                        '76',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontFamily: 'Metropolis'),
+                      ),
+                    ),
+                    Text(
+                      'Posts',
+                      style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                    )
+                  ],
                 ),
-              ),
-              Text(
-                'Posts',
-                style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: FaIcon(
+                    FontAwesomeIcons.ellipsisV,
+                    size: 10,
+                    color: Colors.grey,
+                  ),
+                ),
+                Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0),
+                      child: Text(
+                        // '$followers',
+                        '21',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontFamily: 'Metropolis'),
+                      ),
+                    ),
+                    Text(
+                      'Followers',
+                      style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                    )
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: FaIcon(
+                    FontAwesomeIcons.ellipsisV,
+                    size: 10,
+                    color: Colors.grey,
+                  ),
+                ),
+                Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Text(
+                        // '$following',
+                        '2',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontFamily: 'Metropolis'),
+                      ),
+                    ),
+                    Text(
+                      'Following',
+                      style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                    )
+                  ],
+                ),
+              ]),
+          FutureBuilder(
+            future: getMyPosts(_pageNumber),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.lightBlue,
+                  ),
+                );
+              }
+              if (snapshot.hasData) {
+                final List<dynamic> posts = snapshot.data! as List<dynamic>;
+                for (var post in posts) {
+                  final imagePost = ImagePost(
+                      post['user']['name'],
+                      post['body'] ?? "",
+                      post['image'],
+                      post['challenge_img'] ?? "",
+                      post['width'],
+                      post['height'],
+                      post['id'],
+                      post['commentCount'],
+                      post['user_id'],
+                      post['isLikedA'],
+                      post['like_count_A'],
+                      post['type'],
+                      post['user']['followerCount'],
+                      post['created_at']
+                  );
+                  allImagePosts.add(imagePost);
+                }
+              }
+              return allImagePosts.isEmpty
+                  ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'No photos yet',
+                    style: TextStyle(fontFamily: 'Metropolis'),
+                  )
+                ],
               )
-            ],
+                  : Padding(
+                padding: const EdgeInsets.only(top: 15.0),
+                child: GridView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                  ),
+                  children: [
+                    for (var i = 0; i < allImagePosts.length; i++)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context, MaterialPageRoute(builder: (context) => POstView(
+                                allImagePosts[i].name,
+                                allImagePosts[i].caption,
+                                allImagePosts[i].imageUrl,
+                                allImagePosts[i].challengeImgUrl,
+                                allImagePosts[i].imgWidth,
+                                allImagePosts[i].imgHeight,
+                                allImagePosts[i].postId,
+                                allImagePosts[i].commentCount,
+                                allImagePosts[i].userId,
+                                allImagePosts[i].isLiked,
+                                allImagePosts[i].likeCount,
+                                allImagePosts[i].type,
+                                allImagePosts[i].followerCount,
+                            )));
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: allImagePosts[i].imageUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      )
+                  ],
+                ),
+              );
+            },
           ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: FaIcon(
-                FontAwesomeIcons.ellipsisV,
-                size: 10,
-                color: Colors.grey,
-              ),
-            ),
-            Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    // '$followers',
-                    '21',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        fontFamily: 'Metropolis'),
-                  ),
-                ),
-                Text(
-                  'Followers',
-                  style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                )
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: FaIcon(
-                FontAwesomeIcons.ellipsisV,
-                size: 10,
-                color: Colors.grey,
-              ),
-            ),
-            Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4.0),
-                  child: Text(
-                    // '$following',
-                    '2',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        fontFamily: 'Metropolis'),
-                  ),
-                ),
-                Text(
-                  'Following',
-                  style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                )
-              ],
-            ),
-            ]),
-          ProfilePosts(),
         ],
       ),
     );
   }
-  List<Hobby>? selectedHobbyList;
-  List<Hobby> hobbyList = [];
+}
 
-  String selectedHobbiesText = "";
-  List<int> selectedHobbyIds = [];
-
-  loadHobbies() async {
-    try {
-      hobbyList = await fetchHobbies();
-      return hobbyList;
-    } catch (e) {
-      // Handle error, if any
-    }
-  }
-
-  void updateSelectedHobbiesText() {
-    setState(() {
-      selectedHobbiesText = selectedHobbyList!
-          .map((hobby) => hobby.name!)
-          .toList()
-          .join(", "); // Concatenate hobby names with a comma and space
-      selectedHobbyIds = selectedHobbyList!
-          .map((hobby) => hobby.id!) // Access the ID property of the Hobby
-          .toList();
-    });
-  }
-  void openFilterDialog() async {
-    await FilterListDialog.display<Hobby>(
-      context,
-      listData: await loadHobbies()!, // Use hobbyList as the data source
-      selectedListData: selectedHobbyList,
-      choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
-      validateSelectedItem: (list, val) => list!.contains(val),
-      onItemSearch: (hobby, query) {
-        return hobby.name!.toLowerCase().contains(query.toLowerCase());
-      },
-      onApplyButtonClick: (list) {
-        setState(() {
-          selectedHobbyList = List.from(list!);
-        });
-        Navigator.pop(context);
-        buildFab('value', context);
-      },
-    );
-  }
-
-
-
+class ImagePost {
+  final String imageUrl;
+  String name;
+  String caption;
+  String challengeImgUrl;
+  int imgWidth;
+  int imgHeight;
+  int postId;
+  int commentCount;
+  int userId;
+  bool isLiked;
+  int likeCount;
+  String type;
+  int followerCount;
+  String createdAt;
+  ImagePost(this.name,this.caption,this.imageUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt);
 }
 
 class Hobby {
@@ -338,90 +445,6 @@ class _HighlightsState extends State<Highlights> {
   }
 }
 
-class ProfilePostsStream extends StatefulWidget {
-  final int? id;
-
-  ProfilePostsStream({this.id});
-
-  @override
-  _ProfilePostsStreamState createState() => _ProfilePostsStreamState();
-}
-
-class _ProfilePostsStreamState extends State<ProfilePostsStream> {
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: FetchPosts().getMyPosts(widget.id),
-      builder: (context, snapshot) {
-        List<ImagePost> imagePosts = [];
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.lightBlue,
-            ),
-          );
-        }
-        if (snapshot.hasData) {
-          final List<dynamic> posts = snapshot.data! as List<dynamic>;
-          for (var post in posts) {
-            final image = post['image'];
-            final imagePost = ImagePost(
-              url: image,
-            );
-            imagePosts.add(imagePost);
-          }
-        }
-
-
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 15.0),
-            child: GridView.count(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              children: imagePosts,
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class ImagePost extends StatelessWidget {
-  final String url;
-  final bool isMe = true;
-
-  ImagePost({required this.url});
-
-  @override
-  Widget build(BuildContext context) {
-    if (isMe) {
-      return GestureDetector(
-        onTap: () {
-          // Navigator.push(
-              // context, MaterialPageRoute(builder: (context) => POstView(url)));
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32),
-            color: Colors.red.shade100,
-            image: DecorationImage(
-                image: CachedNetworkImageProvider(url), fit: BoxFit.cover),
-          ),
-        ),
-      );
-    }
-    else {
-      return Container();
-    }
-  }
-}
-
 Future<List<Hobby>> fetchHobbies() async {
   print('fetching hobbies');
   final response = await http.get(Uri.parse('$baseUrl/hobbies'));
@@ -436,7 +459,6 @@ Future<List<Hobby>> fetchHobbies() async {
     throw Exception('Failed to load hobbies');
   }
 }
-
 
 buildFab(value,BuildContext context) {
   return showModalBottomSheet(

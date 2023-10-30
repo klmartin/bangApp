@@ -10,7 +10,8 @@ class FetchPosts {
     print(prefs.getInt('user_id').toString());
     var response = await http.get(Uri.parse('$baseUrl/getMyPosts/'+prefs.getInt('user_id').toString()));
     var data = json.decode(response.body);
-    return data['data']['data'];  }
+    return data['data']['data'];
+  }
 
   Future<List<dynamic>> getUserPosts(id) async {
     var response = await http.get(Uri.parse('$baseUrl/getMyPosts/'+id.toString()));

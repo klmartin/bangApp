@@ -12,7 +12,7 @@ class ReadMoreText extends StatefulWidget {
         Key? key,
         this.trimExpandedText = 'show less',
         this.trimCollapsedText = 'read more',
-        required this.colorClickableText,
+         this.colorClickableText,
         this.trimLength = 240,
         this.trimLines = 2,
         this.trimMode = TrimMode.length,

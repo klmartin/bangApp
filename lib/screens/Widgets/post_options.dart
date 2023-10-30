@@ -2,17 +2,19 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mime/mime.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import '../../services/animation.dart';
 import '../../services/extension.dart';
 import '../../widgets/user_profile.dart';
+import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 import '../Create/video_editing/video_edit.dart';
 import '../Profile/profile.dart';
 import 'dart:io';
 
-Widget? postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type,createdAt){
+Widget? postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type){
   Future<Uint8List> fileToUint8List(File file) async {
     if (file != null) {
       List<int> bytes = await file.readAsBytes();
@@ -32,8 +34,8 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
               Navigator.push(
                 context,
                 createRoute(
-                  Profile(
-                    id: userId,
+                  User.UserProfile(
+                    userid: userId,
                   ),
                 ),
               );
@@ -74,7 +76,7 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
                       ],
                     ),
                     const SizedBox(height: 2),
-                    Text(createdAt.toString())
+                    Text("1 day ago")
                   ],
                 ),
               ],
@@ -167,7 +169,7 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
                                 //           text: url
                                 //               .toString()));
                                 //   Navigator.pop(context);
-                                //   showSnackBarToPage(
+                                //   Toast(
                                 //     context,
                                 //     'Copied to clipboard',
                                 //     Colors.green,
@@ -208,10 +210,10 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
                                         MaterialPageRoute(
                                           builder: (context) => ImageEditor(
                                               image: image,
-                                              // postId: imagePostId,
-                                              // userChallenged:imageUserId,
-                                              // challengeImg: true,
-                                              // image2: null,
+                                               postId: imagePostId,
+                                               userChallenged:imageUserId,
+                                               challengeImg: true,
+                                               image2: null,
                                               allowMultiple: true
                                           ),
                                         ),
