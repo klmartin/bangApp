@@ -7,10 +7,11 @@ import '../../services/extension.dart';
 import 'package:bangapp/services/service.dart';
 import '../../widgets/build_media.dart';
 import '../../widgets/user_profile.dart';
-import '../Comments/commentspage.dart';
+import '../Comments/post_comment.dart';
 import '../Profile/profile.dart';
 import '../Widgets/readmore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 
 class POstView extends StatefulWidget {
@@ -27,7 +28,9 @@ class POstView extends StatefulWidget {
   int  likeCount;
   String  type;
   int followerCount;
-
+  String created;
+  String user_image;
+  int pinnedImage;
 
   POstView(
       this.name,
@@ -43,7 +46,9 @@ class POstView extends StatefulWidget {
       this.likeCount,
       this.type,
       this.followerCount,
-
+      this.created,
+      this.user_image,
+      this.pinnedImage
       );
   static const id = 'postview';
   @override
@@ -59,7 +64,7 @@ class _POstViewState extends State<POstView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: PostCard(widget.name,widget.caption,widget.imgurl,widget.challengeImgUrl,widget.imgWidth,widget.imgHeight,widget.postId,widget.commentCount,widget.userId,widget.isLiked,widget.likeCount,widget.type,widget.followerCount),
+            child: PostCard(widget.name,widget.caption,widget.imgurl,widget.challengeImgUrl,widget.imgWidth,widget.imgHeight,widget.postId,widget.commentCount,widget.userId,widget.isLiked,widget.likeCount,widget.type,widget.followerCount,widget.created,widget.user_image,widget.pinnedImage),
           ),
         ),
       ),
@@ -81,8 +86,12 @@ class PostCard extends StatefulWidget {
   int likeCount;
   String type;
   int followerCount;
+  String createdAt;
+  String userImage;
+  int pinned;
+
   ScrollController _scrollController = ScrollController();
-  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount);
+  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned);
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -133,14 +142,14 @@ class _PostCardState extends State<PostCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            postOptions(context, widget.userId, widget.postUrl, widget.name, widget.followerCount, widget.postUrl, widget.postId, widget.userId, widget.type) ?? Container(),
+            postOptions(context, widget.userId, widget.userImage, widget.name, widget.followerCount, widget.postUrl, widget.postId, widget.userId, widget.type,widget.createdAt) ?? Container(),
             InkWell(
               onTap: () {
                 viewImage(context, widget.postUrl);
               },
               child: AspectRatio(
                 aspectRatio: widget.imgWidth / widget.imgHeight,
-                child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,0),
+                child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned),
               ),
             ),
 
@@ -192,7 +201,6 @@ class _PostCardState extends State<PostCard> {
                                   return CommentsPage(
                                     userId: widget.userId,
                                     postId: widget.postId,
-                                    myProvider: myProvider,
                                   );
                                 },
                               ));
@@ -234,7 +242,6 @@ class _PostCardState extends State<PostCard> {
               margin: EdgeInsets.only(left: 15),
               child: Text('${widget.commentCount} comments'),
             ),
-
 
           ],
         )));

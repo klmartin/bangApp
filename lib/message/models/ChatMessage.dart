@@ -8,6 +8,7 @@ class ChatMessage {
   final MessageStatus messageStatus;
   final bool isSender;
   final int isReady ;
+  final String userImage;
 
   ChatMessage({
     required this.id,
@@ -15,7 +16,8 @@ class ChatMessage {
     required this.messageType,
     required this.messageStatus,
     required this.isSender,
-     required this.isReady,
+    required this.isReady,
+    required this.userImage
 
   });
 }

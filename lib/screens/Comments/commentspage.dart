@@ -160,8 +160,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:provider/provider.dart';
-
-import '../Explore/explore_page2.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CommentsPage extends StatefulWidget {
   final int? userId;
@@ -188,21 +187,33 @@ class _CommentsPageState extends State<CommentsPage> {
     super.initState();
     CircularProgressIndicator();
     _fetchComments();
+    getUserImageFromSharedPreferences();
+
   }
 
   Future<void> _fetchComments() async {
     final response = await Service().getComments(widget.postId.toString());
-    final comments = response;
+    print(response);
     setState(() {
-      // CircularProgressIndicator()
-      filedata = comments.map((comment) {
+      filedata = response.map((comment) {
         return {
           'name': comment['user']['name'],
-          'pic': "https://img.icons8.com/fluency/48/user-male-circle--v1.png",
+          'pic': comment['post']['user_image_url'],
           'message': comment['body'],
           'date': comment['created_at'],
         };
       }).toList();
+    });
+  }
+
+  String userImageURL = "";
+
+  void getUserImageFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      print('this is user image');
+      print(prefs.getString('user_image'));
+      userImageURL = prefs.getString('user_image') ?? "";
     });
   }
 
@@ -227,8 +238,7 @@ class _CommentsPageState extends State<CommentsPage> {
                   child: CircleAvatar(
                       radius: 50,
                       backgroundImage: CommentBox.commentImageParser(
-                          imageURLorPath:
-                              "https://img.icons8.com/fluency/48/user-male-circle--v1.png")),
+                          imageURLorPath:data[i]['pic'])),
                 ),
               ),
               title: Text(
@@ -265,8 +275,7 @@ class _CommentsPageState extends State<CommentsPage> {
       body: Container(
         child: CommentBox(
           userImage: CommentBox.commentImageParser(
-              imageURLorPath:
-                  "https://img.icons8.com/fluency/48/user-male-circle--v1.png"),
+              imageURLorPath:userImageURL),
           child: commentChild(filedata),
           labelText: 'Write a comment...',
           errorText: 'Comment cannot be blank',

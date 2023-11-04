@@ -88,13 +88,8 @@ class Participants {
 }
 
 class ChatProvider with ChangeNotifier {
-// late final IO.Socket socket;
-
-//   final String baseUrl = 'http://192.168.249.226/BangAppBackend/api';
-
   List<Conversation> _conversations = [];
   List<Message> _messages = [];
-
   int _totalUnreadMessages = 0;
   int get totalUnreadMessage => _totalUnreadMessages;
 
@@ -110,7 +105,6 @@ class ChatProvider with ChangeNotifier {
   }
 
   Future<void> getAllConversations(BuildContext context, int userId) async {
-    print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
     try {
       final response = await http
           .get(Uri.parse('$baseUrl/getAllConversations?user_id=$userId'));
@@ -130,15 +124,12 @@ class ChatProvider with ChangeNotifier {
   }
 
   Future getTotalUnreadMessages() async{
-       SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id');
-    final url = "http://192.168.100.118/BangAppBackend/api/getTotalUnreadMessages?user_id=$userId";
-
-   final response =  await http.get(Uri.parse('$baseUrl/getTotalUnreadMessages?user_id=$userId'));
-   _totalUnreadMessages = jsonDecode(response.body)['unreadCount'];
-   print(jsonDecode(response.body));
-   notifyListeners();
-   print("THis toppppppppppppppppppppppppppppppppppppppp");
+    final response =  await http.get(Uri.parse('$baseUrl/getTotalUnreadMessages?user_id=$userId'));
+    _totalUnreadMessages = jsonDecode(response.body)['unreadCount'];
+    print(jsonDecode(response.body));
+    notifyListeners();
   }
 
   Future<void> getMessages(
@@ -147,16 +138,12 @@ class ChatProvider with ChangeNotifier {
     try {
       final response = await http.get(Uri.parse(
           '$baseUrl/getChatMessages?user1_id=$user2Id&user2_id=$user1Id'));
-      print(response.body);
-
       if (response.statusCode == 200) {
         final List<Message> newMessages = [];
         final List<dynamic> data = json.decode(response.body);
         newMessages.addAll(data.map((json) => Message.fromJson(json)).toList());
-        print("Message lenght is :: ${messages.length}");
         _messages.clear();
         _messages.addAll(newMessages);
-        print("Message lenght is :: ${messages.length}");
         notifyListeners();
       } else {
         throw Exception('Failed to load messages');
@@ -167,7 +154,6 @@ class ChatProvider with ChangeNotifier {
   }
 
   Future<void> markMessageAsRead(int messageId) async {
-    print("IM hereeeeeeeeeee");
     final url = Uri.parse('$baseUrl/markMessageAsRead');
     try {
       final response = await http.post(
@@ -198,53 +184,6 @@ class ChatProvider with ChangeNotifier {
     _messages.insert(0, newMessage);
     notifyListeners();
   }
-
-//   Future<void> sendMessage(BuildContext context, int user1Id, int user2Id,
-//       String message, ChatProvider chatProvider, socket) async {
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     final userId = prefs.getInt('user_id');
-//     try {
-//       final response =
-//           await http.post(Uri.parse('$baseUrl/sendMessage'), body: {
-//         'sender_id': user1Id.toString(),
-//         'user2_id': user2Id.toString(),
-//         'message': message,
-//       });
-
-//       if (response.statusCode == 200) {
-//         final newMessage = Message.fromJson(jsonDecode(response.body));
-//         final serv = new Service();
-//         final data = jsonDecode(response.body);
-//         final createdAt = DateTime.parse(data['created_at']);
-//         final timeAgo = timeago.format(createdAt);
-//         final rawMessage = {
-//           'conversation_id': data['conversation_id'].toString(),
-//           'sender_id': user1Id.toString(),
-//           'user2_id': user2Id.toString(),
-//           'message': data['message'],
-//           'time': timeAgo,
-//         };
-//         print(rawMessage);
-//         socket.emit('updateLastMessageInConversation', rawMessage);
-
-//         serv.sendUserNotification(
-//             userId,
-//             "JUmaaa",
-//             "This is a test notification",
-//             prefs.getInt('user_id').toString(),
-//             'like',0);
-
-//         // chatProvider._messages.insert(0, newMessage);
-//         notifyListeners();
-//         // _showSnackbar('Message sent successfully', context);
-//       } else {
-//         throw Exception('Failed to send message');
-//       }
-//     } catch (error) {
-//       _showSnackbar('Error sending message: $error', context);
-//     }
-//   }
-final myUrl = 'http://192.168.243.226/BangAppBackend/api';
 
 Future<void> sendMessage(BuildContext context, int user1Id, int user2Id,
     String message, ChatProvider chatProvider, socket) async {
@@ -312,9 +251,7 @@ Future<void> sendImageMessage(
       final newMessage = Message.fromJson(data);
       final createdAt = DateTime.parse(data['created_at']);
       final timeAgo = timeago.format(createdAt);
-      print("Datttttttttttttttttta");
       print(data);
-      print("End dataaaaaaaaaaaaa");
       final rawMessage = {
         'conversation_id': data['conversation_id'].toString(),
         'sender_id': user1Id.toString(),
@@ -323,8 +260,6 @@ Future<void> sendImageMessage(
         'time': timeAgo,
       };
       print("The above is image response.................");
-
-    //  _sendMessageToSocket(rawMessage);
 
       socket.emit('updateLastMessageInConversation', rawMessage);
       chatProvider._messages.insert(0, newMessage);

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants/urls.dart';
 import '../Explore/explore_page2.dart';
 
 class UpdateCommentsPage extends StatefulWidget {
@@ -22,6 +23,9 @@ class UpdateCommentsPage extends StatefulWidget {
 class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController commentController = TextEditingController();
+  late String myImage = profileUrl;
+
+
 
   List filedata = [];
 
@@ -30,17 +34,24 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
     super.initState();
     CircularProgressIndicator();
     _fetchComments();
+    _getMyInfo();
   }
 
+  void _getMyInfo() async {
+    var myInfo = await Service().getMyInformation();
+
+    setState(() {
+      myImage = myInfo['user_image_url'] ?? "";
+    });
+  }
   Future<void> _fetchComments() async {
     final response = await Service().getUpdateComments(widget.postId.toString());
     final comments = response;
     setState(() {
-      // CircularProgressIndicator()
       filedata = comments.map((comment) {
         return {
           'name': comment['user']['name'],
-          'pic': "https://img.icons8.com/fluency/48/user-male-circle--v1.png",
+          'pic': comment['user']['user_image_url'],
           'message': comment['body'],
           'date': comment['created_at'],
         };
@@ -70,7 +81,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                   child: CircleAvatar(
                       radius: 50,
                       backgroundImage: CommentBox.commentImageParser(
-                          imageURLorPath: "https://img.icons8.com/fluency/48/user-male-circle--v1.png")),
+                          imageURLorPath:  myImage)),
                 ),
               ),
               title: Text(
@@ -107,7 +118,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
       body: Container(
         child: CommentBox(
           userImage: CommentBox.commentImageParser(
-              imageURLorPath: "https://img.icons8.com/fluency/48/user-male-circle--v1.png"),
+              imageURLorPath:myImage),
           child: commentChild(filedata),
           labelText: 'Write a comment...',
           errorText: 'Comment cannot be blank',

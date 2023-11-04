@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/screens/Widgets/small_box2.dart';
 import 'package:flutter/material.dart';
 import '../services/service.dart';
@@ -15,11 +16,10 @@ class BoxDataProvider with ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('user_id');
     final response = await http.get(
-        Uri.parse('https://bangapp.pro/BangAppBackend/api/getBangBattle/$userId'));
+        Uri.parse('$baseUrl/getBangBattle/$userId'));
     final data = jsonDecode(response.body)['data'];
     print(data);
     _boxes = data.map((e) => BoxData2.fromJson(e)).toList();
-    print(boxes);
     notifyListeners();
   }
 
@@ -74,6 +74,9 @@ class BoxData2 {
   bool isLikedA;
   bool isLikedB;
   int commentCount;
+  String type;
+  String coverImage;
+  String coverImage2;
 
   BoxData2({
     required this.postId,
@@ -86,13 +89,16 @@ class BoxData2 {
     required this.imageUrl2,
     required this.text,
     required this.battleId,
+    required this.type,
+    required this.coverImage,
+    required this.coverImage2,
   });
 
   factory BoxData2.fromJson(Map<String, dynamic> json) {
     return BoxData2(
       postId: json['id'],
-      imageUrl1: json['battle1'],
-      imageUrl2: json['battle2'],
+      imageUrl1: json['battle1']?? "",
+      imageUrl2: json['battle2']?? "",
       text: json['body'],
       battleId: json['id'],
       isLikedA: json['isLikedA'],
@@ -100,6 +106,9 @@ class BoxData2 {
       likeCountA: json['like_count_A'],
       likeCountB: json['like_count_B'],
       commentCount: json['comment_count'],
+      type: json['type'],
+      coverImage: json['cover_image'] ?? "",
+      coverImage2: json['cover_image2'] ?? ""
     );
   }
 }

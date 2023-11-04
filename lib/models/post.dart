@@ -9,16 +9,17 @@ class Post {
   final String caption;
   final int width;
   final int height;
- int likeCountA;
- int likeCountB;
- int commentCount;
+  int likeCountA;
+  int likeCountB;
+  int commentCount;
   final int followerCount;
   var isLiked ;
   int isPinned;
   final List<Challenge> challenges;
-var createdAt;
+  var createdAt;
   var isLikedA;
   var  isLikedB;
+  final String userImage;
 
 
   Post({
@@ -41,6 +42,7 @@ var createdAt;
     required this.isLikedA,
     required this.isLikedB,
     required this.createdAt,
+    required this.userImage,
   });
 }
 

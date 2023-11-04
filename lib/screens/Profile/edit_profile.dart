@@ -20,7 +20,6 @@ import 'dart:io';
 import '../../nav.dart';
 import 'edit_profile.dart';
 
-//late String? _name;
 late String? _descr;
 late String phoneNumber;
 late String occupation;
@@ -30,16 +29,6 @@ TextEditingController _dateController = TextEditingController();
 
 Service?  loggedInUser;
 
-/*Map<String, String> body = {
-  //'user_id': prefs.getInt('user_id').toString(),
-  'hobbies': selectedHobbiesText,
-  //'date_of_birth': date_of_birth,
-  'phone_number': phoneNumber,
-  'occupation': occupation,
-  //'bio': _descr,
-};*/
-
-//var rimage;
 var imagePicker;
 enum ImageSourceType { gallery, camera }
 
@@ -74,13 +63,10 @@ class Hobby {
 Future<List<Hobby>> fetchHobbies() async {
   print('fetching hobbies');
   final response = await http.get(Uri.parse('$baseUrl/hobbies'));
-
   if (response.statusCode == 200) {
     final List<dynamic> data = json.decode(response.body);
-
     print(json.decode(response.body));
     return data.map((json) => Hobby.fromJson(json)).toList();
-
   } else {
     throw Exception('Failed to load hobbies');
   }
@@ -97,10 +83,8 @@ class _EditPageState extends State<EditPage> {
 
   bool showSpinner = false;
   @override
-   List<Hobby>? selectedHobbyList;
+  List<Hobby>? selectedHobbyList;
   List<Hobby> hobbyList = [];
-
-  //String selectedHobbiesText = "";
   List<int> selectedHobbyIds = [];
 
   loadHobbies() async {
@@ -247,8 +231,6 @@ class _EditPageState extends State<EditPage> {
 
 
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -275,38 +257,30 @@ class _EditPageState extends State<EditPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-
           padding: const EdgeInsets.all(20.0),
-
           child: Column(
-
             children: <Widget>[
               Center(
-
-
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                  rimage != null
+                  ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                  child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.file(
+                  //to show image, you type like this.
+                  File(rimage!.path),
+                  fit: BoxFit.cover,
+                  width: 100,
+                  height: 100,
 
-        children: [
-       // rimage == null
-          //? CircleAvatar(backgroundImage: NetworkImage(user.photoUrl!),) :
-        rimage != null
-        ? Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Container(
-        child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.file(
-        //to show image, you type like this.
-        File(rimage!.path),
-        fit: BoxFit.cover,
-        width: 100,
-        height: 100,
-
-        ),
-        ),
-        ),
-        )
+                  ),
+                  ),
+                  ),
+                  )
 
 
             : Text(
@@ -329,44 +303,6 @@ class _EditPageState extends State<EditPage> {
 
 
 
-                /*child: Container(
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    // crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                    Container(
-
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.red[100],
-                        borderRadius: BorderRadius.circular(32),
-
-                        image: DecorationImage(
-                          image: rimage != null
-                              ?  File(rimage!.path),
-
-                              //FileImage(rimage) as ImageProvider<Object> // Explicitly cast to ImageProvider<Object>
-                              : CachedNetworkImageProvider(
-                              'http://via.placeholder.com/200x150'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => UploadProfile()));
-                          },
-                          child: Text(
-                            'Change Profile photo',
-                            style: TextStyle(color: Colors.purple),
-                          ))
-                    ],
-                  ),
-                ),*/
               ),
 
 

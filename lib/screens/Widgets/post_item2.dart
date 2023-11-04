@@ -48,6 +48,7 @@ class PostItem2 extends StatelessWidget {
   var like_count_A;
   var like_count_B;
   var createdAt;
+  final String userImage;
 
   PostsProvider myProvider;
 
@@ -71,6 +72,7 @@ class PostItem2 extends StatelessWidget {
       this.isLikedA,
       this.isLikedB,
       this.createdAt,
+      this.userImage,
       {required this.myProvider});
 
   void viewImage(BuildContext context, String imageUrl) {
@@ -107,8 +109,8 @@ class PostItem2 extends StatelessWidget {
         ),
         child: Column(
           children: [
-            postOptions(context, userId, image, name, followerCount, image,
-                    postId, userId, type) ??
+            postOptions(context, userId, userImage, name, followerCount, image,
+                    postId, userId, type,createdAt) ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -340,8 +342,8 @@ class PostItem2 extends StatelessWidget {
         ),
         child: Column(
           children: [
-            postOptions(context, userId, image, name, followerCount, image,
-                postId, userId, type) ??
+            postOptions(context, userId, userImage, name, followerCount, image,
+                postId, userId, type,createdAt) ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -553,7 +555,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            postOptions(context, userId, image, name, followerCount, image, postId, userId, type) ?? Container(),
+            postOptions(context, userId, userImage, name, followerCount, image, postId, userId, type,createdAt) ?? Container(),
             AspectRatio(
               aspectRatio: width / height,
               child: buildMediaWidget(context, image, type, width, height, isPinned),
@@ -561,7 +563,6 @@ class PostItem2 extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-
                 Container(
                   padding: EdgeInsets.only(left: 10),
                   width: MediaQuery.of(context).size.width * 0.82,
@@ -667,8 +668,8 @@ class PostItem2 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              postOptions(context, userId, image, name, followerCount, image,
-                      postId, userId, type) ??
+              postOptions(context, userId, userImage, name, followerCount, image,
+                      postId, userId, type,createdAt) ??
                   Container(),
               SizedBox(
                 height: 400,

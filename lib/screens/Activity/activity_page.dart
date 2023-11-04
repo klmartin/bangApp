@@ -47,11 +47,10 @@ class _Activity extends State<Activity> {
 GestureDetector _notificationList(NotificationItem notification) {
   return GestureDetector(
     onTap: () async {
-      var postDetails = await Service().getPostInfo(notification.postId);
-      print('this is post');
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var userId = prefs.getInt('user_id');
+      var postDetails = await Service().getPostInfo(notification.postId,userId);
       var firstPost = postDetails[0]['image'];
-      print(firstPost);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -66,9 +65,12 @@ GestureDetector _notificationList(NotificationItem notification) {
             postDetails[0]['commentCount'],
             postDetails[0]['user_id'],
             postDetails[0]['isLiked'],
-            postDetails[0]['likeCount'] ?? 0,
+            postDetails[0]['like_count_A'] ?? 0,
             postDetails[0]['type'],
             postDetails[0]['user']['followerCount'],
+            postDetails[0]['created_at'],
+            postDetails[0]['user_image_url'],
+            postDetails[0]['pinned']
           ),
         ),
       );
@@ -108,7 +110,6 @@ GestureDetector _notificationList(NotificationItem notification) {
   );
 }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,15 +124,10 @@ GestureDetector _notificationList(NotificationItem notification) {
           return Dismissible(
             key: Key(notification.id.toString()), // Use a unique key
             onDismissed: (direction) {
-              // Remove the notification from the list when swiped
               if (direction == DismissDirection.startToEnd) {
-                // Swiped from right to left
-                // Perform your action (e.g., delete notification)
                 Service().deleteNotification(notification.id.toString());
               } else if (direction == DismissDirection.endToStart) {
-                // Swiped from left to right
-                // Perform a different action (if needed)
-                // For example, mark the notification as read
+
                 Service().notificationIsRead(notification.id.toString());
               }
               setState(() {

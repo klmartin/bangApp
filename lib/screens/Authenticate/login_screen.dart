@@ -159,7 +159,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'password': password,
                                 },
                               );
+
                               final responseBody = jsonDecode(response.body);
+
                               if (responseBody.containsKey('error') &&
                                   responseBody['error'] ==
                                       'invalid_credentials') {
@@ -192,6 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   prefs.setString('user_image', responseBody['user_image']);
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);
+                                  prefs.setString('bio', responseBody['bio']);
                                   prefs.setString('role', responseBody['role']);
                                 });
                                 print('this is role');

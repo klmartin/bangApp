@@ -67,11 +67,11 @@ List<Post> _allPosts = [];
             isLikedB: data['isLikedB'],
             isLikedA: data['isLikedA'],
             createdAt: data['created_at'],
+            userImage: data['user_image_url']
           );
         }).toList();
 
          _pageNumber++;
-
         _loading = false;
 
         notifyListeners();

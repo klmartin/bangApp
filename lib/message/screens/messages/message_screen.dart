@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/constants.dart';
 import 'package:bangapp/message/models/ChatMessage.dart';
 import 'package:bangapp/message/screens/messages/components/message.dart'
@@ -25,8 +26,9 @@ import 'components/body.dart';
 class MessagesScreen extends StatefulWidget {
   int receiverId;
   String receiverUsername;
+  String userImage;
 
-  MessagesScreen(this.receiverId, this.receiverUsername);
+  MessagesScreen(this.receiverId, this.receiverUsername, this.userImage);
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -67,7 +69,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   void _scrollListener() {
     _firstAutoscrollExecuted = true;
-
     if (_scrollController.hasClients &&
         _scrollController.position.pixels ==
             _scrollController.position.maxScrollExtent) {
@@ -77,7 +78,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-// http://137.184.33.100:3000/
   void connect() {
     socket = IO.io('ws://137.184.33.100:3000/', <String, dynamic>{
       "transports": ['websocket'],
@@ -133,14 +133,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   void _startAConversation() async {
-    print("Executing this.........................");
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     chatProvider.startConversation(
         context, await getUserId(), widget.receiverId);
   }
 
   void _getThisUsersMessages() async {
-    print("Executing this.........................");
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     chatProvider.getMessages(context, await getUserId(), widget.receiverId);
 
@@ -161,7 +159,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     if (messageType == "text") {
       chatProvider.sendMessage(context, await getUserId(), widget.receiverId,
           messageText, chatProvider, socket);
-      print("huuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
     } else if (messageType == "image") {
       chatProvider.sendImageMessage(context, await getUserId(),
           widget.receiverId, File(messageText), chatProvider, socket);
@@ -170,13 +167,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
           widget.receiverId, File(messageText), chatProvider, socket);
     }
 
-    final rawMessage = {
-      "id": 22222,
-      "sender_id": await getUserId(),
-      "message": messageText,
-      "message_type": messageType,
-    };
-    // _sendMessageToSocket(rawMessage);
     setState(() {
       if (_scrollController.hasClients && _shouldAutoscroll) {
         _scrollToBottom();
@@ -190,7 +180,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   void markMessageAsReadHere(message) async {
     if (message.isReady == 0 && message.senderId != await getUserId()) {
-      print("Marking message as read");
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
       chatProvider.markMessageAsRead(message.id);
     }
@@ -209,8 +198,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 builder: (context, chatProvider, child) {
                   final messages = chatProvider.messages;
                   return ListView.builder(
-                      controller:
-                          _scrollController, // Attach the controller here
+                      controller: _scrollController, // Attach the controller here
                       reverse: true,
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
@@ -246,6 +234,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   isSender: isSender,
                                   id: messages[index].id,
                                   isReady: messages[index].isReady,
+                                  userImage: widget.userImage
                                 ),
                               );
                             }
@@ -353,8 +342,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
               child: Icon(Icons.arrow_back, color: Colors.white, size: 33),
             ),
           ),
-          const CircleAvatar(
-            backgroundImage: AssetImage("assets/images/user_2.png"),
+           CircleAvatar(
+            radius: 24,
+            backgroundImage: NetworkImage(widget.userImage), // You can use a placeholder image
           ),
           const SizedBox(width: kDefaultPadding * 0.75),
           Column(
@@ -459,24 +449,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-//   void _handleImageSelection() async {
-//     final result = await ImagePicker().pickImage(
-//       imageQuality: 70,
-//       maxWidth: 1440,
-//       source: ImageSource.gallery,
-//     );
-
-//     if (result != null) {
-//       final bytes = await result.readAsBytes();
-//       final imageSize = await decodeImageFromList(bytes);
-//     //   final message = ChatMessage(id: 000, text: image.toString(), messageType: ChatMessageType.image, messageStatus: MessageStatus.not_view, isSender: true, isReady: 0);
-//     //   final mess = Message(id: 000, senderId: 12, message: result.path, isReady: 0, messageType: 'image');
-//       _sendMessage(result.path, 'image');
-//     //   print(mess.message);
-//       print("Message up trere.............");
-//     //   _addMessage(message);
-//     }
-//   }
 
   void _handleImageSelection() async {
     final result = await ImagePicker().pickImage(

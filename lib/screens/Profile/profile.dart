@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:typed_data';
 import 'package:bangapp/screens/Profile/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:bangapp/screens/Profile/edit_profile.dart';
+import 'package:bangapp/screens/Profile/edit_my_profile.dart';
 import 'package:http/http.dart' as http;
 import 'package:bangapp/screens/Story/storyview.dart';
 import 'package:bangapp/screens/settings/settings.dart';
@@ -13,21 +16,14 @@ import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/userprovider.dart';
-import 'package:bangapp/services/fetch_post.dart';
 import '../Posts/postView_model.dart';
+import '../Posts/post_challenge_view.dart';
+import '../Posts/post_video_challenge_view.dart';
 import 'profile_upload.dart';
+import 'package:bangapp/models/image_post.dart';
 import 'package:bangapp/constants/urls.dart';
-
-Future<String?> getUserImage() async {
-  try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? photoURL = prefs.getString('user_image');
-    return photoURL;
-  } catch (e) {
-    print(e);
-  }
-}
-
+import 'package:bangapp/services/service.dart';
+import 'package:provider/provider.dart';
 
 
 class Profile extends StatefulWidget {
@@ -44,14 +40,21 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   ScrollController? _scrollController;
   bool _isLoading = false;
+  late String myName = "";
+  late String myBio= "";
+  late String myImage = profileUrl;
+  late int myPostCount= 0;
+  late int myFollowerCount= 0;
+  late int myFollowingCount= 0;
+  late String description= "";
   final int _numberOfPostsPerRequest = 20;
   int _pageNumber = 1;
   List<ImagePost> allImagePosts = [];
   void initState() {
     super.initState();
+    _getMyInfo();
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
-    // _loadPosts();
   }
 
   void _scrollListener() {
@@ -62,25 +65,36 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  void _getMyInfo() async {
+    var myInfo = await Service().getMyInformation();
+    print(myInfo);
+    print('this is my info');
+    setState(() {
+      myName =  myInfo['name'] ?? "";
+      myBio = myInfo['bio'] ?? "";
+      myImage = myInfo['user_image_url'] ?? "";
+      myPostCount = myInfo['postCount'] ?? 0;
+      myFollowerCount = myInfo['followerCount'] ?? 0;
+      myFollowingCount = myInfo['followingCount'] ?? 0;
+    });
+  }
+
   void _loadMorePosts() async {
     if (_isLoading) {
       return;
     }
-
     setState(() {
       _isLoading = true;
     });
-
     final List<dynamic> newPosts = await getMyPosts(_pageNumber);
-
     setState(() {
       _isLoading = false;
       // Append the newly loaded posts to the existing list
       allImagePosts.addAll(newPosts.map((post) {
         return ImagePost(post['user']['name'],
-            post['body'],
+            post['body'] ??"",
             post['image'],
-            post['challenge_img'],
+            post['challenge_img']??"",
             post['width'],
             post['height'],
             post['id'],
@@ -90,7 +104,9 @@ class _ProfileState extends State<Profile> {
             post['like_count_A'],
             post['type'],
             post['user']['followerCount'],
-            post['created_at']
+            post['created_at'],
+            post['user_image_url'],
+            post['pinned']
         );
       }));
     });
@@ -106,308 +122,494 @@ class _ProfileState extends State<Profile> {
     return data['data']['data'];
   }
 
+  Future<String?> _generateThumbnail(String file, BuildContext context) async {
+    final thumbnailAsUint8List = await VideoThumbnail.thumbnailFile(
+      video: file,
+      imageFormat: ImageFormat.WEBP,
+      maxWidth: 320,
+      quality: 50,
+    );
+    final thumbnailModel = Provider.of<ThumbnailModel>(context, listen: false);
+    thumbnailModel.setThumbnailData(thumbnailAsUint8List);
+    return thumbnailAsUint8List;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // Build your UI using the imagePosts list
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: ListView(
-        controller: _scrollController,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
-                child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: rimage != null
-                        ? BoxDecoration(
-                      color: Colors.red.shade100,
-                      borderRadius: BorderRadius.circular(25),
-                    )
-                        : BoxDecoration(
-                        color: Colors.red.shade100,
-                        borderRadius: BorderRadius.circular(25),
-                        image: DecorationImage(
-                          image: CachedNetworkImageProvider('$profileUrl/bang_logo.jpg') ,
-                          fit: BoxFit.cover,
-                        )),
-                    child: rimage != null
-                        ? Image.file(
-                      rimage,
+    return ChangeNotifierProvider(
+      create: (context) => ThumbnailModel(),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: ListView(
+          controller: _scrollController,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
+                  child: Container(
                       width: 80,
                       height: 80,
-                      fit: BoxFit.cover,
-                    )
-                        : Container()),
+                      decoration:  BoxDecoration(
+                          color: Colors.red.shade100,
+                          borderRadius: BorderRadius.circular(25),
+                          image: DecorationImage(
+                            image: CachedNetworkImageProvider(myImage) ,
+                            fit: BoxFit.cover,
+                          )),
+                      child: rimage != null
+                          ? Image.file(
+                        rimage,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                      )
+                          : Container()),
+                ),
+                SizedBox(width: 150),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
+                  child: InkWell(
+                    // onTap: () {
+                    //   openFilterDialog();
+                    // },
+                    child: Column(
+                      children: [
+                        Icon(
+                          Ionicons.person_add_outline,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .secondary,
+                          size: 30,
+                        ),
+                        Text(
+                          'Buy Followers',
+                          style: TextStyle(
+                            fontSize: 14.5,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                myName,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Metropolis',
+                ),
               ),
-              SizedBox(width: 150),
-              Padding(
-                padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
-                child: InkWell(
-                  // onTap: () {
-                  //   openFilterDialog();
-                  // },
-                  child: Column(
-                    children: [
-                      Icon(
-                        Ionicons.person_add_outline,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .secondary,
-                        size: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: RichText(
+                overflow: TextOverflow.clip,
+                strutStyle: StrutStyle(fontSize: 12.0),
+                text: TextSpan(
+                    style:
+                    TextStyle(color: Colors.black, fontFamily: 'Metropolis'),
+                    text: myBio),
+              ),
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => EditPage()));
+                          },
+                          child: Text(
+                            'Edit profile',
+                            style: TextStyle(color: Colors.black),
+                          )),
+                    )),
+                SizedBox(width: 10),
+                Expanded(
+                    child: Container(
+                      child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) =>  AppSettings(),) );
+                          },
+                          child: Text(
+                            'Settings',
+                            style: TextStyle(color: Colors.black),
+                          )),
+                    )),
+              ],
+            ),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5.0),
+                        child: Text(
+                          // '$posts',
+                          myPostCount.toString(),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontFamily: 'Metropolis'),
+                        ),
                       ),
                       Text(
-                        'Buy Followers',
-                        style: TextStyle(
-                          fontSize: 14.5,
-                        ),
+                        'Posts',
+                        style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
                       )
                     ],
                   ),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "martin",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Metropolis',
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: RichText(
-              overflow: TextOverflow.clip,
-              strutStyle: StrutStyle(fontSize: 12.0),
-              text: TextSpan(
-                  style:
-                  TextStyle(color: Colors.black, fontFamily: 'Metropolis'),
-                  text: 'descr'),
-            ),
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => EditPage()));
-                        },
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: FaIcon(
+                      FontAwesomeIcons.ellipsisV,
+                      size: 10,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5.0),
                         child: Text(
-                          'Edit profile',
-                          style: TextStyle(color: Colors.black),
-                        )),
-                  )),
-              SizedBox(width: 10),
-              Expanded(
-                  child: Container(
-                    child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) =>  AppSettings(),) );
-                        },
+                          // '$followers',
+                          myFollowerCount.toString(),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontFamily: 'Metropolis'),
+                        ),
+                      ),
+                      Text(
+                        'Followers',
+                        style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: FaIcon(
+                      FontAwesomeIcons.ellipsisV,
+                      size: 10,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4.0),
                         child: Text(
-                          'Settings',
-                          style: TextStyle(color: Colors.black),
-                        )),
-                  )),
-            ],
-          ),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: Text(
-                        // '$posts',
-                        '76',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            fontFamily: 'Metropolis'),
+                          // '$following',
+                          myFollowingCount.toString(),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontFamily: 'Metropolis'),
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Posts',
-                      style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                    )
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: FaIcon(
-                    FontAwesomeIcons.ellipsisV,
-                    size: 10,
-                    color: Colors.grey,
+                      Text(
+                        'Friends',
+                        style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                      )
+                    ],
                   ),
-                ),
-                Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: Text(
-                        // '$followers',
-                        '21',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            fontFamily: 'Metropolis'),
-                      ),
+                ]),
+            FutureBuilder(
+              future: getMyPosts(_pageNumber),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.lightBlue,
                     ),
-                    Text(
-                      'Followers',
-                      style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                    )
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: FaIcon(
-                    FontAwesomeIcons.ellipsisV,
-                    size: 10,
-                    color: Colors.grey,
-                  ),
-                ),
-                Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4.0),
-                      child: Text(
-                        // '$following',
-                        '2',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            fontFamily: 'Metropolis'),
-                      ),
-                    ),
-                    Text(
-                      'Following',
-                      style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                    )
-                  ],
-                ),
-              ]),
-          FutureBuilder(
-            future: getMyPosts(_pageNumber),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.lightBlue,
-                  ),
-                );
-              }
-              if (snapshot.hasData) {
-                final List<dynamic> posts = snapshot.data! as List<dynamic>;
-                for (var post in posts) {
-                  final imagePost = ImagePost(
-                      post['user']['name'],
-                      post['body'] ?? "",
-                      post['image'],
-                      post['challenge_img'] ?? "",
-                      post['width'],
-                      post['height'],
-                      post['id'],
-                      post['commentCount'],
-                      post['user_id'],
-                      post['isLikedA'],
-                      post['like_count_A'],
-                      post['type'],
-                      post['user']['followerCount'],
-                      post['created_at']
                   );
-                  allImagePosts.add(imagePost);
                 }
-              }
-              return allImagePosts.isEmpty
-                  ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'No photos yet',
-                    style: TextStyle(fontFamily: 'Metropolis'),
-                  )
-                ],
-              )
-                  : Padding(
-                padding: const EdgeInsets.only(top: 15.0),
-                child: GridView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                  ),
-                  children: [
-                    for (var i = 0; i < allImagePosts.length; i++)
-                      ClipRRect(
+                if (snapshot.hasData) {
+                  String thumbnailPath = ''; // Variable to store the thumbnail file path
+
+
+                  final List<dynamic> posts = snapshot.data! as List<dynamic>;
+                  for (var post in posts) {
+                    final imagePost = ImagePost(
+                        post['user']['name'],
+                        post['body'] ?? "",
+                        post['image'],
+                        post['challenge_img'] ?? "",
+                        post['width'],
+                        post['height'],
+                        post['id'],
+                        post['commentCount'],
+                        post['user_id'],
+                        post['isLikedA'],
+                        post['like_count_A'],
+                        post['type'],
+                        post['user']['followerCount'],
+                        post['created_at'],
+                        post['user_image_url'],
+                        post['pinned']
+                    );
+                    allImagePosts.add(imagePost);
+                  }
+                }
+                return allImagePosts.isEmpty
+                    ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'No photos yet',
+                      style: TextStyle(fontFamily: 'Metropolis'),
+                    )
+                  ],
+                )
+                    : Padding(
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: GridView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    children: [
+                      for (var i = 0; i < allImagePosts.length; i++)
+                        if(allImagePosts[i].type == 'image' && allImagePosts[i].challengeImgUrl=="" && allImagePosts[i].pinned == 0)
+                        ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context, MaterialPageRoute(builder: (context) => POstView(
+                                  allImagePosts[i].name,
+                                  allImagePosts[i].caption,
+                                  allImagePosts[i].imageUrl,
+                                  allImagePosts[i].challengeImgUrl,
+                                  allImagePosts[i].imgWidth,
+                                  allImagePosts[i].imgHeight,
+                                  allImagePosts[i].postId,
+                                  allImagePosts[i].commentCount,
+                                  allImagePosts[i].userId,
+                                  allImagePosts[i].isLiked,
+                                  allImagePosts[i].likeCount,
+                                  allImagePosts[i].type,
+                                  allImagePosts[i].followerCount,
+                                  allImagePosts[i].createdAt,
+                                  allImagePosts[i].userImage,
+                                  allImagePosts[i].pinned
+                              )));
+                            },
+
+                            child:
+                              CachedNetworkImage(
+                              imageUrl: allImagePosts[i].imageUrl,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),]
+                        else if(allImagePosts[i].type == 'image' && allImagePosts[i].challengeImgUrl!=""&& allImagePosts[i].pinned == 0)...[
+                        ClipRRect(
                         borderRadius: BorderRadius.circular(5),
                         child: InkWell(
                           onTap: () {
-                            Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => POstView(
-                                allImagePosts[i].name,
-                                allImagePosts[i].caption,
-                                allImagePosts[i].imageUrl,
-                                allImagePosts[i].challengeImgUrl,
-                                allImagePosts[i].imgWidth,
-                                allImagePosts[i].imgHeight,
-                                allImagePosts[i].postId,
-                                allImagePosts[i].commentCount,
-                                allImagePosts[i].userId,
-                                allImagePosts[i].isLiked,
-                                allImagePosts[i].likeCount,
-                                allImagePosts[i].type,
-                                allImagePosts[i].followerCount,
-                            )));
+                          Navigator.push(
+                          context, MaterialPageRoute(builder: (context) => POstChallengeView(
+                            allImagePosts[i].name,
+                            allImagePosts[i].caption,
+                            allImagePosts[i].imageUrl,
+                            allImagePosts[i].challengeImgUrl,
+                            allImagePosts[i].imgWidth,
+                            allImagePosts[i].imgHeight,
+                            allImagePosts[i].postId,
+                            allImagePosts[i].commentCount,
+                            allImagePosts[i].userId,
+                            allImagePosts[i].isLiked,
+                            allImagePosts[i].likeCount,
+                            allImagePosts[i].type,
+                            allImagePosts[i].followerCount,
+                            allImagePosts[i].createdAt,
+                            allImagePosts[i].userImage,
+                            allImagePosts[i].pinned
+                          )));
                           },
-                          child: CachedNetworkImage(
-                            imageUrl: allImagePosts[i].imageUrl,
-                            fit: BoxFit.cover,
-                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  imageUrl: allImagePosts[i].imageUrl,
+                                ),
+                              ),
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  imageUrl: allImagePosts[i].challengeImgUrl,
+                                ),
+                              ),
+                            ],
+                          )
                         ),
-                      )
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+                        ),
+                        ]
+                        else if(allImagePosts[i].type == 'image' && allImagePosts[i].challengeImgUrl=="" && allImagePosts[i].pinned == 1) ...[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context, MaterialPageRoute(builder: (context) => POstView(
+                                      allImagePosts[i].name,
+                                      allImagePosts[i].caption,
+                                      allImagePosts[i].imageUrl,
+                                      allImagePosts[i].challengeImgUrl,
+                                      allImagePosts[i].imgWidth,
+                                      allImagePosts[i].imgHeight,
+                                      allImagePosts[i].postId,
+                                      allImagePosts[i].commentCount,
+                                      allImagePosts[i].userId,
+                                      allImagePosts[i].isLiked,
+                                      allImagePosts[i].likeCount,
+                                      allImagePosts[i].type,
+                                      allImagePosts[i].followerCount,
+                                      allImagePosts[i].createdAt,
+                                      allImagePosts[i].userImage,
+                                      allImagePosts[i].pinned,
+                                  )));
+                                },
+                                child:
+                                Image.network(
+                                  pinnedUrl,
+                                  fit: BoxFit.cover,
+                                  width: 100,
+                                  height: 100,
+                                ),
+                              ),
+                            ),
+                        ]
+                        else if(allImagePosts[i].type == 'video' && allImagePosts[i].challengeImgUrl=="")...[
+
+                          ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: InkWell(
+                          onTap: () {
+                          Navigator.push(
+                          context, MaterialPageRoute(builder: (context) => POstView(
+                          allImagePosts[i].name,
+                          allImagePosts[i].caption,
+                          allImagePosts[i].imageUrl,
+                          allImagePosts[i].challengeImgUrl,
+                          allImagePosts[i].imgWidth,
+                          allImagePosts[i].imgHeight,
+                          allImagePosts[i].postId,
+                          allImagePosts[i].commentCount,
+                          allImagePosts[i].userId,
+                          allImagePosts[i].isLiked,
+                          allImagePosts[i].likeCount,
+                          allImagePosts[i].type,
+                          allImagePosts[i].followerCount,
+                          allImagePosts[i].createdAt,
+                          allImagePosts[i].userImage,
+                          allImagePosts[i].pinned
+                          )));
+                          },
+                          child: FutureBuilder<String?>(
+                            future: _generateThumbnail(allImagePosts[i].imageUrl, context), // Replace with your video file path
+                            builder: (context, snapshot) {
+                              print(snapshot);
+                              print('this is data');
+                              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                                  final thumbnailModel = Provider.of<ThumbnailModel>(context);
+                                  final thumbnailData = thumbnailModel.thumbnailData;
+                                  return Image.asset(
+                                    thumbnailData!,
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  );
+                                }
+                              else {
+                                  return Image.asset(
+                                  'assets/images/video_thumb.png',
+                                  fit: BoxFit.cover,
+                                  width: 100,
+                                  height: 100,
+                              );
+                            }
+                            },
+                          )
+
+                          ),
+                          ),
+                        ]
+                        else if(allImagePosts[i].type == 'video' && allImagePosts[i].challengeImgUrl!="")...[
+                            ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: InkWell(
+                            onTap: () {
+                            Navigator.push(
+                            context, MaterialPageRoute(builder: (context) => POstVideoChallengeView(
+                            allImagePosts[i].name,
+                            allImagePosts[i].caption,
+                            allImagePosts[i].imageUrl,
+                            allImagePosts[i].challengeImgUrl,
+                            allImagePosts[i].imgWidth,
+                            allImagePosts[i].imgHeight,
+                            allImagePosts[i].postId,
+                            allImagePosts[i].commentCount,
+                            allImagePosts[i].userId,
+                            allImagePosts[i].isLiked,
+                            allImagePosts[i].likeCount,
+                            allImagePosts[i].type,
+                            allImagePosts[i].followerCount,
+                            allImagePosts[i].createdAt,
+                            allImagePosts[i].userImage,
+                            allImagePosts[i].pinned
+                            )));
+                            },
+                            child: Row(
+                            children: [
+                            Expanded(
+                            child: Image.asset(
+                              'assets/images/video_thumb.png',
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            ),
+                            ),
+                            Expanded(
+                            child: Image.asset(
+                              'assets/images/video_thumb.png',
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            ),
+                            ),
+                            ],
+                            )
+                            ),
+                            ),
+                          ]
+                    ]
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class ImagePost {
-  final String imageUrl;
-  String name;
-  String caption;
-  String challengeImgUrl;
-  int imgWidth;
-  int imgHeight;
-  int postId;
-  int commentCount;
-  int userId;
-  bool isLiked;
-  int likeCount;
-  String type;
-  int followerCount;
-  String createdAt;
-  ImagePost(this.name,this.caption,this.imageUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt);
-}
 
 class Hobby {
   final String? name;
@@ -448,7 +650,6 @@ class _HighlightsState extends State<Highlights> {
 Future<List<Hobby>> fetchHobbies() async {
   print('fetching hobbies');
   final response = await http.get(Uri.parse('$baseUrl/hobbies'));
-
   if (response.statusCode == 200) {
     final List<dynamic> data = json.decode(response.body);
 
@@ -701,5 +902,14 @@ class _HighlightState extends State<Highlight> {
         ]),
       ),
     );
+  }
+}
+
+class ThumbnailModel with ChangeNotifier {
+  String? thumbnailData;
+  void setThumbnailData(String? data) {
+    print(data);
+    thumbnailData = data;
+    notifyListeners();
   }
 }

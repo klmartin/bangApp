@@ -152,11 +152,10 @@ Future<Map<String, dynamic>> getCurrentUser() async {
     }
   }
 
-Future<List<dynamic>> getPostInfo(postId) async {
-
+Future<List<dynamic>> getPostInfo(postId,userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('user_id');
-    final response = await http.get(Uri.parse('$baseUrl/getPostInfo/$postId'));
+    final response = await http.get(Uri.parse('$baseUrl/getPostInfo/$postId/$userId'));
     print(response.body);
     return jsonDecode(response.body);
   }
@@ -292,6 +291,8 @@ Future<List<dynamic>> getPostInfo(postId) async {
           'body': commentText,
         },
        );
+      print(response.body);
+      print('this is app');
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -520,7 +521,6 @@ Future<List<dynamic>> getPostInfo(postId) async {
         'user_id': prefs.getInt('user_id').toString(),
       },
     );
-
     if (response.statusCode == 200) {
       var data = json.decode(response.body) as List<dynamic>;
 
@@ -528,7 +528,6 @@ Future<List<dynamic>> getPostInfo(postId) async {
       for (var item in data) {
         messages.add(ChatMessage.fromJson(item));
       }
-
       return messages;
     } else {
       throw Exception('Failed to load messages');
@@ -572,6 +571,20 @@ Future<List<dynamic>> getPostInfo(postId) async {
       print('Message sent successfully');
     } else {
       print('Failed to send message');
+    }
+  }
+
+  Future<Map<String, dynamic>> getMyInformation({int? userId}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (userId != null) {
+      var response = await http.get(Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId"));
+      var data = json.decode(response.body);
+      return data;
+    } else {
+      var userId = prefs.getInt('user_id').toString();
+      var response = await http.get(Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId"));
+      var data = json.decode(response.body);
+      return data;
     }
   }
 
@@ -621,6 +634,25 @@ Future<List<dynamic>> getPostInfo(postId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('user_id');
     final apiUrl = '$baseUrl/updateIsSeen/$postId/$userId'; // Replace with your actual API URL
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      print(response.body);
+      if (response.statusCode == 200) {
+
+      } else {
+        // Handle errors if needed
+        print('Failed to update post $postId');
+      }
+    } catch (e) {
+      // Handle exceptions if needed
+      print('Exception: $e');
+    }
+  }
+
+  Future<void> updateBangUpdateIsSeen(int postId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id');
+    final apiUrl = '$baseUrl/updateBangUpdateIsSeen/$postId/$userId'; // Replace with your actual API URL
     try {
       final response = await http.get(Uri.parse(apiUrl));
       print(response.body);

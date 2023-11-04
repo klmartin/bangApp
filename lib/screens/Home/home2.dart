@@ -45,7 +45,7 @@ class _Home2ContentState extends State<Home2Content> {
     return RefreshIndicator(
       onRefresh: () async {
         final postsProvider = Provider.of<PostsProvider>(context, listen: false);
-         // postsProvider.refreshData();
+          // postsProvider.refreshData();
       },
       child: Consumer<PostsProvider>(
         builder: (context, postsProvider, child) {
@@ -105,6 +105,7 @@ class _Home2ContentState extends State<Home2Content> {
                 post.isLikedA,
                 post.isLikedB,
                 post.createdAt,
+                post.userImage,
                 myProvider: postsProvider,
               )
           ],
@@ -132,6 +133,7 @@ class _Home2ContentState extends State<Home2Content> {
     post.isLikedA,
     post.isLikedB,
     post.createdAt,
+    post.userImage,
     myProvider: postsProvider,
   );
     }
