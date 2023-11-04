@@ -1,15 +1,11 @@
-import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/models/ChatMessage.dart';
 import 'package:bangapp/message/screens/messages/components/image_message.dart';
-import 'package:bangapp/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 import 'audio_message.dart';
 import 'text_message.dart';
 import 'video_message.dart';
-import 'package:http/http.dart' as http;
 
 class Message extends StatefulWidget {
   const Message({
