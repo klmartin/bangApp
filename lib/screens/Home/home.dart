@@ -7,12 +7,12 @@
 // import 'package:bangapp/models/post.dart';
 // import 'package:bangapp/screens/Widgets/post_item.dart';
 // import '../Widgets/small_box.dart';
-
+//
 // class Home extends StatefulWidget {
 //   @override
 //   _HomeState createState() => _HomeState();
 // }
-
+//
 // class _HomeState extends State<Home> {
 //   late bool _isLastPage;
 //   late int _pageNumber;
@@ -21,7 +21,7 @@
 //   final int _numberOfPostsPerRequest = 10;
 //   List<Post>? _posts;
 //   final int _nextPageTrigger = 3;
-
+//
 //   @override
 //   void initState() {
 //     super.initState();
@@ -32,14 +32,14 @@
 //     _error = false;
 //     fetchData();
 //   }
-
+//
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       body: buildPostsView(),
 //     );
 //   }
-
+//
 //   Widget buildPostsView() {
 //     if (_posts == null || _posts!.isEmpty) {
 //       if (_loading) {
@@ -59,7 +59,7 @@
 //         );
 //       }
 //     }
-
+//
 //     return ListView.builder(
 //       itemCount: _posts!.length + (_isLastPage ? 0 : 1) + (_posts!.isEmpty ? 0 : 1),
 //       itemBuilder: (context, index) {
@@ -100,7 +100,7 @@
 //       },
 //     );
 //   }
-
+//
 //   Future<void> fetchData() async {
 //     try {
 //       final response = await get(Uri.parse(
@@ -185,5 +185,5 @@
 //       ),
 //     );
 //   }
-
+//
 // }

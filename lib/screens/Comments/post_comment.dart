@@ -154,23 +154,20 @@
 //   }
 // }
 
-import 'package:bangapp/providers/posts_provider.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 class CommentsPage extends StatefulWidget {
   final int? userId;
   final postId;
-  PostsProvider myProvider;
 
-   CommentsPage({
+  CommentsPage({
     required this.userId,
     this.postId,
-    required  this.myProvider,
   });
   @override
   _CommentsPageState createState() => _CommentsPageState();
@@ -188,14 +185,14 @@ class _CommentsPageState extends State<CommentsPage> {
     CircularProgressIndicator();
     _fetchComments();
     getUserImageFromSharedPreferences();
-
   }
 
   Future<void> _fetchComments() async {
     final response = await Service().getComments(widget.postId.toString());
-    print(response);
+    final comments = response;
     setState(() {
-      filedata = response.map((comment) {
+      // CircularProgressIndicator()
+      filedata = comments.map((comment) {
         return {
           'name': comment['user']['name'],
           'pic': comment['post']['user_image_url'],
@@ -284,12 +281,11 @@ class _CommentsPageState extends State<CommentsPage> {
           sendButtonMethod: () async {
             if (formKey.currentState!.validate()) {
               final response = await Service().postComment(
-                context,
-                widget.postId,
-                commentController.text,
-                widget.userId
+                  context,
+                  widget.postId,
+                  commentController.text,
+                  widget.userId
               );
-              widget.myProvider.incrementCommentCountByPostId(widget.postId);
               print(commentController.text);
               setState(() {
                 var value = {

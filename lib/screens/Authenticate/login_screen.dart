@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bangapp/models/userprovider.dart';
 import 'package:provider/provider.dart';
 import '../../api/google_signin_api.dart';
-import '../../components/square_tiles.dart';
 import '../../constants/urls.dart';
 import '../../nav.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +14,6 @@ import 'package:bangapp/screens/Authenticate/register_screen.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-import '../../services/auth_services.dart';
 import '../Profile/edit_profile.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -54,7 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Padding(
@@ -70,7 +66,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 100,
                   ),
                   Center(
-
                     child: Image.asset(
                       "images/app_icon.jpg",
                       height: 60,
@@ -87,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),*/
                   ),
                   SizedBox(
-                    height: 100.0,
+                    height: 20.0,
                   ),
                   Container(
                     child: Column(
@@ -100,26 +95,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             //Do something with the user input.
                           },
                           decoration: InputDecoration(
-                            hintText: 'Enter your email',
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 20.0),
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(32.0)),
+                            labelText: 'Email',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(
+                                Icons.mail_outline
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.purple, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(32.0)),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.purple, width: 2.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(32.0)),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
                             ),
                           ),
+                          style: TextStyle(color: Colors.black),
+                          cursorColor: Colors.black,
                         ),
                         SizedBox(
                           height: 10.0,
@@ -132,26 +121,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             //Do something with the user input.
                           },
                           decoration: InputDecoration(
-                            hintText: 'Enter your password.',
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 20.0),
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(32.0)),
+                            labelText: 'Password',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(
+                              Icons.lock_person
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.purple, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(32.0)),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.purple, width: 2.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(32.0)),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
                             ),
                           ),
+                          keyboardType: TextInputType.text,
+                          style: TextStyle(color: Colors.black),
+                          cursorColor: Colors.black,
                         ),
                       ],
                     ),
@@ -175,7 +159,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'password': password,
                                 },
                               );
+
                               final responseBody = jsonDecode(response.body);
+
                               if (responseBody.containsKey('error') &&
                                   responseBody['error'] ==
                                       'invalid_credentials') {
@@ -208,6 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   prefs.setString('user_image', responseBody['user_image']);
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);
+                                  prefs.setString('bio', responseBody['bio']);
                                   prefs.setString('role', responseBody['role']);
                                 });
                                 print('this is role');
@@ -250,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
 
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 20),
 
                   //or continue with
                   Padding(
@@ -279,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 20),
                   //google + apple sign in buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -354,13 +341,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: signIn,
 
                   ),*/
-
-
-                  const SizedBox(height: 50),
-
-
-
-
+                  const SizedBox(height: 20),
                   MaterialButton(
                     onPressed: () {
                       Navigator.push(

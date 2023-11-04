@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:bangapp/message/screens/chats/chats_screen.dart';
+import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:bangapp/providers/chat_provider.dart';
@@ -9,10 +9,12 @@ import 'package:bangapp/providers/comment_provider.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
+import 'package:bangapp/screens/Posts/postView_model.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
+import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -24,7 +26,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
 import 'models/userprovider.dart';
@@ -36,6 +37,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/screens/Create/final_create.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:bangapp/services/service.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -213,41 +216,69 @@ class _AuthenticateState extends State<Authenticate> {
           MaterialPageRoute(
             builder: (context) => MessagesScreen(
                 notificationId,
-                message.data['user_name'] ?? "Username"),
+                message.data['user_name'] ?? "Username",
+                logoUrl
+            ),
           ),
         );
       }
 
       if (title != null && body != null) {
-        print('this is message');
-        print(message.data['challenge_id']);
         _showLocalNotification(title, body);
       } else {
         print('Received message with missing title or body.');
       }
     });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       // Handle notification tap when the app is in the background or terminated.
       // Navigate the user to the relevant screen based on the notification data.
-      print(message.data["type"]);
-
       if (message.data["type"] == "message") {
         int notificationId = int.parse(message.data['notification_id']);
         String? userName = message.data['user_name'];
-      print("THis is of object type ${notificationId.runtimeType} and is $notificationId user is $userName");
-
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => MessagesScreen(
                 notificationId,
-                userName ?? "Username"),
+                userName ?? "Username",
+                logoUrl
+            ),
           ),
         );
       }
 
-      if (message.data["type"] == "challange") {
+      if (message.data["type"] == "like" || message.data["type"] == "comment") {
+        int notificationId = int.parse(message.data['notification_id']);
+        String? userName = message.data['user_name'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var userId = prefs.getInt('user_id');
+        var postData = await Service().getPostInfo(message.data['notification_id'],userId);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => POstView(
+                postData[0]['user']['name'],
+                postData[0]['body'] ?? "",
+                postData[0]['image'],
+                postData[0]['challenge_img'] ?? '',
+                postData[0]['width'],
+                postData[0]['height'],
+                postData[0]['id'],
+                postData[0]['commentCount'],
+                postData[0]['user']['id'],
+                postData[0]['isLiked'],
+                postData[0]['like_count_A'] ?? 0,
+                postData[0]['type'],
+                postData[0]['user']['followerCount'],
+                postData[0]['created_at']  ?? '',
+                postData[0]['user_image_url'],
+                postData[0]['pinned']
+            ),
+          ),
+        );
+      }
+      if (message.data["type"] == "challenge") {
         int? challengeId = message.data['challenge_id'] != null
             ? int.tryParse(message.data['challenge_id'])
             : null;

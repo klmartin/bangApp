@@ -115,14 +115,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   List<Widget> _widgetOptions = [
     Home2(),
-    // ChatsScreen(),
-    // ChatsScreen(),
-    // ChatPage(),
-    // BangUpdates2(),
     CR.Create(),
     Activity(),
-    // BangInspiration(),
-    // Activity(),
     Profile(),
   ];
 

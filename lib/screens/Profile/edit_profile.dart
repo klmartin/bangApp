@@ -17,9 +17,9 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
+import '../../nav.dart';
 import 'edit_profile.dart';
 
-//late String? _name;
 late String? _descr;
 late String phoneNumber;
 late String occupation;
@@ -29,16 +29,6 @@ TextEditingController _dateController = TextEditingController();
 
 Service?  loggedInUser;
 
-/*Map<String, String> body = {
-  //'user_id': prefs.getInt('user_id').toString(),
-  'hobbies': selectedHobbiesText,
-  //'date_of_birth': date_of_birth,
-  'phone_number': phoneNumber,
-  'occupation': occupation,
-  //'bio': _descr,
-};*/
-
-//var rimage;
 var imagePicker;
 enum ImageSourceType { gallery, camera }
 
@@ -73,13 +63,10 @@ class Hobby {
 Future<List<Hobby>> fetchHobbies() async {
   print('fetching hobbies');
   final response = await http.get(Uri.parse('$baseUrl/hobbies'));
-
   if (response.statusCode == 200) {
     final List<dynamic> data = json.decode(response.body);
-
     print(json.decode(response.body));
     return data.map((json) => Hobby.fromJson(json)).toList();
-
   } else {
     throw Exception('Failed to load hobbies');
   }
@@ -96,10 +83,8 @@ class _EditPageState extends State<EditPage> {
 
   bool showSpinner = false;
   @override
-   List<Hobby>? selectedHobbyList;
+  List<Hobby>? selectedHobbyList;
   List<Hobby> hobbyList = [];
-
-  //String selectedHobbiesText = "";
   List<int> selectedHobbyIds = [];
 
   loadHobbies() async {
@@ -159,62 +144,7 @@ class _EditPageState extends State<EditPage> {
         return FractionallySizedBox(
           heightFactor: .4,
           child: Column(
-           /* crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Center(
 
-                  *//* child: TextButton(
-                    onPressed: () async {
-                      XFile image = await imagePicker.pickImage(
-                        source: ImageSource.gallery,
-                      );
-                      setState(() {
-                        rimage = File(image.path);
-                      });
-                      Navigator.pop(context,rimage);
-                    },*//*
-
-                  child: Text(
-                    'Choose Upload',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
-                ),
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.camera_on_rectangle,
-                  size: 25.0,
-                ),
-                title: Text('Choose From Gallery'),
-                onTap: () {
-                  // Navigator.pop(context);
-                  // Navigator.of(context).push(
-                  //   CupertinoPageRoute(
-                  //     builder: (_) => CreatePost(),
-                  //   ),
-                  // );
-                },
-              ),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.camera_on_rectangle,
-                  size: 25.0,
-                ),
-                title: Text('Upload From Camera'),
-                onTap: () async {
-                  // Navigator.pop(context);
-                  // await viewModel.pickImage(context: context);
-
-                },
-              ),*/
 
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -301,8 +231,6 @@ class _EditPageState extends State<EditPage> {
 
 
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -329,38 +257,30 @@ class _EditPageState extends State<EditPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-
           padding: const EdgeInsets.all(20.0),
-
           child: Column(
-
             children: <Widget>[
               Center(
-
-
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                  rimage != null
+                  ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                  child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.file(
+                  //to show image, you type like this.
+                  File(rimage!.path),
+                  fit: BoxFit.cover,
+                  width: 100,
+                  height: 100,
 
-        children: [
-       // rimage == null
-          //? CircleAvatar(backgroundImage: NetworkImage(user.photoUrl!),) :
-        rimage != null
-        ? Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Container(
-        child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.file(
-        //to show image, you type like this.
-        File(rimage!.path),
-        fit: BoxFit.cover,
-        width: 100,
-        height: 100,
-
-        ),
-        ),
-        ),
-        )
+                  ),
+                  ),
+                  ),
+                  )
 
 
             : Text(
@@ -383,84 +303,8 @@ class _EditPageState extends State<EditPage> {
 
 
 
-                /*child: Container(
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    // crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                    Container(
-
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.red[100],
-                        borderRadius: BorderRadius.circular(32),
-
-                        image: DecorationImage(
-                          image: rimage != null
-                              ?  File(rimage!.path),
-
-                              //FileImage(rimage) as ImageProvider<Object> // Explicitly cast to ImageProvider<Object>
-                              : CachedNetworkImageProvider(
-                              'http://via.placeholder.com/200x150'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => UploadProfile()));
-                          },
-                          child: Text(
-                            'Change Profile photo',
-                            style: TextStyle(color: Colors.purple),
-                          ))
-                    ],
-                  ),
-                ),*/
               ),
-             /* Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                     // child: Text('User Name', textAlign: TextAlign.center),
 
-                    ),
-                    TextField(
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.text,
-                      onChanged: (value) {
-                        _name = value;
-                        //Do something with the user input.
-                      },
-                      decoration: InputDecoration(
-                         hintText: 'Enter your Name',
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 20.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.purple, width: 1.0),
-                          borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.purple, width: 2.0),
-                          borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-    */
 
               SizedBox(
                 height: 8.0,
@@ -479,36 +323,28 @@ class _EditPageState extends State<EditPage> {
                   if (picked != null) {
                     setState(() {
                       date_of_birth = picked;
-                      //_dateController.text = formatDate(DateTime(date_of_birth.toString() as int), [yyyy, '-', mm, '-', dd]);
-                       //_dateController.text = DateFormat.yMMMd().format(date_of_birth.toString());
-                      //_dateController.text = date_of_birth.toString();
-
                       _dateController.text = DateFormatter.formatDateTime(
                         dateTime: date_of_birth,
                         outputFormat: 'dd/MM/yyyy',
-
                       );
-                      //String date = dateFormat.format(dateTime);
-
                     });
                   }
                 },
                 decoration: InputDecoration(
-
-                  hintText: 'Enter your Date of Birth',
-                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  labelText: 'Enter your date of birth',
+                  labelStyle: TextStyle(color: Colors.black),
+                  prefixIcon: Icon(
+                      Icons.date_range
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.purple, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.purple, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.black,
               ),
               SizedBox(
                 height: 8.0,
@@ -520,27 +356,22 @@ class _EditPageState extends State<EditPage> {
                   //Do something with the user input.
                   phoneNumber = value;
                 },
-                decoration: InputDecoration(
-                  hintText: 'Enter your phone number',
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                ),
+                 decoration: InputDecoration(
+                   labelText: 'Enter your phone number',
+                   labelStyle: TextStyle(color: Colors.black),
+                   prefixIcon: Icon(
+                       Icons.phone
+                   ),
+                   enabledBorder: UnderlineInputBorder(
+                     borderSide: BorderSide(color: Colors.black),
+                   ),
+                   focusedBorder: UnderlineInputBorder(
+                     borderSide: BorderSide(color: Colors.black),
+                   ),
+                 ),
+                 style: TextStyle(color: Colors.black),
+                 cursorColor: Colors.black,
               ),
-
-
                SizedBox(
                 height: 8.0,
               ),
@@ -552,30 +383,23 @@ class _EditPageState extends State<EditPage> {
                 },
                 readOnly: true, // Make the TextField read-only to prevent manual input
                 decoration: InputDecoration(
-                  labelText: "Select Hobbies",
-                  suffixIcon: Icon(Icons.arrow_drop_down),
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  ),// Add an icon at the end of the TextField
-                ),
+                 labelText: 'Select hobbies and intrests',
+                 labelStyle: TextStyle(color: Colors.black),
+                 prefixIcon: Icon(
+                     Icons.accessibility_new
+                 ),
+                 enabledBorder: UnderlineInputBorder(
+                   borderSide: BorderSide(color: Colors.black),
+                 ),
+                 focusedBorder: UnderlineInputBorder(
+                   borderSide: BorderSide(color: Colors.black),
+                 ),
+               ),
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.black,
                 controller: TextEditingController(text: selectedHobbiesText),
                  // Show the selected hobbies in the TextField
               ),
-
-
-
               SizedBox(
                 height: 8.0,
               ),
@@ -583,35 +407,27 @@ class _EditPageState extends State<EditPage> {
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.text,
                 onChanged: (value) {
-                  //Do something with the user input.
                   occupation = value;
                 },
                 decoration: InputDecoration(
-                  hintText: 'Occupation',
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  labelText: 'Occupation',
+                  labelStyle: TextStyle(color: Colors.black),
+                  prefixIcon: Icon(
+                      Icons.work_outline
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.purple, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.black,
               ),
               SizedBox(
                 height: 8.0,
               ),
-
-
-
-
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: Container(
@@ -632,26 +448,20 @@ class _EditPageState extends State<EditPage> {
                           //Do something with the user input.
                         },
                         decoration: InputDecoration(
-                          hintText: 'Bio',
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 20.0),
-                          border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(32.0)),
+                          labelText: 'Bio',
+                          labelStyle: TextStyle(color: Colors.black),
+                          prefixIcon: Icon(
+                              Icons.info_outline
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.purple, width: 1.0),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(32.0)),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.purple, width: 2.0),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(32.0)),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
                           ),
                         ),
+                        style: TextStyle(color: Colors.black),
+                        cursorColor: Colors.black,
                       ),
                     ],
                   ),
@@ -667,13 +477,11 @@ class _EditPageState extends State<EditPage> {
 
                     child: TextButton(
                         onPressed: () async {
-
-
-                          Service().setUserProfile2(date_of_birth,phoneNumber,selectedHobbiesText, occupation,_descr, rimage.toString());
+                          Service().setUserProfile(date_of_birth,phoneNumber,selectedHobbiesText, occupation,_descr, rimage.toString());
                            Navigator.push(
                              context,
                              MaterialPageRoute(
-                               builder: (context) => Home2(),
+                               builder: (context) => Nav(),
                              ),
                            );
                           print(rimage);
@@ -689,15 +497,9 @@ class _EditPageState extends State<EditPage> {
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-
                           Colors.deepOrange,
                           Colors.deepPurple,
                           Colors.redAccent
-
-
-                          /*Colors.purple,
-                          Colors.deepPurple,
-                          Colors.blueAccent*/
                         ],
                         begin: Alignment.bottomRight,
                         end: Alignment.topLeft,

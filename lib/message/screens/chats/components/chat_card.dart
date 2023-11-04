@@ -27,9 +27,8 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(chat.image),
+                  backgroundImage: NetworkImage(chat.image),
                 ),
-
               ],
             ),
             Expanded(
@@ -63,29 +62,26 @@ class ChatCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                    Container(
-                      height: 25,
-                      width: 25,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 37, 211, 102),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            width: 3),
-                      ),
-                      child: Align(
-                        alignment: Alignment.center,
+
+                  Visibility(
+                    visible: chat.unreadCount > 0, // Show only if unreadCount > 0
+                    child: Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red, // You can customize the color
+                        ),
                         child: Text(
                           chat.unreadCount.toString(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-
-
-
-
+                  ),
                   Text(chat.time),
                 ],
               ),

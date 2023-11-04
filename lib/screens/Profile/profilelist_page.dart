@@ -66,7 +66,6 @@ class UserBubble extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
-            print("here");
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -111,7 +110,7 @@ class UserBubble extends StatelessWidget {
                           backgroundColor: Colors.blueGrey,
                           radius: 32,
                           backgroundImage:
-                              CachedNetworkImageProvider(this.profileUrl),
+                              NetworkImage(this.profileUrl),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 10.0, left: 20.0),
@@ -221,8 +220,7 @@ class _UsersStreamState extends State<UsersStream> {
                 followCount: user['followCount'],
                 followingCount: user['followCount'],
                 postCount: user['postCount'],
-                isMe:
-                    false, // Assuming the logged-in user is not shown in search results
+                isMe: false, // Assuming the logged-in user is not shown in search results
               );
             },
           ),
@@ -410,7 +408,7 @@ class UserProfile extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return MessagesScreen(this.id!, this.name);
+                            return MessagesScreen(this.id!, this.name,this.profileUrl);
                             //   return PmScreen(selectedUser: '2', name: '', profileUrl: '',);
                           }));
                         },

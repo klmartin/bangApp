@@ -1,3 +1,4 @@
+import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/components/filled_outline_button.dart';
 import 'package:bangapp/message/constants.dart';
 import 'package:bangapp/message/models/Chat.dart' as Chat;
@@ -25,20 +26,6 @@ class Body extends StatelessWidget {
         Container(
           padding: const EdgeInsets.fromLTRB(1, 1, 1, 1),
           color:  kPrimaryColor,
-          //   padding: const EdgeInsets.fromLTRB(
-          //       kDefaultPadding, 0, kDefaultPadding, kDefaultPadding),
-          //   color: kPrimaryColor,
-          //   child: Row(
-          //     children: [
-          //       FillOutlineButton(press: () {}, text: "Recent Message"),
-          //       const SizedBox(width: kDefaultPadding),
-          //       FillOutlineButton(
-          //         press: () {},
-          //         text: "Active",
-          //         isFilled: false,
-          //       ),
-          //     ],
-          //   ),
         ),
      Expanded(
           child: Consumer<ChatProvider>(
@@ -67,11 +54,10 @@ class Body extends StatelessWidget {
                         final conv = conversations[index];
                         return  ChatCard(
                             key: Key(conv.id.toString()),
-                          chat: Chat.Chat(
+                            chat: Chat.Chat(
                             name: conv.receiverName ?? "",
-                            lastMessage:
-                                conv.lastMessage ?? "Last Message Here",
-                            image: "assets/images/app_iconw.jpg",
+                            lastMessage: conv.lastMessage ?? "Last Message Here",
+                            image: conv.image ?? logoUrl,
                             time: conv.time ?? "3 minutes Ago",
                             isActive: true,
                             unreadCount: conv.unreadCount,
@@ -81,7 +67,9 @@ class Body extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => MessagesScreen(
                                   conv.receiverId ?? 0,
-                                  conv.receiverName ?? "Username"),
+                                  conv.receiverName ?? "Username",
+                                  conv.image ?? logoUrl
+                              ),
                             ),
                           ),
                         );

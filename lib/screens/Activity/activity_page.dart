@@ -47,11 +47,10 @@ class _Activity extends State<Activity> {
 GestureDetector _notificationList(NotificationItem notification) {
   return GestureDetector(
     onTap: () async {
-      var postDetails = await Service().getPostInfo(notification.postId);
-      print('this is post');
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var userId = prefs.getInt('user_id');
+      var postDetails = await Service().getPostInfo(notification.postId,userId);
       var firstPost = postDetails[0]['image'];
-      print(firstPost);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -66,9 +65,12 @@ GestureDetector _notificationList(NotificationItem notification) {
             postDetails[0]['commentCount'],
             postDetails[0]['user_id'],
             postDetails[0]['isLiked'],
-            postDetails[0]['likeCount'] ?? 0,
+            postDetails[0]['like_count_A'] ?? 0,
             postDetails[0]['type'],
             postDetails[0]['user']['followerCount'],
+            postDetails[0]['created_at'],
+            postDetails[0]['user_image_url'],
+            postDetails[0]['pinned']
           ),
         ),
       );
@@ -108,7 +110,6 @@ GestureDetector _notificationList(NotificationItem notification) {
   );
 }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,12 +118,45 @@ GestureDetector _notificationList(NotificationItem notification) {
               child: CircularProgressIndicator(), // Display a loading indicator
             )
           : ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return _notificationList(notification);
-              },
+        itemCount: notifications.length,
+        itemBuilder: (context, index) {
+          final notification = notifications[index];
+          return Dismissible(
+            key: Key(notification.id.toString()), // Use a unique key
+            onDismissed: (direction) {
+              if (direction == DismissDirection.startToEnd) {
+                Service().deleteNotification(notification.id.toString());
+              } else if (direction == DismissDirection.endToStart) {
+
+                Service().notificationIsRead(notification.id.toString());
+              }
+              setState(() {
+                notifications.removeAt(index);
+              });
+            },
+            background: Container(
+              color: Colors.red, // Background color when swiped left
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.only(left: 20),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
             ),
+            secondaryBackground: Container(
+              color: Colors.green, // Background color when swiped right
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.only(right: 20),
+              child: Icon(
+                Icons.check,
+                color: Colors.white,
+              ),
+            ),
+            child: _notificationList(notification),
+          );
+        },
+      )
+
     );
   }
 }

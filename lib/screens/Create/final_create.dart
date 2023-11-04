@@ -291,7 +291,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                               ); // Return a loading indicator while fetching shared preferences.
                             },
                           )
-
                         ],
                       ),
                       SizedBox(height: 15),
@@ -307,7 +306,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 ? null : () async
                                 {
                                   setState(() {isLoading = true;});
-
                                 SharedPreferences prefs = await SharedPreferences.getInstance();
                                 try {
                                   if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == false) {
@@ -326,7 +324,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     else{
                                       await service.addImage(body, filePath,);
                                     }
-
                                   }
                                   else if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == true) {
                                     String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');

@@ -53,9 +53,9 @@ class _MessageState extends State<Message> {
             : MainAxisAlignment.start,
         children: [
           if (!widget.message.isSender) ...[
-            const CircleAvatar(
+             CircleAvatar(
               radius: 12,
-              backgroundImage: AssetImage("assets/images/user_2.png"),
+              backgroundImage: NetworkImage(widget.message.userImage),
             ),
             const SizedBox(width: kDefaultPadding / 2),
           ],

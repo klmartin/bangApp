@@ -1,5 +1,4 @@
 import 'package:bangapp/constants/urls.dart';
-import 'package:bangapp/models/post.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -153,11 +152,10 @@ Future<Map<String, dynamic>> getCurrentUser() async {
     }
   }
 
-Future<List<dynamic>> getPostInfo(postId) async {
-
+Future<List<dynamic>> getPostInfo(postId,userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('user_id');
-    final response = await http.get(Uri.parse('$baseUrl/getPostInfo/$postId'));
+    final response = await http.get(Uri.parse('$baseUrl/getPostInfo/$postId/$userId'));
     print(response.body);
     return jsonDecode(response.body);
   }
@@ -293,6 +291,8 @@ Future<List<dynamic>> getPostInfo(postId) async {
           'body': commentText,
         },
        );
+      print(response.body);
+      print('this is app');
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -440,74 +440,22 @@ Future<List<dynamic>> getPostInfo(postId) async {
     }
   }
 
-
-    Future<bool> setUserProfile(date_of_birth,phoneNumber,String Hobbies, occupation, bio, String filepath) async {
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var user_id = prefs.getInt('user_id');
-    String addimageUrl =
-        '$baseUrl/setUserProfile';
-
-   var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
-      /*
-       ..fields.addAll(user_id as Map<String, String>)
-      ..fields.addAll(date_of_birth as Map<String, String>)
-      ..fields.addAll(phoneNumber as Map<String, String>)
-      ..fields.addAll(Hobbies as Map<String, String>)
-      ..fields.addAll(occupation as Map<String, String>)
-      ..fields.addAll(bio as Map<String, String>)
-      */
-    /*body: {
-      'user_id': user_id.toString(),
-    'date_of_birth': date_of_birth,
-    'phoneNumber': phoneNumber,
-    'Hobbies':Hobbies,
-    'occupation':occupation,
-    'reference_id':referenceId,
-    'body': body
-  },*/
-
-      //..fields.addAll(body)
-     ..fields.addAll(user_id as Map<String, String>)
-     //..fields.addAll(date_of_birth as Map<String, String>)
-     ..fields.addAll(phoneNumber as Map<String, String>)
-     ..fields.addAll(Hobbies as Map<String, String>)
-     ..fields.addAll(occupation as Map<String, String>)
-     ..fields.addAll(bio as Map<String, String>)
-      ..files.add(await http.MultipartFile.fromPath('image', filepath));
-    try {
-      var response = await http.Response.fromStream(await request.send());
-
-      if (response.statusCode == 201) {
-        var data = json.decode(response.body);
-        print(data);
-        return data['url'];
-
-      } else {
-        return false;
-      }
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<void> setUserProfile2(date_of_birth, String phoneNumber,String Hobbies, occupation, bio, String filepath) async {
+  Future<void> setUserProfile(date_of_birth, String phoneNumber,String Hobbies, occupation, bio, String filepath) async {
     print(['this is type', date_of_birth,phoneNumber, Hobbies, occupation, bio, filepath]);
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final response = await http.post(
-        Uri.parse('$baseUrl/setUserProfile'),
-          body: {
-            'user_id': prefs.getInt('user_id').toString(),
-            'phone_number': phoneNumber.toString(),
-            'hobbies': selectedHobbiesText,
-            'date_of_birth': date_of_birth.toString(),
-            'image' : filepath,
-            'occupation': occupation,
-            'bio': bio,
-          },
-      );
+      Map<String, String> body ={
+        'user_id': prefs.getInt('user_id').toString(),
+        'phone_number': phoneNumber.toString(),
+        'hobbies': selectedHobbiesText,
+        'date_of_birth': date_of_birth.toString(),
+        'occupation': occupation,
+        'bio': bio,
+      };
+      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/setUserProfile'))
+        ..fields.addAll(body)
+        ..files.add(await http.MultipartFile.fromPath('image', filepath));
+      var response = await http.Response.fromStream(await request.send());
       print('this is response');
       print(response.body);
       if (response.statusCode == 200) {
@@ -573,7 +521,6 @@ Future<List<dynamic>> getPostInfo(postId) async {
         'user_id': prefs.getInt('user_id').toString(),
       },
     );
-
     if (response.statusCode == 200) {
       var data = json.decode(response.body) as List<dynamic>;
 
@@ -581,7 +528,6 @@ Future<List<dynamic>> getPostInfo(postId) async {
       for (var item in data) {
         messages.add(ChatMessage.fromJson(item));
       }
-
       return messages;
     } else {
       throw Exception('Failed to load messages');
@@ -625,6 +571,20 @@ Future<List<dynamic>> getPostInfo(postId) async {
       print('Message sent successfully');
     } else {
       print('Failed to send message');
+    }
+  }
+
+  Future<Map<String, dynamic>> getMyInformation({int? userId}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (userId != null) {
+      var response = await http.get(Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId"));
+      var data = json.decode(response.body);
+      return data;
+    } else {
+      var userId = prefs.getInt('user_id').toString();
+      var response = await http.get(Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId"));
+      var data = json.decode(response.body);
+      return data;
     }
   }
 
@@ -678,9 +638,7 @@ Future<List<dynamic>> getPostInfo(postId) async {
       final response = await http.get(Uri.parse(apiUrl));
       print(response.body);
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final status = data['status'];
-        print('Post $postId updated status: $status');
+
       } else {
         // Handle errors if needed
         print('Failed to update post $postId');
@@ -688,6 +646,51 @@ Future<List<dynamic>> getPostInfo(postId) async {
     } catch (e) {
       // Handle exceptions if needed
       print('Exception: $e');
+    }
+  }
+
+  Future<void> updateBangUpdateIsSeen(int postId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id');
+    final apiUrl = '$baseUrl/updateBangUpdateIsSeen/$postId/$userId'; // Replace with your actual API URL
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      print(response.body);
+      if (response.statusCode == 200) {
+
+      } else {
+        // Handle errors if needed
+        print('Failed to update post $postId');
+      }
+    } catch (e) {
+      // Handle exceptions if needed
+      print('Exception: $e');
+    }
+  }
+
+  Future deleteNotification(notificationId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/deleteNotification/$notificationId'),
+      );
+      print([response.body,notificationId]);
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      return e;
+    }
+  }
+
+  Future notificationIsRead(notificationId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/notificationIsRead/$notificationId'),
+      );
+      print([response.body,notificationId]);
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      return e;
     }
   }
 
