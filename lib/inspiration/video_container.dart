@@ -2,8 +2,8 @@ import 'package:bangapp/inspiration/view_video.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/video_player.dart';
 
+// ignore: must_be_immutable
 class VideoContainer extends StatelessWidget {
   VideoContainer({
     required this.inspirationVideoId,

@@ -1,5 +1,6 @@
 import 'package:bangapp/message/models/ChatMessage.dart';
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import 'package:emoji_regex/emoji_regex.dart';
 
 

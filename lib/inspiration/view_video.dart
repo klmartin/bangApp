@@ -1,12 +1,11 @@
 import 'package:bangapp/inspiration/video_container.dart';
 import 'package:bangapp/widgets/video_player.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
 
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class ViewVideo extends StatefulWidget {
   int inspirationVideoId;
   final String? title;

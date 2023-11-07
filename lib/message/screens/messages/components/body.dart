@@ -1,8 +1,6 @@
 import 'package:bangapp/message/constants.dart';
-import 'package:bangapp/message/models/ChatMessage.dart';
 import 'package:flutter/material.dart';
 
-import 'chat_input_field.dart';
 import 'message.dart';
 
 class Body extends StatelessWidget {

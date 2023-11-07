@@ -1,9 +1,7 @@
 import 'package:bangapp/inspiration/category.dart';
 import 'package:bangapp/inspiration/video_container.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class BangInspirationBuilder extends StatefulWidget {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class Category1 extends StatelessWidget {
   Category1({required this.catName});
 

@@ -24,28 +24,40 @@ class Home2Content extends StatefulWidget {
 }
 
 class _Home2ContentState extends State<Home2Content> {
-      late ScrollController _scrollController;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     postsProvider.fetchData();
-    _scrollController = ScrollController()
-      ..addListener(() {
-        // This checks if the ListView has been scrolled all the way to the bottom.
-        if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        }
-      });
+    _scrollController.addListener(_scrollListener);
+  }
 
+  void _scrollListener() {
+    final postsProvider = Provider.of<PostsProvider>(context, listen: false);
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !postsProvider.isLoading &&
+        !postsProvider.isLastPage) {
+      postsProvider.fetchData(); // Trigger loading of the next page
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        final postsProvider = Provider.of<PostsProvider>(context, listen: false);
-          // postsProvider.refreshData();
+        final postsProvider =
+            Provider.of<PostsProvider>(context, listen: false);
+        // postsProvider.refreshData();
       },
       child: Consumer<PostsProvider>(
         builder: (context, postsProvider, child) {
@@ -55,12 +67,6 @@ class _Home2ContentState extends State<Home2Content> {
     );
   }
 
-@override
-  void dispose() {
-    _scrollController.dispose();  // Dispose the ScrollController when the widget is removed
-    super.dispose();
-  }
-
   Widget buildPostsView(PostsProvider postsProvider) {
     if (postsProvider.isLoading) {
       return const Center(
@@ -68,7 +74,7 @@ class _Home2ContentState extends State<Home2Content> {
       );
     } else if (postsProvider.isError) {
       return Center(
-        child: errorDialog(size: 20),
+        child: Text(""),
       );
     } else if (postsProvider.posts == null || postsProvider.posts!.isEmpty) {
       return Center(
@@ -77,68 +83,85 @@ class _Home2ContentState extends State<Home2Content> {
     }
 
     return ListView.builder(
-      itemCount: postsProvider.posts!.length,
+    controller: _scrollController, // Attach the ScrollController
+      itemCount: postsProvider.posts!.length + 1,
       itemBuilder: (context, index) {
-        final Post post = postsProvider.posts![index];
-        Service().updateIsSeen(post.postId);
-        if(index == 0){
-        return Column(
-          children: [
-            SmallBoxCarousel(),
-            PostItem2(
-                post.postId,
-                post.userId,
-                post.name,
-                post.image,
-                post.challengeImg,
-                post.caption,
-                post.type,
-                post.width,
-                post.height,
-                post.likeCountA,
-                post.likeCountB,
-                post.commentCount,
-                post.followerCount,
-                post.challenges,
-                post.isLiked,
-                post.isPinned,
-                post.isLikedA,
-                post.isLikedB,
-                post.createdAt,
-                post.userImage,
-                myProvider: postsProvider,
-              )
-          ],
-        );
-      }
+        if (index < postsProvider.posts!.length) {
+          final Post post = postsProvider.posts![index];
+          Service().updateIsSeen(post.postId);
 
-    else{
-      return PostItem2(
-    post.postId,
-    post.userId,
-    post.name,
-    post.image,
-    post.challengeImg,
-    post.caption,
-    post.type,
-    post.width,
-    post.height,
-    post.likeCountA,
-    post.likeCountB,
-    post.commentCount,
-    post.followerCount,
-    post.challenges,
-    post.isLiked,
-    post.isPinned,
-    post.isLikedA,
-    post.isLikedB,
-    post.createdAt,
-    post.userImage,
-    myProvider: postsProvider,
-  );
-    }
+          if (index == 0) {
+            return Column(
+              children: [
+                SmallBoxCarousel(),
+                PostItem2(
+                  post.postId,
+                  post.userId,
+                  post.name,
+                  post.image,
+                  post.challengeImg,
+                  post.caption,
+                  post.type,
+                  post.width,
+                  post.height,
+                  post.likeCountA,
+                  post.likeCountB,
+                  post.commentCount,
+                  post.followerCount,
+                  post.challenges,
+                  post.isLiked,
+                  post.isPinned,
+                  post.isLikedA,
+                  post.isLikedB,
+                  post.createdAt,
+                  post.userImage,
+                  myProvider: postsProvider,
+                )
+              ],
+            );
+          } else {
+            return PostItem2(
+              post.postId,
+              post.userId,
+              post.name,
+              post.image,
+              post.challengeImg,
+              post.caption,
+              post.type,
+              post.width,
+              post.height,
+              post.likeCountA,
+              post.likeCountB,
+              post.commentCount,
+              post.followerCount,
+              post.challenges,
+              post.isLiked,
+              post.isPinned,
+              post.isLikedA,
+              post.isLikedB,
+              post.createdAt,
+              post.userImage,
+              myProvider: postsProvider,
+            );
+          }
+        } else if (postsProvider.isLoading) {
+          // Loading indicator while fetching the next page of posts
+          return Center(child: CircularProgressIndicator());
+        } else if (!postsProvider.isLastPage) {
+          // "Load More" button
+          return ElevatedButton(
+            onPressed: () {
+              postsProvider.fetchData(); // Trigger loading of the next page
+            },
+            child: Text('Load More'),
+          );
+        } else {
+          // No more posts to load
+          return Center(child: Text('No more posts to load.'));
         }
-        );}
+      },
+    );
+  }
 
   Widget errorDialog({required double size}) {
     return SizedBox(
@@ -155,17 +178,22 @@ class _Home2ContentState extends State<Home2Content> {
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           TextButton(
             onPressed: () {
-              final postsProvider = Provider.of<PostsProvider>(context, listen: false);
-            //   postsProvider.refreshData();
+              final postsProvider =
+                  Provider.of<PostsProvider>(context, listen: false);
+              //   postsProvider.refreshData();
             },
-            child: const Text("Retry", style: TextStyle(fontSize: 20, color: Colors.purpleAccent),),
+            child: const Text(
+              "Retry",
+              style: TextStyle(fontSize: 20, color: Colors.purpleAccent),
+            ),
           ),
         ],
       ),
     );
   }
 }
-
