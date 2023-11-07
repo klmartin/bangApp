@@ -1,4 +1,5 @@
 import 'package:date_format/date_format.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
@@ -23,17 +24,25 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
       autoPlay: true,
-      looping: true,
+      looping: false,
       placeholder: Container(
         color: const Color.fromARGB(255, 30, 34, 45),
       ),
     );
   }
 
+Future<void> _progressiveDownloadVideo() async {
+    final _dio = Dio();
+    final response = await _dio.get(widget.mediaUrl, options: Options(responseType: ResponseType.stream));
+    await _videoPlayerController.initialize();
+     _videoPlayerController = VideoPlayerController.networkUrl(response as Uri);
+
+}
   @override
   void dispose() {
     _chewieController.dispose();
     _videoPlayerController.dispose();
+    _progressiveDownloadVideo();
     super.dispose();
   }
 
