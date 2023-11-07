@@ -13,6 +13,7 @@ import 'package:bangapp/services/fetch_post.dart';
 import 'package:bangapp/models/image_post.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
 
+import '../../message/screens/messages/message_screen.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
 
@@ -24,9 +25,7 @@ List<dynamic> followlist = [];
 
 
 class UserProfile extends StatefulWidget {
-
   final userid;
-
   UserProfile(
       {required this.userid});
 
@@ -290,8 +289,7 @@ class _UserProfileState extends State<UserProfile> {
                     onPressed: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                            return ChatsScreen();
-                        // return PmScreen(selectedUser: widget.userid, name: '', profileUrl: '',);
+                        return MessagesScreen(widget.userid!, myName,myImage);
                       }));
                     },
                     child: Text(

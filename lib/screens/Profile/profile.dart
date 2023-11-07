@@ -336,8 +336,6 @@ class _ProfileState extends State<Profile> {
                 }
                 if (snapshot.hasData) {
                   String thumbnailPath = ''; // Variable to store the thumbnail file path
-
-
                   final List<dynamic> posts = snapshot.data! as List<dynamic>;
                   for (var post in posts) {
                     final imagePost = ImagePost(

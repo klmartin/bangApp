@@ -50,28 +50,13 @@ class BangUpdates3 extends StatelessWidget {
       itemCount: bangUpdateProvider.bangUpdates.length,
       itemBuilder: (context, index) {
         final bangUpdate = bangUpdateProvider.bangUpdates[index];
-        // Service().updateBangUpdateIsSeen(bangUpdate.postId);
-        return index != 0
-            ? FutureBuilder<Widget>(
+        Service().updateBangUpdateIsSeen(bangUpdate.postId);
+        return  FutureBuilder<Widget>(
           future: buildBangUpdate2(context, bangUpdate, index),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
               return snapshot.data ?? Container(); // Use the widget if available, or a fallback Container
-            } else {
-              return CircularProgressIndicator(); // Show a loading indicator while fetching the widget
-            }
           },
-        )
-            : FutureBuilder<Widget>(
-              future: buildBangUpdate2(context, bangUpdate, index),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return snapshot.data ?? Text("No Content Here, Please come again later");
-                } else {
-                  return CircularProgressIndicator();
-                }
-              },
-            );
+        );
       },
     );
   }

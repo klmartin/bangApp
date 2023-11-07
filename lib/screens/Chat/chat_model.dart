@@ -49,9 +49,11 @@ class PmScreen extends StatefulWidget {
   final String name;
 
   PmScreen(
-      {required this.selectedUser,
-      required this.name,
-      required this.profileUrl});
+      {
+        required this.selectedUser,
+        required this.name,
+        required this.profileUrl
+      });
   @override
   _PmScreenState createState() => _PmScreenState();
 }
