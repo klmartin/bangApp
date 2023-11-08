@@ -84,107 +84,111 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                             margin: EdgeInsets.symmetric(horizontal: 1.0),
                             child: Column(
                               children: [
-                            Row(
-                              children: [
+                              Row(
+                                children: [
                                 if(box.type=='image')
-                                GestureDetector(
-                                    onTap: () {
-                                    viewImage(context, box.imageUrl1);
-                                    },
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          height: 200,
-                                          width: halfScreenWidth - 8 ,
-                                          child: CachedNetworkImage(
-                                            imageUrl: box.imageUrl1,
-                                            placeholder: (context, url) => AspectRatio(
-                                              aspectRatio: 200 / 200,
-                                              child: Shimmer.fromColors(
-                                                baseColor:
-                                                const Color.fromARGB(255, 30, 34, 45),
-                                                highlightColor:
-                                                const Color.fromARGB(255, 30, 34, 45)
-                                                    .withOpacity(.85),
-                                                child: Container(
-                                                    color: const Color.fromARGB(
-                                                        255, 30, 34, 45)),
+                                Expanded(
+                                  child: GestureDetector(
+                                      onTap: () {
+                                      viewImage(context, box.imageUrl1);
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            height: 200,
+                                            width: halfScreenWidth - 8 ,
+                                            child: CachedNetworkImage(
+                                              imageUrl: box.imageUrl1,
+                                              placeholder: (context, url) => AspectRatio(
+                                                aspectRatio: 200 / 200,
+                                                child: Shimmer.fromColors(
+                                                  baseColor:
+                                                  const Color.fromARGB(255, 30, 34, 45),
+                                                  highlightColor:
+                                                  const Color.fromARGB(255, 30, 34, 45)
+                                                      .withOpacity(.85),
+                                                  child: Container(
+                                                      color: const Color.fromARGB(
+                                                          255, 30, 34, 45)),
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        Positioned(
-                                          bottom: 5,
-                                          child: Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(50),
-                                            ),
-                                            child: Text(
-                                              "A",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 34,
+                                          Positioned(
+                                            bottom: 5,
+                                            child: Container(
+                                              margin: EdgeInsets.only(left: 10),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(50),
+                                              ),
+                                              child: Text(
+                                                "A",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 34,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
+                                    ),
+                                ),
+                                SizedBox(width: 5),
+                                  Expanded(
+                                  child: GestureDetector(
+                                  onTap: () {
+                                  viewImage(context, box.imageUrl2);
+                                  },
+                                  child: Stack(
+                                  children: [
+                                  Container(
+                                  height: 200,
+                                  width:halfScreenWidth - 5 ,
+                                  child: CachedNetworkImage(
+                                    imageUrl: box.imageUrl1,
+                                    placeholder: (context, url) => AspectRatio(
+                                      aspectRatio: 200 / 200,
+                                      child: Shimmer.fromColors(
+                                        baseColor:
+                                        const Color.fromARGB(255, 30, 34, 45),
+                                        highlightColor:
+                                        const Color.fromARGB(255, 30, 34, 45)
+                                            .withOpacity(.85),
+                                        child: Container(
+                                            color: const Color.fromARGB(
+                                                255, 30, 34, 45)),
+                                      ),
                                     ),
                                   ),
-                                SizedBox(width: 10),
-                                GestureDetector(
-                          onTap: () {
-                          viewImage(context, box.imageUrl2);
-                          },
-                          child: Stack(
-                          children: [
-                          Container(
-                          height: 200,
-                          width:halfScreenWidth - 5 ,
-                          child: CachedNetworkImage(
-                            imageUrl: box.imageUrl1,
-                            placeholder: (context, url) => AspectRatio(
-                              aspectRatio: 200 / 200,
-                              child: Shimmer.fromColors(
-                                baseColor:
-                                const Color.fromARGB(255, 30, 34, 45),
-                                highlightColor:
-                                const Color.fromARGB(255, 30, 34, 45)
-                                    .withOpacity(.85),
-                                child: Container(
-                                    color: const Color.fromARGB(
-                                        255, 30, 34, 45)),
+                                  ),
+                                  Positioned(
+                                    bottom: 5, right: 0,
+                                    child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: Text(
+                                    "B",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 34,
+                                            ),
+                                         ),
+                                       ),
+                                      ),
+                                    ),
+                                  ],
+                                  ),
                               ),
-                            ),
-                          ),
-                          ),
-                          Positioned(
-                          bottom: 5, right: 0,
-                          child: Align(
-                          alignment: Alignment.bottomRight,
-                          child: Container(
-                          margin: EdgeInsets.only(right: 10),
-                          decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Text(
-                          "B",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 34,
-                          ),
-                          ),
-                          ),
-                          ),
-                          ),
-                          ],
-                          ),
-                          ),
-                                if(box.type=='video')
-                                  GestureDetector(
+                                ),
+                              if(box.type=='video')
+                                GestureDetector(
                                     onTap: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(
@@ -246,11 +250,10 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                       ],
                                     ),
                                   ),
-                                SizedBox(width: 10),
+                                SizedBox(width: 5),
                                 GestureDetector(
                                   onTap: () {
                                     Navigator.push(context,
-
                                         MaterialPageRoute(
                                         builder: (context) => Scaffold(
                                         appBar: AppBar(
@@ -266,7 +269,6 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                         body: VideoPlayerPage(
                                             mediaUrl: box.imageUrl2
                                         ))));
-
                                         // MaterialPageRoute(builder: (context) => VideoPlayerPage(mediaUrl: box.imageUrl2)));
                                   },
                                   child: Stack(
@@ -317,7 +319,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
 
                               ],
                             ),
-                          Text(
+                                Text(
                                   box.text,
                                   style: TextStyle(
                                     fontSize: 15,
