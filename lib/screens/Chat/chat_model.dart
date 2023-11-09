@@ -230,18 +230,18 @@ class MessageBubble extends StatelessWidget {
                       borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(30.0),
                           topLeft: Radius.circular(30.0),
-                          bottomRight: Radius.circular(30.0)),
+                          bottomRight: Radius.circular(30.0)
+                      ),
                       gradient: LinearGradient(
                         colors: [
                           Colors.purple,
                           Colors.deepPurple,
-                          Colors.blueAccent
-                        ],
+                          Colors.blueAccent ],
                         begin: Alignment.bottomRight,
                         end: Alignment.topLeft,
                       ),
                     ),
-              child: Padding(
+                child: Padding(
                 padding: const EdgeInsets.symmetric(
                     vertical: 15.0, horizontal: 20.0),
                 child: RichText(

@@ -1,9 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:typed_data';
-import 'package:bangapp/screens/Profile/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:filter_list/filter_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -15,7 +11,6 @@ import 'package:bangapp/screens/settings/settings.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../models/userprovider.dart';
 import '../Posts/postView_model.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
@@ -23,8 +18,6 @@ import 'profile_upload.dart';
 import 'package:bangapp/models/image_post.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/services/service.dart';
-import 'package:provider/provider.dart';
-
 
 class Profile extends StatefulWidget {
   final int? id;

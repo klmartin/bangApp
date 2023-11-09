@@ -87,57 +87,54 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                               Row(
                                 children: [
                                 if(box.type=='image')
-                                Expanded(
-                                  child: GestureDetector(
-                                      onTap: () {
-                                      viewImage(context, box.imageUrl1);
-                                      },
-                                      child: Stack(
-                                        children: [
-                                          Container(
-                                            height: 200,
-                                            width: halfScreenWidth - 8 ,
-                                            child: CachedNetworkImage(
-                                              imageUrl: box.imageUrl1,
-                                              placeholder: (context, url) => AspectRatio(
-                                                aspectRatio: 200 / 200,
-                                                child: Shimmer.fromColors(
-                                                  baseColor:
-                                                  const Color.fromARGB(255, 30, 34, 45),
-                                                  highlightColor:
-                                                  const Color.fromARGB(255, 30, 34, 45)
-                                                      .withOpacity(.85),
-                                                  child: Container(
-                                                      color: const Color.fromARGB(
-                                                          255, 30, 34, 45)),
-                                                ),
+                                GestureDetector(
+                                    onTap: () {
+                                    viewImage(context, box.imageUrl1);
+                                    },
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          height: 200,
+                                          width: halfScreenWidth - 8 ,
+                                          child: CachedNetworkImage(
+                                            imageUrl: box.imageUrl1,
+                                            placeholder: (context, url) => AspectRatio(
+                                              aspectRatio: 200 / 200,
+                                              child: Shimmer.fromColors(
+                                                baseColor:
+                                                const Color.fromARGB(255, 30, 34, 45),
+                                                highlightColor:
+                                                const Color.fromARGB(255, 30, 34, 45)
+                                                    .withOpacity(.85),
+                                                child: Container(
+                                                    color: const Color.fromARGB(
+                                                        255, 30, 34, 45)),
                                               ),
                                             ),
                                           ),
-                                          Positioned(
-                                            bottom: 5,
-                                            child: Container(
-                                              margin: EdgeInsets.only(left: 10),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(50),
-                                              ),
-                                              child: Text(
-                                                "A",
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 34,
-                                                ),
+                                        ),
+                                        Positioned(
+                                          bottom: 5,
+                                          child: Container(
+                                            margin: EdgeInsets.only(left: 10),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(50),
+                                            ),
+                                            child: Text(
+                                              "A",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 34,
                                               ),
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                ),
+                                  ),
                                 SizedBox(width: 5),
-                                  Expanded(
-                                  child: GestureDetector(
+                                  GestureDetector(
                                   onTap: () {
                                   viewImage(context, box.imageUrl2);
                                   },
@@ -186,7 +183,6 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                   ],
                                   ),
                               ),
-                                ),
                               if(box.type=='video')
                                 GestureDetector(
                                     onTap: () {
@@ -316,7 +312,6 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                     ],
                                   ),
                                 ),
-
                               ],
                             ),
                                 Text(
