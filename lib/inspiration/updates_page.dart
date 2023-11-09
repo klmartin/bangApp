@@ -53,30 +53,30 @@ class _BangInspirationBuilderState extends State<BangInspirationBuilder> {
                             padding: EdgeInsets.only(bottom: 15),
                             child: Row(
                               children: [
-                                SizedBox(width: 5),
-                                Category1(
-                                  catName: 'All',
-                                ),
-                                SizedBox(width: 5),
-                                Category1(
-                                  catName: 'Life',
-                                ),
-                                SizedBox(width: 5),
-                                Category1(
-                                  catName: 'Entertainment',
-                                ),
-                                SizedBox(width: 5),
-                                Category1(
-                                  catName: 'Business',
-                                ),
-                                SizedBox(width: 5),
-                                Category1(
-                                  catName: 'Live',
-                                ),
-                                SizedBox(width: 5),
-                                Category1(
-                                  catName: 'Business',
-                                ),
+                                // SizedBox(width: 5),
+                                // Category1(
+                                //   catName: 'All',
+                                // ),
+                                // SizedBox(width: 5),
+                                // Category1(
+                                //   catName: 'Life',
+                                // ),
+                                // SizedBox(width: 5),
+                                // Category1(
+                                //   catName: 'Entertainment',
+                                // ),
+                                // SizedBox(width: 5),
+                                // Category1(
+                                //   catName: 'Business',
+                                // ),
+                                // SizedBox(width: 5),
+                                // Category1(
+                                //   catName: 'Live',
+                                // ),
+                                // SizedBox(width: 5),
+                                // Category1(
+                                //   catName: 'Business',
+                                // ),
                               ],
                             ),
                           ),
@@ -85,28 +85,50 @@ class _BangInspirationBuilderState extends State<BangInspirationBuilder> {
                     ),
                   ),
                   SizedBox(height: 5),
-                  ListView.builder(
+                //   ListView.builder(
+                //     shrinkWrap: true,
+                //     physics: NeverScrollableScrollPhysics(),
+                //     itemCount: provider.inspirations.length,
+                //     itemBuilder: (context, index) {
+                //       final inspiration = provider.inspirations[index];
+
+                //       return VideoContainer(
+                //         inspirationVideoId: inspiration.id,
+                //         // videoLink:  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
+                //         videoLink: inspiration.videoUrl ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                //         thumbnail:
+                //             inspiration.thumbnail ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
+                //         channelName: 'The Codeholic',
+                //         pubDate: '9 days ago',
+                //         videotitle: inspiration.title ?? 'Default Title',
+                //         viewsCount: '98.8 views',
+                //         channelIcon: 'assets/images/app_icon.jpg',
+                //       );
+                //     },
+                //   ),
+                // ],
+
+                ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: provider.inspirations.length,
+                    // physics: NeverScrollableScrollPhysics(),
+                    itemCount: 2,
                     itemBuilder: (context, index) {
                       final inspiration = provider.inspirations[index];
 
                       return VideoContainer(
                         inspirationVideoId: inspiration.id,
-                        // videoLink:  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
-                        videoLink: inspiration.videoUrl ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                        thumbnail:
-                            inspiration.thumbnail ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
+                        videoLink: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                        thumbnail: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
                         channelName: 'The Codeholic',
                         pubDate: '9 days ago',
-                        videotitle: inspiration.title ?? 'Default Title',
+                        videotitle: 'Default Title',
                         viewsCount: '98.8 views',
                         channelIcon: 'assets/images/app_icon.jpg',
                       );
                     },
                   ),
                 ],
+
               ),
             ),
           );
