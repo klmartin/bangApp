@@ -39,8 +39,6 @@ class Service {
   }
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
-    print('this is video');
-    print([body,filepath]);
     String addimageUrl = '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
@@ -48,11 +46,9 @@ class Service {
     try {
       var response = await http.Response.fromStream(await request.send());
       if (response.statusCode == 201) {
-        print("immeenda hivo");
         final response2 = jsonDecode(response.body);
         if (response2['data']) {
         } else {
-          print("No response.........");
         }
         return true;
       } else {
@@ -440,7 +436,7 @@ Future<List<dynamic>> getPostInfo(postId,userId) async {
     }
   }
 
-  Future<void> setUserProfile(date_of_birth, String phoneNumber,String Hobbies, occupation, bio, String filepath) async {
+  Future<void> setUserProfile(date_of_birth, String? phoneNumber,String Hobbies, occupation, bio,  filepath) async {
     print(['this is type', date_of_birth,phoneNumber, Hobbies, occupation, bio, filepath]);
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();

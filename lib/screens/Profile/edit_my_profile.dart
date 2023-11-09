@@ -13,8 +13,8 @@ import 'dart:io';
 import '../../nav.dart';
 
 late String? _descr;
-late String phoneNumber;
-late String occupation;
+ String? phoneNumber;
+late String? occupation;
 TextEditingController phoneNumberController = TextEditingController();
 TextEditingController descriptionController = TextEditingController();
 TextEditingController occupationController = TextEditingController();
@@ -141,7 +141,7 @@ class _EditPageState extends State<EditPage> {
                             borderRadius: BorderRadius.circular(8),
                             child: Image.file(
                               //to show image, you type like this.
-                              File(rimage!.path),
+                              File(rimage!),
                               fit: BoxFit.cover,
                               width: 100,
                               height: 100,
@@ -334,7 +334,7 @@ class _EditPageState extends State<EditPage> {
 
                     child: TextButton(
                         onPressed: () async {
-                          Service().setUserProfile(date_of_birth,phoneNumber,selectedHobbiesText, occupation,_descr, rimage.toString());
+                          Service().setUserProfile(date_of_birth,phoneNumber!,selectedHobbiesText, occupation,_descr, rimage);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -436,7 +436,7 @@ class _EditPageState extends State<EditPage> {
                           source: ImageSource.gallery,
                         );
                         setState(() {
-                          rimage = File(image.path);
+                          rimage = image.path;
                           userImage = '';
                         });
                         Navigator.pop(context,rimage);
@@ -467,7 +467,7 @@ class _EditPageState extends State<EditPage> {
                           source: ImageSource.camera,
                         );
                         setState(() {
-                          rimage = File(image.path);
+                          rimage = image.path;
                           userImage = '';
                         });
                         Navigator.pop(context,rimage);

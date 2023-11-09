@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -155,7 +156,7 @@ class _ProfileState extends State<Profile> {
                           )),
                       child: rimage != null
                           ? Image.file(
-                        rimage,
+                        File(rimage),
                         width: 80,
                         height: 80,
                         fit: BoxFit.cover,
@@ -166,9 +167,9 @@ class _ProfileState extends State<Profile> {
                 Padding(
                   padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
                   child: InkWell(
-                    // onTap: () {
-                    //   openFilterDialog();
-                    // },
+                    onTap: () {
+                      buildFab(1,context);
+                    },
                     child: Column(
                       children: [
                         Icon(
@@ -487,7 +488,6 @@ class _ProfileState extends State<Profile> {
                             ),
                         ]
                         else if(allImagePosts[i].type == 'video' && allImagePosts[i].challengeImgUrl=="")...[
-
                           ClipRRect(
                           borderRadius: BorderRadius.circular(5),
                           child: InkWell(

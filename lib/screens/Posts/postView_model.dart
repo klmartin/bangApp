@@ -214,7 +214,6 @@ class _PostCardState extends State<PostCard> {
                           Column(
                             children: [
                               GestureDetector(
-
                                 child: widget.isLiked
                                     ? Icon(CupertinoIcons.heart_fill,
                                     color: Colors.red, size: 25)

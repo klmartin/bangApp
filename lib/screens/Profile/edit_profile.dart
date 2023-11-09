@@ -159,7 +159,7 @@ class _EditPageState extends State<EditPage> {
         source: ImageSource.gallery,
         );
         setState(() {
-        rimage = File(image.path);
+          rimage = image.path;
         });
         Navigator.pop(context,rimage);
         },
@@ -190,7 +190,7 @@ class _EditPageState extends State<EditPage> {
         source: ImageSource.camera,
         );
         setState(() {
-        rimage = File(image.path);
+          rimage = image.path;
         });
         Navigator.pop(context,rimage);
         },
@@ -477,15 +477,14 @@ class _EditPageState extends State<EditPage> {
 
                     child: TextButton(
                         onPressed: () async {
-                          Service().setUserProfile(date_of_birth,phoneNumber,selectedHobbiesText, occupation,_descr, rimage.toString());
+                          Service().setUserProfile(date_of_birth,phoneNumber,selectedHobbiesText, occupation,_descr, rimage);
                            Navigator.push(
                              context,
                              MaterialPageRoute(
                                builder: (context) => Nav(),
                              ),
                            );
-                          print(rimage);
-                          print("pressed");
+
                         },
                         child: Text(
                           'Update',
