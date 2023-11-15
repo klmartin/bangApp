@@ -24,25 +24,53 @@ class _Activity extends State<Activity> {
   }
 
   Future<void> fetchNotifications() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('user_id');
-    print(userId);
-    final response =
-        await http.get(Uri.parse('$baseUrl/getNotifications/$userId'));
-    print(response.body);
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  final userId = prefs.getInt('user_id');
+  print(userId);
+
+  final String cacheKey = 'cached_notifications';
+  final String cachedData = prefs.getString(cacheKey) ?? '';
+  final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+
+  try {
+    if (cachedData.isNotEmpty &&
+        DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp)).inMinutes <= 2) {
+      // Use cached data if it exists and is not expired
+      final Map<String, dynamic> data = json.decode(cachedData);
       final notificationModel = NotificationModel.fromJson(data); // Parse JSON
       setState(() {
         notifications = notificationModel.notifications;
         isLoading = false; // Set isLoading to false when data is loaded
       });
     } else {
-      // Handle API error
-      isLoading = false; // Set isLoading to false when data is loaded
-      print('Failed to load notifications');
+      // Fetch data from the server
+      final response = await http.get(Uri.parse('$baseUrl/getNotifications/$userId'));
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final notificationModel = NotificationModel.fromJson(data); // Parse JSON
+        setState(() {
+          notifications = notificationModel.notifications;
+          isLoading = false; // Set isLoading to false when data is loaded
+        });
+
+        // Save data and timestamp to SharedPreferences
+        prefs.setString(cacheKey, response.body);
+        prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+      } else {
+        // Handle API error
+        isLoading = false; // Set isLoading to false when data is loaded
+        print('Failed to load notifications');
+      }
     }
+  } catch (e) {
+    // Handle other exceptions (e.g., network error)
+    // You may want to set an error flag or log the error
+    isLoading = false; // Set isLoading to false when data is loaded
+    print('Error fetching notifications: $e');
   }
+}
 
 GestureDetector _notificationList(NotificationItem notification) {
   return GestureDetector(

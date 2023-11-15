@@ -29,9 +29,47 @@ class PostsProvider with ChangeNotifier {
       try {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         final userId = prefs.getInt('user_id').toString();
-        final response = await get(Uri.parse(
-            "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"));
-        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        final String cacheKey = 'cached_posts';
+        final String cachedData = prefs.getString(cacheKey) ?? '';
+        final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+
+        var responseData = {};
+
+        if (cachedData.isNotEmpty &&
+            DateTime.now()
+                    .difference(DateTime.fromMillisecondsSinceEpoch(
+                        lastCachedTimestamp))
+                    .inMinutes <=
+                3) {
+          // Use cached data if it exists and is not expired
+          responseData = json.decode(cachedData);
+          // Process cached data...
+        } else {
+          try {
+            final response = await get(Uri.parse(
+                "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"));
+
+            if (response.statusCode == 200) {
+              responseData = json.decode(response.body);
+              // Process data from the server...
+
+              // Save data and timestamp to SharedPreferences
+              prefs.setString(cacheKey, json.encode(responseData));
+              prefs.setInt(
+                  '${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+            } else {
+              // Handle server error (e.g., response.statusCode is not 200)
+              // You may want to set an error flag or log the error
+            }
+          } catch (e) {
+            // Handle other exceptions (e.g., network error)
+            // You may want to set an error flag or log the error
+          }
+        }
+
+
+        // final Map<String, dynamic> responseData = json.decode(response.body);
 
         if (responseData.containsKey('data')) {
           List<dynamic> responseList = responseData['data']['data'];
@@ -48,27 +86,7 @@ class PostsProvider with ChangeNotifier {
                       confirmed: challengeData['confirmed'],
                     ))
                 .toList();
-            return Post(
-                postId: data['id'],
-                userId: data['user_id'],
-                name: data['user']['name'],
-                image: data['image'],
-                challengeImg: data['challenge_img'],
-                caption: data['body'] ?? 'hi',
-                type: data['type'],
-                width: data['width'],
-                height: data['height'],
-                likeCountA: data['like_count_A'],
-                likeCountB: data['like_count_B'],
-                commentCount: data['commentCount'],
-                followerCount: data['user']['followerCount'],
-                isLiked: data['isLiked'],
-                isPinned: data['pinned'],
-                challenges: challenges,
-                isLikedB: data['isLikedB'],
-                isLikedA: data['isLikedA'],
-                createdAt: data['created_at'],
-                userImage: data['user_image_url']);
+            return newPost(data, challenges);
           }).toList();
           _posts.addAll(newPosts);
           _pageNumber++;
@@ -83,6 +101,30 @@ class PostsProvider with ChangeNotifier {
         // Handle the error here...
       }
     }
+  }
+
+  Post newPost(data, List<Challenge> challenges) {
+    return Post(
+        postId: data['id'],
+        userId: data['user_id'],
+        name: data['user']['name'],
+        image: data['image'],
+        challengeImg: data['challenge_img'],
+        caption: data['body'] ?? 'hi',
+        type: data['type'],
+        width: data['width'],
+        height: data['height'],
+        likeCountA: data['like_count_A'],
+        likeCountB: data['like_count_B'],
+        commentCount: data['commentCount'],
+        followerCount: data['user']['followerCount'],
+        isLiked: data['isLiked'],
+        isPinned: data['pinned'],
+        challenges: challenges,
+        isLikedB: data['isLikedB'],
+        isLikedA: data['isLikedA'],
+        createdAt: data['created_at'],
+        userImage: data['user_image_url']);
   }
 
   void addPost(Post post) {
