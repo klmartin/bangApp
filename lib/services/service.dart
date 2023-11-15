@@ -110,8 +110,7 @@ class Service {
     }
   }
 
-  Future<bool> addChallenge(
-      Map<String, String> body, String filepath, int userId) async {
+  Future<bool> addChallenge(Map<String, String> body, String filepath, int userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String addimageUrl = '$baseUrl/addChallenge';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
@@ -120,12 +119,16 @@ class Service {
     try {
       var response = await http.Response.fromStream(await request.send());
       if (response.statusCode == 200) {
+        print("nimefika kwenye challegne notification");
         var data = json.decode(response.body);
+        print(data);
         String notificationSent = await sendNotification(
             userId,
             prefs.getString('name'),
             'Has Challenged Your Post',
-            data['challengeId']);
+            data['challengeId'],
+            'challenge'
+        );
         return true;
       } else {
         return false;
@@ -362,6 +365,26 @@ Future<List<dynamic>> getPostInfo(postId,userId) async {
           'post_id': postId.toString(),
         },
       );
+      print('this is accept response');
+      print(response.body);
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      return e;
+    }
+  }
+
+
+  Future declineChallenge(postId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/declineChallenge'),
+        body: {
+          'post_id': postId.toString(),
+        },
+      );
+      print('this is accept response');
+      print(response.body);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -386,17 +409,20 @@ Future<List<dynamic>> getPostInfo(postId,userId) async {
     }
   }
 
-  Future<String> sendNotification(userId, name, body, challengeId ) async {
+  Future<String> sendNotification(userId, name, body, challengeId,type ) async {
     try {
+      print("nimefika kwenye notification");
       final response = await http.post(
         Uri.parse('$baseUrl/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
           'body': body,
+          'type': type,
           'challengeId': challengeId.toString(),
         },
       );
+      print(response.body);
       if (response.statusCode == 200) {
         return 'success';
       } else {

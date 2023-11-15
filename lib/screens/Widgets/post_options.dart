@@ -209,12 +209,12 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => ImageEditor(
-                                              image: image,
+                                               image: image,
                                                postId: imagePostId,
                                                userChallenged:imageUserId,
                                                challengeImg: true,
                                                image2: null,
-                                              allowMultiple: true
+                                               allowMultiple: true
                                           ),
                                         ),
                                       );

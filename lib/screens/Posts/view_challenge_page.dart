@@ -28,8 +28,10 @@ class ViewChallengePage extends StatefulWidget {
 }
 
 class _ViewChallengePageState extends State<ViewChallengePage> {
+
   Future<Map<String, dynamic>> getChallenge() async {
     print(widget.challengeId);
+    print('this is the data');
     var response = await http.get(Uri.parse('$baseUrl/getChallenge/${widget.challengeId}'));
     var data = json.decode(response.body);
     return data['data'];
@@ -218,6 +220,7 @@ class _PostCardState extends State<PostCard> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: ElevatedButton(
                       onPressed: () {
+                        Service().declineChallenge(widget.post_id);
                         // Add your logic for declining here
                       },
                       child: Text('Decline'),

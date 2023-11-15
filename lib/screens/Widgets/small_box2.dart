@@ -144,7 +144,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                   height: 200,
                                   width:halfScreenWidth - 5 ,
                                   child: CachedNetworkImage(
-                                    imageUrl: box.imageUrl1,
+                                    imageUrl: box.imageUrl2,
                                     placeholder: (context, url) => AspectRatio(
                                       aspectRatio: 200 / 200,
                                       child: Shimmer.fromColors(

@@ -111,7 +111,7 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                 width:  MediaQuery.of(context).size.width * 0.5,
                 child: ReadMoreText(
                   bangUpdate.caption,
-                  trimLines: 1,
+                  trimLines: 2,
                   style: Theme.of(context).textTheme.bodyLarge!,
                   colorClickableText: Theme.of(context).primaryColor,
                   trimMode: TrimMode.line,
@@ -130,8 +130,6 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
 
       ],
     );
-
-
   }
   else if (bangUpdate.type == 'video')
   {
