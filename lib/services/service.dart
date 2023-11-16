@@ -639,7 +639,6 @@ Future<List<dynamic>> getPostInfo(postId,userId) async {
           final notificationCount = jsonResponse['notification_count'];
           return notificationCount;
         } else {
-          // If the 'notification_count' key is not present in the JSON response
           return 0; // Or handle this case as needed
         }
       } else {
