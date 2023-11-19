@@ -96,7 +96,7 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
             children: [
               Row(
                 children: [
-                  UserProfile(url: bangUpdate.userImage, size: 25),
+                  UserProfile(url: bangUpdate.userImage, size: 35),
                   SizedBox(width: 5),
                   Text(
                     bangUpdate.userName,
@@ -107,21 +107,31 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                   ),
                 ],
               ),
-              SizedBox(
-                width:  MediaQuery.of(context).size.width * 0.5,
-                child: ReadMoreText(
-                  bangUpdate.caption,
-                  trimLines: 2,
-                  style: Theme.of(context).textTheme.bodyLarge!,
-                  colorClickableText: Theme.of(context).primaryColor,
-                  trimMode: TrimMode.line,
-                  trimCollapsedText: '...Show more',
-                  trimExpandedText: '...Show less',
-                  moreStyle: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+
+              Container(
+                height: 10,
+                child: Row(
+                  children: [
+                    SizedBox(width: 70),
+                    SizedBox(
+                      width:  MediaQuery.of(context).size.width * 0.5,
+                      child: ReadMoreText(
+                        'this is bang update caption',
+                        trimLines: 2,
+                        style: Theme.of(context).textTheme.bodyLarge!,
+                        colorClickableText: Theme.of(context).primaryColor,
+                        trimMode: TrimMode.line,
+                        trimCollapsedText: '...Show more',
+                        trimExpandedText: '...Show less',
+                        textColor:Colors.white,
+                        moreStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

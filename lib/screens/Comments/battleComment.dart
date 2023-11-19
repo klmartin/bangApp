@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Explore/explore_page2.dart';
 
@@ -31,26 +32,35 @@ class _BattleCommentState extends State<BattleComment> {
     super.initState();
     CircularProgressIndicator();
     _fetchComments();
+    getUserImageFromSharedPreferences();
   }
 
   Future<void> _fetchComments() async {
     final response = await Service().getBattleComments(widget.postId.toString());
     final comments = response;
 
-
     setState(() {
       // CircularProgressIndicator()
       filedata = comments.map((comment) {
         return {
           'name': comment['user']['name'],
-          'pic': 'YOUR_BASE_URL/${comment['user']['image']}',
+          'pic': comment['user_image_url'],
           'message': comment['body'],
           'date': comment['created_at'],
         };
       }).toList();
     });
   }
+  String userImageURL = "";
 
+  void getUserImageFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userImageURL = prefs.getString('user_image') ?? "";
+      print(userImageURL);
+      print("this is image after set state");
+    });
+  }
 
   Widget commentChild(data) {
     return ListView(
@@ -109,8 +119,7 @@ class _BattleCommentState extends State<BattleComment> {
       ),
       body: Container(
         child: CommentBox(
-          userImage: CommentBox.commentImageParser(
-              imageURLorPath: "assets/img/userpic.jpg"),
+          userImage: NetworkImage(userImageURL),
           child: commentChild(filedata),
           labelText: 'Write a comment...',
           errorText: 'Comment cannot be blank',
