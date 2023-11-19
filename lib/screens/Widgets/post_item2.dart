@@ -1,10 +1,12 @@
 import 'dart:developer';
 import 'dart:typed_data';
+import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'package:bangapp/screens/blog/colors.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:bangapp/widgets/like_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:file_picker/file_picker.dart';
@@ -102,7 +104,9 @@ class PostItem2 extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
-    if (challengeImg != null && challenges.isEmpty && type=='image')  //challenge image
+    if (challengeImg != null &&
+        challenges.isEmpty &&
+        type == 'image') //challenge image
     {
       return Container(
         decoration: const BoxDecoration(
@@ -111,7 +115,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type,createdAt) ??
+                    postId, userId, type, createdAt) ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -310,7 +314,9 @@ class PostItem2 extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 5), // Add some spacing between the username and caption
+                    SizedBox(
+                        width:
+                            5), // Add some spacing between the username and caption
                     Expanded(
                       child: ReadMoreText(
                         caption,
@@ -336,8 +342,9 @@ class PostItem2 extends StatelessWidget {
           ],
         ),
       );
-    }
-    else if(challengeImg != null && challenges.isEmpty && type=='video') //challenge video
+    } else if (challengeImg != null &&
+        challenges.isEmpty &&
+        type == 'video') //challenge video
     {
       return Container(
         decoration: const BoxDecoration(
@@ -346,7 +353,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                postId, userId, type,createdAt) ??
+                    postId, userId, type, createdAt) ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -362,13 +369,14 @@ class PostItem2 extends StatelessWidget {
                         child: Stack(
                           children: [
                             Chewie(
-                          controller: ChewieController(
-                          videoPlayerController: VideoPlayerController.network(image),
-                          autoPlay: false,
-                          looping: true,
-                          showControls: true, // Hide controls if needed
-                        ),
-                       ),
+                              controller: ChewieController(
+                                videoPlayerController:
+                                    VideoPlayerController.network(image),
+                                autoPlay: false,
+                                looping: true,
+                                showControls: true, // Hide controls if needed
+                              ),
+                            ),
                             Positioned(
                               bottom: 5,
                               child: Container(
@@ -400,7 +408,8 @@ class PostItem2 extends StatelessWidget {
                           children: [
                             Chewie(
                               controller: ChewieController(
-                                videoPlayerController: VideoPlayerController.network(challengeImg),
+                                videoPlayerController:
+                                    VideoPlayerController.network(challengeImg),
                                 autoPlay: false,
                                 looping: true,
                                 showControls: true, // Hide controls if needed
@@ -449,9 +458,9 @@ class PostItem2 extends StatelessWidget {
                         },
                         child: isLikedA
                             ? Icon(CupertinoIcons.heart_fill,
-                            color: Colors.red, size: 25)
+                                color: Colors.red, size: 25)
                             : Icon(CupertinoIcons.heart,
-                            color: Colors.red, size: 25),
+                                color: Colors.red, size: 25),
                       ),
                       Text("${likeCountA.toString()} Likes")
                     ],
@@ -499,9 +508,9 @@ class PostItem2 extends StatelessWidget {
                             },
                             child: isLikedB
                                 ? Icon(CupertinoIcons.heart_fill,
-                                color: Colors.red, size: 25)
+                                    color: Colors.red, size: 25)
                                 : Icon(CupertinoIcons.heart,
-                                color: Colors.red, size: 25),
+                                    color: Colors.red, size: 25),
                           ),
                           Text("${likeCountB.toString()} Likes")
                         ],
@@ -522,8 +531,11 @@ class PostItem2 extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 5), // Add some spacing between the username and caption
-                    Expanded( // Wrap the ReadMoreText with an Expanded widget
+                    SizedBox(
+                        width:
+                            5), // Add some spacing between the username and caption
+                    Expanded(
+                      // Wrap the ReadMoreText with an Expanded widget
                       child: ReadMoreText(
                         caption,
                         trimLines: 1,
@@ -549,8 +561,7 @@ class PostItem2 extends StatelessWidget {
           ],
         ),
       );
-    }
-    else if (challengeImg == null && challenges.isEmpty) //single post
+    } else if (challengeImg == null && challenges.isEmpty) //single post
     {
       return Container(
         decoration: const BoxDecoration(
@@ -559,8 +570,11 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            postOptions(context, userId, userImage, name, followerCount, image, postId, userId, type,createdAt) ?? Container(),
-            buildMediaWidget(context, image, type, width, height, isPinned) ?? Container(),
+            postOptions(context, userId, userImage, name, followerCount, image,
+                    postId, userId, type, createdAt) ??
+                Container(),
+            buildMediaWidget(context, image, type, width, height, isPinned) ??
+                Container(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -575,7 +589,9 @@ class PostItem2 extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 5), // Add some spacing between the username and caption
+                      SizedBox(
+                          width:
+                              5), // Add some spacing between the username and caption
                       Expanded(
                         child: ReadMoreText(
                           caption,
@@ -596,7 +612,7 @@ class PostItem2 extends StatelessWidget {
                   ),
                 ),
                 Container(
-                    padding: EdgeInsets.only(right: 10),
+                  padding: EdgeInsets.only(right: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -636,12 +652,20 @@ class PostItem2 extends StatelessWidget {
                                     : Icon(CupertinoIcons.heart,
                                         color: Colors.red, size: 25),
                               ),
-                              Text(
-                                "$likeCountA likes",
-                                style: TextStyle(
-                                  fontSize: 12.5,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
+                              GestureDetector(
+                                onTap: () {
+                                    Provider.of<UserLikesProvider>(context, listen: false).getUserLikedPost(postId);
+
+                                  LikesModal.showLikesModal(
+                                      context, postId);
+                                },
+                                child: Text(
+                                  "$likeCountA likes",
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
@@ -669,8 +693,8 @@ class PostItem2 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              postOptions(context, userId, userImage, name, followerCount, image,
-                      postId, userId, type,createdAt) ??
+              postOptions(context, userId, userImage, name, followerCount,
+                      image, postId, userId, type, createdAt) ??
                   Container(),
               SizedBox(
                 height: 400,

@@ -11,8 +11,7 @@ import '../screens/Widgets/readmore.dart';
 import '../services/animation.dart';
 import 'package:bangapp/widgets/user_profile.dart';
 
-Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  {
-
+Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async {
   if (bangUpdate.type == 'image') {
     return Stack(
       children: [
@@ -28,7 +27,7 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                 placeholder: (context, url) => Shimmer.fromColors(
                   baseColor: const Color.fromARGB(255, 30, 34, 45),
                   highlightColor:
-                  const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
+                      const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
                   child: Container(
                     color: const Color.fromARGB(255, 30, 34, 45),
                   ),
@@ -45,8 +44,7 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
               BangUpdateLikeButton(
                   likeCount: bangUpdate.likeCount,
                   isLiked: bangUpdate.isLiked,
-                  postId: bangUpdate.postId
-              ),
+                  postId: bangUpdate.postId),
               SizedBox(height: 10),
               Text(
                 bangUpdate.likeCount.toString(),
@@ -76,39 +74,40 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                 ),
               ),
               SizedBox(height: 10),
-              Text(
-                bangUpdate.commentCount.toString(),
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                )
-              ),
+              Text(bangUpdate.commentCount.toString(),
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  )),
               SizedBox(height: 20),
               Icon(CupertinoIcons.paperplane, color: Colors.white, size: 30),
               SizedBox(height: 20),
             ],
           ),
         ),
-
         Positioned(
           bottom: 30,
           left: -50,
           child: Column(
-
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  UserProfile(url: bangUpdate.userImage, size: 35),
-                  SizedBox(width: 5),
-                  Text(
-                    bangUpdate.userName,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+              Padding(
+                padding: const EdgeInsets.only(left: 70),
+                child: Row(
+                  children: [
+                    UserProfile(url: bangUpdate.userImage, size: 35),
+                    SizedBox(width: 5),
+                    Text(
+                      bangUpdate.userName,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Row(
                 children: [
@@ -117,10 +116,10 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: ReadMoreText(
-                        bangUpdate.caption,
+                        "bangUpdate.captioefj jfk ajwbfe jkfweu bejhf jhwef hihgreui vjhebrfui kjfeio iuefhiewo iefuhn",
                         trimLines: 1,
                         style: Theme.of(context).textTheme.bodyLarge!,
-                        colorClickableText: Theme.of(context).primaryColor,
+                        colorClickableText: Colors.white,
                         trimMode: TrimMode.line,
                         trimCollapsedText: '...Show more',
                         trimExpandedText: '...Show less',
@@ -128,7 +127,7 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                         moreStyle: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -140,12 +139,11 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
         ),
       ],
     );
-  }
-  else if (bangUpdate.type == 'video')
-  {
-    VideoPlayerController  _videoPlayerController =
-    VideoPlayerController.networkUrl(Uri.parse(bangUpdate.filename));
-    await _videoPlayerController.initialize(); // Initialize the video player controller
+  } else if (bangUpdate.type == 'video') {
+    VideoPlayerController _videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(bangUpdate.filename));
+    await _videoPlayerController
+        .initialize(); // Initialize the video player controller
     ChewieController _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
       autoPlay: true,
@@ -155,8 +153,7 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
         color: const Color.fromARGB(255, 30, 34, 45),
       ),
     );
-    return Stack(
-      children: [
+    return Stack(children: [
       Container(
         width: double.infinity,
         child: GestureDetector(
@@ -174,79 +171,79 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
           child: AspectRatio(
             aspectRatio: _videoPlayerController.value.aspectRatio,
             child: _videoPlayerController.value.isInitialized
-                ? VisibilityDetector(key: Key('chewie_key'), // Provide a unique key
-                onVisibilityChanged: (VisibilityInfo info) {
-                  if (info.visibleFraction == 0.0) {
-                    _videoPlayerController?.pause();
-                  } else {
-                    _videoPlayerController?.play();
-                  }
-                },child: VideoPlayer(_videoPlayerController))
+                ? VisibilityDetector(
+                    key: Key('chewie_key'), // Provide a unique key
+                    onVisibilityChanged: (VisibilityInfo info) {
+                      if (info.visibleFraction == 0.0) {
+                        _videoPlayerController?.pause();
+                      } else {
+                        _videoPlayerController?.play();
+                      }
+                    },
+                    child: VideoPlayer(_videoPlayerController))
                 : Container(), // Display an empty container if the video is not yet initialized
           ),
         ),
       ),
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: Column(
-            children: [
-              BangUpdateLikeButton(
-                  likeCount: bangUpdate.likeCount,
-                  isLiked: bangUpdate.isLiked,
-                  postId: bangUpdate.postId
+      Positioned(
+        bottom: 0,
+        right: 0,
+        child: Column(
+          children: [
+            BangUpdateLikeButton(
+                likeCount: bangUpdate.likeCount,
+                isLiked: bangUpdate.isLiked,
+                postId: bangUpdate.postId),
+            SizedBox(height: 10),
+            Text(
+              bangUpdate.likeCount.toString(),
+              style: TextStyle(
+                fontSize: 12.5,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: 10),
-              Text(
-                bangUpdate.likeCount.toString(),
+            ),
+            SizedBox(height: 20),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  createRoute(
+                    UpdateCommentsPage(
+                      postId: bangUpdate.postId, userId: bangUpdate.postId,
+                      // currentUser: 1,
+                    ),
+                  ),
+                );
+              },
+              child: Icon(
+                CupertinoIcons.chat_bubble,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(bangUpdate.commentCount.toString(),
                 style: TextStyle(
                   fontSize: 12.5,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    createRoute(
-                      UpdateCommentsPage(
-                        postId: bangUpdate.postId, userId: bangUpdate.postId,
-                        // currentUser: 1,
-                      ),
-                    ),
-                  );
-                },
-                child: Icon(
-                  CupertinoIcons.chat_bubble,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                  bangUpdate.commentCount.toString(),
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  )
-              ),
-              SizedBox(height: 20),
-              Icon(CupertinoIcons.paperplane, color: Colors.white, size: 30),
-              SizedBox(height: 20),
-            ],
-          ),
+                )),
+            SizedBox(height: 20),
+            Icon(CupertinoIcons.paperplane, color: Colors.white, size: 30),
+            SizedBox(height: 20),
+          ],
         ),
-
-        Positioned(
-          bottom: 30,
-          left: -50,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
+      ),
+      Positioned(
+        bottom: 30,
+        left: -50,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 70),
+              child: Row(
                 children: [
                   UserProfile(url: bangUpdate.userImage, size: 35),
                   SizedBox(width: 5),
@@ -259,35 +256,33 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 70),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  child: ReadMoreText(
-                    bangUpdate.caption,
-                    trimLines: 1,
-                    style: Theme.of(context).textTheme.bodyLarge!,
-                    colorClickableText: Theme.of(context).primaryColor,
-                    trimMode: TrimMode.line,
-                    trimCollapsedText: '...Show more',
-                    trimExpandedText: '...Show less',
-                    textColor: Colors.white,
-                    moreStyle: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 70),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: ReadMoreText(
+                  bangUpdate.caption,
+                  trimLines: 1,
+                  style: Theme.of(context).textTheme.bodyLarge!,
+                  colorClickableText: Theme.of(context).primaryColor,
+                  trimMode: TrimMode.line,
+                  trimCollapsedText: '...Show more',
+                  trimExpandedText: '...Show less',
+                  textColor: Colors.white,
+                  moreStyle: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-
-      ]
-    );
+      ),
+    ]);
   } else {
     return Container(); // Return an empty container if the media type is unknown or unsupported
   }
 }
-
