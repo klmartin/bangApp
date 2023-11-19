@@ -87,7 +87,8 @@ class _FinaleCreateState extends State<FinalCreate> {
     List<Uint8List> images = [];
     List<String> videos = [];
     if(widget.editedImage != null && widget.editedImage2 != null && widget.type=='image') {
-      List<Uint8List> images = [widget.editedImage!, widget.editedImage2!];
+      images.add(widget.editedImage!);
+      images.add( widget.editedImage2!);
     }
     if(widget.editedVideo != null && widget.editedVideo2 != null) {
        videos.add(widget.editedVideo!);
@@ -96,35 +97,40 @@ class _FinaleCreateState extends State<FinalCreate> {
     Size size= MediaQuery.of(context).size;
     return  Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Post',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          title: Row(
+            children: [
+              GestureDetector(
+                onTap: () async {  Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Create(),
+                  ),
+                );},
+                child: Container(
+                  padding: EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Colors.pink, Colors.redAccent, Colors.orange],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Icon(Icons.arrow_back_rounded, size: 30),
+                ),
+              ),
+              SizedBox(width: 10),
+
+            ],
           ),
           automaticallyImplyLeading: false,
           elevation: 0.0,
           backgroundColor: Colors.white,
           actions: [
-            GestureDetector(
-              onTap: () async {  Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Create(),
-                ),
-              );},
-              child: Container(
-                padding: EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Colors.pink, Colors.redAccent, Colors.orange],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Icon(Icons.arrow_back_rounded, size: 30),
-              ),
+            Text(
+              'Post',
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
-            SizedBox(width: 10)
           ],
         ),
         body:ListView(
@@ -134,62 +140,63 @@ class _FinaleCreateState extends State<FinalCreate> {
                 child:Column (
                     children:[
                       Row(
-                        children: [ // Display the first image
-                        if (widget.editedImage != null && widget.editedImage2 == null )
-                          Expanded(
-                        child: InkWell(
-                            child: Container(
-                              width: size.width,
-                              height: size.height /2 ,
-                              child: Image.memory(
-                                widget.editedImage!,
+                        children:
+                        [ // Display the first image
+                          if (widget.editedImage != null && widget.editedImage2 == null )
+                            Expanded(
+                          child: InkWell(
+                              child: Container(
                                 width: size.width,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        )
-                        else if (widget.editedImage2 != null && widget.editedImage != null)
-                          Expanded(
-                            child: SizedBox(
-                              height: size.height/2, // Specify the desired height
-                              child: PageView.builder(
-                                itemCount: images.length,
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    width: 190,
-                                    height: 200,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red[200],
-                                      borderRadius: BorderRadius.circular(32),
-                                    ),
-                                    child: Image.memory(
-                                      images[index],
-                                      width: 190.0,
-                                      height: 200.0,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          )
-                        else if(widget.editedVideo != null && widget.editedVideo2 == null && widget.editedImage2 == null)
-                          InkWell(
-                            child: Container(
-                              width: size.width -4,
-                              height: size.height / 2 ,
-                              child: Chewie(
-                                controller: ChewieController(
-                                  videoPlayerController: VideoPlayerController.network(widget.editedVideo!),
-                                  autoPlay: true,
-                                  looping: false,
+                                height: size.height /2 ,
+                                child: Image.memory(
+                                  widget.editedImage!,
+                                  width: size.width,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
                           )
-                        else if(widget.editedVideo != null && widget.editedVideo2 != null)
-                              Expanded(
+                          else if (widget.editedImage2 != null && widget.editedImage != null)
+                            Expanded(
+                              child: SizedBox(
+                                height: size.height/2, // Specify the desired height
+                                child: PageView.builder(
+                                  itemCount: images.length,
+                                  itemBuilder: (context, index) {
+                                    return Container(
+                                      width: 190,
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        color: Colors.red[200],
+                                        borderRadius: BorderRadius.circular(32),
+                                      ),
+                                      child: Image.memory(
+                                        images[index],
+                                        width: 190.0,
+                                        height: 200.0,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            )
+                          else if(widget.editedVideo != null && widget.editedVideo2 == null && widget.editedImage2 == null)
+                            InkWell(
+                              child: Container(
+                                width: size.width -4,
+                                height: size.height / 2 ,
+                                child: Chewie(
+                                  controller: ChewieController(
+                                    videoPlayerController: VideoPlayerController.network(widget.editedVideo!),
+                                    autoPlay: true,
+                                    looping: false,
+                                  ),
+                                ),
+                              ),
+                            )
+                          else if(widget.editedVideo != null && widget.editedVideo2 != null)
+                            Expanded(
                                 child: SizedBox(
                                   height: size.height / 2, // Specify the desired height
                                   child: PageView.builder(
@@ -212,7 +219,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   ),
                                 ),
                               )
-                            ],
+                        ],
                       ),
                       SizedBox(height: 15.0),
                       Text(

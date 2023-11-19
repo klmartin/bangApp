@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../screens/Comments/updateComment.dart';
 import '../screens/Explore/bang_updates_like_button.dart';
 import '../screens/Widgets/readmore.dart';
@@ -89,10 +90,12 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
             ],
           ),
         ),
+
         Positioned(
           bottom: 30,
           left: -50,
           child: Column(
+
             children: [
               Row(
                 children: [
@@ -107,23 +110,21 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                   ),
                 ],
               ),
-
-              Container(
-                height: 10,
-                child: Row(
-                  children: [
-                    SizedBox(width: 70),
-                    SizedBox(
-                      width:  MediaQuery.of(context).size.width * 0.5,
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 70),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
                       child: ReadMoreText(
-                        'this is bang update caption',
-                        trimLines: 2,
+                        bangUpdate.caption,
+                        trimLines: 1,
                         style: Theme.of(context).textTheme.bodyLarge!,
                         colorClickableText: Theme.of(context).primaryColor,
                         trimMode: TrimMode.line,
                         trimCollapsedText: '...Show more',
                         trimExpandedText: '...Show less',
-                        textColor:Colors.white,
+                        textColor: Colors.white,
                         moreStyle: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -131,13 +132,12 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
-
       ],
     );
   }
@@ -155,7 +155,6 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
         color: const Color.fromARGB(255, 30, 34, 45),
       ),
     );
-
     return Stack(
       children: [
       Container(
@@ -175,7 +174,14 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
           child: AspectRatio(
             aspectRatio: _videoPlayerController.value.aspectRatio,
             child: _videoPlayerController.value.isInitialized
-                ? VideoPlayer(_videoPlayerController)
+                ? VisibilityDetector(key: Key('chewie_key'), // Provide a unique key
+                onVisibilityChanged: (VisibilityInfo info) {
+                  if (info.visibleFraction == 0.0) {
+                    _videoPlayerController?.pause();
+                  } else {
+                    _videoPlayerController?.play();
+                  }
+                },child: VideoPlayer(_videoPlayerController))
                 : Container(), // Display an empty container if the video is not yet initialized
           ),
         ),
@@ -233,14 +239,16 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
             ],
           ),
         ),
+
         Positioned(
           bottom: 30,
           left: -50,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
                 children: [
-                  UserProfile(url: bangUpdate.userImage, size: 25),
+                  UserProfile(url: bangUpdate.userImage, size: 35),
                   SizedBox(width: 5),
                   Text(
                     bangUpdate.userName,
@@ -251,27 +259,32 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                   ),
                 ],
               ),
-              SizedBox(
-                width:  MediaQuery.of(context).size.width * 0.5,
-                child: ReadMoreText(
-                  bangUpdate.caption,
-                  trimLines: 1,
-                  style: Theme.of(context).textTheme.bodyLarge!,
-                  colorClickableText: Theme.of(context).primaryColor,
-                  trimMode: TrimMode.line,
-                  trimCollapsedText: '...Show more',
-                  trimExpandedText: '...Show less',
-                  moreStyle: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              Padding(
+                padding: const EdgeInsets.only(left: 70),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: ReadMoreText(
+                    bangUpdate.caption,
+                    trimLines: 1,
+                    style: Theme.of(context).textTheme.bodyLarge!,
+                    colorClickableText: Theme.of(context).primaryColor,
+                    trimMode: TrimMode.line,
+                    trimCollapsedText: '...Show more',
+                    trimExpandedText: '...Show less',
+                    textColor: Colors.white,
+                    moreStyle: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-    ]
+
+      ]
     );
   } else {
     return Container(); // Return an empty container if the media type is unknown or unsupported

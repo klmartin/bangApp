@@ -336,7 +336,8 @@ class PostItem2 extends StatelessWidget {
           ],
         ),
       );
-    } else if(challengeImg != null && challenges.isEmpty && type=='video') //challenge video
+    }
+    else if(challengeImg != null && challenges.isEmpty && type=='video') //challenge video
     {
       return Container(
         decoration: const BoxDecoration(
