@@ -40,7 +40,7 @@ class _Activity extends State<Activity> {
       final notificationModel = NotificationModel.fromJson(data); // Parse JSON
       setState(() {
         notifications = notificationModel.notifications;
-        isLoading = false; // Set isLoading to false when data is loaded
+        isLoading = false;
       });
     } else {
       // Fetch data from the server
