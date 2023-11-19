@@ -1,3 +1,4 @@
+
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:flutter/material.dart';
@@ -181,7 +182,6 @@ Future<List<dynamic>> getPostInfo(postId,userId) async {
           var name = prefs.getString('name');
           var body = "$name has Liked your post";
           print(this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like',postId));
-
         }
         print(postId);
       } else {
