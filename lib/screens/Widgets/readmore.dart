@@ -87,7 +87,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
     final dataStyle = TextStyle(
       fontWeight: FontWeight.normal,
       fontSize: 15,
-      color: widget.textColor ?? Colors.black,
+      color: widget.textColor ?? Colors.white,
     );
 
     TextStyle? effectiveTextStyle = widget.style;
