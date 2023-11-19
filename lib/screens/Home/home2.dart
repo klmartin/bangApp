@@ -88,7 +88,7 @@ class _Home2ContentState extends State<Home2Content> {
       itemBuilder: (context, index) {
         if (index < postsProvider.posts!.length) {
           final Post post = postsProvider.posts![index];
-          Service().updateIsSeen(post.postId);
+        //   Service().updateIsSeen(post.postId);
 
           if (index == 0) {
             return Column(

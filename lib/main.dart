@@ -7,6 +7,7 @@ import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
+import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
@@ -54,6 +55,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => BangUpdateProvider()),
     ChangeNotifierProvider(create: (context) => ChatProvider()),
     ChangeNotifierProvider(create: (context) => BoxDataProvider()),
+        ChangeNotifierProvider(create: (context) => UserLikesProvider()),
   ], child: MyApp()));
 }
 
