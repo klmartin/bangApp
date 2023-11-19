@@ -57,7 +57,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   @override
   void initState() {
     super.initState();
-    _startAConversation(); // Load chat messages when the screen initializes
+    // _startAConversation(); // Load chat messages when the screen initializes
     _getThisUsersMessages();
     connect();
     _scrollController.addListener(_scrollListener);
@@ -132,15 +132,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-  void _startAConversation() async {
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    chatProvider.startConversation(
-        context, await getUserId(), widget.receiverId);
-  }
+//   void _startAConversation() async {
+//     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+//     chatProvider.startConversation(
+//         context,  await getUserId(), widget.receiverId,);
+//   }
 
   void _getThisUsersMessages() async {
+    final res = widget.receiverId;
+    print("Loading messages for: ${await getUserId()} and $res");
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    chatProvider.getMessages(context, await getUserId(), widget.receiverId);
+    chatProvider.getMessages(context, await getUserId(), res);
 
     setState(() {
       if (_scrollController.hasClients && _shouldAutoscroll) {
@@ -217,8 +219,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               // The user ID future has completed successfully
                               final userId = userIdSnapshot.data;
                               final isSender = message.senderId == userId;
-                              print("object");
-                              print(messages[index].messageType);
+                            //   print("object");
+                            //   print(messages[index].messageType);
                               return MSG.Message(
                                 message: ChatMessage(
                                   text: messages[index].message,
