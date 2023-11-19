@@ -127,10 +127,13 @@ class _FinaleCreateState extends State<FinalCreate> {
           elevation: 0.0,
           backgroundColor: Colors.white,
           actions: [
-            Text(
-              'Post',
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            Center(
+              child: Text(
+                'Post',
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 20),
+              ),
             ),
+            SizedBox(width: 10),
           ],
         ),
         body:ListView(
@@ -414,7 +417,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     };
                                     await service.addChallengImage(body, filePath1, filePath2);
                                 }
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Nav()),);
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Nav()));
                                 } finally {
                                 // After your button logic is done, set loading back to false
                                 setState(() {

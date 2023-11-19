@@ -214,6 +214,12 @@ class _PostCardState extends State<PostCard> {
                           Column(
                             children: [
                               GestureDetector(
+                                onTap: () {
+                                  Service().likeAction(widget.postId, "A", widget.userId);
+                                  setState(() {
+                                    widget.isLiked = !widget.isLiked;
+                                  });
+                                },
                                 child: widget.isLiked
                                     ? Icon(CupertinoIcons.heart_fill,
                                     color: Colors.red, size: 25)
