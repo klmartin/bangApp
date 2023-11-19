@@ -198,7 +198,7 @@ class _CommentsPageState extends State<CommentsPage> {
       filedata = response.map((comment) {
         return {
           'name': comment['user']['name'],
-          'pic': comment['post']['user_image_url'],
+          'pic': comment['user_image_url'],
           'message': comment['body'],
           'date': comment['created_at'],
         };
@@ -211,9 +211,9 @@ class _CommentsPageState extends State<CommentsPage> {
   void getUserImageFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      print('this is user image');
-      print(prefs.getString('user_image'));
       userImageURL = prefs.getString('user_image') ?? "";
+      print(userImageURL);
+      print("this is image after set state");
     });
   }
 
@@ -274,8 +274,7 @@ class _CommentsPageState extends State<CommentsPage> {
       ),
       body: Container(
         child: CommentBox(
-          userImage: CommentBox.commentImageParser(
-              imageURLorPath:userImageURL),
+          userImage: NetworkImage(userImageURL),
           child: commentChild(filedata),
           labelText: 'Write a comment...',
           errorText: 'Comment cannot be blank',
@@ -294,7 +293,7 @@ class _CommentsPageState extends State<CommentsPage> {
               setState(() {
                 var value = {
                   'name': response['data']['user']['name'],
-                  'pic': response['data']['user']['image'],
+                  'pic': response['data']['user']['user_image_url'],
                   'message': commentController.text,
                   'date': '2021-01-01 12:00:00'
                 };

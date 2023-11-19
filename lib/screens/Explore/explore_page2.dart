@@ -54,7 +54,6 @@ class BangUpdates3 extends StatelessWidget {
       itemBuilder: (context, index) {
         final bangUpdate = bangUpdateProvider.bangUpdates[index];
         Service().updateBangUpdateIsSeen(bangUpdate.postId);
-
         return FutureBuilder<Widget>(
           future: buildBangUpdate2(context, bangUpdate, index),
           builder: (context, snapshot) {

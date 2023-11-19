@@ -17,6 +17,7 @@ class ReadMoreText extends StatefulWidget {
         this.trimLines = 2,
         this.trimMode = TrimMode.length,
          this.style,
+        this.textColor,
          this.textAlign,
          this.textDirection,
          this.locale,
@@ -61,6 +62,8 @@ class ReadMoreText extends StatefulWidget {
   final double? textScaleFactor;
   final String? semanticsLabel;
   final TextStyle? delimiterStyle;
+  // this is text color for specifying when text should
+  final Color? textColor;
 
   @override
   ReadMoreTextState createState() => ReadMoreTextState();
@@ -84,7 +87,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
     final dataStyle = TextStyle(
       fontWeight: FontWeight.normal,
       fontSize: 15,
-      color: Colors.black,
+      color: widget.textColor ?? Colors.black,
     );
 
     TextStyle? effectiveTextStyle = widget.style;
