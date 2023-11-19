@@ -14,13 +14,13 @@ class VideoPlayerPage extends StatefulWidget {
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   late VideoPlayerController _videoPlayerController;
-  late ChewieController _chewieController;
+  late ChewieController? _chewieController;
 
 
   @override
-  void initState() {
+  void initState()  {
     super.initState();
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.mediaUrl));
+    initializeVideo();
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
       autoPlay: true,
@@ -31,16 +31,31 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     );
   }
 
+  Future<void> initializeVideo() async {
+    _videoPlayerController = VideoPlayerController.network(widget.mediaUrl);
+    await _videoPlayerController.initialize();
+    setState(() {
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController,
+        autoPlay: true,
+        looping: false,
+        placeholder: Container(
+          color: const Color.fromARGB(255, 30, 34, 45),
+        ),
+      );
+    });
+  }
+
 Future<void> _progressiveDownloadVideo() async {
     final _dio = Dio();
     final response = await _dio.get(widget.mediaUrl, options: Options(responseType: ResponseType.stream));
-    await _videoPlayerController.initialize();
+
      _videoPlayerController = VideoPlayerController.networkUrl(response as Uri);
 
 }
   @override
   void dispose() {
-    _chewieController.dispose();
+    _chewieController?.dispose();
     _videoPlayerController.dispose();
     _progressiveDownloadVideo();
     super.dispose();
@@ -56,31 +71,24 @@ Future<void> _progressiveDownloadVideo() async {
   Widget build(BuildContext context) {
     //final screenSize = MediaQuery.of(context).size;
     print(_videoPlayerController.value.aspectRatio);
-
+    print('this is aspect ration of the video');
     return AspectRatio(
-                //aspectRatio: 16 / 9,
-      aspectRatio: _videoPlayerController.value.aspectRatio,
-
+      aspectRatio:  _videoPlayerController.value.aspectRatio,
       child: Stack(
             children: [
               VisibilityDetector(
                 key: Key('chewie_key'), // Provide a unique key
                 onVisibilityChanged: (VisibilityInfo info) {
                   if (info.visibleFraction == 0.0) {
-                    _chewieController.pause();
+                    _chewieController?.pause();
                   } else {
-                    _chewieController.play();
+                    _chewieController?.play();
                   }
                 },
-
-
                 child: Chewie(
-                  controller: _chewieController,
-
+                  controller: _chewieController!,
                 ),
               ),
-
-
             ],
           ),
 

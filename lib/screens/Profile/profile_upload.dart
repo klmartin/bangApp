@@ -53,7 +53,7 @@ class _UploadProfileState extends State<UploadProfile> {
                         source: ImageSource.gallery,
                       );
                       setState(() {
-                        rimage = File(image.path);
+                        rimage = image.path;
                       });
                       Navigator.pop(context,rimage);
                     },
@@ -84,7 +84,7 @@ class _UploadProfileState extends State<UploadProfile> {
                         source: ImageSource.camera,
                       );
                       setState(() {
-                        rimage = File(image.path);
+                        rimage = image.path;
                       });
                       Navigator.pop(context,rimage);
                     },

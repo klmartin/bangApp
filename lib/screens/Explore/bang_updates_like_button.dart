@@ -33,7 +33,6 @@ class _BangUpdateLikeButtonState extends State<BangUpdateLikeButton> {
         GestureDetector(
           onTap: () async {
             setState(() {
-
               isLiked = !isLiked; // Update the isLiked state variable
             });
         final upt = Provider.of<BangUpdateProvider>(context, listen: false);

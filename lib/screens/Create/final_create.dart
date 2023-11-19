@@ -1,16 +1,18 @@
+import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:bangapp/services/service.dart';
 import '../../nav.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
-
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'create_page.dart';
 
 enum ImageSourceType { gallery, camera }
@@ -51,6 +53,7 @@ class _FinaleCreateState extends State<FinalCreate> {
   XFile? mediaFile;
   bool isLoading = false;
   VideoPlayerController? videoController;
+
   Future<String> saveUint8ListAsFile(Uint8List data, String fileName) async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String filePath = '${appDocDir.path}/$fileName';
@@ -58,6 +61,26 @@ class _FinaleCreateState extends State<FinalCreate> {
     await file.writeAsBytes(data);
     return filePath;
   }
+
+  Future<XFile?> testCompressAndGetFile(File file, String targetPath) async {
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path, targetPath,
+      quality: 88,
+      rotate: 180,
+    );
+
+    print(file.lengthSync());
+    print("this is the compresses");
+
+    return result;
+  }
+
+  Future<File> compressFile(File file) async{
+    File compressedFile = await FlutterNativeImage.compressImage(file.path,
+      quality: 5,);
+    return compressedFile;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -237,8 +260,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                               if (snapshot.connectionState == ConnectionState.done) {
                                 final sharedPreferences = snapshot.data;
                                 final userRole = sharedPreferences?.getString("role"); // Replace "user_role" with the actual key for the role in shared preferences.
-                                print('this is role');
-                                print(userRole);
                                 bool isAdmin = userRole == "admin";
                                 return isAdmin
                                     ? Container(
@@ -265,7 +286,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 )
                                     : Container(); // Return an empty container if the user is not an admin
                               }
-
                               // Handle other connection states (loading, etc.) if needed
                               return Container(
                                 child: Row(
@@ -305,11 +325,15 @@ class _FinaleCreateState extends State<FinalCreate> {
                                 onPressed: isLoading
                                 ? null : () async
                                 {
-                                  setState(() {isLoading = true;});
+                                setState(() {isLoading = true;});
                                 SharedPreferences prefs = await SharedPreferences.getInstance();
                                 try {
                                   if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == false) {
                                     String filePath = await saveUint8ListAsFile(widget.editedImage!, 'image.jpg');
+                                    File compressedImage = await compressFile(File(filePath));
+                                    print("this is compressed");
+                                    print(compressedImage);
+
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
                                       'body': caption ?? " ",
@@ -317,12 +341,10 @@ class _FinaleCreateState extends State<FinalCreate> {
                                       'type': widget.type!,
                                     };
                                     if(bangUpdate==1){
-                                      print('naenda kwenye bangupdate');
-                                      print(body);
                                       await service.addBangUpdate(body, filePath);
                                     }
                                     else{
-                                      await service.addImage(body, filePath,);
+                                      await service.addImage(body, compressedImage.path );
                                     }
                                   }
                                   else if (widget.editedImage != null && widget.editedImage2 == null && widget.challengeImg == true) {
@@ -337,6 +359,20 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   await service.addChallenge(body, filePath, widget.userChallenged!);
                                   }
                                   else if (widget.editedVideo != null && widget.editedVideo2 == null && widget.type == 'video') {
+                                    MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+                                      widget.editedVideo.toString(), // Use the path property
+                                      quality: VideoQuality.Res640x480Quality,
+                                      deleteOrigin: true,
+                                    );
+
+                                    print('Compressed Video Info:');
+                                    print('File path: ${mediaInfo?.path}');
+                                    print('File size: ${mediaInfo?.filesize}');
+                                    print('Duration: ${mediaInfo?.duration} seconds');
+
+
+                                    print('this is video media info');
+
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
                                       'body': caption ?? "",
@@ -344,12 +380,10 @@ class _FinaleCreateState extends State<FinalCreate> {
                                       'pinned': pinPost == 1 ? '1' : '0',
                                     };
                                     if(bangUpdate==1){
-                                      print('naenda kwenye bangupdate kwenye video');
-                                      print(body);
-                                      await service.addBangUpdate(body, widget.editedVideo.toString());
+                                      await service.addBangUpdate(body, mediaInfo?.path ?? '');
                                     }
                                     else{
-                                      await service.addImage(body, widget.editedVideo.toString());
+                                      await service.addImage(body, mediaInfo?.path ?? '');
                                     }
                                   }
                                   else if(widget.editedVideo != null && widget.editedVideo2 != null && widget.type == 'video') {

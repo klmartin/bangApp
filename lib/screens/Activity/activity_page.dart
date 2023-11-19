@@ -106,7 +106,7 @@ GestureDetector _notificationList(NotificationItem notification) {
     child: ListTile(
       leading: CircleAvatar(
         // Update based on notification data
-        backgroundImage: NetworkImage(profileUrl+notification.userImage),
+        backgroundImage: NetworkImage(notification.userImage),
         radius: 28.0,
       ),
       title: Text(

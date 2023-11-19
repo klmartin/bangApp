@@ -106,7 +106,7 @@ class _VideoEditorState extends State<VideoEditor> {
     await ExportService.runFFmpegCommand(
       await config.getExecuteConfig(),
       onProgress: (stats) {
-        _exportingProgress.value = config.getFFmpegProgress(stats.getTime());
+        _exportingProgress.value = config.getFFmpegProgress(stats.getTime().toInt());
       },
       onError: (e, s) => _showErrorSnackBar("Error on export video :("),
       onCompleted: (file) {

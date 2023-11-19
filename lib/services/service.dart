@@ -1,3 +1,4 @@
+
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +40,6 @@ class Service {
   }
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
-    print('this is video');
-    print([body,filepath]);
     String addimageUrl = '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..fields.addAll(body)
@@ -48,11 +47,9 @@ class Service {
     try {
       var response = await http.Response.fromStream(await request.send());
       if (response.statusCode == 201) {
-        print("immeenda hivo");
         final response2 = jsonDecode(response.body);
         if (response2['data']) {
         } else {
-          print("No response.........");
         }
         return true;
       } else {
@@ -114,8 +111,7 @@ class Service {
     }
   }
 
-  Future<bool> addChallenge(
-      Map<String, String> body, String filepath, int userId) async {
+  Future<bool> addChallenge(Map<String, String> body, String filepath, int userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String addimageUrl = '$baseUrl/addChallenge';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
@@ -124,12 +120,16 @@ class Service {
     try {
       var response = await http.Response.fromStream(await request.send());
       if (response.statusCode == 200) {
+        print("nimefika kwenye challegne notification");
         var data = json.decode(response.body);
+        print(data);
         String notificationSent = await sendNotification(
             userId,
             prefs.getString('name'),
             'Has Challenged Your Post',
-            data['challengeId']);
+            data['challengeId'],
+            'challenge'
+        );
         return true;
       } else {
         return false;
@@ -182,7 +182,6 @@ Future<List<dynamic>> getPostInfo(postId,userId) async {
           var name = prefs.getString('name');
           var body = "$name has Liked your post";
           print(this.sendUserNotification(userId, prefs.getString('name'), body, prefs.getInt('user_id').toString(),'like',postId));
-
         }
         print(postId);
       } else {
@@ -366,6 +365,26 @@ Future<List<dynamic>> getPostInfo(postId,userId) async {
           'post_id': postId.toString(),
         },
       );
+      print('this is accept response');
+      print(response.body);
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      return e;
+    }
+  }
+
+
+  Future declineChallenge(postId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/declineChallenge'),
+        body: {
+          'post_id': postId.toString(),
+        },
+      );
+      print('this is accept response');
+      print(response.body);
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -390,17 +409,20 @@ Future<List<dynamic>> getPostInfo(postId,userId) async {
     }
   }
 
-  Future<String> sendNotification(userId, name, body, challengeId ) async {
+  Future<String> sendNotification(userId, name, body, challengeId,type ) async {
     try {
+      print("nimefika kwenye notification");
       final response = await http.post(
         Uri.parse('$baseUrl/sendNotification'),
         body: {
           'user_id': userId.toString(),
           'heading': name,
           'body': body,
+          'type': type,
           'challengeId': challengeId.toString(),
         },
       );
+      print(response.body);
       if (response.statusCode == 200) {
         return 'success';
       } else {
@@ -440,7 +462,7 @@ Future<List<dynamic>> getPostInfo(postId,userId) async {
     }
   }
 
-  Future<void> setUserProfile(date_of_birth, String phoneNumber,String Hobbies, occupation, bio, String filepath) async {
+  Future<void> setUserProfile(date_of_birth, String? phoneNumber,String Hobbies, occupation, bio,  filepath) async {
     print(['this is type', date_of_birth,phoneNumber, Hobbies, occupation, bio, filepath]);
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -11,7 +11,7 @@ class PostsProvider with ChangeNotifier {
   int _pageNumber = 0;
   bool _error = false;
   bool _loading = true;
-  final int _numberOfPostsPerRequest = 30;
+  final int _numberOfPostsPerRequest = 10;
   final int _nextPageTrigger = 3;
 
   List<Post> _posts = [];

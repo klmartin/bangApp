@@ -1,9 +1,6 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:typed_data';
-import 'package:bangapp/screens/Profile/user_profile.dart';
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:filter_list/filter_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -15,7 +12,6 @@ import 'package:bangapp/screens/settings/settings.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../models/userprovider.dart';
 import '../Posts/postView_model.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
@@ -23,8 +19,6 @@ import 'profile_upload.dart';
 import 'package:bangapp/models/image_post.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/services/service.dart';
-import 'package:provider/provider.dart';
-
 
 class Profile extends StatefulWidget {
   final int? id;
@@ -162,7 +156,7 @@ class _ProfileState extends State<Profile> {
                           )),
                       child: rimage != null
                           ? Image.file(
-                        rimage,
+                        File(rimage),
                         width: 80,
                         height: 80,
                         fit: BoxFit.cover,
@@ -173,9 +167,9 @@ class _ProfileState extends State<Profile> {
                 Padding(
                   padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
                   child: InkWell(
-                    // onTap: () {
-                    //   openFilterDialog();
-                    // },
+                    onTap: () {
+                      buildFab(1,context);
+                    },
                     child: Column(
                       children: [
                         Icon(
@@ -336,8 +330,6 @@ class _ProfileState extends State<Profile> {
                 }
                 if (snapshot.hasData) {
                   String thumbnailPath = ''; // Variable to store the thumbnail file path
-
-
                   final List<dynamic> posts = snapshot.data! as List<dynamic>;
                   for (var post in posts) {
                     final imagePost = ImagePost(
@@ -496,7 +488,6 @@ class _ProfileState extends State<Profile> {
                             ),
                         ]
                         else if(allImagePosts[i].type == 'video' && allImagePosts[i].challengeImgUrl=="")...[
-
                           ClipRRect(
                           borderRadius: BorderRadius.circular(5),
                           child: InkWell(

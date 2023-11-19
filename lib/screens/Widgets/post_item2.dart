@@ -102,7 +102,8 @@ class PostItem2 extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
-    if (challengeImg != null && challenges.isEmpty && type=='image') {
+    if (challengeImg != null && challenges.isEmpty && type=='image')  //challenge image
+    {
       return Container(
         decoration: const BoxDecoration(
           color: Color.fromARGB(1, 30, 34, 45),
@@ -335,7 +336,8 @@ class PostItem2 extends StatelessWidget {
           ],
         ),
       );
-    } else if(challengeImg != null && challenges.isEmpty && type=='video'){
+    } else if(challengeImg != null && challenges.isEmpty && type=='video') //challenge video
+    {
       return Container(
         decoration: const BoxDecoration(
           color: Color.fromARGB(1, 30, 34, 45),
@@ -547,7 +549,8 @@ class PostItem2 extends StatelessWidget {
         ),
       );
     }
-    else if (challengeImg == null && challenges.isEmpty) { //single post
+    else if (challengeImg == null && challenges.isEmpty) //single post
+    {
       return Container(
         decoration: const BoxDecoration(
           color: Color.fromARGB(1, 30, 34, 45),
@@ -556,10 +559,7 @@ class PostItem2 extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             postOptions(context, userId, userImage, name, followerCount, image, postId, userId, type,createdAt) ?? Container(),
-            AspectRatio(
-              aspectRatio: width / height,
-              child: buildMediaWidget(context, image, type, width, height, isPinned),
-            ),
+            buildMediaWidget(context, image, type, width, height, isPinned) ?? Container(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

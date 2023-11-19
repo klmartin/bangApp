@@ -49,7 +49,7 @@ class NotificationItem {
       type: json['type'],
       referenceId: json['reference_id'],
       postId: json['post_id'],
-      userImage: json['user']['image'] ?? logoUrl,
+      userImage: json['user']['user_image_url'],
       isRead: json['is_read'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],

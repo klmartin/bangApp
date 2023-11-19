@@ -8,6 +8,7 @@ import '../screens/Comments/updateComment.dart';
 import '../screens/Explore/bang_updates_like_button.dart';
 import '../screens/Widgets/readmore.dart';
 import '../services/animation.dart';
+import 'package:bangapp/widgets/user_profile.dart';
 
 Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  {
 
@@ -89,30 +90,46 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
           ),
         ),
         Positioned(
-          bottom: 0,
-          left: 0,
+          bottom: 30,
+          left: -50,
           child: Column(
             children: [
-              Text(
-                bangUpdate.caption,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
+              Row(
+                children: [
+                  UserProfile(url: bangUpdate.userImage, size: 25),
+                  SizedBox(width: 5),
+                  Text(
+                    bangUpdate.userName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width:  MediaQuery.of(context).size.width * 0.5,
+                child: ReadMoreText(
+                  bangUpdate.caption,
+                  trimLines: 2,
+                  style: Theme.of(context).textTheme.bodyLarge!,
+                  colorClickableText: Theme.of(context).primaryColor,
+                  trimMode: TrimMode.line,
+                  trimCollapsedText: '...Show more',
+                  trimExpandedText: '...Show less',
+                  moreStyle: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              Text(
-              bangUpdate.userName,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),]
+            ],
           ),
         ),
+
       ],
     );
-
-
   }
   else if (bangUpdate.type == 'video')
   {
@@ -207,20 +224,14 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
           ),
         ),
         Positioned(
-          bottom: 0,
-          left: 0,
+          bottom: 30,
+          left: -50,
           child: Column(
-            children:[
-              Text(
-                bangUpdate.caption,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
+            children: [
               Row(
                 children: [
-
+                  UserProfile(url: bangUpdate.userImage, size: 25),
+                  SizedBox(width: 5),
                   Text(
                     bangUpdate.userName,
                     style: TextStyle(
@@ -230,7 +241,24 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async  
                   ),
                 ],
               ),
-            ]
+              SizedBox(
+                width:  MediaQuery.of(context).size.width * 0.5,
+                child: ReadMoreText(
+                  bangUpdate.caption,
+                  trimLines: 1,
+                  style: Theme.of(context).textTheme.bodyLarge!,
+                  colorClickableText: Theme.of(context).primaryColor,
+                  trimMode: TrimMode.line,
+                  trimCollapsedText: '...Show more',
+                  trimExpandedText: '...Show less',
+                  moreStyle: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
     ]

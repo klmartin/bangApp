@@ -8,27 +8,30 @@ import '../constants/urls.dart';
 
 Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
   if ( type == 'image' && isPinned==0) {
-    return  GestureDetector(
-        onTap: () {
-          viewImage(context, mediaUrl);
-        },
-        child: CachedNetworkImage(
-          imageUrl: mediaUrl,
-          height: imgHeight.toDouble(),
-          width: imgWidth.toDouble(),
-          fit: BoxFit.cover,
-          placeholder: (context, url) => AspectRatio(
-            aspectRatio: imgWidth / imgHeight,
-            child: Shimmer.fromColors(
-              baseColor: const Color.fromARGB(255, 30, 34, 45),
-              highlightColor: const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-              child: Container(color: const Color.fromARGB(255, 30, 34, 45)),
+    return  AspectRatio(
+      aspectRatio: imgWidth / imgHeight,
+      child: GestureDetector(
+          onTap: () {
+            viewImage(context, mediaUrl);
+          },
+          child: CachedNetworkImage(
+            imageUrl: mediaUrl,
+            height: imgHeight.toDouble(),
+            width: imgWidth.toDouble(),
+            fit: BoxFit.cover,
+            placeholder: (context, url) => AspectRatio(
+              aspectRatio: imgWidth / imgHeight,
+              child: Shimmer.fromColors(
+                baseColor: const Color.fromARGB(255, 30, 34, 45),
+                highlightColor: const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
+                child: Container(color: const Color.fromARGB(255, 30, 34, 45)),
+              ),
             ),
           ),
         ),
-      );
+    );
   }
-  else if (type == 'image' && isPinned==1){
+  else if (type == 'image' || type== 'video' && isPinned==1) {
     return GestureDetector(
       onTap: () {
         buildFab(isPinned,context);
@@ -48,7 +51,6 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
     );
   }
   else if (type == 'video') {
-    print('this is a video for play');
     return VideoPlayerPage(mediaUrl: mediaUrl);
   } else {
     return Container();

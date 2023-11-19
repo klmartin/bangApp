@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants/urls.dart';
 import '../../widgets/SearchBox.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 
 class BangUpdates2 extends StatefulWidget {
   @override
@@ -45,33 +46,26 @@ class BangUpdates3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bangUpdateProvider = Provider.of<BangUpdateProvider>(context);
-    return PageView.builder(
+    return PreloadPageView.builder(
+      controller: PreloadPageController(),
+      preloadPagesCount: 3,
       scrollDirection: Axis.vertical,
       itemCount: bangUpdateProvider.bangUpdates.length,
       itemBuilder: (context, index) {
         final bangUpdate = bangUpdateProvider.bangUpdates[index];
-        // Service().updateBangUpdateIsSeen(bangUpdate.postId);
-        return index != 0
-            ? FutureBuilder<Widget>(
+        Service().updateBangUpdateIsSeen(bangUpdate.postId);
+
+        return FutureBuilder<Widget>(
           future: buildBangUpdate2(context, bangUpdate, index),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return snapshot.data ?? Container(); // Use the widget if available, or a fallback Container
             } else {
-              return CircularProgressIndicator(); // Show a loading indicator while fetching the widget
+              // Loading indicator or placeholder while content is being loaded
+              return CircularProgressIndicator();
             }
           },
-        )
-            : FutureBuilder<Widget>(
-              future: buildBangUpdate2(context, bangUpdate, index),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return snapshot.data ?? Text("No Content Here, Please come again later");
-                } else {
-                  return CircularProgressIndicator();
-                }
-              },
-            );
+        );
       },
     );
   }
@@ -126,7 +120,7 @@ class BangUpdateProvider extends ChangeNotifier {
             post['bang_update_like_count'].isNotEmpty
             ? post['bang_update_like_count'][0]['like_count']
             : 0,
-        userImage: post['user']['image'] ,
+        userImage: post['user_image_url'] ,
         userName: post['user']['name'],
         commentCount: post['bang_update_comments'] != null &&
             post['bang_update_comments'].isNotEmpty
