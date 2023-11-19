@@ -116,7 +116,7 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async {
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: ReadMoreText(
-                        "bangUpdate.captioefj jfk ajwbfe jkfweu bejhf jhwef hihgreui vjhebrfui kjfeio iuefhiewo iefuhn",
+                        bangUpdate.caption,
                         trimLines: 1,
                         style: Theme.of(context).textTheme.bodyLarge!,
                         colorClickableText: Colors.white,
