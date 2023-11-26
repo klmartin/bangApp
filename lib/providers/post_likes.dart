@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 
 class UserLikesProvider extends ChangeNotifier {
-      final List<dynamic> _likedUsers = [];
+  final List<dynamic> _likedUsers = [];
 
   get likedUsers => _likedUsers;
 
@@ -34,9 +34,6 @@ class UserLikesProvider extends ChangeNotifier {
   }
 
 }
-
-
-
 
 class User {
   final int id;

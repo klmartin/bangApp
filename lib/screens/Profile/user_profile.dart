@@ -92,22 +92,23 @@ class _UserProfileState extends State<UserProfile> {
       _isLoading = false;
       // Append the newly loaded posts to the existing list
       allImagePosts.addAll(newPosts.map((post) {
-        return ImagePost(post['user']['name'],
-            post['body']??'',
-            post['image'],
-            post['challenge_img']??'',
-            post['width'],
-            post['height'],
-            post['id'],
-            post['commentCount'],
-            post['user_id'],
-            post['isLikedA'],
-            post['like_count_A'],
-            post['type'],
-            post['user']['followerCount'],
-            post['created_at'],
-            post['user_image_url'],
-            post['pinned']
+        return ImagePost(
+            name: post['user']['name'] ,
+            caption:post['body'] ?? "",
+            imageUrl:post['image'],
+            challengeImgUrl:post['challenge_img']??"",
+            imgWidth:post['width'],
+            imgHeight:post['height'],
+            postId:post['id'],
+            commentCount:post['commentCount'],
+            userId:post['user']['id'],
+            isLiked:post['isLiked'],
+            likeCount:post['like_count_A'],
+            type:post['type'],
+            followerCount:post['followerCount'],
+            createdAt:post['created_at'],
+            userImage:post['user_image_url'],
+            pinned:post['pinned']
         );
       }));
     });
@@ -313,22 +314,22 @@ class _UserProfileState extends State<UserProfile> {
               final List<dynamic> posts = snapshot.data! as List<dynamic>;
               for (var post in posts) {
                 final imagePost = ImagePost(
-                    post['user']['name'],
-                    post['body'] ?? "",
-                    post['image'],
-                    post['challenge_img'] ?? "",
-                    post['width'],
-                    post['height'],
-                    post['id'],
-                    post['commentCount'],
-                    post['user_id'],
-                    post['isLikedA'],
-                    post['like_count_A'],
-                    post['type'],
-                    post['user']['followerCount'],
-                    post['created_at'],
-                    post['user_image_url'],
-                    post['pinned']
+                    name: post['user']['name'] ,
+                    caption:post['body'] ?? "",
+                    imageUrl:post['image'],
+                    challengeImgUrl:post['challenge_img']??"",
+                    imgWidth:post['width'],
+                    imgHeight:post['height'],
+                    postId:post['id'],
+                    commentCount:post['commentCount'],
+                    userId:post['user']['id'],
+                    isLiked:post['isLiked'],
+                    likeCount:post['like_count_A'],
+                    type:post['type'],
+                    followerCount:post['followerCount'],
+                    createdAt:post['created_at'],
+                    userImage:post['user_image_url'],
+                    pinned:post['pinned']
 
 
                 );
@@ -367,28 +368,28 @@ class _UserProfileState extends State<UserProfile> {
                               onTap: () {
                                 Navigator.push(
                                     context, MaterialPageRoute(builder: (context) => POstView(
-                                    allImagePosts[i].name,
-                                    allImagePosts[i].caption,
-                                    allImagePosts[i].imageUrl,
-                                    allImagePosts[i].challengeImgUrl,
-                                    allImagePosts[i].imgWidth,
-                                    allImagePosts[i].imgHeight,
-                                    allImagePosts[i].postId,
-                                    allImagePosts[i].commentCount,
-                                    allImagePosts[i].userId,
-                                    allImagePosts[i].isLiked,
-                                    allImagePosts[i].likeCount,
-                                    allImagePosts[i].type,
-                                    allImagePosts[i].followerCount,
-                                    allImagePosts[i].createdAt,
-                                    allImagePosts[i].userImage,
-                                    allImagePosts[i].pinned
+                                    allImagePosts[i].name!,
+                                    allImagePosts[i].caption!,
+                                    allImagePosts[i].imageUrl!,
+                                    allImagePosts[i].challengeImgUrl!,
+                                    allImagePosts[i].imgWidth!,
+                                    allImagePosts[i].imgHeight!,
+                                    allImagePosts[i].postId!,
+                                    allImagePosts[i].commentCount!,
+                                    allImagePosts[i].userId!,
+                                    allImagePosts[i].isLiked!,
+                                    allImagePosts[i].likeCount!,
+                                    allImagePosts[i].type!,
+                                    allImagePosts[i].followerCount!,
+                                    allImagePosts[i].createdAt!,
+                                    allImagePosts[i].userImage!,
+                                    allImagePosts[i].pinned!
                                 )));
                               },
 
                               child:
                               CachedNetworkImage(
-                                imageUrl: allImagePosts[i].imageUrl,
+                                imageUrl: allImagePosts[i].imageUrl!,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -400,22 +401,22 @@ class _UserProfileState extends State<UserProfile> {
                             onTap: () {
                               Navigator.push(
                                   context, MaterialPageRoute(builder: (context) => POstView(
-                                  allImagePosts[i].name,
-                                  allImagePosts[i].caption,
-                                  allImagePosts[i].imageUrl,
-                                  allImagePosts[i].challengeImgUrl,
-                                  allImagePosts[i].imgWidth,
-                                  allImagePosts[i].imgHeight,
-                                  allImagePosts[i].postId,
-                                  allImagePosts[i].commentCount,
-                                  allImagePosts[i].userId,
-                                  allImagePosts[i].isLiked,
-                                  allImagePosts[i].likeCount,
-                                  allImagePosts[i].type,
-                                  allImagePosts[i].followerCount,
-                                  allImagePosts[i].createdAt,
-                                  allImagePosts[i].userImage,
-                                  allImagePosts[i].pinned
+                                  allImagePosts[i].name!,
+                                  allImagePosts[i].caption!,
+                                  allImagePosts[i].imageUrl!,
+                                  allImagePosts[i].challengeImgUrl!,
+                                  allImagePosts[i].imgWidth!,
+                                  allImagePosts[i].imgHeight!,
+                                  allImagePosts[i].postId!,
+                                  allImagePosts[i].commentCount!,
+                                  allImagePosts[i].userId!,
+                                  allImagePosts[i].isLiked!,
+                                  allImagePosts[i].likeCount!,
+                                  allImagePosts[i].type!,
+                                  allImagePosts[i].followerCount!,
+                                  allImagePosts[i].createdAt!,
+                                  allImagePosts[i].userImage!,
+                                  allImagePosts[i].pinned!
                               )));
                             },
                             child:
@@ -436,22 +437,22 @@ class _UserProfileState extends State<UserProfile> {
                                 onTap: () {
                                   Navigator.push(
                                       context, MaterialPageRoute(builder: (context) => POstChallengeView(
-                                      allImagePosts[i].name,
-                                      allImagePosts[i].caption,
-                                      allImagePosts[i].imageUrl,
-                                      allImagePosts[i].challengeImgUrl,
-                                      allImagePosts[i].imgWidth,
-                                      allImagePosts[i].imgHeight,
-                                      allImagePosts[i].postId,
-                                      allImagePosts[i].commentCount,
-                                      allImagePosts[i].userId,
-                                      allImagePosts[i].isLiked,
-                                      allImagePosts[i].likeCount,
-                                      allImagePosts[i].type,
-                                      allImagePosts[i].followerCount,
-                                      allImagePosts[i].createdAt,
-                                      allImagePosts[i].userImage,
-                                      allImagePosts[i].pinned
+                                      allImagePosts[i].name!,
+                                      allImagePosts[i].caption!,
+                                      allImagePosts[i].imageUrl!,
+                                      allImagePosts[i].challengeImgUrl!,
+                                      allImagePosts[i].imgWidth!,
+                                      allImagePosts[i].imgHeight!,
+                                      allImagePosts[i].postId!,
+                                      allImagePosts[i].commentCount!,
+                                      allImagePosts[i].userId!,
+                                      allImagePosts[i].isLiked!,
+                                      allImagePosts[i].likeCount!,
+                                      allImagePosts[i].type!,
+                                      allImagePosts[i].followerCount!,
+                                      allImagePosts[i].createdAt!,
+                                      allImagePosts[i].userImage!,
+                                      allImagePosts[i].pinned!
                                   )));
                                 },
 
@@ -459,13 +460,13 @@ class _UserProfileState extends State<UserProfile> {
                                   children: [
                                     Expanded(
                                       child: CachedNetworkImage(
-                                        imageUrl: allImagePosts[i].imageUrl,
+                                        imageUrl: allImagePosts[i].imageUrl!,
                                       ),
                                     ),
                                     SizedBox(width: 10),
                                     Expanded(
                                       child: CachedNetworkImage(
-                                        imageUrl: allImagePosts[i].challengeImgUrl,
+                                        imageUrl: allImagePosts[i].challengeImgUrl!,
                                       ),
                                     ),
                                   ],
@@ -480,22 +481,22 @@ class _UserProfileState extends State<UserProfile> {
                                 onTap: () {
                                   Navigator.push(
                                       context, MaterialPageRoute(builder: (context) => POstView(
-                                      allImagePosts[i].name,
-                                      allImagePosts[i].caption,
-                                      allImagePosts[i].imageUrl,
-                                      allImagePosts[i].challengeImgUrl,
-                                      allImagePosts[i].imgWidth,
-                                      allImagePosts[i].imgHeight,
-                                      allImagePosts[i].postId,
-                                      allImagePosts[i].commentCount,
-                                      allImagePosts[i].userId,
-                                      allImagePosts[i].isLiked,
-                                      allImagePosts[i].likeCount,
-                                      allImagePosts[i].type,
-                                      allImagePosts[i].followerCount,
-                                      allImagePosts[i].createdAt,
-                                      allImagePosts[i].userImage,
-                                      allImagePosts[i].pinned
+                                      allImagePosts[i].name!,
+                                      allImagePosts[i].caption!,
+                                      allImagePosts[i].imageUrl!,
+                                      allImagePosts[i].challengeImgUrl!,
+                                      allImagePosts[i].imgWidth!,
+                                      allImagePosts[i].imgHeight!,
+                                      allImagePosts[i].postId!,
+                                      allImagePosts[i].commentCount!,
+                                      allImagePosts[i].userId!,
+                                      allImagePosts[i].isLiked!,
+                                      allImagePosts[i].likeCount!,
+                                      allImagePosts[i].type!,
+                                      allImagePosts[i].followerCount!,
+                                      allImagePosts[i].createdAt!,
+                                      allImagePosts[i].userImage!,
+                                      allImagePosts[i].pinned!
                                   )));
                                 },
                                 child: Image.asset(
@@ -514,22 +515,22 @@ class _UserProfileState extends State<UserProfile> {
                                     onTap: () {
                                       Navigator.push(
                                           context, MaterialPageRoute(builder: (context) => POstVideoChallengeView(
-                                          allImagePosts[i].name,
-                                          allImagePosts[i].caption,
-                                          allImagePosts[i].imageUrl,
-                                          allImagePosts[i].challengeImgUrl,
-                                          allImagePosts[i].imgWidth,
-                                          allImagePosts[i].imgHeight,
-                                          allImagePosts[i].postId,
-                                          allImagePosts[i].commentCount,
-                                          allImagePosts[i].userId,
-                                          allImagePosts[i].isLiked,
-                                          allImagePosts[i].likeCount,
-                                          allImagePosts[i].type,
-                                          allImagePosts[i].followerCount,
-                                          allImagePosts[i].createdAt,
-                                          allImagePosts[i].userImage,
-                                          allImagePosts[i].pinned
+                                          allImagePosts[i].name!,
+                                          allImagePosts[i].caption!,
+                                          allImagePosts[i].imageUrl!,
+                                          allImagePosts[i].challengeImgUrl!,
+                                          allImagePosts[i].imgWidth!,
+                                          allImagePosts[i].imgHeight!,
+                                          allImagePosts[i].postId!,
+                                          allImagePosts[i].commentCount!,
+                                          allImagePosts[i].userId!,
+                                          allImagePosts[i].isLiked!,
+                                          allImagePosts[i].likeCount!,
+                                          allImagePosts[i].type!,
+                                          allImagePosts[i].followerCount!,
+                                          allImagePosts[i].createdAt!,
+                                          allImagePosts[i].userImage!,
+                                          allImagePosts[i].pinned!
                                       )));
                                     },
                                     child: Row(

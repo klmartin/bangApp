@@ -321,15 +321,24 @@ class PostItem2 extends StatelessWidget {
                       child: ReadMoreText(
                         caption,
                         trimLines: 1,
-                        style: Theme.of(context).textTheme.bodyLarge!,
                         colorClickableText: Theme.of(context).primaryColor,
                         trimMode: TrimMode.line,
+                        textColor: Colors.black,
                         trimCollapsedText: '...Show more',
                         trimExpandedText: '...Show less',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black,
+                        ),
+                        lessStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                         moreStyle: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -539,15 +548,24 @@ class PostItem2 extends StatelessWidget {
                       child: ReadMoreText(
                         caption,
                         trimLines: 1,
-                        style: Theme.of(context).textTheme.bodyLarge!,
                         colorClickableText: Theme.of(context).primaryColor,
                         trimMode: TrimMode.line,
+                        textColor: Colors.black,
                         trimCollapsedText: '...Show more',
                         trimExpandedText: '...Show less',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black,
+                        ),
+                        lessStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                         moreStyle: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -596,11 +614,20 @@ class PostItem2 extends StatelessWidget {
                         child: ReadMoreText(
                           caption,
                           trimLines: 1,
-                          style: Theme.of(context).textTheme.bodyLarge!,
                           colorClickableText: Theme.of(context).primaryColor,
                           trimMode: TrimMode.line,
+                          textColor: Colors.black,
                           trimCollapsedText: '...Show more',
                           trimExpandedText: '...Show less',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                          lessStyle: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                           moreStyle: TextStyle(
                             fontSize: 15,
                             color: Theme.of(context).primaryColor,
@@ -746,11 +773,20 @@ class PostItem2 extends StatelessWidget {
                   child: ReadMoreText(
                     caption,
                     trimLines: 1,
-                    style: Theme.of(context).textTheme.bodyLarge!,
                     colorClickableText: Theme.of(context).primaryColor,
                     trimMode: TrimMode.line,
+                    textColor: Colors.black,
                     trimCollapsedText: '...Show more',
                     trimExpandedText: '...Show less',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.black,
+                    ),
+                    lessStyle: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                     moreStyle: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,

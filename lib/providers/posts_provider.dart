@@ -15,7 +15,6 @@ class PostsProvider with ChangeNotifier {
   final int _nextPageTrigger = 3;
 
   List<Post> _posts = [];
-  List<Post> _allPosts = [];
 
   List<Post>? get posts => _posts;
   bool get isLastPage => _isLastPage;
@@ -29,14 +28,14 @@ class PostsProvider with ChangeNotifier {
       try {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         final userId = prefs.getInt('user_id').toString();
-
         final String cacheKey = 'cached_posts';
+        final iJustPosted = prefs.getBool('i_just_posted');
         final String cachedData = prefs.getString(cacheKey) ?? '';
         final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
 
         var responseData = {};
 
-        if (cachedData.isNotEmpty &&
+        if (cachedData.isNotEmpty && iJustPosted != true &&
             DateTime.now()
                     .difference(DateTime.fromMillisecondsSinceEpoch(
                         lastCachedTimestamp))
@@ -49,11 +48,9 @@ class PostsProvider with ChangeNotifier {
           try {
             final response = await get(Uri.parse(
                 "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"));
-
             if (response.statusCode == 200) {
               responseData = json.decode(response.body);
               // Process data from the server...
-
               // Save data and timestamp to SharedPreferences
               prefs.setString(cacheKey, json.encode(responseData));
               prefs.setInt(
@@ -67,8 +64,6 @@ class PostsProvider with ChangeNotifier {
             // You may want to set an error flag or log the error
           }
         }
-
-
         // final Map<String, dynamic> responseData = json.decode(response.body);
 
         if (responseData.containsKey('data')) {

@@ -15,7 +15,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'create_page.dart';
 
-enum ImageSourceType { gallery, camera }
 
 class FinalCreate extends StatefulWidget {
   static const String id = 'final_posts';
@@ -45,6 +44,19 @@ class FinalCreate extends StatefulWidget {
 
 class _FinaleCreateState extends State<FinalCreate> {
   Service service = Service();
+
+  late int myRole = 0;
+  void initState() {
+    super.initState();
+    _initializeSharedPreferences();
+  }
+
+  void _initializeSharedPreferences() async {
+    var myInfo = await Service().getMyInformation();
+    setState(() {
+      myRole =  myInfo['role_id'] ?? 0;
+    });
+  }
   var image;
   bool light = true;
   var caption;
@@ -69,18 +81,14 @@ class _FinaleCreateState extends State<FinalCreate> {
       rotate: 180,
     );
 
-    print(file.lengthSync());
-    print("this is the compresses");
-
     return result;
   }
 
   Future<File> compressFile(File file) async{
     File compressedFile = await FlutterNativeImage.compressImage(file.path,
-      quality: 5,);
+      quality: 50);
     return compressedFile;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -264,63 +272,30 @@ class _FinaleCreateState extends State<FinalCreate> {
                               });
                             },
                           ),
-                          FutureBuilder(
-                            future: SharedPreferences.getInstance(),
-                            builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
-                              if (snapshot.connectionState == ConnectionState.done) {
-                                final sharedPreferences = snapshot.data;
-                                final userRole = sharedPreferences?.getString("role"); // Replace "user_role" with the actual key for the role in shared preferences.
-                                bool isAdmin = userRole == "admin";
-                                return isAdmin
-                                    ? Container(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        'Chemba ya Umbea',
-                                        style: TextStyle(
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                      Switch(
-                                        value: bangUpdate == 1,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            bangUpdate = value ? 1 : 0;
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                    : Container(); // Return an empty container if the user is not an admin
-                              }
-                              // Handle other connection states (loading, etc.) if needed
-                              return Container(
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Chemba ya Umbea',
-                                      style: TextStyle(
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                    Switch(
-                                      value: bangUpdate == 1,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          bangUpdate = value ? 1 : 0;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ); // Return a loading indicator while fetching shared preferences.
-                            },
-                          )
+                          myRole == 1 ?
+                          Container(
+                          child:
+                          Row(
+                          children: [
+                          Text(
+                          'Chemba ya Umbea',
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                          ),
+                          Switch(
+                          value: bangUpdate == 1,
+                          onChanged: (value) {
+                          setState(() {
+                            bangUpdate = value ? 1 : 0;
+                          });
+                          },
+                          ),
+                          ],
+                          ),
+                          ) : Container()
                         ],
                       ),
                       SizedBox(height: 15),
@@ -343,7 +318,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     File compressedImage = await compressFile(File(filePath));
                                     print("this is compressed");
                                     print(compressedImage);
-
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
                                       'body': caption ?? " ",
@@ -365,7 +339,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                       'post_id': widget.postId.toString(),
                                       'pinned': pinPost == 1 ? '1' : '0',
                                       'type': widget.type!,
-                                    };
+                                  };
                                   await service.addChallenge(body, filePath, widget.userChallenged!);
                                   }
                                   else if (widget.editedVideo != null && widget.editedVideo2 == null && widget.type == 'video') {
@@ -374,14 +348,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                                       quality: VideoQuality.Res640x480Quality,
                                       deleteOrigin: true,
                                     );
-
-                                    print('Compressed Video Info:');
-                                    print('File path: ${mediaInfo?.path}');
-                                    print('File size: ${mediaInfo?.filesize}');
-                                    print('Duration: ${mediaInfo?.duration} seconds');
-
-
-                                    print('this is video media info');
 
                                     Map<String, String> body = {
                                       'user_id': prefs.getInt('user_id').toString(),
@@ -417,6 +383,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     };
                                     await service.addChallengImage(body, filePath1, filePath2);
                                 }
+                                prefs.setBool('i_just_posted', true);
                                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Nav()));
                                 } finally {
                                 // After your button logic is done, set loading back to false

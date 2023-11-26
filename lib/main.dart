@@ -60,6 +60,16 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  void startTimer() {
+    Timer.periodic(Duration(minutes: 3), (timer) {
+      // Clear the boolean value after every three minutes
+      setBooleanValue(false);
+    });
+  }
+  Future<void> setBooleanValue(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('i_just_posted', false);
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

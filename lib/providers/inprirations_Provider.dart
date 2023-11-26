@@ -4,10 +4,6 @@ import 'package:http/http.dart' as http;
 
 import '../constants/urls.dart';
 
-// const url = "http://192.168.194.226/BangAppBackend/api/get/bangInspirations";
-// final url = "http://192.168.137.226/BangAppBackend/api/get/bangInspirations";
-
-
 
 class BangInspirationsProvider with ChangeNotifier {
   List<BangInspiration> _inspirations = [];
@@ -20,17 +16,13 @@ class BangInspirationsProvider with ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-
       final response = await http.get(Uri.parse('$baseUrl/get/bangInspirations'));
       print(response.body);
-
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         _inspirations = data.map((json) => BangInspiration.fromJson(json)).toList();
         print(inspirations);
         notifyListeners();
-
-
       } else {
         throw Exception('Failed to fetch inspirations');
       }

@@ -81,7 +81,6 @@ class _Home2ContentState extends State<Home2Content> {
         child: Text("No posts available."),
       );
     }
-
     return ListView.builder(
     controller: _scrollController, // Attach the ScrollController
       itemCount: postsProvider.posts!.length + 1,
@@ -89,7 +88,6 @@ class _Home2ContentState extends State<Home2Content> {
         if (index < postsProvider.posts!.length) {
           final Post post = postsProvider.posts![index];
           Service().updateIsSeen(post.postId);
-
           if (index == 0) {
             return Column(
               children: [

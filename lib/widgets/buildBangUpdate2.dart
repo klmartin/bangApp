@@ -118,16 +118,24 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async {
                       child: ReadMoreText(
                         bangUpdate.caption,
                         trimLines: 1,
-                        style: Theme.of(context).textTheme.bodyLarge!,
                         colorClickableText: Colors.white,
                         trimMode: TrimMode.line,
                         trimCollapsedText: '...Show more',
                         trimExpandedText: '...Show less',
                         textColor: Colors.white,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
                         moreStyle: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.white54,
+                        ),
+                        lessStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white54,
                         ),
                       ),
                     ),
