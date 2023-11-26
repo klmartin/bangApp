@@ -15,22 +15,22 @@ import 'package:provider/provider.dart';
 
 
 class POstView extends StatefulWidget {
-  String  name;
-  String  caption;
-  String  imgurl;
-  String  challengeImgUrl;
-  int  imgWidth;
-  int  imgHeight;
-  int  postId;
-  int  commentCount;
-  int  userId;
-  bool  isLiked;
-  int  likeCount;
-  String  type;
-  int followerCount;
-  String created;
-  String user_image;
-  int pinnedImage;
+  String?  name;
+  String?  caption;
+  String?  imgurl;
+  String?  challengeImgUrl;
+  int?  imgWidth;
+  int?  imgHeight;
+  int?  postId;
+  int?  commentCount;
+  int?  userId;
+  bool?  isLiked;
+  int?  likeCount;
+  String?  type;
+  int? followerCount;
+  String? created;
+  String? user_image;
+  int? pinnedImage;
 
   POstView(
       this.name,
@@ -64,7 +64,7 @@ class _POstViewState extends State<POstView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: PostCard(widget.name,widget.caption,widget.imgurl,widget.challengeImgUrl,widget.imgWidth,widget.imgHeight,widget.postId,widget.commentCount,widget.userId,widget.isLiked,widget.likeCount,widget.type,widget.followerCount,widget.created,widget.user_image,widget.pinnedImage),
+            child: PostCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!),
           ),
         ),
       ),

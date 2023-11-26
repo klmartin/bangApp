@@ -403,7 +403,7 @@ class _ProfileState extends State<Profile> {
                   ),
                 ],
               ),
-              _persposts ? ProfilePostsStream() : Expanded(child: Update()),
+              _persposts ? Expanded(child: ProfilePostsStream()) : Expanded(child: Update()),
             ],
           ),
         )
@@ -428,25 +428,6 @@ class Hobby {
   }
 }
 
-class Highlights extends StatefulWidget {
-  final String name;
-  final String url;
-
-  Highlights({required this.name, required this.url});
-
-  @override
-  _HighlightsState createState() => _HighlightsState();
-}
-
-class _HighlightsState extends State<Highlights> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
-      child: Column(children: <Widget>[]),
-    );
-  }
-}
 
 Future<List<Hobby>> fetchHobbies() async {
   print('fetching hobbies');
@@ -638,122 +619,44 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
             return Center(child: CircularProgressIndicator());
           }
           else{
-            return GridView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                ),
-                children: [
-                  for (var i = 0; i < provider.updates.length; i++)
-                    if(provider.updates[i].type == 'image')
-                      ...[
-                        Container(
-                          height: 250,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: InkWell(
-                              onTap: () {
-                               print('pressed');
-                              },
-                              child: CachedNetworkImage(
-                                imageUrl: provider.updates[i].filename!,
-                                fit: BoxFit.cover,
+            return SingleChildScrollView(
+              child: GridView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                  ),
+                  children: [
+                    for (var i = 0; i < provider.updates.length; i++)
+                      if(provider.updates[i].type == 'image')
+                        ...[
+                          Container(
+                            height: 250,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: InkWell(
+                                onTap: () {
+                                 print('pressed');
+                                },
+                                child: CachedNetworkImage(
+                                  imageUrl: provider.updates[i].filename!,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                        ), ]
-                ]
+                          ), ]
+                  ]
+              ),
             );
           }
         });
   }
 }
 
-class Highlight extends StatefulWidget {
-  final String name;
-  final String url;
 
-  Highlight({required this.name, required this.url});
-
-  @override
-  _HighlightState createState() => _HighlightState();
-}
-
-class _HighlightState extends State<Highlight> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        child: Column(children: <Widget>[
-          SizedBox(
-            height: 10.0,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => StoryPageView(
-                            key: null,
-                          )));
-            },
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                gradient: LinearGradient(
-                  colors: [Colors.purple, Colors.blue],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  height: 36,
-                  width: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        image: DecorationImage(
-                            image: NetworkImage(widget.url), fit: BoxFit.cover),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            // padding: const EdgeInsets.fromLTRB(10.0, 5.0, 8.0, 5.0),
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              widget.name,
-              style: TextStyle(
-                fontFamily: 'Metropolis',
-                fontSize: 11.0,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          )
-        ]),
-      ),
-    );
-  }
-}
 
 class ThumbnailModel with ChangeNotifier {
   String? thumbnailData;
@@ -800,52 +703,54 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
               return Center(child: CircularProgressIndicator());
             }
             else{
-              return GridView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                  ),
-                  children: [
-                    for (var i = 0; i < provider.posts.length; i++)
-                      if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=='' && provider.posts[i].pinned == 0)
-                        ...[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context, MaterialPageRoute(builder: (context) => POstView(
-                                    provider.posts[i].name!,
-                                    provider.posts[i].caption!,
-                                    provider.posts[i].imageUrl!,
-                                    provider.posts[i].challengeImgUrl!,
-                                    provider.posts[i].imgWidth!,
-                                    provider.posts[i].imgHeight!,
-                                    provider.posts[i].postId!,
-                                    provider.posts[i].commentCount!,
-                                    provider.posts[i].userId!,
-                                    provider.posts[i].isLiked!,
-                                    provider.posts[i].likeCount!,
-                                    provider.posts[i].type!,
-                                    provider.posts[i].followerCount!,
-                                    provider.posts[i].createdAt!,
-                                    provider.posts[i].userImage!,
-                                    provider.posts[i].pinned!
-                                )));
-                              },
+              return SingleChildScrollView(
+                child: GridView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    children: [
+                      for (var i = 0; i < provider.posts.length; i++)
+                        if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=='' && provider.posts[i].pinned == 0)
+                          ...[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context, MaterialPageRoute(builder: (context) => POstView(
+                                      provider.posts[i].name!,
+                                      provider.posts[i].caption!,
+                                      provider.posts[i].imageUrl!,
+                                      provider.posts[i].challengeImgUrl!,
+                                      provider.posts[i].imgWidth!,
+                                      provider.posts[i].imgHeight!,
+                                      provider.posts[i].postId!,
+                                      provider.posts[i].commentCount!,
+                                      provider.posts[i].userId!,
+                                      provider.posts[i].isLiked!,
+                                      provider.posts[i].likeCount!,
+                                      provider.posts[i].type!,
+                                      provider.posts[i].followerCount!,
+                                      provider.posts[i].createdAt!,
+                                      provider.posts[i].userImage!,
+                                      provider.posts[i].pinned!
+                                  )));
+                                },
 
-                              child:
-                              CachedNetworkImage(
-                                imageUrl: provider.posts[i].imageUrl!,
-                                fit: BoxFit.cover,
+                                child:
+                                CachedNetworkImage(
+                                  imageUrl: provider.posts[i].imageUrl!,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                          ), ]
-                  ]
+                            ), ]
+                    ]
+                ),
               );
             }
 

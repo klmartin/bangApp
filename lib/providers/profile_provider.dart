@@ -28,11 +28,9 @@ class ProfileProvider extends ChangeNotifier {
     var data = json.decode(response.body);
     final List<dynamic> post = data['data']['data'];
     _posts = post.map((json) => ImagePost.fromJson(json)).toList();
-    print(posts);
+    print(posts[0].likeCount);
     print('this is posts getter');
     notifyListeners();
-
-
 
   }
 

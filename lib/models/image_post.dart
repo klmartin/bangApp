@@ -49,7 +49,7 @@ class ImagePost {
         isLiked:json['isLiked'],
         likeCount:json['like_count_A'],
         type:json['type'],
-        followerCount:json['followerCount'],
+        followerCount:json['user']['followerCount'],
         createdAt:json['created_at'],
         userImage:json['user_image_url'],
         pinned: json['pinned']
