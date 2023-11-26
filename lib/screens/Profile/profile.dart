@@ -652,26 +652,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                       ]
                   ]
               ),
-              children: [
-                for (var i = 0; i < provider.updates.length; i++)
-                  if (provider.updates[i].type == 'image') ...[
-                    Container(
-                      height: 250,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: InkWell(
-                          onTap: () {
-                            print('pressed');
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl: provider.updates[i].filename!,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ]
-              ]),
+
         );
       }
     });
