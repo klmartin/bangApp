@@ -98,7 +98,8 @@ GestureDetector _notificationList(NotificationItem notification) {
             postDetails[0]['user']['followerCount'],
             postDetails[0]['created_at'],
             postDetails[0]['user_image_url'],
-            postDetails[0]['pinned']
+            postDetails[0]['pinned'],
+            null
           ),
         ),
       );

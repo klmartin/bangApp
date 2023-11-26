@@ -2,6 +2,7 @@ import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
+import '../../providers/Profile_Provider.dart';
 import '../../services/animation.dart';
 import '../../services/extension.dart';
 import 'package:bangapp/services/service.dart';
@@ -31,6 +32,7 @@ class POstView extends StatefulWidget {
   String? created;
   String? user_image;
   int? pinnedImage;
+  ProfileProvider? myProvider;
 
   POstView(
       this.name,
@@ -48,7 +50,8 @@ class POstView extends StatefulWidget {
       this.followerCount,
       this.created,
       this.user_image,
-      this.pinnedImage
+      this.pinnedImage,
+      this.myProvider,
       );
   static const id = 'postview';
   @override
@@ -64,7 +67,7 @@ class _POstViewState extends State<POstView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: PostCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!),
+            child: PostCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!,widget.myProvider!),
           ),
         ),
       ),
@@ -89,9 +92,9 @@ class PostCard extends StatefulWidget {
   String createdAt;
   String userImage;
   int pinned;
-
+  ProfileProvider myProvider;
   ScrollController _scrollController = ScrollController();
-  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned);
+  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned,this.myProvider);
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -215,10 +218,19 @@ class _PostCardState extends State<PostCard> {
                             children: [
                               GestureDetector(
                                 onTap: () {
+                                   final countUpdate = Provider.of<ProfileProvider>(context, listen: false);
+                                  widget.myProvider.increaseLikes(widget.postId);
                                   Service().likeAction(widget.postId, "A", widget.userId);
-                                  setState(() {
-                                    widget.isLiked = !widget.isLiked;
-                                  });
+                                   setState(() {
+
+                                     if (widget!.isLiked) {
+                                       widget?.likeCount--;
+                                       widget!.isLiked = false;
+                                     } else {
+                                       widget!.likeCount++;
+                                       widget.isLiked = true;
+                                     }
+                                   });
                                 },
                                 child: widget.isLiked
                                     ? Icon(CupertinoIcons.heart_fill,

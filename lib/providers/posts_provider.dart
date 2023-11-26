@@ -158,7 +158,6 @@ class PostsProvider with ChangeNotifier {
 
   void increaseLikes2(int postId, int postType) {
     final post = _posts.firstWhere((update) => update.postId == postId);
-
     // ignore: unnecessary_null_comparison
     if (post != null) {
       if (postType == 1) {

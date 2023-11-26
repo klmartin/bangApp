@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSettings extends StatelessWidget {
   @override
+  bool privacySwitchValue = false;
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -30,6 +31,18 @@ class AppSettings extends StatelessWidget {
           ListTile(
             leading: FaIcon(FontAwesomeIcons.lock),
             title: Text("Privacy"),
+          ),
+          ListTile(
+            leading: FaIcon(FontAwesomeIcons.message),
+            title: Text("Pin Messages"),
+            trailing: Switch(
+              value: privacySwitchValue,
+              onChanged: (value) {
+                // setState(() {
+                //   privacySwitchValue = value;
+                // });
+              },
+            ),
           ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.shieldAlt),
