@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:photo_view/photo_view.dart';
 
 import '../constants/urls.dart';
 
@@ -31,6 +32,8 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
         ),
     );
   }
+
+
   else if (type == 'image' || type== 'video' && isPinned==1) {
     return GestureDetector(
       onTap: () {
@@ -57,6 +60,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
   }
 }
 
+
 void viewImage(BuildContext context, String imageUrl) {
   Navigator.of(context).push(
     MaterialPageRoute(
@@ -64,9 +68,18 @@ void viewImage(BuildContext context, String imageUrl) {
         body: SizedBox.expand(
           child: Hero(
             tag: imageUrl,
-            child: CachedNetworkImage(
-              imageUrl: imageUrl,
-              fit: BoxFit.contain,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ZoomableImage(imageUrl: imageUrl),
+                  ),
+                );
+              },
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),
@@ -74,6 +87,30 @@ void viewImage(BuildContext context, String imageUrl) {
     ),
   );
 }
+
+class ZoomableImage extends StatelessWidget {
+  final String imageUrl;
+
+  ZoomableImage({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: PhotoView(
+          imageProvider: NetworkImage(imageUrl),
+          minScale: PhotoViewComputedScale.contained,
+          maxScale: PhotoViewComputedScale.covered * 2,
+          enableRotation: true,
+          backgroundDecoration: BoxDecoration(
+            color: Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 buildFab(value,BuildContext context) {
   return showModalBottomSheet(

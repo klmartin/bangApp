@@ -32,7 +32,6 @@ class ProfileProvider extends ChangeNotifier {
     _pageNumber++;
     print('this is posts getter');
     notifyListeners();
-
   }
 
 

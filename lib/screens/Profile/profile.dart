@@ -127,20 +127,23 @@ class _ProfileState extends State<Profile> {
                 onTap: () {
                   buildFab(1, context);
                 },
-                child: Column(
-                  children: [
-                    Icon(
-                      Ionicons.person_add_outline,
-                      color: Theme.of(context).colorScheme.secondary,
-                      size: 30,
-                    ),
-                    Text(
-                      'Buy Followers',
-                      style: TextStyle(
-                        fontSize: 14.5,
+                child: Container(
+                  margin: EdgeInsets.only(right: 10),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Ionicons.person_add_outline,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 30,
                       ),
-                    )
-                  ],
+                      Text(
+                        'Buy Followers',
+                        style: TextStyle(
+                          fontSize: 14.5,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -360,7 +363,9 @@ class _ProfileState extends State<Profile> {
                   ),
                 ],
               ),
-              _persposts ? Expanded(child: ProfilePostsStream()) : Expanded(child: Update()),
+              _persposts
+                  ? Expanded(child: ProfilePostsStream())
+                  : Expanded(child: Update()),
             ],
           ),
         )
@@ -553,9 +558,11 @@ class Update extends StatelessWidget {
     );
   }
 }
+
 class _UpdatePostsStreamContent extends StatefulWidget {
   @override
-  _UpdatePostsStreamContentState createState() => _UpdatePostsStreamContentState();
+  _UpdatePostsStreamContentState createState() =>
+      _UpdatePostsStreamContentState();
 }
 
 class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
@@ -564,8 +571,8 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
   @override
   void initState() {
     super.initState();
-    final updateProvider = Provider.of<BangUpdateProfileProvider>(
-        context, listen: false);
+    final updateProvider =
+        Provider.of<BangUpdateProfileProvider>(context, listen: false);
     updateProvider.getMyUpdate();
     _scrollController.addListener(_scrollListener);
 
@@ -584,6 +591,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
 
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<BangUpdateProfileProvider>(
@@ -644,9 +652,29 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                       ]
                   ]
               ),
-            );
-          }
-        });
+              children: [
+                for (var i = 0; i < provider.updates.length; i++)
+                  if (provider.updates[i].type == 'image') ...[
+                    Container(
+                      height: 250,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: InkWell(
+                          onTap: () {
+                            print('pressed');
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: provider.updates[i].filename!,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]
+              ]),
+        );
+      }
+    });
   }
 }
 
@@ -659,12 +687,12 @@ class ProfilePostsStream extends StatelessWidget {
       child: _ProfilePostsStreamContent(),
     );
   }
-
 }
 
 class _ProfilePostsStreamContent extends StatefulWidget {
   @override
-  _ProfilePostsStreamContentState createState() => _ProfilePostsStreamContentState();
+  _ProfilePostsStreamContentState createState() =>
+      _ProfilePostsStreamContentState();
 }
 
 class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> {
@@ -908,4 +936,3 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
 
   }
 }
-

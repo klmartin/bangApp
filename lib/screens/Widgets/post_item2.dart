@@ -77,13 +77,39 @@ class PostItem2 extends StatelessWidget {
       this.userImage,
       {required this.myProvider});
 
-  void viewImage(BuildContext context, String imageUrl) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: SizedBox.expand(
-            child: Hero(
-              tag: imageUrl,
+//   void viewImage(BuildContext context, String imageUrl) {
+//     Navigator.of(context).push(
+//       MaterialPageRoute(
+//         builder: (context) => Scaffold(
+//           body: SizedBox.expand(
+//             child: Hero(
+//               tag: imageUrl,
+//               child: CachedNetworkImage(
+//                 imageUrl: imageUrl,
+//                 fit: BoxFit.contain,
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+void viewImage(BuildContext context, String imageUrl) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) => Scaffold(
+        body: SizedBox.expand(
+          child: Hero(
+            tag: imageUrl,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ZoomableImage(imageUrl: imageUrl),
+                  ),
+                );
+              },
               child: CachedNetworkImage(
                 imageUrl: imageUrl,
                 fit: BoxFit.contain,
@@ -92,8 +118,9 @@ class PostItem2 extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Future<Uint8List> fileToUint8List(File file) async {
     if (file != null) {

@@ -323,16 +323,18 @@ class _VideoEditorState extends State<VideoEditor> {
         child: Row(
           children: [
             Expanded(
-              child: IconButton(
-                onPressed: () => Navigator.pushReplacement(
+              child:
+               InkWell(
+                    child: Icon(Icons.arrow_back),
+                     onTap: () => {
+                      Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => Create(),
                   ),
-                ),
-                icon: const Icon(Icons.exit_to_app),
-                tooltip: 'Leave editor',
-              ),
+                  )
+                  }
+                )
             ),
             const VerticalDivider(endIndent: 22, indent: 22),
             Expanded(
@@ -365,20 +367,11 @@ class _VideoEditorState extends State<VideoEditor> {
             ),
             const VerticalDivider(endIndent: 22, indent: 22),
             Expanded(
-              child: PopupMenuButton(
-                tooltip: 'Open export menu',
-                icon: const Icon(Icons.save),
-                itemBuilder: (context) => [
-                  // PopupMenuItem(
-                  //   onTap: _exportCover,
-                  //   child: const Text('Export cover'),
-                  // ),
-                  PopupMenuItem(
-                    onTap: _exportVideo,
-                    child: const Text('Post video'),
-                  ),
-                ],
-              ),
+                child: InkWell(
+                    child: Icon(Icons.arrow_forward,),
+                     onTap:  _exportVideo
+                )
+
             ),
           ],
         ),
