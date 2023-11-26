@@ -9,8 +9,10 @@ class ImagePost {
   int? postId;
   int? commentCount;
   int? userId;
-  bool? isLiked;
-  int? likeCount;
+  bool isLikedA;
+  bool isLikedB;
+  int likeCountA;
+  int likeCountB;
   String? type;
   int? followerCount;
   String? createdAt;
@@ -27,8 +29,10 @@ class ImagePost {
       this.postId,
       this.commentCount,
       this.userId,
-      this.isLiked,
-      this.likeCount,
+      required this.isLikedA,
+      required this.isLikedB,
+      required this.likeCountA,
+      required this.likeCountB,
       this.type,
       this.followerCount,
       this.createdAt,
@@ -46,8 +50,10 @@ class ImagePost {
         postId:json['id'],
         commentCount:json['commentCount'],
         userId:json['user']['id'],
-        isLiked:json['isLiked'],
-        likeCount:json['like_count_A'],
+        isLikedA:json['isLikedA'],
+        isLikedB: json['isLikedB'],
+        likeCountA:json['like_count_A'],
+        likeCountB:json['like_count_B'],
         type:json['type'],
         followerCount:json['user']['followerCount'],
         createdAt:json['created_at'],

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart';
+import 'package:bangapp/providers/Profile_Provider.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
@@ -55,6 +56,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => BangUpdateProvider()),
     ChangeNotifierProvider(create: (context) => ChatProvider()),
     ChangeNotifierProvider(create: (context) => BoxDataProvider()),
+    ChangeNotifierProvider(create: (context) => ProfileProvider()),
         ChangeNotifierProvider(create: (context) => UserLikesProvider()),
   ], child: MyApp()));
 }
@@ -285,7 +287,8 @@ class _AuthenticateState extends State<Authenticate> {
                 postData[0]['user']['followerCount'],
                 postData[0]['created_at']  ?? '',
                 postData[0]['user_image_url'],
-                postData[0]['pinned']
+                postData[0]['pinned'],
+                Provider.of<ProfileProvider>(context, listen: false)
             ),
           ),
         );

@@ -17,7 +17,7 @@ class ProfileProvider extends ChangeNotifier {
   List<ImagePost> _posts = [];
   List<ImagePost> get posts => _posts;
 
-  Future<void>  getMyPosts(int pageNumber) async {
+  Future<void>  getMyPosts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print(prefs.getInt('user_id').toString());
     var userId = prefs.getInt('user_id').toString();
@@ -25,13 +25,47 @@ class ProfileProvider extends ChangeNotifier {
         "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"));
     print(response.body);
     print('this is data from api');
+
     var data = json.decode(response.body);
     final List<dynamic> post = data['data']['data'];
-    _posts = post.map((json) => ImagePost.fromJson(json)).toList();
-    print(posts[0].likeCount);
+    _posts.addAll(post.map((json) => ImagePost.fromJson(json)).toList());
+    _pageNumber++;
     print('this is posts getter');
     notifyListeners();
 
+  }
+
+
+  Future<void>  getUserPost(userId) async {
+
+    var response = await http.get(Uri.parse(
+        "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"));
+    print(response.body);
+    print('this is data from api');
+
+    var data = json.decode(response.body);
+    final List<dynamic> post = data['data']['data'];
+    _posts.addAll(post.map((json) => ImagePost.fromJson(json)).toList());
+    _pageNumber++;
+    print('this is posts getter');
+    notifyListeners();
+
+  }
+
+
+  void increaseLikes(int postId) {
+    final post = _posts?.firstWhere((update) => update.postId == postId);
+
+    if (post!.isLikedA) {
+      print('ndani');
+      post?.likeCountA--;
+      post!.isLikedA = false;
+    } else {
+      print('nje');
+      post!.likeCountA++;
+      post.isLikedA = true;
+    }
+    notifyListeners();
   }
 
 

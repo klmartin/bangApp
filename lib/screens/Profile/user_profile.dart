@@ -12,8 +12,12 @@ import 'package:http/http.dart' as http;
 import 'package:bangapp/services/fetch_post.dart';
 import 'package:bangapp/models/image_post.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
+import 'package:provider/provider.dart';
 
 import '../../message/screens/messages/message_screen.dart';
+import '../../providers/Profile_Provider.dart';
+import '../../providers/bangUpdate_profile_provider.dart';
+import '../../widgets/video_rect.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
 
@@ -53,6 +57,8 @@ class _UserProfileState extends State<UserProfile> {
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
     super.initState();
+    final provider = Provider.of<ProfileProvider>(context, listen: false);
+
     _getMyInfo();
   }
   void _scrollListener() {
@@ -102,13 +108,15 @@ class _UserProfileState extends State<UserProfile> {
             postId:post['id'],
             commentCount:post['commentCount'],
             userId:post['user']['id'],
-            isLiked:post['isLiked'],
-            likeCount:post['like_count_A'],
+            isLikedA:post['isLikedA'],
+            likeCountA:post['like_count_A'],
             type:post['type'],
             followerCount:post['followerCount'],
             createdAt:post['created_at'],
             userImage:post['user_image_url'],
-            pinned:post['pinned']
+            pinned:post['pinned'],
+            isLikedB: post['isLikedA'],
+            likeCountB: post['like_count_B']
         );
       }));
     });
@@ -300,55 +308,265 @@ class _UserProfileState extends State<UserProfile> {
               )),
             ],
           ),
-          FutureBuilder(
-          future: getMyPosts(_pageNumber),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData){
-              return Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.lightBlue,
-                  ),
-                );
-            }
-            if (snapshot.hasData) {
-              final List<dynamic> posts = snapshot.data! as List<dynamic>;
-              for (var post in posts) {
-                final imagePost = ImagePost(
-                    name: post['user']['name'] ,
-                    caption:post['body'] ?? "",
-                    imageUrl:post['image'],
-                    challengeImgUrl:post['challenge_img']??"",
-                    imgWidth:post['width'],
-                    imgHeight:post['height'],
-                    postId:post['id'],
-                    commentCount:post['commentCount'],
-                    userId:post['user']['id'],
-                    isLiked:post['isLiked'],
-                    likeCount:post['like_count_A'],
-                    type:post['type'],
-                    followerCount:post['followerCount'],
-                    createdAt:post['created_at'],
-                    userImage:post['user_image_url'],
-                    pinned:post['pinned']
-
-
-                );
-                allImagePosts.add(imagePost);
-              }
-
-            }
-            return allImagePosts.isEmpty
-                ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'No photos yet',
-                  style: TextStyle(fontFamily: 'Metropolis'),
-                )
+          Container(
+            width: 500,
+            height: 500,
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Material(
+                          type: MaterialType
+                              .transparency, //Makes it usable on any background color, thanks @IanSmith
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color:
+                                      _persposts ? Colors.black : Colors.grey,
+                                      width: 0.5)),
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                            ),
+                            child: InkWell(
+                              //This keeps the splash effect within the circle
+                              borderRadius: BorderRadius.circular(
+                                  1000), //Something large to ensure a circle
+                              onTap: () {
+                                setState(() {
+                                  _persposts = true;
+                                });
+                              },
+                              child: Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(20.0),
+                                  child: FaIcon(
+                                    FontAwesomeIcons.thLarge,
+                                    color:
+                                    _persposts ? Colors.black : Colors.grey,
+                                    size: 15,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )),
+                    ),
+                    Expanded(
+                      child: Material(
+                        type: MaterialType
+                            .transparency, //Makes it usable on any background color, thanks @IanSmith
+                        child: Ink(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color:
+                                      _persposts ? Colors.grey : Colors.black,
+                                      width: 0.5)),
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                            ),
+                            child: InkWell(
+                              //This keeps the splash effect within the circle
+                              borderRadius: BorderRadius.circular(
+                                  1000.0), //Something large to ensure a circle
+                              onTap: () {
+                                setState(() {
+                                  _persposts = false;
+                                });
+                              },
+                              child: Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(20.0),
+                                  child: FaIcon(
+                                    FontAwesomeIcons.userTag,
+                                    size: 15,
+                                    color:
+                                    _persposts ? Colors.grey : Colors.black,
+                                  ),
+                                ),
+                              ),
+                            )),
+                      ),
+                    ),
+                  ],
+                ),
+                _persposts ? Expanded(child: ProfilePostsStream(userid: widget.userid.toString())) : Expanded(child: Update( userid: widget.userid.toString())),
               ],
-            )
-                : Padding(
-              padding: const EdgeInsets.only(top: 15.0),
+            ),
+          )
+
+        ],
+      ),
+    ));
+  }
+}
+
+
+class Update extends StatelessWidget {
+  late String? userid;
+  Update({required this.userid});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => BangUpdateProfileProvider(),
+      child: _UpdatePostsStreamContent( userid:userid,),
+    );
+  }
+}
+class _UpdatePostsStreamContent extends StatefulWidget {
+  late String? userid;
+  _UpdatePostsStreamContent({required this.userid});
+
+  @override
+  _UpdatePostsStreamContentState createState() => _UpdatePostsStreamContentState();
+}
+
+class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
+  ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    final updateProvider = Provider.of<BangUpdateProfileProvider>(
+        context, listen: false);
+    updateProvider.getUserUpdate(widget.userid);
+    _scrollController.addListener(_scrollListener);
+
+  }
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      // User has reached the end, load more data here
+      final updateProvider = Provider.of<BangUpdateProfileProvider>(context, listen: false);
+      updateProvider.getMyUpdate(); // Trigger loading of the next page
+
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<BangUpdateProfileProvider>(
+        builder: (context, provider, child) {
+          if (provider.updates.isEmpty) {
+            return Center(child: CircularProgressIndicator());
+          }
+          else{
+            return SingleChildScrollView(
+              controller: _scrollController,
+              child: GridView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                  ),
+                  children: [
+                    for (var i = 0; i < provider.updates.length; i++)
+                      if(provider.updates[i].type == 'image')
+                        ...[
+                          Container(
+                            height: 250,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: InkWell(
+                                onTap: () {
+                                  print('pressed');
+                                },
+                                child: CachedNetworkImage(
+                                  imageUrl: provider.updates[i].filename!,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ), ]
+                      else if(provider.updates[i].type == 'video') ...[
+                        Container(
+                          height: 250,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: InkWell(
+                                onTap: () {
+                                  print('pressed');
+                                },
+                                child:VideoRect(message:provider.updates[i].filename)
+
+                            ),
+                          ),
+                        )
+                      ]
+                  ]
+              ),
+            );
+          }
+        });
+  }
+}
+
+
+class ProfilePostsStream extends StatelessWidget {
+  late String? userid;
+  ProfilePostsStream({required this.userid});
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => ProfileProvider(),
+      child: _ProfilePostsStreamContent(userid: userid,),
+    );
+  }
+
+}
+
+class _ProfilePostsStreamContent extends StatefulWidget {
+  late String? userid;
+  _ProfilePostsStreamContent({required this.userid});
+  @override
+  _ProfilePostsStreamContentState createState() => _ProfilePostsStreamContentState();
+}
+
+class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> {
+
+  ScrollController _scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    final providerPost = Provider.of<ProfileProvider>(context, listen: false);
+    providerPost.getUserPost(widget.userid);
+    _scrollController.addListener(_scrollListener);
+  }
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      // User has reached the end, load more data here
+      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      profileProvider.getUserPost(widget.userid);
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    // Use the ProfileProvider here to build your UI based on the fetched posts
+
+    return Consumer<ProfileProvider>(
+        builder: (context, provider, child) {
+          if(provider.posts.isEmpty ){
+            return Center(child: CircularProgressIndicator());
+          }
+          else{
+            return SingleChildScrollView(
+              controller: _scrollController,
               child: GridView(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -359,8 +577,8 @@ class _UserProfileState extends State<UserProfile> {
                     crossAxisSpacing: 10,
                   ),
                   children: [
-                    for (var i = 0; i < allImagePosts.length; i++)
-                      if(allImagePosts[i].type == 'image' && allImagePosts[i].challengeImgUrl=='' && allImagePosts[i].pinned == 0)
+                    for (var i = 0; i < provider.posts.length; i++)
+                      if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=='' && provider.posts[i].pinned == 0)
                         ...[
                           ClipRRect(
                             borderRadius: BorderRadius.circular(5),
@@ -368,55 +586,57 @@ class _UserProfileState extends State<UserProfile> {
                               onTap: () {
                                 Navigator.push(
                                     context, MaterialPageRoute(builder: (context) => POstView(
-                                    allImagePosts[i].name!,
-                                    allImagePosts[i].caption!,
-                                    allImagePosts[i].imageUrl!,
-                                    allImagePosts[i].challengeImgUrl!,
-                                    allImagePosts[i].imgWidth!,
-                                    allImagePosts[i].imgHeight!,
-                                    allImagePosts[i].postId!,
-                                    allImagePosts[i].commentCount!,
-                                    allImagePosts[i].userId!,
-                                    allImagePosts[i].isLiked!,
-                                    allImagePosts[i].likeCount!,
-                                    allImagePosts[i].type!,
-                                    allImagePosts[i].followerCount!,
-                                    allImagePosts[i].createdAt!,
-                                    allImagePosts[i].userImage!,
-                                    allImagePosts[i].pinned!
+                                  provider.posts[i].name!,
+                                  provider.posts[i].caption!,
+                                  provider.posts[i].imageUrl!,
+                                  provider.posts[i].challengeImgUrl!,
+                                  provider.posts[i].imgWidth!,
+                                  provider.posts[i].imgHeight!,
+                                  provider.posts[i].postId!,
+                                  provider.posts[i].commentCount!,
+                                  provider.posts[i].userId!,
+                                  provider.posts[i].isLikedA!,
+                                  provider.posts[i].likeCountA!,
+                                  provider.posts[i].type!,
+                                  provider.posts[i].followerCount!,
+                                  provider.posts[i].createdAt!,
+                                  provider.posts[i].userImage!,
+                                  provider.posts[i].pinned!,
+                                  provider,
                                 )));
                               },
 
                               child:
                               CachedNetworkImage(
-                                imageUrl: allImagePosts[i].imageUrl!,
+                                imageUrl: provider.posts[i].imageUrl!,
                                 fit: BoxFit.cover,
                               ),
                             ),
                           ), ]
-                      else if(allImagePosts[i].type == 'image' && allImagePosts[i].challengeImgUrl=="" && allImagePosts[i].pinned == 1) ...[
+                      else if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=="" && provider.posts[i].pinned == 1) ...[
                         ClipRRect(
                           borderRadius: BorderRadius.circular(5),
                           child: InkWell(
                             onTap: () {
                               Navigator.push(
                                   context, MaterialPageRoute(builder: (context) => POstView(
-                                  allImagePosts[i].name!,
-                                  allImagePosts[i].caption!,
-                                  allImagePosts[i].imageUrl!,
-                                  allImagePosts[i].challengeImgUrl!,
-                                  allImagePosts[i].imgWidth!,
-                                  allImagePosts[i].imgHeight!,
-                                  allImagePosts[i].postId!,
-                                  allImagePosts[i].commentCount!,
-                                  allImagePosts[i].userId!,
-                                  allImagePosts[i].isLiked!,
-                                  allImagePosts[i].likeCount!,
-                                  allImagePosts[i].type!,
-                                  allImagePosts[i].followerCount!,
-                                  allImagePosts[i].createdAt!,
-                                  allImagePosts[i].userImage!,
-                                  allImagePosts[i].pinned!
+                                provider.posts[i].name!,
+                                provider.posts[i].caption!,
+                                provider.posts[i].imageUrl!,
+                                provider.posts[i].challengeImgUrl!,
+                                provider.posts[i].imgWidth!,
+                                provider.posts[i].imgHeight!,
+                                provider.posts[i].postId!,
+                                provider.posts[i].commentCount!,
+                                provider.posts[i].userId!,
+                                provider.posts[i].isLikedA!,
+                                provider.posts[i].likeCountA!,
+                                provider.posts[i].type!,
+                                provider.posts[i].followerCount!,
+                                provider.posts[i].createdAt!,
+                                provider.posts[i].userImage!,
+                                provider.posts[i].pinned!,
+                                provider,
                               )));
                             },
                             child:
@@ -429,30 +649,29 @@ class _UserProfileState extends State<UserProfile> {
                           ),
                         ),
                       ]
-                           else if(allImagePosts[i].type =='image' &&allImagePosts[i].challengeImgUrl != ''&& allImagePosts[i].pinned == 0)...[
-
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: InkWell(
+                      else if(provider.posts[i].type =='image' &&provider.posts[i].challengeImgUrl != ''&& provider.posts[i].pinned == 0)...[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: InkWell(
                                 onTap: () {
                                   Navigator.push(
                                       context, MaterialPageRoute(builder: (context) => POstChallengeView(
-                                      allImagePosts[i].name!,
-                                      allImagePosts[i].caption!,
-                                      allImagePosts[i].imageUrl!,
-                                      allImagePosts[i].challengeImgUrl!,
-                                      allImagePosts[i].imgWidth!,
-                                      allImagePosts[i].imgHeight!,
-                                      allImagePosts[i].postId!,
-                                      allImagePosts[i].commentCount!,
-                                      allImagePosts[i].userId!,
-                                      allImagePosts[i].isLiked!,
-                                      allImagePosts[i].likeCount!,
-                                      allImagePosts[i].type!,
-                                      allImagePosts[i].followerCount!,
-                                      allImagePosts[i].createdAt!,
-                                      allImagePosts[i].userImage!,
-                                      allImagePosts[i].pinned!
+                                      provider.posts[i].name!,
+                                      provider.posts[i].caption!,
+                                      provider.posts[i].imageUrl!,
+                                      provider.posts[i].challengeImgUrl!,
+                                      provider.posts[i].imgWidth!,
+                                      provider.posts[i].imgHeight!,
+                                      provider.posts[i].postId!,
+                                      provider.posts[i].commentCount!,
+                                      provider.posts[i].userId!,
+                                      provider.posts[i].isLikedA!,
+                                      provider.posts[i].likeCountA!,
+                                      provider.posts[i].type!,
+                                      provider.posts[i].followerCount!,
+                                      provider.posts[i].createdAt!,
+                                      provider.posts[i].userImage!,
+                                      provider.posts[i].pinned!
                                   )));
                                 },
 
@@ -460,96 +679,83 @@ class _UserProfileState extends State<UserProfile> {
                                   children: [
                                     Expanded(
                                       child: CachedNetworkImage(
-                                        imageUrl: allImagePosts[i].imageUrl!,
+                                        imageUrl: provider.posts[i].imageUrl!,
                                       ),
                                     ),
                                     SizedBox(width: 10),
                                     Expanded(
                                       child: CachedNetworkImage(
-                                        imageUrl: allImagePosts[i].challengeImgUrl!,
+                                        imageUrl: provider.posts[i].challengeImgUrl!,
                                       ),
                                     ),
                                   ],
                                 )
-                              ),
                             ),
-                          ]
-                          else if(allImagePosts[i].type == 'video'&& allImagePosts[i].challengeImgUrl=="")...[
+                          ),
+                        ]
+                        else if(provider.posts[i].type == 'video'&& provider.posts[i].challengeImgUrl=="")...[
                             ClipRRect(
                               borderRadius: BorderRadius.circular(5),
                               child: InkWell(
                                 onTap: () {
                                   Navigator.push(
                                       context, MaterialPageRoute(builder: (context) => POstView(
-                                      allImagePosts[i].name!,
-                                      allImagePosts[i].caption!,
-                                      allImagePosts[i].imageUrl!,
-                                      allImagePosts[i].challengeImgUrl!,
-                                      allImagePosts[i].imgWidth!,
-                                      allImagePosts[i].imgHeight!,
-                                      allImagePosts[i].postId!,
-                                      allImagePosts[i].commentCount!,
-                                      allImagePosts[i].userId!,
-                                      allImagePosts[i].isLiked!,
-                                      allImagePosts[i].likeCount!,
-                                      allImagePosts[i].type!,
-                                      allImagePosts[i].followerCount!,
-                                      allImagePosts[i].createdAt!,
-                                      allImagePosts[i].userImage!,
-                                      allImagePosts[i].pinned!
+                                      provider.posts[i].name!,
+                                      provider.posts[i].caption!,
+                                      provider.posts[i].imageUrl!,
+                                      provider.posts[i].challengeImgUrl!,
+                                      provider.posts[i].imgWidth!,
+                                      provider.posts[i].imgHeight!,
+                                      provider.posts[i].postId!,
+                                      provider.posts[i].commentCount!,
+                                      provider.posts[i].userId!,
+                                      provider.posts[i].isLikedA!,
+                                      provider.posts[i].likeCountA!,
+                                      provider.posts[i].type!,
+                                      provider.posts[i].followerCount!,
+                                      provider.posts[i].createdAt!,
+                                      provider.posts[i].userImage!,
+                                      provider.posts[i].pinned!,
+                                      provider
                                   )));
                                 },
-                                child: Image.asset(
-                                  'assets/images/video_thumb.png',
-                                  fit: BoxFit.cover,
-                                  width: 100,
-                                  height: 100,
-                                ),
+                                child: VideoRect(message:provider.posts[i].imageUrl),
                               ),
                             ),
-                        ]
-                          else if(allImagePosts[i].type == 'video' && allImagePosts[i].challengeImgUrl!="")...[
+                          ]
+                          else if(provider.posts[i].type == 'video' && provider.posts[i].challengeImgUrl!="")...[
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
                                 child: InkWell(
                                     onTap: () {
                                       Navigator.push(
                                           context, MaterialPageRoute(builder: (context) => POstVideoChallengeView(
-                                          allImagePosts[i].name!,
-                                          allImagePosts[i].caption!,
-                                          allImagePosts[i].imageUrl!,
-                                          allImagePosts[i].challengeImgUrl!,
-                                          allImagePosts[i].imgWidth!,
-                                          allImagePosts[i].imgHeight!,
-                                          allImagePosts[i].postId!,
-                                          allImagePosts[i].commentCount!,
-                                          allImagePosts[i].userId!,
-                                          allImagePosts[i].isLiked!,
-                                          allImagePosts[i].likeCount!,
-                                          allImagePosts[i].type!,
-                                          allImagePosts[i].followerCount!,
-                                          allImagePosts[i].createdAt!,
-                                          allImagePosts[i].userImage!,
-                                          allImagePosts[i].pinned!
+                                        provider.posts[i].name!,
+                                        provider.posts[i].caption!,
+                                        provider.posts[i].imageUrl!,
+                                        provider.posts[i].challengeImgUrl!,
+                                        provider.posts[i].imgWidth!,
+                                        provider.posts[i].imgHeight!,
+                                        provider.posts[i].postId!,
+                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].userId!,
+                                        provider.posts[i].isLikedA!,
+                                        provider.posts[i].likeCountA!,
+                                        provider.posts[i].type!,
+                                        provider.posts[i].followerCount!,
+                                        provider.posts[i].createdAt!,
+                                        provider.posts[i].userImage!,
+                                        provider.posts[i].pinned!,
+
                                       )));
                                     },
                                     child: Row(
                                       children: [
                                         Expanded(
-                                          child: Image.asset(
-                                            'assets/images/video_thumb.png',
-                                            fit: BoxFit.cover,
-                                            width: 100,
-                                            height: 100,
-                                          ),
+                                          child: VideoRect(message:provider.posts[i].imageUrl),
                                         ),
                                         Expanded(
-                                          child: Image.asset(
-                                            'assets/images/video_thumb.png',
-                                            fit: BoxFit.cover,
-                                            width: 100,
-                                            height: 100,
-                                          ),
+                                          child: VideoRect(message:provider.posts[i].challengeImgUrl),
                                         ),
                                       ],
                                     )
@@ -559,10 +765,13 @@ class _UserProfileState extends State<UserProfile> {
                   ]
               ),
             );
-          },
-        ),
-        ],
-      ),
-    ));
+          }
+
+        }
+    );
+
+
   }
 }
+
+

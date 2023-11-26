@@ -23,9 +23,22 @@ class BangUpdateProfileProvider extends ChangeNotifier {
     print('this is data from api');
     var data = json.decode(response.body);
     final List<dynamic> post = data;
-    _updates = post.map((json) => BangUpdate.fromJson(json)).toList();
-    print(_updates);
-    print('this is update posts getter');
+    _updates.addAll(post.map((json) => BangUpdate.fromJson(json)).toList()) ;
+    _pageNumber++;
+    notifyListeners();
+
+
+  }
+
+  Future<void>  getUserUpdate(userId) async {
+
+    var response = await http.get(Uri.parse('$baseUrl/user-bang-updates?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId'));
+    print(response.body);
+    print('this is data from api');
+    var data = json.decode(response.body);
+    final List<dynamic> post = data;
+    _updates.addAll(post.map((json) => BangUpdate.fromJson(json)).toList()) ;
+    _pageNumber++;
     notifyListeners();
 
 
