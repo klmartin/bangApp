@@ -31,7 +31,6 @@ class ProfileProvider extends ChangeNotifier {
     print(posts[0].likeCount);
     print('this is posts getter');
     notifyListeners();
-
   }
 
 

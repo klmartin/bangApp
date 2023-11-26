@@ -89,23 +89,22 @@ class _ProfileState extends State<Profile> {
       // Append the newly loaded posts to the existing list
       allImagePosts.addAll(newPosts.map((post) {
         return ImagePost(
-            name: post['user']['name'] ,
-            caption:post['body'] ?? "",
-            imageUrl:post['image'],
-            challengeImgUrl:post['challenge_img']??"",
-            imgWidth:post['width'],
-            imgHeight:post['height'],
-            postId:post['id'],
-            commentCount:post['commentCount'],
-            userId:post['user']['id'],
-            isLiked:post['isLiked'],
-            likeCount:post['like_count_A'],
-            type:post['type'],
-            followerCount:post['followerCount'],
-            createdAt:post['created_at'],
-            userImage:post['user_image_url'],
-            pinned:post['pinned']
-        );
+            name: post['user']['name'],
+            caption: post['body'] ?? "",
+            imageUrl: post['image'],
+            challengeImgUrl: post['challenge_img'] ?? "",
+            imgWidth: post['width'],
+            imgHeight: post['height'],
+            postId: post['id'],
+            commentCount: post['commentCount'],
+            userId: post['user']['id'],
+            isLiked: post['isLiked'],
+            likeCount: post['like_count_A'],
+            type: post['type'],
+            followerCount: post['followerCount'],
+            createdAt: post['created_at'],
+            userImage: post['user_image_url'],
+            pinned: post['pinned']);
       }));
     });
   }
@@ -170,20 +169,23 @@ class _ProfileState extends State<Profile> {
                 onTap: () {
                   buildFab(1, context);
                 },
-                child: Column(
-                  children: [
-                    Icon(
-                      Ionicons.person_add_outline,
-                      color: Theme.of(context).colorScheme.secondary,
-                      size: 30,
-                    ),
-                    Text(
-                      'Buy Followers',
-                      style: TextStyle(
-                        fontSize: 14.5,
+                child: Container(
+                  margin: EdgeInsets.only(right: 10),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Ionicons.person_add_outline,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 30,
                       ),
-                    )
-                  ],
+                      Text(
+                        'Buy Followers',
+                        style: TextStyle(
+                          fontSize: 14.5,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -403,7 +405,9 @@ class _ProfileState extends State<Profile> {
                   ),
                 ],
               ),
-              _persposts ? Expanded(child: ProfilePostsStream()) : Expanded(child: Update()),
+              _persposts
+                  ? Expanded(child: ProfilePostsStream())
+                  : Expanded(child: Update()),
             ],
           ),
         )
@@ -427,7 +431,6 @@ class Hobby {
     );
   }
 }
-
 
 Future<List<Hobby>> fetchHobbies() async {
   print('fetching hobbies');
@@ -597,66 +600,63 @@ class Update extends StatelessWidget {
     );
   }
 }
+
 class _UpdatePostsStreamContent extends StatefulWidget {
   @override
-  _UpdatePostsStreamContentState createState() => _UpdatePostsStreamContentState();
+  _UpdatePostsStreamContentState createState() =>
+      _UpdatePostsStreamContentState();
 }
 
 class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
-
   @override
   void initState() {
     super.initState();
-    final updateProvider = Provider.of<BangUpdateProfileProvider>(
-        context, listen: false);
+    final updateProvider =
+        Provider.of<BangUpdateProfileProvider>(context, listen: false);
     updateProvider.getMyUpdate();
   }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<BangUpdateProfileProvider>(
         builder: (context, provider, child) {
-          if (provider.updates.isEmpty) {
-            return Center(child: CircularProgressIndicator());
-          }
-          else{
-            return SingleChildScrollView(
-              child: GridView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                  ),
-                  children: [
-                    for (var i = 0; i < provider.updates.length; i++)
-                      if(provider.updates[i].type == 'image')
-                        ...[
-                          Container(
-                            height: 250,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: InkWell(
-                                onTap: () {
-                                 print('pressed');
-                                },
-                                child: CachedNetworkImage(
-                                  imageUrl: provider.updates[i].filename!,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ), ]
-                  ]
+      if (provider.updates.isEmpty) {
+        return Center(child: CircularProgressIndicator());
+      } else {
+        return SingleChildScrollView(
+          child: GridView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
               ),
-            );
-          }
-        });
+              children: [
+                for (var i = 0; i < provider.updates.length; i++)
+                  if (provider.updates[i].type == 'image') ...[
+                    Container(
+                      height: 250,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: InkWell(
+                          onTap: () {
+                            print('pressed');
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: provider.updates[i].filename!,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]
+              ]),
+        );
+      }
+    });
   }
 }
-
-
 
 class ThumbnailModel with ChangeNotifier {
   String? thumbnailData;
@@ -675,21 +675,21 @@ class ProfilePostsStream extends StatelessWidget {
       child: _ProfilePostsStreamContent(),
     );
   }
-
 }
 
 class _ProfilePostsStreamContent extends StatefulWidget {
   @override
-  _ProfilePostsStreamContentState createState() => _ProfilePostsStreamContentState();
+  _ProfilePostsStreamContentState createState() =>
+      _ProfilePostsStreamContentState();
 }
 
-class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> {
-
-
+class _ProfilePostsStreamContentState
+    extends State<_ProfilePostsStreamContent> {
   @override
   void initState() {
     super.initState();
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
     profileProvider.getMyPosts(1);
   }
 
@@ -697,32 +697,32 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
   Widget build(BuildContext context) {
     // Use the ProfileProvider here to build your UI based on the fetched posts
 
-      return Consumer<ProfileProvider>(
-          builder: (context, provider, child) {
-            if(provider.posts.isEmpty ){
-              return Center(child: CircularProgressIndicator());
-            }
-            else{
-              return SingleChildScrollView(
-                child: GridView(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                    ),
-                    children: [
-                      for (var i = 0; i < provider.posts.length; i++)
-                        if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=='' && provider.posts[i].pinned == 0)
-                          ...[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context, MaterialPageRoute(builder: (context) => POstView(
+    return Consumer<ProfileProvider>(builder: (context, provider, child) {
+      if (provider.posts.isEmpty) {
+        return Center(child: CircularProgressIndicator());
+      } else {
+        return SingleChildScrollView(
+          child: GridView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+              ),
+              children: [
+                for (var i = 0; i < provider.posts.length; i++)
+                  if (provider.posts[i].type == 'image' &&
+                      provider.posts[i].challengeImgUrl == '' &&
+                      provider.posts[i].pinned == 0) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => POstView(
                                       provider.posts[i].name!,
                                       provider.posts[i].caption!,
                                       provider.posts[i].imageUrl!,
@@ -738,26 +738,18 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                       provider.posts[i].followerCount!,
                                       provider.posts[i].createdAt!,
                                       provider.posts[i].userImage!,
-                                      provider.posts[i].pinned!
-                                  )));
-                                },
-
-                                child:
-                                CachedNetworkImage(
-                                  imageUrl: provider.posts[i].imageUrl!,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ), ]
-                    ]
-                ),
-              );
-            }
-
-         }
-      );
-
-
+                                      provider.posts[i].pinned!)));
+                        },
+                        child: CachedNetworkImage(
+                          imageUrl: provider.posts[i].imageUrl!,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ]
+              ]),
+        );
+      }
+    });
   }
 }
-

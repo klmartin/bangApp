@@ -10,6 +10,41 @@ import '../screens/Explore/bang_updates_like_button.dart';
 import '../screens/Widgets/readmore.dart';
 import '../services/animation.dart';
 import 'package:bangapp/widgets/user_profile.dart';
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
+
+
+
+class ZoomableImageScreen extends StatelessWidget {
+  final List<String> imageUrls; // If you have multiple images, provide a list of URLs
+
+  ZoomableImageScreen({required this.imageUrls});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PhotoViewGallery.builder(
+        itemCount: imageUrls.length,
+        builder: (context, index) {
+          return PhotoViewGalleryPageOptions(
+            imageProvider: CachedNetworkImageProvider(imageUrls[index]),
+            minScale: PhotoViewComputedScale.contained * 0.8,
+            maxScale: PhotoViewComputedScale.covered * 2,
+          );
+        },
+        scrollPhysics: BouncingScrollPhysics(),
+        backgroundDecoration: BoxDecoration(
+          color: Colors.black,
+        ),
+        pageController: PageController(),
+      ),
+    );
+  }
+}
+
+
 
 Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async {
   if (bangUpdate.type == 'image') {
@@ -19,21 +54,32 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async {
           color: Colors.black,
           child: Center(
             child: Container(
-              height: 400,
-              width: double.infinity,
-              child: CachedNetworkImage(
-                fit: BoxFit.cover,
-                imageUrl: bangUpdate.filename,
-                placeholder: (context, url) => Shimmer.fromColors(
-                  baseColor: const Color.fromARGB(255, 30, 34, 45),
-                  highlightColor:
-                      const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-                  child: Container(
-                    color: const Color.fromARGB(255, 30, 34, 45),
-                  ),
-                ),
-              ),
-            ),
+  height: 400,
+  width: double.infinity,
+  child: GestureDetector(
+    onTap: () {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return ZoomableImageScreen(imageUrls: [bangUpdate.filename]);
+          },
+        ),
+      );
+    },
+    child: CachedNetworkImage(
+      fit: BoxFit.cover,
+      imageUrl: bangUpdate.filename,
+      placeholder: (context, url) => Shimmer.fromColors(
+        baseColor: const Color.fromARGB(255, 30, 34, 45),
+        highlightColor:
+            const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
+        child: Container(
+          color: const Color.fromARGB(255, 30, 34, 45),
+        ),
+      ),
+    ),
+  ),
+)
           ),
         ),
         Positioned(

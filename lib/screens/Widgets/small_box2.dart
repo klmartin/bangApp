@@ -1,4 +1,5 @@
 import 'package:bangapp/screens/Widgets/battle_like.dart';
+import 'package:bangapp/widgets/build_media.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -27,25 +28,54 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
   }
 
   void viewImage(BuildContext context, String imageUrl) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: SizedBox.expand(
-            child: Hero(
-                tag: imageUrl,
-                child: Container(
-                  height: 250,
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) => Scaffold(
+        body: SizedBox.expand(
+          child: Hero(
+            tag: imageUrl,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ZoomableImage(imageUrl: imageUrl),
                   ),
-                )),
+                );
+              },
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+//   void viewImage(BuildContext context, String imageUrl) {
+//     Navigator.of(context).push(
+//       MaterialPageRoute(
+//         builder: (context) => Scaffold(
+//           body: SizedBox.expand(
+//             child: Hero(
+//                 tag: imageUrl,
+//                 child: Container(
+//                   height: 250,
+//                   child: CachedNetworkImage(
+//                     imageUrl: imageUrl,
+//                     fit: BoxFit.cover,
+
+//                   ),
+//                 )),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+
   @override
 
   Widget build(BuildContext context) {
