@@ -126,20 +126,12 @@ class BangInspirationBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Provider.of<BangInspirationsProvider>(context, listen: false).fetchInspirations(context),
-      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Data is still loading
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          // An error occurred
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        } else {
+    return Consumer<BangInspirationsProvider>(
+      builder: (context, provider, child) {
+        // Assuming fetchInspirations is a Future<void> function in your provider
+        provider.fetchInspirations(context);
+
+
           // Data has been loaded successfully
           return SingleChildScrollView(
             child: Container(
@@ -194,26 +186,22 @@ class BangInspirationBuilder extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 5),
-                  Consumer<BangInspirationsProvider>(
-                    builder: (context, provider, child) {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: provider.inspirations.length,
-                        itemBuilder: (context, index) {
-                          final inspiration = provider.inspirations[index];
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: provider.inspirations.length,
+                    itemBuilder: (context, index) {
+                      final inspiration = provider.inspirations[index];
 
-                          return VideoContainer(
-                            inspirationVideoId: inspiration.id,
-                            videoLink: inspiration.videoUrl ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                            thumbnail: inspiration.thumbnail ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
-                            channelName: 'The Codeholic',
-                            pubDate: '9 days ago',
-                            videotitle: inspiration.title ?? 'Default Title',
-                            viewsCount: '98.8 views',
-                            channelIcon: 'assets/images/app_icon.jpg',
-                          );
-                        },
+                      return VideoContainer(
+                        inspirationVideoId: inspiration.id,
+                        videoLink: inspiration.videoUrl ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                        thumbnail: inspiration.thumbnail ?? 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
+                        channelName: 'The Codeholic',
+                        pubDate: '9 days ago',
+                        videotitle: inspiration.title ?? 'Default Title',
+                        viewsCount: '98.8 views',
+                        channelIcon: 'assets/images/app_icon.jpg',
                       );
                     },
                   ),
@@ -221,7 +209,7 @@ class BangInspirationBuilder extends StatelessWidget {
               ),
             ),
           );
-        }
+        
       },
     );
   }
