@@ -35,6 +35,27 @@ class _VideoMessageState extends State<VideoMessage> {
         } else {
           _controller.play();
         }
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            opaque: false,
+            pageBuilder: (BuildContext context, _, __) {
+              return Scaffold(
+                body: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context); // Close full screen on tap
+                  },
+                  child: Center(
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
       },
       child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.45, // 45% of total width

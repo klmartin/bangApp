@@ -14,6 +14,7 @@ import 'package:bangapp/screens/Authenticate/register_screen.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import '../../services/token_storage_helper.dart';
 import '../Profile/edit_profile.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -70,16 +71,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       "images/app_icon.jpg",
                       height: 60,
                     ),
-                    /*child: Hero(
-                      tag: 'logo',
-                      child: Text('Bang App',
-                          style: TextStyle(
-                            fontFamily: 'Billabong',
-                            color: Colors.black,
-                            fontSize: 50.0,
-                            fontWeight: FontWeight.w500,
-                          )),
-                    ),*/
                   ),
                   SizedBox(
                     height: 20.0,
@@ -190,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
                                   prefs.setInt('user_id', responseBody['user_id']);
-                                  prefs.setString('token', responseBody['token']);
+                                  await TokenManager.saveToken(responseBody['token']);
                                   prefs.setString('user_image', responseBody['user_image']);
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);

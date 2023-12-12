@@ -54,28 +54,124 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
   );
 }
 
-//   void viewImage(BuildContext context, String imageUrl) {
-//     Navigator.of(context).push(
-//       MaterialPageRoute(
-//         builder: (context) => Scaffold(
-//           body: SizedBox.expand(
-//             child: Hero(
-//                 tag: imageUrl,
-//                 child: Container(
-//                   height: 250,
-//                   child: CachedNetworkImage(
-//                     imageUrl: imageUrl,
-//                     fit: BoxFit.cover,
+  buildFab(value, BuildContext context) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Center(
+                  child: Text(
+                    'Pinned battle',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                leading: Icon(
+                  CupertinoIcons.circle_fill,
+                  color: Colors.orange.shade600,
+                  size: 25.0,
+                ),
+                title: Text('Pay to Vote'),
+                trailing: Text('500 tshs'),
+                // subtitle: Text('to Vote'),
+                onTap: () {
+                  Navigator.pop(context);
+                  buildPayments('value', context);
+                },
+              ),
 
-//                   ),
-//                 )),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
+            ],
+          ),
+        );
+      },
+    );
+  }
 
-
+  buildPayments(value, BuildContext context) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Center(
+                  child: Text(
+                    'Packages',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                leading: Icon(
+                  CupertinoIcons.circle_fill,
+                  color: Colors.blue.shade600,
+                  size: 25.0,
+                ),
+                title: Text('Tigo Pesa'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: Icon(
+                  CupertinoIcons.circle_fill,
+                  color: Colors.red.shade600,
+                  size: 25.0,
+                ),
+                title: Text('Airtel Money'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: Icon(
+                  CupertinoIcons.circle_fill,
+                  color: Colors.red,
+                  size: 25.0,
+                ),
+                title: Text('M-pesa'),
+                onTap: () async {},
+              ),
+              ListTile(
+                leading: Icon(
+                  CupertinoIcons.circle_fill,
+                  color: Colors.yellowAccent,
+                  size: 25.0,
+                ),
+                title: Text('Halo-pesa'),
+                onTap: () {},
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
   @override
 
   Widget build(BuildContext context) {
@@ -279,6 +375,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                 SizedBox(width: 5),
                                 GestureDetector(
                                   onTap: () {
+
                                     Navigator.push(context,
                                         MaterialPageRoute(
                                         builder: (context) => Scaffold(
@@ -362,14 +459,20 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                         children: [
                                           GestureDetector(
                                             onTap: () {
-                                              final countUpdate =
-                                                  Provider.of<BoxDataProvider>(
-                                                      context,
-                                                      listen: false);
-                                              Service().likeBattle(box.postId, "A");
-                                              countUpdate.increaseLikes(
-                                                  box.postId, 1);
-                                              // Service().likeAction(postId, "A");
+                                              if(box.pinned){
+                                                print('this is pinned');
+                                                buildFab(1, context);
+                                              }
+                                              else{
+                                                final countUpdate =
+                                                Provider.of<BoxDataProvider>(
+                                                    context,
+                                                    listen: false);
+                                                Service().likeBattle(box.postId, "A");
+                                                countUpdate.increaseLikes(
+                                                    box.postId, 1);
+                                              }
+
                                             },
                                             child: box.isLikedA
                                                 ? Icon(
@@ -426,14 +529,21 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                             ),
                                             GestureDetector(
                                               onTap: () {
-                                                final countUpdate = Provider.of<
-                                                        BoxDataProvider>(
-                                                    context,
-                                                    listen: false);
-                                                Service().likeBattle(
-                                                    box.postId, "B");
-                                                countUpdate.increaseLikes(
-                                                    box.postId, 2);
+                                                if(box.pinned){
+                                                  print('this is pinned');
+                                                  buildFab(1, context);
+                                                }
+                                                else{
+                                                  final countUpdate = Provider.of<
+                                                      BoxDataProvider>(
+                                                      context,
+                                                      listen: false);
+                                                  Service().likeBattle(
+                                                      box.postId, "B");
+                                                  countUpdate.increaseLikes(
+                                                      box.postId, 2);
+                                                }
+
                                                 // Service().likeAction(postId, "A");
                                               },
                                               child: box.isLikedB

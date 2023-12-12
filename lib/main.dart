@@ -5,28 +5,22 @@ import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:bangapp/providers/Profile_Provider.dart';
+import 'package:bangapp/providers/bang_update_provider.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
 import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/providers/posts_provider.dart';
-import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
-import 'package:http/http.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:bangapp/screens/Authenticate/login_screen.dart';
 import 'package:bangapp/screens/Chat/calls_chat.dart';
 import 'package:bangapp/screens/Chat/new_message_chat.dart';
-import 'package:bangapp/screens/Comments/commentspage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
@@ -52,26 +46,16 @@ void main() async {
     ChangeNotifierProvider(create: (context) => CommentProvider()),
     ChangeNotifierProvider(create: (context) => PostsProvider()),
     ChangeNotifierProvider(create: (context) => BangInspirationsProvider()),
-    // ChangeNotifierProvider(create: (context) => HomeProvider()),
     ChangeNotifierProvider(create: (context) => BangUpdateProvider()),
     ChangeNotifierProvider(create: (context) => ChatProvider()),
     ChangeNotifierProvider(create: (context) => BoxDataProvider()),
     ChangeNotifierProvider(create: (context) => ProfileProvider()),
-        ChangeNotifierProvider(create: (context) => UserLikesProvider()),
+    ChangeNotifierProvider(create: (context) => UserLikesProvider()),
   ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  void startTimer() {
-    Timer.periodic(Duration(minutes: 3), (timer) {
-      // Clear the boolean value after every three minutes
-      setBooleanValue(false);
-    });
-  }
-  Future<void> setBooleanValue(bool value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('i_just_posted', false);
-  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -208,7 +192,6 @@ class _AuthenticateState extends State<Authenticate> {
   }
 
   void _configureFirebaseMessaging() {
-    print('hereeeeeeeee');
     _firebaseMessaging.getToken().then((token) {
       // Example:
       // YourAPIService.sendTokenToBackend(token);
@@ -294,8 +277,11 @@ class _AuthenticateState extends State<Authenticate> {
         );
       }
       if (message.data["type"] == "challenge") {
-        int? challengeId = message.data['challenge_id'] != null
-            ? int.tryParse(message.data['challenge_id'])
+
+        print('this is the challenge data');
+        print(message.data["notification_id"]);
+        int? challengeId = message.data['notification_id'] != null
+            ? int.tryParse(message.data['notification_id'])
             : null;
         // Pass the challengeId to ViewChallengePage
         Navigator.of(context).push(MaterialPageRoute(

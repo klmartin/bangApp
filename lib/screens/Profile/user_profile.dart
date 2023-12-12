@@ -44,6 +44,7 @@ class _UserProfileState extends State<UserProfile> {
   late String myBio= "";
   late String myImage = profileUrl;
   late int myPostCount= 0;
+  bool privacySwitchValue = false;
   late int myFollowerCount= 0;
   late int myFollowingCount= 0;
   late String description= "";
@@ -80,6 +81,7 @@ class _UserProfileState extends State<UserProfile> {
       myPostCount = myInfo['postCount'] ?? 0;
       myFollowerCount = myInfo['followerCount'] ?? 0;
       myFollowingCount = myInfo['followingCount'] ?? 0;
+      privacySwitchValue = myInfo['public'] == 1 ? true : false;
     });
   }
 
@@ -296,10 +298,15 @@ class _UserProfileState extends State<UserProfile> {
                   child: Container(
                 child: OutlinedButton(
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return MessagesScreen(widget.userid!, myName,myImage);
-                      }));
+                      if(privacySwitchValue){
+                        print('this is it nigga');
+                        buildFab(1, context);
+                      }
+                      else{
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return MessagesScreen(widget.userid!, myName,myImage);
+                        }));
+                      }
                     },
                     child: Text(
                       'Message',
@@ -523,6 +530,123 @@ class ProfilePostsStream extends StatelessWidget {
     );
   }
 
+}
+buildFab(value, BuildContext context) {
+  return showModalBottomSheet(
+    isScrollControlled: true,
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Center(
+                child: Text(
+                  'This User has Pinned Messaging',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color: Colors.green,
+                size: 25.0,
+              ),
+              title: Text('Pay'),
+              trailing: Text('500 tshs'),
+              subtitle: Text('to Message this User'),
+              onTap: () {
+                Navigator.pop(context);
+                buildPayments('value', context);
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+buildPayments(value, BuildContext context) {
+  return showModalBottomSheet(
+    isScrollControlled: true,
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Center(
+                child: Text(
+                  'Packages',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color: Colors.blue.shade600,
+                size: 25.0,
+              ),
+              title: Text('Tigo Pesa'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color: Colors.red.shade600,
+                size: 25.0,
+              ),
+              title: Text('Airtel Money'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color: Colors.red,
+                size: 25.0,
+              ),
+              title: Text('M-pesa'),
+              onTap: () async {},
+            ),
+            ListTile(
+              leading: Icon(
+                CupertinoIcons.circle_fill,
+                color: Colors.yellowAccent,
+                size: 25.0,
+              ),
+              title: Text('Halo-pesa'),
+              onTap: () {},
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 class _ProfilePostsStreamContent extends StatefulWidget {

@@ -12,13 +12,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import '../../nav.dart';
 
-late String? _descr;
+ String? _descr;
  String? phoneNumber;
-late String? occupation;
+ String? name;
+ String? occupation;
 TextEditingController phoneNumberController = TextEditingController();
 TextEditingController descriptionController = TextEditingController();
 TextEditingController occupationController = TextEditingController();
 TextEditingController dateOfBirthController = TextEditingController();
+TextEditingController nameController = TextEditingController();
 String selectedHobbiesText = "";
 DateTime date_of_birth = DateTime.now();
 TextEditingController _dateController = TextEditingController();
@@ -46,12 +48,15 @@ class _EditPageState extends State<EditPage> {
 
   void _getUserData() async {
     Map<String, dynamic> info = await Service().getMyInformation();
+    print(info);
+    print('this is info');
     setState(() {
       dateOfBirthController.text = info['date_of_birth'] != null
           ? DateFormatter.formatDateTime(
         dateTime: DateTime.parse(info['date_of_birth']),
         outputFormat: 'dd/MM/yyyy',
       ) : '';
+      nameController.text = info['name'];
       phoneNumberController.text = info['phone_number'] ?? '';
       selectedHobbiesText = info['hobbies_and_interests'] ?? '';
       occupationController.text = info['occupation'] ?? '';
@@ -161,9 +166,34 @@ class _EditPageState extends State<EditPage> {
 
                 ),
               ),
+              TextField(
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.text,
+                controller: nameController,
+                onChanged: (value) {
+                  //Do something with the user input.
+                  name = value;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Enter your name',
+                  labelStyle: TextStyle(color: Colors.black),
+                  prefixIcon: Icon(
+                      Icons.accessibility
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                ),
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.black,
+              ),
               SizedBox(
                 height: 8.0,
               ),
+
               TextField(
                 textAlign: TextAlign.center,
                 controller: dateOfBirthController,
@@ -334,7 +364,7 @@ class _EditPageState extends State<EditPage> {
 
                     child: TextButton(
                         onPressed: () async {
-                          Service().setUserProfile(date_of_birth,phoneNumber!,selectedHobbiesText, occupation,_descr, rimage);
+                          Service().setUserProfile(date_of_birth,phoneNumber!,selectedHobbiesText,occupation,_descr,rimage,name);
                           Navigator.push(
                             context,
                             MaterialPageRoute(

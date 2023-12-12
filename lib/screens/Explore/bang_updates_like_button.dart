@@ -4,6 +4,8 @@ import 'package:bangapp/services/service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/bang_update_provider.dart';
+
 class BangUpdateLikeButton extends StatefulWidget {
   late final int likeCount;
   final bool isLiked;

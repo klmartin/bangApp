@@ -175,14 +175,23 @@ class _PostCardState extends State<PostCard> {
                         child: ReadMoreText(
                           widget.caption,
                           trimLines: 1,
-                          style: Theme.of(context).textTheme.bodyLarge!,
                           colorClickableText: Theme.of(context).primaryColor,
                           trimMode: TrimMode.line,
                           trimCollapsedText: '...Show more',
                           trimExpandedText: '...Show less',
+                          textColor: Colors.black,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                          lessStyle: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                           moreStyle: TextStyle(
                             fontSize: 15,
-                            color: Theme.of(context).primaryColor,
+                            color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -300,14 +309,23 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
       return ReadMoreText(
         widget.caption ?? "",
         trimLines: 2,
-        style: Theme.of(context).textTheme.bodyText1!,
         colorClickableText: Theme.of(context).primaryColor,
         trimMode: TrimMode.line,
         trimCollapsedText: '...Show more',
         trimExpandedText: '...Show less',
+        textColor: Colors.black,
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+        ),
+        lessStyle: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
         moreStyle: TextStyle(
           fontSize: 15,
-          color: Theme.of(context).primaryColor,
+          color: Colors.black,
         ),
       );
     }

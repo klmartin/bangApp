@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
+import '../../nav.dart';
 import '../../services/animation.dart';
 import '../../services/extension.dart';
 import 'package:bangapp/services/service.dart';
@@ -207,8 +208,25 @@ class _PostCardState extends State<PostCard> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        Service().acceptChallenge(widget.post_id);
+                      onPressed: () async {
+                        var acceptChallenge = await Service().acceptChallenge(widget.id);
+                        if(acceptChallenge['message'] == "success"){
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Nav()));
+                        }
+                        else{
+                          Fluttertoast.showToast(
+                            msg: 'Something Went Wrong...',
+                            toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.black,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
+                          );
+                        }
                         // Add your logic for accepting here
                       },
                       child: Text('Accept'),
@@ -220,8 +238,11 @@ class _PostCardState extends State<PostCard> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        Service().declineChallenge(widget.post_id);
-                        // Add your logic for declining here
+                        Service().declineChallenge(widget.id);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Nav()));
                       },
                       child: Text('Decline'),
                     ),

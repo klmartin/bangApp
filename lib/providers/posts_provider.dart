@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/token_storage_helper.dart';
+
 class PostsProvider with ChangeNotifier {
   bool _isLastPage = false;
   int _pageNumber = 0;
   bool _error = false;
   bool _loading = true;
-  final int _numberOfPostsPerRequest = 100;
+  final int _numberOfPostsPerRequest = 10;
   final int _nextPageTrigger = 3;
 
   List<Post> _posts = [];
@@ -23,7 +25,7 @@ class PostsProvider with ChangeNotifier {
 
   num get nextPageTrigger => _nextPageTrigger;
 
-  Future<void> fetchData() async {
+  Future<void> fetchData(int _pageNumber) async {
     if (!_isLastPage) {
       try {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -32,22 +34,33 @@ class PostsProvider with ChangeNotifier {
         final iJustPosted = prefs.getBool('i_just_posted');
         final String cachedData = prefs.getString(cacheKey) ?? '';
         final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
-
+        final token = await TokenManager.getToken();
         var responseData = {};
 
-        if (cachedData.isNotEmpty && iJustPosted != true &&
+        if (cachedData.isNotEmpty &&
             DateTime.now()
                     .difference(DateTime.fromMillisecondsSinceEpoch(
                         lastCachedTimestamp))
                     .inMinutes <=
-                3) {
+                3 && _pageNumber <=1 ) {
           // Use cached data if it exists and is not expired
           responseData = json.decode(cachedData);
-          // Process cached data...
+          print('here');
+          print(token);
+
         } else {
           try {
+
             final response = await get(Uri.parse(
-                "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"));
+                "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
+                  headers: {
+                    'Authorization': 'Bearer $token', // Include other headers as needed
+                  },
+            );
+
+            print("$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
+            print(response.body);
+            print('res body');
             if (response.statusCode == 200) {
               responseData = json.decode(response.body);
               // Process data from the server...
@@ -64,8 +77,7 @@ class PostsProvider with ChangeNotifier {
             // You may want to set an error flag or log the error
           }
         }
-        // final Map<String, dynamic> responseData = json.decode(response.body);
-
+        print(token);
         if (responseData.containsKey('data')) {
           List<dynamic> responseList = responseData['data']['data'];
           final newPosts = responseList.map((data) {
@@ -84,7 +96,7 @@ class PostsProvider with ChangeNotifier {
             return newPost(data, challenges);
           }).toList();
           _posts.addAll(newPosts);
-          _pageNumber++;
+
           _loading = false;
           notifyListeners();
         } else {

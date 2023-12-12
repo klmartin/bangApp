@@ -7,6 +7,8 @@ import '../Widgets/small_box2.dart';
 import 'package:bangapp/services/service.dart';
 
 class Home2 extends StatelessWidget {
+  int _pageNumber = 1;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,22 +27,22 @@ class Home2Content extends StatefulWidget {
 
 class _Home2ContentState extends State<Home2Content> {
   final ScrollController _scrollController = ScrollController();
+  int _pageNumber = 1;
 
   @override
   void initState() {
     super.initState();
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
-    postsProvider.fetchData();
+    postsProvider.fetchData(_pageNumber);
     _scrollController.addListener(_scrollListener);
   }
 
   void _scrollListener() {
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200 &&
-        !postsProvider.isLoading &&
-        !postsProvider.isLastPage) {
-      postsProvider.fetchData(); // Trigger loading of the next page
+            _scrollController.position.maxScrollExtent - 200) {
+      _pageNumber ++;
+      postsProvider.fetchData(_pageNumber); // Trigger loading of the next page
     }
   }
 
@@ -149,7 +151,7 @@ class _Home2ContentState extends State<Home2Content> {
           // "Load More" button
           return ElevatedButton(
             onPressed: () {
-              postsProvider.fetchData(); // Trigger loading of the next page
+              postsProvider.fetchData(_pageNumber); // Trigger loading of the next page
             },
             child: Text('Load More'),
           );

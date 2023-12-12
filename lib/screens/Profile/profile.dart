@@ -45,6 +45,7 @@ class _ProfileState extends State<Profile> {
   late int myFollowerCount = 0;
   late int myFollowingCount = 0;
   late String description = "";
+  bool privacySwitchValue = false;
   final int _numberOfPostsPerRequest = 20;
   int _pageNumber = 1;
   bool _persposts = true;
@@ -74,6 +75,7 @@ class _ProfileState extends State<Profile> {
       myPostCount = myInfo['postCount'] ?? 0;
       myFollowerCount = myInfo['followerCount'] ?? 0;
       myFollowingCount = myInfo['followingCount'] ?? 0;
+      privacySwitchValue = myInfo['public'] == 1 ? true : false;
     });
   }
 
@@ -192,7 +194,7 @@ class _ProfileState extends State<Profile> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AppSettings(),
+                          builder: (context) => AppSettings(privacySwitchValue: privacySwitchValue),
                         ));
                   },
                   child: Text(

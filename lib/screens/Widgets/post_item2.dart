@@ -77,24 +77,6 @@ class PostItem2 extends StatelessWidget {
       this.userImage,
       {required this.myProvider});
 
-//   void viewImage(BuildContext context, String imageUrl) {
-//     Navigator.of(context).push(
-//       MaterialPageRoute(
-//         builder: (context) => Scaffold(
-//           body: SizedBox.expand(
-//             child: Hero(
-//               tag: imageUrl,
-//               child: CachedNetworkImage(
-//                 imageUrl: imageUrl,
-//                 fit: BoxFit.contain,
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
 void viewImage(BuildContext context, String imageUrl) {
   Navigator.of(context).push(
     MaterialPageRoute(
@@ -339,9 +321,7 @@ void viewImage(BuildContext context, String imageUrl) {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(
-                        width:
-                            5), // Add some spacing between the username and caption
+                    SizedBox(width: 5), // Add some spacing between the username and caption
                     Expanded(
                       child: ReadMoreText(
                         caption,
@@ -763,60 +743,124 @@ void viewImage(BuildContext context, String imageUrl) {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  SizedBox(width: 280),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        createRoute(
-                          CommentsPage(
-                            postId: postId, userId: userId,
-                            myProvider: myProvider,
-                            // currentUser: 1,
-                          ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(left: 10),
+                        width: MediaQuery.of(context).size.width * 0.82,
+                        child: Row(
+                          children: [
+                            Text(
+                              name, // Add your username here
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                                width:
+                                5), // Add some spacing between the username and caption
+                            Expanded(
+                              child: ReadMoreText(
+                                caption,
+                                trimLines: 1,
+                                colorClickableText: Theme.of(context).primaryColor,
+                                trimMode: TrimMode.line,
+                                textColor: Colors.black,
+                                trimCollapsedText: '...Show more',
+                                trimExpandedText: '...Show less',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
+                                lessStyle: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                moreStyle: TextStyle(
+                                  fontSize: 15,
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                    child: const Icon(
-                      CupertinoIcons.chat_bubble,
-                      color: Colors.black,
-                      size: 25,
-                    ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) {
+                                        return CommentsPage(
+                                          userId: userId,
+                                          postId: postId,
+                                          myProvider: myProvider,
+                                        );
+                                      },
+                                    ));
+                                  },
+                                  child: const Icon(
+                                    CupertinoIcons.chat_bubble,
+                                    color: Colors.black,
+                                    size: 25,
+                                  ),
+                                ),
+                                Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        final countUpdate =
+                                        Provider.of<PostsProvider>(context,
+                                            listen: false);
+                                        countUpdate.increaseLikes(postId);
+                                        Service().likeAction(postId, "A", userId);
+                                      },
+                                      child: isLiked
+                                          ? Icon(CupertinoIcons.heart_fill,
+                                          color: Colors.red, size: 25)
+                                          : Icon(CupertinoIcons.heart,
+                                          color: Colors.red, size: 25),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Provider.of<UserLikesProvider>(context, listen: false).getUserLikedPost(postId);
+
+                                        LikesModal.showLikesModal(
+                                            context, postId);
+                                      },
+                                      child: Text(
+                                        "$likeCountA likes",
+                                        style: TextStyle(
+                                          fontSize: 12.5,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    // child: LikeButton(likeCount: 0 ,isLiked:false,postId:postId,isChallenge: false,isButtonA: false,isButtonB: true),
-                    child: Container(),
+                  Container(
+                    margin: EdgeInsets.only(left: 15),
+                    child: Text("$commentCount comments"),
                   ),
                 ],
               ),
-              if (caption != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ReadMoreText(
-                    caption,
-                    trimLines: 1,
-                    colorClickableText: Theme.of(context).primaryColor,
-                    trimMode: TrimMode.line,
-                    textColor: Colors.black,
-                    trimCollapsedText: '...Show more',
-                    trimExpandedText: '...Show less',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.black,
-                    ),
-                    lessStyle: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    moreStyle: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ),
+
               const SizedBox(height: 20),
             ],
           ));

@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/models/bang_update.dart';
 
+import '../services/api_cache_helper.dart';
+
 class BangUpdateProfileProvider extends ChangeNotifier {
   bool _isLoading = false;
   final int _numberOfPostsPerRequest = 20;
@@ -13,34 +15,24 @@ class BangUpdateProfileProvider extends ChangeNotifier {
   List<BangUpdate> _updates = [];
   List<BangUpdate> get updates => _updates;
 
+  ApiCacheHelper apiCacheHelper = ApiCacheHelper(
+    baseUrl: baseUrl,
+    numberOfPostsPerRequest: 10,
+  );
 
-  Future<void>  getMyUpdate() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(prefs.getInt('user_id').toString());
-    var userId = prefs.getInt('user_id').toString();
-    var response = await http.get(Uri.parse('$baseUrl/user-bang-updates?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId'));
-    print(response.body);
-    print('this is data from api');
-    var data = json.decode(response.body);
-    final List<dynamic> post = data;
-    _updates.addAll(post.map((json) => BangUpdate.fromJson(json)).toList()) ;
+  Future<void> getMyUpdate() async {
+    final post = await apiCacheHelper.getMyUpdate(pageNumber: _pageNumber);
+    _updates.addAll(post.map((json) => BangUpdate.fromJson(json)).toList());
     _pageNumber++;
     notifyListeners();
-
-
   }
 
   Future<void>  getUserUpdate(userId) async {
-
-    var response = await http.get(Uri.parse('$baseUrl/user-bang-updates?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId'));
-    print(response.body);
-    print('this is data from api');
-    var data = json.decode(response.body);
-    final List<dynamic> post = data;
-    _updates.addAll(post.map((json) => BangUpdate.fromJson(json)).toList()) ;
+    final post = await apiCacheHelper.getUserUpdate(pageNumber: _pageNumber, userId: userId);
+    print(post);
+    print('this is post');
+    _updates.addAll(post.map((json) => BangUpdate.fromJson(json) ).toList()) ;
     _pageNumber++;
     notifyListeners();
-
-
   }
 }

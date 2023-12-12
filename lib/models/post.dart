@@ -55,7 +55,7 @@ class Challenge {
   final String type;
   final int confirmed;
 
-  Challenge({
+  Challenge( {
     required this.id,
     required this.postId,
     required this.userId,

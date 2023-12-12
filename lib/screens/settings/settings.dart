@@ -3,11 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Authenticate/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+ import "package:bangapp/services/service.dart";
 
+import '../../services/token_storage_helper.dart';
 
-class AppSettings extends StatelessWidget {
+class AppSettings extends StatefulWidget {
   @override
   bool privacySwitchValue = false;
+  AppSettings({required this.privacySwitchValue});
+  _AppSettings createState() => _AppSettings();
+}
+
+
+class _AppSettings extends State<AppSettings> {
+  @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -36,11 +46,13 @@ class AppSettings extends StatelessWidget {
             leading: FaIcon(FontAwesomeIcons.message),
             title: Text("Pin Messages"),
             trailing: Switch(
-              value: privacySwitchValue,
+              value: widget.privacySwitchValue,
               onChanged: (value) {
-                // setState(() {
-                //   privacySwitchValue = value;
-                // });
+                print(value);
+                Service().pinMessage();
+                setState(() {
+                  widget.privacySwitchValue = value;
+                });
               },
             ),
           ),
@@ -64,8 +76,7 @@ class AppSettings extends StatelessWidget {
             ),
             title: Text("Logout"),
             onTap: () async {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.remove('token');
+              await TokenManager.clearToken();
               Navigator.pushNamed(context, LoginScreen.id);
             },
           ),
