@@ -24,6 +24,7 @@ import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
+import 'firebase_options.dart';
 import 'models/userprovider.dart';
 import 'screens/Authenticate/welcome_screen.dart';
 import 'screens/Profile/edit_profile.dart';
@@ -39,7 +40,13 @@ import 'package:bangapp/services/service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Listen for shared data when the app starts
-  await Firebase.initializeApp();
+  if (Platform.isIOS) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserProvider()),
