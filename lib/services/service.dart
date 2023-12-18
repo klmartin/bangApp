@@ -286,19 +286,25 @@ class Service {
     try {
       final token = await TokenManager.getToken();
       final response = await http.get(
-        Uri.parse('$baseUrl/bangUpdateComment/$postId'),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json', // Include other headers as needed
-      },
+        Uri.parse('$baseUrl/bangUpdateComment/$postId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
       );
+
       if (response.statusCode == 200) {
+        // Assuming your response body is a list, modify this based on your actual response structure
+        List<dynamic> comments = jsonDecode(response.body);
+        return comments;
       } else {
+        // Handle other status codes if needed
         return [];
       }
     } catch (e) {
       print(e);
-      return ['err'];
       // Handle exceptions, if any
+      return ['err'];
     }
   }
 
