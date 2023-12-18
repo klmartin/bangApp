@@ -348,8 +348,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(body, filePath);
                                   } else {
-                                    await service.addImage(
-                                        body, compressedImage.path);
+                                    await service.addImage(body, compressedImage.path);
                                   }
                                 } else if (widget.editedImage != null &&
                                     widget.editedImage2 == null &&
@@ -422,10 +421,17 @@ class _FinaleCreateState extends State<FinalCreate> {
                                       body, filePath1, filePath2);
                                 }
                                 prefs.setBool('i_just_posted', true);
-                                Navigator.pushReplacement(
+                                if(bangUpdate == 1){Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Nav()));
+                                        builder: (context) => Nav(initialIndex: 1)));}
+                                else{
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Nav(initialIndex: 0)));
+                                }
+
                               } finally {
                                 // After your button logic is done, set loading back to false
                                 setState(() {

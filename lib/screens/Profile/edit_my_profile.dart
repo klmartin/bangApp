@@ -1,4 +1,5 @@
 import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/screens/Profile/profile.dart';
 import 'package:date_formatter/date_formatter.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,30 +11,30 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import '../../models/hobby.dart';
 import '../../nav.dart';
+import '../../services/api_cache_helper.dart';
 
- String? _descr;
- String? phoneNumber;
- String? name;
- String? occupation;
-TextEditingController phoneNumberController = TextEditingController();
-TextEditingController descriptionController = TextEditingController();
-TextEditingController occupationController = TextEditingController();
-TextEditingController dateOfBirthController = TextEditingController();
-TextEditingController nameController = TextEditingController();
-String selectedHobbiesText = "";
-DateTime date_of_birth = DateTime.now();
-TextEditingController _dateController = TextEditingController();
-Service?  loggedInUser;
-String userImage = '';
-var imagePicker;
 enum ImageSourceType { gallery, camera }
 
 class EditPage extends StatefulWidget {
   static const String id = 'edit';
-  EditPage({
-    Key? key,
-  }): super(key: key);
+  String? _descr;
+  String? phoneNumber;
+  String? name;
+  String? occupation;
+  String? bio;
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController occupationController = TextEditingController();
+  TextEditingController dateOfBirthController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  String selectedHobbiesText = "";
+  DateTime date_of_birth = DateTime.now();
+  TextEditingController _dateController = TextEditingController();
+  String userImage = '';
+  var imagePicker;
+  EditPage({required this.userImage,required this.name,required this.date_of_birth,required this.phoneNumber,required this.selectedHobbiesText,required this.occupation,required this.bio});
 
   _EditPageState createState() => _EditPageState();
 }
@@ -43,28 +44,16 @@ class _EditPageState extends State<EditPage> {
   void initState() {
     super.initState();
     _getUserData();
-    imagePicker = ImagePicker();
+    widget.imagePicker = ImagePicker();
   }
-
   void _getUserData() async {
-    Map<String, dynamic> info = await Service().getMyInformation();
-    print(info);
-    print('this is info');
-    setState(() {
-      dateOfBirthController.text = info['date_of_birth'] != null
-          ? DateFormatter.formatDateTime(
-        dateTime: DateTime.parse(info['date_of_birth']),
-        outputFormat: 'dd/MM/yyyy',
-      ) : '';
-      nameController.text = info['name'];
-      phoneNumberController.text = info['phone_number'] ?? '';
-      selectedHobbiesText = info['hobbies_and_interests'] ?? '';
-      occupationController.text = info['occupation'] ?? '';
-      descriptionController.text = info['bio'] ?? '';
-      userImage = info['user_image_url'] ?? '';
+      widget.nameController.text = widget.name!;
+      widget.phoneNumberController.text = widget.phoneNumber!;
+      widget.selectedHobbiesText = widget.selectedHobbiesText;
+      widget.occupationController.text = widget.occupation!;
+      widget.descriptionController.text = widget.bio!;
+      widget.userImage = widget.userImage;
       rimage = null;
-
-    });
   }
 
   bool showSpinner = false;
@@ -107,14 +96,14 @@ class _EditPageState extends State<EditPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if(userImage != '' && rimage == null)
+                    if(widget.userImage != '' && rimage == null)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Container(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
-                            userImage!, // Provide the remote URL here
+                            widget.userImage!, // Provide the remote URL here
                             fit: BoxFit.cover,
                             width: 100,
                             height: 100,
@@ -122,7 +111,7 @@ class _EditPageState extends State<EditPage> {
                         ),
                       ),
                     ),
-                    if(userImage == '' && rimage == null)
+                    if(widget.userImage == '' && rimage == null)
                      Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Container(
@@ -138,7 +127,7 @@ class _EditPageState extends State<EditPage> {
                         ),
                       ),
                     ),
-                    if(rimage != null && userImage == '')
+                    if(rimage != null && widget.userImage == '')
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
@@ -169,10 +158,10 @@ class _EditPageState extends State<EditPage> {
               TextField(
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.text,
-                controller: nameController,
+                controller: widget.nameController,
                 onChanged: (value) {
                   //Do something with the user input.
-                  name = value;
+                  widget.name = value;
                 },
                 decoration: InputDecoration(
                   labelText: 'Enter your name',
@@ -196,20 +185,20 @@ class _EditPageState extends State<EditPage> {
 
               TextField(
                 textAlign: TextAlign.center,
-                controller: dateOfBirthController,
+                controller: widget.dateOfBirthController,
                 onTap: () async {
                   final DateTime? picked = await showDatePicker(
                     context: context,
-                    initialDate: date_of_birth,
+                    initialDate: widget.date_of_birth,
                     //initialDate: DateTime.now(),
                     firstDate: DateTime(1900, 1),
                     lastDate: DateTime(2100, 12),
                   );
                   if (picked != null) {
                     setState(() {
-                      date_of_birth = picked;
-                      _dateController.text = DateFormatter.formatDateTime(
-                        dateTime: date_of_birth,
+                      widget.date_of_birth = picked;
+                      widget._dateController.text = DateFormatter.formatDateTime(
+                        dateTime: widget.date_of_birth,
                         outputFormat: 'dd/MM/yyyy',
                       );
                     });
@@ -237,10 +226,10 @@ class _EditPageState extends State<EditPage> {
               TextField(
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
-                controller: phoneNumberController,
+                controller: widget.phoneNumberController,
                 onChanged: (value) {
                   //Do something with the user input.
-                  phoneNumber = value;
+                  widget.phoneNumber = value;
                 },
                 decoration: InputDecoration(
                   labelText: 'Enter your phone number',
@@ -282,7 +271,7 @@ class _EditPageState extends State<EditPage> {
                 ),
                 style: TextStyle(color: Colors.black),
                 cursorColor: Colors.black,
-                controller: TextEditingController(text: selectedHobbiesText),
+                controller: TextEditingController(text: widget.selectedHobbiesText),
                 // Show the selected hobbies in the TextField
               ),
               SizedBox(
@@ -291,9 +280,9 @@ class _EditPageState extends State<EditPage> {
               TextField(
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.text,
-                controller: occupationController,
+                controller: widget.occupationController,
                 onChanged: (value) {
-                  occupation = value;
+                  widget.occupation = value;
                 },
                 decoration: InputDecoration(
                   labelText: 'Occupation',
@@ -329,9 +318,9 @@ class _EditPageState extends State<EditPage> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textAlign: TextAlign.center,
-                        controller: descriptionController,
+                        controller: widget.descriptionController,
                         onChanged: (value) {
-                          _descr = value;
+                          widget._descr = value;
                           //Do something with the user input.
                         },
                         decoration: InputDecoration(
@@ -364,15 +353,14 @@ class _EditPageState extends State<EditPage> {
 
                     child: TextButton(
                         onPressed: () async {
-                          Service().setUserProfile(date_of_birth,phoneNumber!,selectedHobbiesText,occupation,_descr,rimage,name);
+                          print([widget.date_of_birth,widget.phoneNumber!,widget.selectedHobbiesText,widget.occupation,widget._descr,rimage,widget.name]);
+                          await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber!,widget.selectedHobbiesText,widget.occupation,widget._descr,rimage,widget.name);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Nav(),
+                              builder: (context) => Nav(initialIndex: 4),
                             ),
                           );
-                          print(rimage);
-                          print("pressed");
                         },
                         child: Text(
                           'Update',
@@ -400,19 +388,9 @@ class _EditPageState extends State<EditPage> {
       ),
     );
   }
-
-  loadHobbies() async {
-    try {
-      hobbyList = await fetchHobbies();
-      return hobbyList;
-    } catch (e) {
-      // Handle error, if any
-    }
-  }
-
   void updateSelectedHobbiesText() {
     setState(() {
-      selectedHobbiesText = selectedHobbyList!
+      widget.selectedHobbiesText = selectedHobbyList!
           .map((hobby) => hobby.name!)
           .toList()
           .join(", "); // Concatenate hobby names with a comma and space
@@ -425,7 +403,7 @@ class _EditPageState extends State<EditPage> {
   void openFilterDialog() async {
     await FilterListDialog.display<Hobby>(
       context,
-      listData: await loadHobbies()!, // Use hobbyList as the data source
+      listData:  await fetchHobbies(), // Use hobbyList as the data source
       selectedListData: selectedHobbyList,
       choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
       validateSelectedItem: (list, val) => list!.contains(val),
@@ -462,12 +440,12 @@ class _EditPageState extends State<EditPage> {
                   // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
                   child: TextButton(
                       onPressed: () async {
-                        XFile image = await imagePicker.pickImage(
+                        XFile image = await widget.imagePicker.pickImage(
                           source: ImageSource.gallery,
                         );
                         setState(() {
                           rimage = image.path;
-                          userImage = '';
+                          widget.userImage = '';
                         });
                         Navigator.pop(context,rimage);
                       },
@@ -493,12 +471,12 @@ class _EditPageState extends State<EditPage> {
                   child: TextButton(
                       onPressed: () async {
                         // _handleURLButtonPress(context, ImageSourceType.camera);
-                        XFile image = await imagePicker.pickImage(
+                        XFile image = await widget.imagePicker.pickImage(
                           source: ImageSource.camera,
                         );
                         setState(() {
                           rimage = image.path;
-                          userImage = '';
+                          widget.userImage = '';
                         });
                         Navigator.pop(context,rimage);
                       },
@@ -530,34 +508,16 @@ class _EditPageState extends State<EditPage> {
     );
   }
 
-
 }
 
-class Hobby {
-  final String? name;
-  final int ?id;
-  final String? avatar;
-
-  Hobby({this.name,this.id, this.avatar});
-
-  factory Hobby.fromJson(Map<String, dynamic> json) {
-    return Hobby(
-      name: json['name'],
-      id: json['id'],
-      avatar: "", // You can set the avatar URL here if needed
-    );
-  }
-}
+ApiCacheHelper apiCacheHelper = ApiCacheHelper(
+  baseUrl: baseUrl,
+  numberOfPostsPerRequest: 10,
+);
 
 Future<List<Hobby>> fetchHobbies() async {
-  print('fetching hobbies');
-  final response = await http.get(Uri.parse('$baseUrl/hobbies'));
-  if (response.statusCode == 200) {
-    final List<dynamic> data = json.decode(response.body);
-    print(json.decode(response.body));
-    return data.map((json) => Hobby.fromJson(json)).toList();
-  } else {
-    throw Exception('Failed to load hobbies');
-  }
+  final response = await apiCacheHelper.fetchHobbies();
+  return response.map((json) => Hobby.fromJson(json)).toList();
 }
+
 

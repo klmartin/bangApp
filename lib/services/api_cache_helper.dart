@@ -41,7 +41,7 @@ class ApiCacheHelper {
     required Function apiCall,
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final iJustPosted = prefs.getBool('i_just_posted');
+    final iJustPosted = prefs.getBool('i_just_posted_profile');
     final String cachedData = prefs.getString(cacheKey) ?? '';
     final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
 
@@ -50,7 +50,7 @@ class ApiCacheHelper {
         .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
         .inMinutes;
 
-    if (cachedData.isNotEmpty && minutes <= 3 || iJustPosted != true) {
+    if (cachedData.isNotEmpty && minutes <= 3 && iJustPosted != true) {
       data = json.decode(cachedData);
     } else {
       data = await apiCall();
@@ -86,6 +86,35 @@ class ApiCacheHelper {
 
     return data;
   }
+
+
+  Future<List<dynamic>> getCachedData4({
+    required String cacheKey,
+    required Function apiCall,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final iJustPosted = prefs.getBool('i_just_posted');
+    final String cachedData = prefs.getString(cacheKey) ?? '';
+    final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+
+    List<dynamic> data;
+    var minutes = DateTime.now()
+        .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+        .inMinutes;
+
+    if (cachedData.isNotEmpty && minutes <= 3000000000) {
+      print(cachedData);
+      data = json.decode(cachedData);
+    } else {
+      data = await apiCall();
+      prefs.setString(cacheKey, json.encode(data));
+      prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+    }
+
+    return data;
+  }
+
+
 
   Future<Map<dynamic, dynamic>> fetchData({required int pageNumber}) async {
     final token = await TokenManager.getToken();
@@ -278,4 +307,33 @@ class ApiCacheHelper {
       },
     );
   }
+
+  Future<List<dynamic>> fetchHobbies() async {
+    final token = await TokenManager.getToken();
+    print(token);
+    return getCachedData4(
+      cacheKey: 'cached_get_hobbies',
+      apiCall: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final userId = prefs.getInt('user_id').toString();
+        final response = await http.get(
+          Uri.parse(
+            "$baseUrl/hobbies",
+          ),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type':
+            'application/json', // Include other headers as needed
+          },
+        );
+        if (response.statusCode == 200) {
+          return json.decode(response.body);
+        } else {
+          // Handle server error
+          throw Exception('Failed to load data');
+        }
+      },
+    );
+  }
+
 }

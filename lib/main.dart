@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
         NewMessageChat.id: (context) => NewMessageChat(),
         ChatHome.id: (context) => ChatHome(),
         CallsChat.id: (context) => CallsChat(),
-        Nav.id: (context) => Nav(),
+        Nav.id: (context) => Nav(initialIndex: 0),
         Register.id: (context) => Register(),
         Welcome.id: (context) => Welcome(),
         EditPage.id: (context) => EditPage(),
@@ -328,7 +328,7 @@ class _AuthenticateState extends State<Authenticate> {
         if (snapshot.hasData) {
           String? token = snapshot.data?.getString('token');
           if (token != null) {
-            return Nav();
+            return Nav(initialIndex: 0);
           } else {
             return Welcome();
           }

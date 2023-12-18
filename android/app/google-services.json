@@ -1,47 +1,47 @@
 {
-  "project_info": {
-    "project_number": "515952068275",
-    "firebase_url": "https://bangappp-3f9ec-default-rtdb.firebaseio.com",
-    "project_id": "bangappp-3f9ec",
-    "storage_bucket": "bangappp-3f9ec.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:515952068275:android:0229382cc44014db5c12c6",
-        "android_client_info": {
-          "package_name": "com.cyblogerz.bangapp"
-        }
-      },
-      "oauth_client": [
+    "project_info": {
+        "project_number": "515952068275",
+        "firebase_url": "https://bangappp-3f9ec-default-rtdb.firebaseio.com",
+        "project_id": "bangappp-3f9ec",
+        "storage_bucket": "bangappp-3f9ec.appspot.com"
+    },
+    "client": [
         {
-          "client_id": "515952068275-atvkkg8fpt9bj2mspqdojjmqlresnsfi.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBsqXQoaX6aceHhauD5sWFsD7YTzpVs3lo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "515952068275-atvkkg8fpt9bj2mspqdojjmqlresnsfi.apps.googleusercontent.com",
-              "client_type": 3
+            "client_info": {
+                "mobilesdk_app_id": "1:515952068275:android:ab63bf074c15f6c15c12c6",
+                "android_client_info": {
+                    "package_name": "pro.bangapp.bangapptz"
+                }
             },
-            {
-              "client_id": "515952068275-993ca05akfgi392br8br7ggbn7be1cnn.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.cyblogerz.bangapp"
-              }
+            "oauth_client": [
+                {
+                    "client_id": "515952068275-adi4cs8dmp9ojn77h723kq6mcrtl79gt.apps.googleusercontent.com",
+                    "client_type": 3
+                }
+            ],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyBsqXQoaX6aceHhauD5sWFsD7YTzpVs3lo"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": [
+                        {
+                            "client_id": "515952068275-adi4cs8dmp9ojn77h723kq6mcrtl79gt.apps.googleusercontent.com",
+                            "client_type": 3
+                        },
+                        {
+                            "client_id": "515952068275-993ca05akfgi392br8br7ggbn7be1cnn.apps.googleusercontent.com",
+                            "client_type": 2,
+                            "ios_info": {
+                                "bundle_id": "com.cyblogerz.bangapp"
+                            }
+                        }
+                    ]
+                }
             }
-          ]
         }
-      }
-    }
-  ],
-  "configuration_version": "1"
+    ],
+    "configuration_version": "1"
 }

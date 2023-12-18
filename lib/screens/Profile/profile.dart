@@ -1,18 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:date_formatter/date_formatter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Profile/edit_my_profile.dart';
 import 'package:http/http.dart' as http;
-import 'package:video_player/video_player.dart';
 import 'package:bangapp/screens/settings/settings.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../message/screens/messages/components/video_message.dart';
+import '../../models/hobby.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
 import '../../widgets/video_rect.dart';
@@ -40,6 +39,10 @@ class _ProfileState extends State<Profile> {
   bool _isLoading = false;
   late String myName = "";
   late String myBio = "";
+  String? phoneNumber;
+  DateTime date_of_birth = DateTime.now();
+  String selectedHobbiesText = "";
+  String? occupation;
   late String myImage = profileUrl;
   late int myPostCount = 0;
   late int myFollowerCount = 0;
@@ -69,9 +72,16 @@ class _ProfileState extends State<Profile> {
     print(myInfo);
     print('this is my info');
     setState(() {
+      // date_of_birth = myInfo['date_of_birth'] != null
+      //     ? DateFormatter.formatDateTime(
+      //   dateTime: DateTime.parse(myInfo['date_of_birth']),
+      //   outputFormat: 'dd/MM/yyyy',
+      // ) : '';
       myName = myInfo['name'] ?? "";
       myBio = myInfo['bio'] ?? "";
+      selectedHobbiesText = myInfo['hobbies_and_interests'] ?? '';
       myImage = myInfo['user_image_url'] ?? "";
+      occupation = myInfo['occupation'] ?? '';
       myPostCount = myInfo['postCount'] ?? 0;
       myFollowerCount = myInfo['followerCount'] ?? 0;
       myFollowingCount = myInfo['followingCount'] ?? 0;
@@ -179,7 +189,7 @@ class _ProfileState extends State<Profile> {
               child: OutlinedButton(
                   onPressed: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => EditPage()));
+                        MaterialPageRoute(builder: (context) => EditPage(userImage: myImage,name: myName, date_of_birth: date_of_birth, phoneNumber: phoneNumber, selectedHobbiesText: selectedHobbiesText, occupation: occupation, bio: myBio)));
                   },
                   child: Text(
                     'Edit profile',
@@ -372,22 +382,6 @@ class _ProfileState extends State<Profile> {
           ),
         )
       ],
-    );
-  }
-}
-
-class Hobby {
-  final String? name;
-  final int? id;
-  final String? avatar;
-
-  Hobby({this.name, this.id, this.avatar});
-
-  factory Hobby.fromJson(Map<String, dynamic> json) {
-    return Hobby(
-      name: json['name'],
-      id: json['id'],
-      avatar: "", // You can set the avatar URL here if needed
     );
   }
 }
@@ -599,7 +593,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
     return Consumer<BangUpdateProfileProvider>(
         builder: (context, provider, child) {
           if (provider.updates.isEmpty) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: Text('No Posts Available'));
           }
           else{
             return SingleChildScrollView(
@@ -704,11 +698,10 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
   @override
   Widget build(BuildContext context) {
     // Use the ProfileProvider here to build your UI based on the fetched posts
-
       return Consumer<ProfileProvider>(
           builder: (context, provider, child) {
             if(provider.posts.isEmpty ){
-              return Center(child: CircularProgressIndicator());
+              return Center(child: Text('No Posts Available'));
             }
             else{
               return SingleChildScrollView(

@@ -1,4 +1,6 @@
 //import 'dart:ffi';
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +10,7 @@ import '../../components/square_tiles.dart';
 import '../../constants/colors.dart';
 import '../../models/userprovider.dart';
 import '../../services/auth_services.dart';
+import '../../services/token_storage_helper.dart';
 import 'login_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:http/http.dart' as http;
@@ -176,13 +179,16 @@ class _RegisterState extends State<Register> {
 
                         if (password == confirmPassword) {
                           try {
-                            print('this is data');
-                            final response = await http.post(
+
+                            var response = await http.post(
                               Uri.parse('$baseUrl/v1/register'),
-                              body: {
+                              body: jsonEncode({
                                 'email': email,
                                 'name': name,
                                 'password': password,
+                              }),
+                              headers: {
+                                HttpHeaders.contentTypeHeader: 'application/json',
                               },
                             );
                             final responseBody = jsonDecode(response.body);
@@ -210,16 +216,14 @@ class _RegisterState extends State<Register> {
                               else {
                                 _firebaseMessaging.getToken().then((
                                     token) async {
-                                  Service().sendTokenToBackend(
-                                      token, responseBody['id']);
-                                });
-                                SharedPreferences prefs = await SharedPreferences
-                                    .getInstance();
+                                  Service().sendTokenToBackend(token, responseBody['id']);});
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
                                 prefs.setInt('user_id', responseBody['id']);
-                                prefs.setString(
-                                    'token', responseBody['access_token']);
+                                await TokenManager.saveToken(responseBody['access_token']);
+                                prefs.setString('token', responseBody['access_token']);
                                 prefs.setString('name', responseBody['name']);
-                                prefs.setString('email', responseBody['name']);
+                                prefs.setString('email', responseBody['email']);
+                                print(prefs.getString('name'));
                                 Navigator.pushReplacement(
                                     context, MaterialPageRoute(
                                   builder: (context) => EditPage(),
