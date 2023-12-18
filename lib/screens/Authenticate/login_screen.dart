@@ -38,14 +38,16 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future signIn() async {
-   final user =  await GoogleSignInApi.login();
+    final user = await GoogleSignInApi.login();
 
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sign in Failed'),));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Sign in Failed'),
+      ));
     } else {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => EditPage(),));
+        builder: (context) => EditPage(),
+      ));
     }
   }
 
@@ -88,9 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: 'Email',
                             labelStyle: TextStyle(color: Colors.black),
-                            prefixIcon: Icon(
-                                Icons.mail_outline
-                            ),
+                            prefixIcon: Icon(Icons.mail_outline),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
                             ),
@@ -114,9 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: 'Password',
                             labelStyle: TextStyle(color: Colors.black),
-                            prefixIcon: Icon(
-                              Icons.lock_person
-                            ),
+                            prefixIcon: Icon(Icons.lock_person),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
                             ),
@@ -143,8 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                             try {
                               final response = await http.post(
-                                Uri.parse(
-                                    '$baseUrl/v1/login'),
+                                Uri.parse('$baseUrl/v1/login'),
                                 body: {
                                   'email': email,
                                   'password': password,
@@ -170,6 +167,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                                 showSpinner = false;
                               } else {
+                                print(responseBody['token']);
+                                print('this is response body for access_token');
                                 _firebaseMessaging
                                     .getToken()
                                     .then((token) async {
@@ -180,12 +179,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                       .setUser(responseBody);
                                   SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
-                                  prefs.setInt('user_id', responseBody['user_id']);
+                                  prefs.setInt(
+                                      'user_id', responseBody['user_id']);
                                   await TokenManager.saveToken(responseBody['token']);
-                                  prefs.setString('user_image', responseBody['user_image']);
+                                  prefs.setString(
+                                      'user_image', responseBody['user_image']);
+                                  prefs.setString('token', responseBody['token']);
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);
-                                  prefs.setString('bio', responseBody['bio']);
                                   prefs.setString('role', responseBody['role']);
                                 });
                                 print('this is role');
@@ -193,7 +194,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => Nav()),
+                                  MaterialPageRoute(
+                                      builder: (context) => Nav(initialIndex: 0)),
                                 );
                               }
                             }
@@ -228,7 +230,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-
                   const SizedBox(height: 20),
 
                   //or continue with
@@ -242,12 +243,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Colors.grey[400],
                           ),
                         ),
-
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child:  Text('Or continue with',
+                          child: Text(
+                            'Or continue with',
                             style: TextStyle(color: Colors.grey[700]),
-                          ),),
+                          ),
+                        ),
                         Expanded(
                           child: Divider(
                             thickness: 0.5,
@@ -264,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       //google button
-                     /* SquareTile(
+                      /* SquareTile(
                         imagePath: 'assets/images/google.png',
                         //onTap: () => AuthService().signInWithGoogle(),),
                         onTap: () => AuthService().signIn(),
@@ -282,25 +284,26 @@ class _LoginScreenState extends State<LoginScreen> {
 */
 
                       MaterialButton(
-                          onPressed: signIn,
-                          child:  Container(
-                      padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white),
-                borderRadius: BorderRadius.circular(16),
-                color: Colors.grey[200],
-              ),
-              child: Image.asset(
-                'assets/images/google.png',
-                height: 40,
-              ),
-            ),),
+                        onPressed: signIn,
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.grey[200],
+                          ),
+                          child: Image.asset(
+                            'assets/images/google.png',
+                            height: 40,
+                          ),
+                        ),
+                      ),
 
                       const SizedBox(width: 10),
 
                       MaterialButton(
                         onPressed: signIn,
-                        child:  Container(
+                        child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.white),
@@ -311,15 +314,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             'assets/images/apple.png',
                             height: 40,
                           ),
-                        ),),
-
-
+                        ),
+                      ),
                     ],
                   ),
 
                   SizedBox(height: 20),
 
-               /*   ElevatedButton.icon(
+                  /*   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       primary: Colors.white,
                       onPrimary: Colors.black,
@@ -362,7 +364,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         )
                       ],
                     ),
-
                   )
                 ],
               ),

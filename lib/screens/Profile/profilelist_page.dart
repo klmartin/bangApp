@@ -11,6 +11,7 @@ import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 
 import '../../services/animation.dart';
 import '../../services/fetch_post.dart';
+import '../../services/token_storage_helper.dart';
 import '../Chat/chat_model.dart';
 
 void main() => runApp(ProfileList());
@@ -147,10 +148,14 @@ class UsersStream extends StatefulWidget {
 class _UsersStreamState extends State<UsersStream> {
   TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _searchResults = [];
-
   void _fetchSearchResults(String keyword) async {
+    final token = await TokenManager.getToken();
     final url = Uri.parse('$baseUrl/users/search?keyword=$keyword');
-    final response = await http.get(url);
+    final response = await http.get(url,headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type':
+      'application/json', // Include other headers as needed
+    },);
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);

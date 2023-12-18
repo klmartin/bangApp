@@ -17,21 +17,24 @@ import 'package:bangapp/screens/Create/create_page.dart' as CR;
 
 class Nav extends StatefulWidget {
   static const String id = 'nav';
+  final int initialIndex;
+  Nav({required this.initialIndex});
   @override
   _NavState createState() => _NavState();
 }
 
 class _NavState extends State<Nav> {
   bool _isAppBarEnabled = true; // Variable to track app bar state
+  int _selectedIndex = 0;
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialIndex;
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     chatProvider.getTotalUnreadMessages();
   }
 
   @override
-  int _selectedIndex = 0;
   void _onItemTap(int index) {
     setState(() {
       _selectedIndex = index;

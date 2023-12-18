@@ -36,17 +36,13 @@ class PostsProvider with ChangeNotifier {
         final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
         final token = await TokenManager.getToken();
         var responseData = {};
-
-        if (cachedData.isNotEmpty &&
-            DateTime.now()
-                    .difference(DateTime.fromMillisecondsSinceEpoch(
-                        lastCachedTimestamp))
-                    .inMinutes <=
-                3 && _pageNumber <=1 ) {
+        print(iJustPosted);
+        print('ijustposted');
+        var minutes = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp)).inMinutes;
+        if (minutes <= 3  && iJustPosted != true ) {
+          print('nimeingia hapa');
           // Use cached data if it exists and is not expired
           responseData = json.decode(cachedData);
-          print('here');
-          print(token);
 
         } else {
           try {

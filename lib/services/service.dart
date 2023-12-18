@@ -51,16 +51,22 @@ class Service {
   }
 
   Future<bool> addImage(Map<String, String> body, String filepath) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = await TokenManager.getToken();
+    final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
     String addimageUrl = '$baseUrl/imageadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
+      ..headers.addAll(headers)
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
+      prefs.setBool('i_just_posted', true);
+      prefs.setBool('i_just_posted_profile', true);
       if (response.statusCode == 201) {
         final response2 = jsonDecode(response.body);
         if (response2['data']) {
+
         } else {}
         return true;
       } else {
@@ -73,6 +79,7 @@ class Service {
   }
 
   Future<bool> addBangUpdate(Map<String, String> body, String filepath) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = await TokenManager.getToken();
     final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
     String addimageUrl = '$baseUrl/addBangUpdate';
@@ -84,7 +91,8 @@ class Service {
       var response = await http.Response.fromStream(await request.send());
       if (response.statusCode == 201) {
         final response2 = jsonDecode(response.body);
-
+        prefs.setBool('i_just_posted_bang_update', true);
+        prefs.setBool('i_just_posted_profile', true);
         if (response2['data']) {
         } else {
           print("No response.........");
@@ -100,6 +108,7 @@ class Service {
   }
 
   Future<bool> addChallengImage(Map<String, String> body, String filepath, String filepath2) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = await TokenManager.getToken();
     final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
     String addimageUrl = '$baseUrl/imagechallengadd';
@@ -110,7 +119,8 @@ class Service {
       ..files.add(await http.MultipartFile.fromPath('image2', filepath2));
     try {
       var response = await http.Response.fromStream(await request.send());
-      print(response.body);
+      prefs.setBool('i_just_posted', true);
+      prefs.setBool('i_just_posted_profile', true);
       if (response.statusCode == 201) {
         return true;
       } else {
@@ -134,7 +144,6 @@ class Service {
     try {
       var response = await http.Response.fromStream(await request.send());
       if (response.statusCode == 200) {
-        print("nimefika kwenye challegne notification");
         var data = json.decode(response.body);
         print(data);
         String notificationSent = await sendNotification(
@@ -186,17 +195,19 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/likePost'),
-        body: {
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body: json.encode({
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
           'like_type': likeType,
-        },
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
-        },
+        }),
+
       );
+      print(response.body);
+      print('this is response');
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
@@ -219,15 +230,15 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/likeBangUpdate'),
-        body: {
-          'post_id': postId.toString(),
-          'user_id': prefs.getInt('user_id').toString(), // Convert to string
-        },
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':
           'application/json', // Include other headers as needed
         },
+        body: json.encode({
+          'post_id': postId.toString(),
+          'user_id': prefs.getInt('user_id').toString(), // Convert to string
+        }),
       );
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
@@ -277,13 +288,10 @@ class Service {
       final response = await http.get(
         Uri.parse('$baseUrl/bangUpdateComment/$postId'),headers: {
         'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
+        'Content-Type': 'application/json', // Include other headers as needed
       },
       );
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        return responseData['comments'];
       } else {
         return [];
       }
@@ -547,7 +555,7 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       Map<String, String> body = {
         'user_id': prefs.getInt('user_id').toString(),
-        'phone_number': phoneNumber.toString(),
+        'phoneNumber': phoneNumber.toString(),
         'hobbies': selectedHobbiesText,
         'date_of_birth': date_of_birth.toString(),
         'occupation': occupation,
@@ -560,16 +568,16 @@ class Service {
             ..fields.addAll(body)
             ..files.add(await http.MultipartFile.fromPath('image', filepath));
       var response = await http.Response.fromStream(await request.send());
-      print('this is response');
-      print(response.body);
+      print(response);
+      print('this is edit response');
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
-        print(responseData);
+
         setState(() {});
       } else {}
     } catch (e) {
-      print(e);
+print(e);
       // Handle exceptions, if any
     }
   }

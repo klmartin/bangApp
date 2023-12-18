@@ -214,7 +214,7 @@ class _PostCardState extends State<PostCard> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Nav()));
+                                  builder: (context) => Nav(initialIndex: 0)));
                         }
                         else{
                           Fluttertoast.showToast(
@@ -242,7 +242,7 @@ class _PostCardState extends State<PostCard> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Nav()));
+                                builder: (context) => Nav(initialIndex: 0)));
                       },
                       child: Text('Decline'),
                     ),
