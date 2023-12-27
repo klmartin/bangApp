@@ -147,9 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'password': password,
                                 },
                               );
-
                               final responseBody = jsonDecode(response.body);
-
                               if (responseBody.containsKey('error') &&
                                   responseBody['error'] ==
                                       'invalid_credentials') {
@@ -172,13 +170,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _firebaseMessaging
                                     .getToken()
                                     .then((token) async {
-                                  Service().sendTokenToBackend(
-                                      token, responseBody['user_id']);
                                   Provider.of<UserProvider>(context,
-                                          listen: false)
+                                      listen: false)
                                       .setUser(responseBody);
                                   SharedPreferences prefs =
-                                      await SharedPreferences.getInstance();
+                                  await SharedPreferences.getInstance();
                                   prefs.setInt(
                                       'user_id', responseBody['user_id']);
                                   await TokenManager.saveToken(responseBody['token']);
@@ -188,9 +184,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);
                                   prefs.setString('role', responseBody['role']);
+                                  print('this is token');
+                                  print(token);
+                                  Service().sendTokenToBackend(
+                                      token, responseBody['user_id']);
+
                                 });
-                                print('this is role');
-                                print(responseBody['role']);
+
 
                                 Navigator.pushReplacement(
                                   context,

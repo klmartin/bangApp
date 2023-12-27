@@ -469,18 +469,19 @@ class Service {
 
   Future sendTokenToBackend(token, id) async {
     try {
-      final token = await TokenManager.getToken();
+      final authToken = await TokenManager.getToken();
       final response = await http.post(
         Uri.parse('$baseUrl/storeToken'),
-        body: {
-          'user_id': id.toString(),
-          'device_token': token,
-        },
         headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': 'Bearer $authToken',
           'Content-Type':
           'application/json', // Include other headers as needed
         },
+        body:jsonEncode({
+          'user_id': id,
+          'device_token': token,
+        }),
+
       );
       if (response.statusCode == 200) {
       } else {}

@@ -461,10 +461,10 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
   Widget build(BuildContext context) {
     return Consumer<BangUpdateProfileProvider>(
         builder: (context, provider, child) {
-          if (provider.updates.isEmpty) {
-            return Center(child: CircularProgressIndicator());
+          if (provider.isLoading== false && provider.updates.isEmpty) {
+            return Center(child: Text('No Posts Available'));
           }
-          else{
+          else if(provider.isLoading== false &&  !provider.updates.isEmpty){
             return SingleChildScrollView(
               controller: _scrollController,
               child: GridView(
@@ -513,6 +513,9 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                   ]
               ),
             );
+          }
+          else{
+            return Center(child: CircularProgressIndicator());
           }
         });
   }
@@ -685,10 +688,10 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
 
     return Consumer<ProfileProvider>(
         builder: (context, provider, child) {
-          if(provider.posts.isEmpty ){
-            return Center(child: CircularProgressIndicator());
+          if(provider.posts.isEmpty  && provider.isLoading == false ){
+            return Center(child: Text('No Posts Available'));
           }
-          else{
+          else if(provider.isLoading == false && !provider.posts.isEmpty ){
             return SingleChildScrollView(
               controller: _scrollController,
               child: GridView(
@@ -889,6 +892,9 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                   ]
               ),
             );
+          }
+          else{
+            return Center(child: CircularProgressIndicator());
           }
 
         }

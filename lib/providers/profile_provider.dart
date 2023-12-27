@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'package:bangapp/constants/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/image_post.dart';
 import '../services/api_cache_helper.dart';
 
 class ProfileProvider extends ChangeNotifier {
-  bool _isLoading = false;
+  bool _isLoading = true;
   late String myImage = profileUrl;
   late int myPostCount= 0;
   late int myFollowerCount= 0;
@@ -17,15 +16,17 @@ class ProfileProvider extends ChangeNotifier {
   int _pageNumber = 1;
   List<ImagePost> _posts = [];
   List<ImagePost> get posts => _posts;
+  bool  get isLoading => _isLoading;
 
   ApiCacheHelper apiCacheHelper = ApiCacheHelper(
     baseUrl: baseUrl,
-    numberOfPostsPerRequest: 10,
+    numberOfPostsPerRequest: 15,
   );
 
   Future<void> getMyPosts() async {
     List<dynamic> data = await apiCacheHelper.getMyPosts(pageNumber: _pageNumber);
     _posts.addAll(data.map((json) => ImagePost.fromJson(json)).toList());
+    _isLoading = false;
     _pageNumber++;
     notifyListeners();
   }
@@ -33,9 +34,9 @@ class ProfileProvider extends ChangeNotifier {
   Future<void> getUserPost(userId) async {
     List<dynamic> data =  await apiCacheHelper.getUserPost(pageNumber: _pageNumber, userId: userId);
     _posts.addAll(data.map((json) => ImagePost.fromJson(json)).toList());
+    _isLoading = false;
     _pageNumber++;
     notifyListeners();
-
   }
 
   void increaseLikes(int postId) {

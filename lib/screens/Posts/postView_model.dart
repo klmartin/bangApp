@@ -59,7 +59,9 @@ class POstView extends StatefulWidget {
 }
 
 class _POstViewState extends State<POstView> {
+
   @override
+
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(

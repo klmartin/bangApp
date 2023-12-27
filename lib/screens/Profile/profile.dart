@@ -592,10 +592,10 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
   Widget build(BuildContext context) {
     return Consumer<BangUpdateProfileProvider>(
         builder: (context, provider, child) {
-          if (provider.updates.isEmpty) {
+          if (provider.updates.isEmpty && provider.isLoading == false  ) {
             return Center(child: Text('No Posts Available'));
           }
-          else{
+          else if(provider.isLoading == false && !provider.updates.isEmpty) {
             return SingleChildScrollView(
               controller: _scrollController,
               child: GridView(
@@ -617,7 +617,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                               borderRadius: BorderRadius.circular(5),
                               child: InkWell(
                                 onTap: () {
-                                 print('pressed');
+                                  print('pressed');
                                 },
                                 child: CachedNetworkImage(
                                   imageUrl: provider.updates[i].filename!,
@@ -632,16 +632,11 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5),
                             child: InkWell(
-                              onTap: () {
-                                print('pressed');
-                              },
-                              child:VideoRect(message:provider.updates[i].filename)
-                              // Image.asset(
-                              //   'assets/images/video_thumb.png',
-                              //   fit: BoxFit.cover,
-                              //   width: 100,
-                              //   height: 100,
-                              // ),
+                                onTap: () {
+                                  print('pressed');
+                                },
+                                child:VideoRect(message:provider.updates[i].filename)
+
                             ),
                           ),
                         )
@@ -649,9 +644,13 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                   ]
               ),
 
-        );
+            );
+          }
+          else{
+            return Center(child: CircularProgressIndicator());
+          }
       }
-    });
+    );
   }
 }
 
@@ -700,10 +699,10 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
     // Use the ProfileProvider here to build your UI based on the fetched posts
       return Consumer<ProfileProvider>(
           builder: (context, provider, child) {
-            if(provider.posts.isEmpty ){
+            if(provider.posts.isEmpty && provider.isLoading == false){
               return Center(child: Text('No Posts Available'));
             }
-            else{
+            else if ( provider.isLoading == false && !provider.posts.isEmpty){
               return SingleChildScrollView(
                 controller: _scrollController,
                 child: GridView(
@@ -725,22 +724,22 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                 onTap: () {
                                   Navigator.push(
                                       context, MaterialPageRoute(builder: (context) => POstView(
-                                      provider.posts[i].name!,
-                                      provider.posts[i].caption!,
-                                      provider.posts[i].imageUrl!,
-                                      provider.posts[i].challengeImgUrl!,
-                                      provider.posts[i].imgWidth!,
-                                      provider.posts[i].imgHeight!,
-                                      provider.posts[i].postId!,
-                                      provider.posts[i].commentCount!,
-                                      provider.posts[i].userId!,
-                                      provider.posts[i].isLikedA!,
-                                      provider.posts[i].likeCountA!,
-                                      provider.posts[i].type!,
-                                      provider.posts[i].followerCount!,
-                                      provider.posts[i].createdAt!,
-                                      provider.posts[i].userImage!,
-                                      provider.posts[i].pinned!,
+                                    provider.posts[i].name!,
+                                    provider.posts[i].caption!,
+                                    provider.posts[i].imageUrl!,
+                                    provider.posts[i].challengeImgUrl!,
+                                    provider.posts[i].imgWidth!,
+                                    provider.posts[i].imgHeight!,
+                                    provider.posts[i].postId!,
+                                    provider.posts[i].commentCount!,
+                                    provider.posts[i].userId!,
+                                    provider.posts[i].isLikedA!,
+                                    provider.posts[i].likeCountA!,
+                                    provider.posts[i].type!,
+                                    provider.posts[i].followerCount!,
+                                    provider.posts[i].createdAt!,
+                                    provider.posts[i].userImage!,
+                                    provider.posts[i].pinned!,
                                     provider,
                                   )));
                                 },
@@ -759,23 +758,23 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                               onTap: () {
                                 Navigator.push(
                                     context, MaterialPageRoute(builder: (context) => POstView(
-                                    provider.posts[i].name!,
-                                    provider.posts[i].caption!,
-                                    provider.posts[i].imageUrl!,
-                                    provider.posts[i].challengeImgUrl!,
-                                    provider.posts[i].imgWidth!,
-                                    provider.posts[i].imgHeight!,
-                                    provider.posts[i].postId!,
-                                    provider.posts[i].commentCount!,
-                                    provider.posts[i].userId!,
-                                    provider.posts[i].isLikedA!,
-                                    provider.posts[i].likeCountA!,
-                                    provider.posts[i].type!,
-                                    provider.posts[i].followerCount!,
-                                    provider.posts[i].createdAt!,
-                                    provider.posts[i].userImage!,
-                                    provider.posts[i].pinned!,
-                                    provider,
+                                  provider.posts[i].name!,
+                                  provider.posts[i].caption!,
+                                  provider.posts[i].imageUrl!,
+                                  provider.posts[i].challengeImgUrl!,
+                                  provider.posts[i].imgWidth!,
+                                  provider.posts[i].imgHeight!,
+                                  provider.posts[i].postId!,
+                                  provider.posts[i].commentCount!,
+                                  provider.posts[i].userId!,
+                                  provider.posts[i].isLikedA!,
+                                  provider.posts[i].likeCountA!,
+                                  provider.posts[i].type!,
+                                  provider.posts[i].followerCount!,
+                                  provider.posts[i].createdAt!,
+                                  provider.posts[i].userImage!,
+                                  provider.posts[i].pinned!,
+                                  provider,
                                 )));
                               },
                               child:
@@ -869,22 +868,22 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                       onTap: () {
                                         Navigator.push(
                                             context, MaterialPageRoute(builder: (context) => POstVideoChallengeView(
-                                            provider.posts[i].name!,
-                                            provider.posts[i].caption!,
-                                            provider.posts[i].imageUrl!,
-                                            provider.posts[i].challengeImgUrl!,
-                                            provider.posts[i].imgWidth!,
-                                            provider.posts[i].imgHeight!,
-                                            provider.posts[i].postId!,
-                                            provider.posts[i].commentCount!,
-                                            provider.posts[i].userId!,
-                                            provider.posts[i].isLikedA!,
-                                            provider.posts[i].likeCountA!,
-                                            provider.posts[i].type!,
-                                            provider.posts[i].followerCount!,
-                                            provider.posts[i].createdAt!,
-                                            provider.posts[i].userImage!,
-                                            provider.posts[i].pinned!,
+                                          provider.posts[i].name!,
+                                          provider.posts[i].caption!,
+                                          provider.posts[i].imageUrl!,
+                                          provider.posts[i].challengeImgUrl!,
+                                          provider.posts[i].imgWidth!,
+                                          provider.posts[i].imgHeight!,
+                                          provider.posts[i].postId!,
+                                          provider.posts[i].commentCount!,
+                                          provider.posts[i].userId!,
+                                          provider.posts[i].isLikedA!,
+                                          provider.posts[i].likeCountA!,
+                                          provider.posts[i].type!,
+                                          provider.posts[i].followerCount!,
+                                          provider.posts[i].createdAt!,
+                                          provider.posts[i].userImage!,
+                                          provider.posts[i].pinned!,
 
                                         )));
                                       },
@@ -904,6 +903,9 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                     ]
                 ),
               );
+            }
+            else {
+              return Center(child: CircularProgressIndicator());
             }
 
          }

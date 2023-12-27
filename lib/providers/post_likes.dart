@@ -3,6 +3,8 @@ import 'package:bangapp/constants/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../services/token_storage_helper.dart';
+
 
 
 class UserLikesProvider extends ChangeNotifier {
@@ -11,10 +13,14 @@ class UserLikesProvider extends ChangeNotifier {
   get likedUsers => _likedUsers;
 
   Future<void> getUserLikedPost(int postId) async {
-
+    final token = await TokenManager.getToken();
   try {
     final url = Uri.parse("$baseUrl/getPostLikes/$postId");
-    final response = await http.get(url);
+    final response = await http.get(url, headers: {
+    'Authorization': 'Bearer $token',
+    'Content-Type':
+    'application/json', // Include other headers as needed
+    },);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
