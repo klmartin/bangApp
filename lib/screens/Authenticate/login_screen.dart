@@ -232,75 +232,75 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
 
                   //or continue with
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            'Or continue with',
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  //   child: Row(
+                  //     children: [
+                  //       Expanded(
+                  //         child: Divider(
+                  //           thickness: 0.5,
+                  //           color: Colors.grey[400],
+                  //         ),
+                  //       ),
+                  //       Padding(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  //         child: Text(
+                  //           'Or continue with',
+                  //           style: TextStyle(color: Colors.grey[700]),
+                  //         ),
+                  //       ),
+                  //       Expanded(
+                  //         child: Divider(
+                  //           thickness: 0.5,
+                  //           color: Colors.grey[400],
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
 
                   const SizedBox(height: 20),
                   //google + apple sign in buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
                     
 
-                      MaterialButton(
-                        onPressed: signIn,
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(16),
-                            color: Colors.grey[200],
-                          ),
-                          child: Image.asset(
-                            'assets/images/google.png',
-                            height: 40,
-                          ),
-                        ),
-                      ),
+                  //     MaterialButton(
+                  //       onPressed: signIn,
+                  //       child: Container(
+                  //         padding: const EdgeInsets.all(20),
+                  //         decoration: BoxDecoration(
+                  //           border: Border.all(color: Colors.white),
+                  //           borderRadius: BorderRadius.circular(16),
+                  //           color: Colors.grey[200],
+                  //         ),
+                  //         child: Image.asset(
+                  //           'assets/images/google.png',
+                  //           height: 40,
+                  //         ),
+                  //       ),
+                  //     ),
 
-                      const SizedBox(width: 10),
+                  //     const SizedBox(width: 10),
 
-                      MaterialButton(
-                        onPressed: signIn,
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(16),
-                            color: Colors.grey[200],
-                          ),
-                          child: Image.asset(
-                            'assets/images/apple.png',
-                            height: 40,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  //     MaterialButton(
+                  //       onPressed: signIn,
+                  //       child: Container(
+                  //         padding: const EdgeInsets.all(20),
+                  //         decoration: BoxDecoration(
+                  //           border: Border.all(color: Colors.white),
+                  //           borderRadius: BorderRadius.circular(16),
+                  //           color: Colors.grey[200],
+                  //         ),
+                  //         child: Image.asset(
+                  //           'assets/images/apple.png',
+                  //           height: 40,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
 
                   SizedBox(height: 20),
 

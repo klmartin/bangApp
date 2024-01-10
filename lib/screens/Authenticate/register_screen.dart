@@ -274,23 +274,23 @@ class _RegisterState extends State<Register> {
 
               const SizedBox(height: 50),
               //google + apple sign in buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //google button
-                  SquareTile(
-                    imagePath: 'assets/images/google.png',
-                    onTap: () => AuthService().signIn(),),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     //google button
+              //     SquareTile(
+              //       imagePath: 'assets/images/google.png',
+              //       onTap: () => AuthService().signIn(),),
 
-                  const SizedBox(width: 10),
-                  //apple button
-                  SquareTile(
-                    imagePath: 'assets/images/apple.png',
-                    onTap: () => AuthService().signIn(),
-                  ),
+              //     const SizedBox(width: 10),
+              //     //apple button
+              //     SquareTile(
+              //       imagePath: 'assets/images/apple.png',
+              //       onTap: () => AuthService().signIn(),
+              //     ),
 
-                ],
-              ),
+              //   ],
+              // ),
 
               const SizedBox(height: 50),
               MaterialButton(
