@@ -262,79 +262,65 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 20),
                   //google + apple sign in buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      //google button
-                      /* SquareTile(
-                        imagePath: 'assets/images/google.png',
-                        //onTap: () => AuthService().signInWithGoogle(),),
-                        onTap: () => AuthService().signIn(),
-
-                      ),
-
-
-
-                      const SizedBox(width: 10),
-                      //apple button
-                      SquareTile(
-                          imagePath: 'assets/images/apple.png',
-                          onTap: () => AuthService().signIn(),
-                          ),
-*/
-
-                      MaterialButton(
-                        onPressed: signIn,
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(16),
-                            color: Colors.grey[200],
-                          ),
-                          child: Image.asset(
-                            'assets/images/google.png',
-                            height: 40,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 10),
-
-                      MaterialButton(
-                        onPressed: signIn,
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(16),
-                            color: Colors.grey[200],
-                          ),
-                          child: Image.asset(
-                            'assets/images/apple.png',
-                            height: 40,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+//                   Row(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: [
+//                       //google button
+//                       /* SquareTile(
+//                         imagePath: 'assets/images/google.png',
+//                         //onTap: () => AuthService().signInWithGoogle(),),
+//                         onTap: () => AuthService().signIn(),
+//
+//                       ),
+//
+//
+//
+//                       const SizedBox(width: 10),
+//                       //apple button
+//                       SquareTile(
+//                           imagePath: 'assets/images/apple.png',
+//                           onTap: () => AuthService().signIn(),
+//                           ),
+// */
+//
+//                       MaterialButton(
+//                         onPressed: signIn,
+//                         child: Container(
+//                           padding: const EdgeInsets.all(20),
+//                           decoration: BoxDecoration(
+//                             border: Border.all(color: Colors.white),
+//                             borderRadius: BorderRadius.circular(16),
+//                             color: Colors.grey[200],
+//                           ),
+//                           child: Image.asset(
+//                             'assets/images/google.png',
+//                             height: 40,
+//                           ),
+//                         ),
+//                       ),
+//
+//                       const SizedBox(width: 10),
+//
+//                       MaterialButton(
+//                         onPressed: signIn,
+//                         child: Container(
+//                           padding: const EdgeInsets.all(20),
+//                           decoration: BoxDecoration(
+//                             border: Border.all(color: Colors.white),
+//                             borderRadius: BorderRadius.circular(16),
+//                             color: Colors.grey[200],
+//                           ),
+//                           child: Image.asset(
+//                             'assets/images/apple.png',
+//                             height: 40,
+//                           ),
+//                         ),
+//                       ),
+//                     ],
+//                   ),
 
                   SizedBox(height: 20),
 
-                  /*   ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Colors.black,
-                      minimumSize: Size(double.infinity, 50),
-                    ),
-                    icon: FaIcon(
-                      FontAwesomeIcons.google,
-                      color: Colors.red,
-                    ),
-                    label: Text('Sign Up with Google'),
-                    onPressed: signIn,
-
-                  ),*/
                   const SizedBox(height: 20),
                   MaterialButton(
                     onPressed: () {
