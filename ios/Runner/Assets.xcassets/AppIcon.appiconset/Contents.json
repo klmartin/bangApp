@@ -2,74 +2,112 @@
   "images" : [
     {
       "filename" : "Icon-App-40x40@1x.png",
-      "idiom" : "iphone",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
       "size" : "20x20"
     },
     {
-      "filename" : "Icon-App-60x60@2x 1.png",
-      "idiom" : "iphone",
+      "filename" : "Icon-App-60x60@2x.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "3x",
       "size" : "20x20"
-    },
-    {
-      "filename" : "Icon-App-60x60@2x-2.png",
-      "idiom" : "iphone",
-      "scale" : "1x",
-      "size" : "29x29"
     },
     {
       "filename" : "Icon-App-60x60@2x-3.png",
-      "idiom" : "iphone",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
-      "filename" : "Icon-App-60x60@2x-4.png",
-      "idiom" : "iphone",
+      "filename" : "Icon-App-60x60@2x-4 copy.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "3x",
       "size" : "29x29"
     },
     {
-      "filename" : "Icon-App-40x40@2x.png",
-      "idiom" : "iphone",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
-      "size" : "40x40"
-    },
-    {
-      "filename" : "Icon-App-60x60@2x-5.png",
-      "idiom" : "iphone",
-      "scale" : "3x",
-      "size" : "40x40"
-    },
-    {
-      "filename" : "Icon-App-60x60@2x-6.png",
-      "idiom" : "iphone",
-      "scale" : "1x",
-      "size" : "57x57"
+      "size" : "38x38"
     },
     {
       "filename" : "Icon-App-60x60@2x-7.png",
-      "idiom" : "iphone",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "3x",
+      "size" : "38x38"
+    },
+    {
+      "filename" : "Icon-App-40x40@2x.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
-      "size" : "57x57"
+      "size" : "40x40"
     },
     {
       "filename" : "Icon-App-60x60@2x-5 1.png",
-      "idiom" : "iphone",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "3x",
+      "size" : "40x40"
+    },
+    {
+      "filename" : "Icon-App-60x60@2x-5 copy.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
-      "filename" : "Icon-App-60x60@3x.png",
-      "idiom" : "iphone",
+      "filename" : "Icon-App-60x60@2x-13.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "scale" : "3x",
       "size" : "60x60"
     },
     {
-      "filename" : "Icon-App-60x60@2x-8.png",
-      "idiom" : "ios-marketing",
-      "scale" : "1x",
+      "filename" : "Icon-App-60x60@2x-11.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "2x",
+      "size" : "64x64"
+    },
+    {
+      "filename" : "Icon-App-60x60@2x-14.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "3x",
+      "size" : "64x64"
+    },
+    {
+      "filename" : "Icon-App-60x60@2x-15.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "2x",
+      "size" : "68x68"
+    },
+    {
+      "filename" : "Icon-App-152x152@2x-9.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "2x",
+      "size" : "76x76"
+    },
+    {
+      "filename" : "Icon-App-167x6167@2x-9.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "2x",
+      "size" : "83.5x83.5"
+    },
+    {
+      "filename" : "Icon-App-60x60@2x-8.png 23-03-37-214.png",
+      "idiom" : "universal",
+      "platform" : "ios",
       "size" : "1024x1024"
     }
   ],

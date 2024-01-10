@@ -167,31 +167,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                                 showSpinner = false;
                               } else {
-                                print(responseBody['token']);
-                                print('this is response body for access_token');
-                                _firebaseMessaging
-                                    .getToken()
-                                    .then((token) async {
-                                  Service().sendTokenToBackend(
-                                      token, responseBody['user_id']);
-                                  Provider.of<UserProvider>(context,
+                                Provider.of<UserProvider>(context,
                                           listen: false)
                                       .setUser(responseBody);
                                   SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
-                                  prefs.setInt(
-                                      'user_id', responseBody['user_id']);
+                                      print("debug for shared preferences");
+                                      print(prefs);
+                                      print(responseBody['user_id']);
+                                  prefs.setInt('user_id', responseBody['user_id']);
                                   await TokenManager.saveToken(responseBody['token']);
                                   prefs.setString(
                                       'user_image', responseBody['user_image']);
                                   prefs.setString('token', responseBody['token']);
                                   prefs.setString('name', responseBody['name']);
-                                  prefs.setString('device_token', token!);
+                                 
                                   prefs.setString('role', responseBody['role']);
-                                });
-                                print('this is role');
-                                print(responseBody['role']);
+                                       print('this is role');
+                                print(prefs.getInt("user_id"));
 
+                                _firebaseMessaging.getToken().then((token) async {
+                                  Service().sendTokenToBackend(
+                                      token, responseBody['user_id']);
+                                       prefs.setString('device_token', token!);
+                                });
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -265,23 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      //google button
-                      /* SquareTile(
-                        imagePath: 'assets/images/google.png',
-                        //onTap: () => AuthService().signInWithGoogle(),),
-                        onTap: () => AuthService().signIn(),
-
-                      ),
-
-
-
-                      const SizedBox(width: 10),
-                      //apple button
-                      SquareTile(
-                          imagePath: 'assets/images/apple.png',
-                          onTap: () => AuthService().signIn(),
-                          ),
-*/
+                    
 
                       MaterialButton(
                         onPressed: signIn,
@@ -321,20 +304,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   SizedBox(height: 20),
 
-                  /*   ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Colors.black,
-                      minimumSize: Size(double.infinity, 50),
-                    ),
-                    icon: FaIcon(
-                      FontAwesomeIcons.google,
-                      color: Colors.red,
-                    ),
-                    label: Text('Sign Up with Google'),
-                    onPressed: signIn,
-
-                  ),*/
+                
                   const SizedBox(height: 20),
                   MaterialButton(
                     onPressed: () {
