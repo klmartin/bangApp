@@ -19,42 +19,54 @@ enum ImageSourceType { gallery, camera }
 
 class EditPage extends StatefulWidget {
   static const String id = 'edit';
-  String? _descr;
-  String? phoneNumber;
-  String? name;
-  String? occupation;
-  String? bio;
-  TextEditingController phoneNumberController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
-  TextEditingController occupationController = TextEditingController();
-  TextEditingController dateOfBirthController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
+  final TextEditingController nameController;
+  final TextEditingController occupationController;
+  final TextEditingController dateOfBirthController;
+  final TextEditingController phoneNumberController;
+  final TextEditingController bioController;
+  String name;
+  int phoneNumber;
+  String occupation;
+  String bio;
+
   String selectedHobbiesText = "";
   DateTime date_of_birth = DateTime.now();
   TextEditingController _dateController = TextEditingController();
-  String userImage = '';
+  String userImage ;
   var imagePicker;
-  EditPage({required this.userImage,required this.name,required this.date_of_birth,required this.phoneNumber,required this.selectedHobbiesText,required this.occupation,required this.bio});
-
+  EditPage({
+    required this.nameController,
+    required this.occupationController,
+    required this.dateOfBirthController,
+    required this.phoneNumberController,
+    required this.userImage,
+    required this.name,
+    required this.date_of_birth,
+    required this.phoneNumber,
+    required this.selectedHobbiesText,
+    required this.occupation,
+    required this.bio,
+    required this.bioController,
+  });
   _EditPageState createState() => _EditPageState();
 }
+
 class _EditPageState extends State<EditPage> {
   late Map<String, dynamic> _currentUser;
+
   @override
   void initState() {
     super.initState();
-    _getUserData();
+    rimage = null;
+
+    widget.nameController.text = widget.name;
+    widget.occupationController.text = widget.occupation;
+    widget.phoneNumberController.text = widget.phoneNumber.toString();
+    widget.dateOfBirthController.text = widget.date_of_birth.toString();
+    widget.bioController.text = widget.bio;
     widget.imagePicker = ImagePicker();
   }
-  void _getUserData() async {
-      widget.nameController.text = widget.name!;
-      widget.phoneNumberController.text = widget.phoneNumber!;
-      widget.selectedHobbiesText = widget.selectedHobbiesText;
-      widget.occupationController.text = widget.occupation!;
-      widget.descriptionController.text = widget.bio!;
-      widget.userImage = widget.userImage;
-      rimage = null;
-  }
+
 
   bool showSpinner = false;
   @override
@@ -229,7 +241,7 @@ class _EditPageState extends State<EditPage> {
                 controller: widget.phoneNumberController,
                 onChanged: (value) {
                   //Do something with the user input.
-                  widget.phoneNumber = value;
+                  widget.phoneNumber = int.parse(value);
                 },
                 decoration: InputDecoration(
                   labelText: 'Enter your phone number',
@@ -318,9 +330,9 @@ class _EditPageState extends State<EditPage> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textAlign: TextAlign.center,
-                        controller: widget.descriptionController,
+                        controller: widget.bioController,
                         onChanged: (value) {
-                          widget._descr = value;
+                          widget.bio = value;
                           //Do something with the user input.
                         },
                         decoration: InputDecoration(
@@ -353,8 +365,8 @@ class _EditPageState extends State<EditPage> {
 
                     child: TextButton(
                         onPressed: () async {
-                          print([widget.date_of_birth,widget.phoneNumber!,widget.selectedHobbiesText,widget.occupation,widget._descr,rimage,widget.name]);
-                          await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber!,widget.selectedHobbiesText,widget.occupation,widget._descr,rimage,widget.name);
+                          print([widget.date_of_birth,widget.phoneNumber!,widget.selectedHobbiesText,widget.occupation,rimage,widget.name]);
+                          await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber!,widget.selectedHobbiesText,widget.occupation,widget.bio,rimage,widget.name);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -509,6 +521,7 @@ class _EditPageState extends State<EditPage> {
   }
 
 }
+
 
 ApiCacheHelper apiCacheHelper = ApiCacheHelper(
   baseUrl: baseUrl,

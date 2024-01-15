@@ -39,7 +39,7 @@ class _ProfileState extends State<Profile> {
   bool _isLoading = false;
   late String myName = "";
   late String myBio = "";
-  String? phoneNumber;
+  int? phoneNumber;
   DateTime date_of_birth = DateTime.now();
   String selectedHobbiesText = "";
   String? occupation;
@@ -72,13 +72,10 @@ class _ProfileState extends State<Profile> {
     print(myInfo);
     print('this is my info');
     setState(() {
-      // date_of_birth = myInfo['date_of_birth'] != null
-      //     ? DateFormatter.formatDateTime(
-      //   dateTime: DateTime.parse(myInfo['date_of_birth']),
-      //   outputFormat: 'dd/MM/yyyy',
-      // ) : '';
+      date_of_birth = DateTime.parse(myInfo['date_of_birth']);
       myName = myInfo['name'] ?? "";
       myBio = myInfo['bio'] ?? "";
+      phoneNumber = myInfo['phone_number'] ?? 0;
       selectedHobbiesText = myInfo['hobbies_and_interests'] ?? '';
       myImage = myInfo['user_image_url'] ?? "";
       occupation = myInfo['occupation'] ?? '';
@@ -189,8 +186,22 @@ class _ProfileState extends State<Profile> {
               child: OutlinedButton(
                   onPressed: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => EditPage(userImage: myImage,name: myName, date_of_birth: date_of_birth, phoneNumber: phoneNumber, selectedHobbiesText: selectedHobbiesText, occupation: occupation, bio: myBio)));
-                  },
+                        MaterialPageRoute(
+                        builder: (context) =>  EditPage(
+                          nameController: TextEditingController(),
+                          userImage: myImage,
+                          name: myName,
+                          date_of_birth: date_of_birth,
+                          phoneNumber: phoneNumber!,
+                          selectedHobbiesText: selectedHobbiesText,
+                          occupation: occupation!,
+                          bio: myBio,
+                          occupationController: TextEditingController(),
+                          dateOfBirthController: TextEditingController(),
+                          phoneNumberController: TextEditingController(),
+                          bioController: TextEditingController(),
+                      ),
+                    ));                  },
                   child: Text(
                     'Edit profile',
                     style: TextStyle(color: Colors.black),

@@ -423,7 +423,7 @@ class _EditPageState extends State<EditPage> {
                         onPressed: () async {
                           await Service().setUserProfile(
                               date_of_birth,
-                              phoneNumber,
+                              int.parse(phoneNumber),
                               selectedHobbiesText,
                               occupation,
                               _descr,

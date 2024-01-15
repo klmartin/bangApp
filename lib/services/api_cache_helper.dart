@@ -298,6 +298,8 @@ class ApiCacheHelper {
                 'application/json', // Include other headers as needed
           },
         );
+        print('chembe');
+        print(token);
         if (response.statusCode == 200) {
           return json.decode(response.body);
         } else {

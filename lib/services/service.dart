@@ -63,6 +63,7 @@ class Service {
       var response = await http.Response.fromStream(await request.send());
       prefs.setBool('i_just_posted', true);
       prefs.setBool('i_just_posted_profile', true);
+      print(response.body);
       if (response.statusCode == 201) {
         final response2 = jsonDecode(response.body);
         if (response2['data']) {
@@ -555,25 +556,41 @@ class Service {
     }
   }
 
-  Future<void> setUserProfile(date_of_birth, String? phoneNumber, String Hobbies, occupation, bio, filepath, name) async {
+  Future<void> setUserProfile(
+      date_of_birth,
+      int? phoneNumber,
+      String Hobbies,
+      occupation,
+      bio,
+      filepath,
+      name,
+      ) async {
     try {
       final token = await TokenManager.getToken();
-      final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'multipart/form-data'
+      };
       SharedPreferences prefs = await SharedPreferences.getInstance();
       Map<String, String> body = {
         'user_id': prefs.getInt('user_id').toString(),
-        'phoneNumber': phoneNumber.toString(),
+        'phoneNumber': phoneNumber?.toString() ?? '', // Check for null before converting to string
         'hobbies': selectedHobbiesText,
         'date_of_birth': date_of_birth.toString(),
         'occupation': occupation,
         'bio': bio,
         'name': name
       };
-      var request =
-          http.MultipartRequest('POST', Uri.parse('$baseUrl/setUserProfile'))
-            ..headers.addAll(headers)
-            ..fields.addAll(body)
-            ..files.add(await http.MultipartFile.fromPath('image', filepath));
+
+      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/setUserProfile'))
+        ..headers.addAll(headers)
+        ..fields.addAll(body);
+
+      // Add the file path only if it is not null
+      if (filepath != null) {
+        request.files.add(await http.MultipartFile.fromPath('image', filepath));
+      }
+
       var response = await http.Response.fromStream(await request.send());
       print(response);
       print('this is edit response');
@@ -582,9 +599,11 @@ class Service {
         final responseData = json.decode(response.body);
 
         setState(() {});
-      } else {}
+      } else {
+        // Handle other response codes or errors
+      }
     } catch (e) {
-print(e);
+      print(e);
       // Handle exceptions, if any
     }
   }

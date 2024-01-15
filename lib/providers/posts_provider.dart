@@ -36,17 +36,15 @@ class PostsProvider with ChangeNotifier {
         final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
         final token = await TokenManager.getToken();
         var responseData = {};
-        print(iJustPosted);
-        print('ijustposted');
+
         var minutes = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp)).inMinutes;
         if (minutes <= 3  && iJustPosted != true ) {
-          print('nimeingia hapa');
           // Use cached data if it exists and is not expired
           responseData = json.decode(cachedData);
 
         } else {
           try {
-
+            print("$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
             final response = await get(Uri.parse(
                 "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
                   headers: {
@@ -54,9 +52,6 @@ class PostsProvider with ChangeNotifier {
                   },
             );
 
-            print("$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
-            print(response.body);
-            print('res body');
             if (response.statusCode == 200) {
               responseData = json.decode(response.body);
               // Process data from the server...
@@ -73,7 +68,7 @@ class PostsProvider with ChangeNotifier {
             // You may want to set an error flag or log the error
           }
         }
-        print(token);
+
         if (responseData.containsKey('data')) {
           List<dynamic> responseList = responseData['data']['data'];
           final newPosts = responseList.map((data) {
