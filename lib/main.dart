@@ -39,6 +39,7 @@ import 'package:bangapp/services/service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferences.getInstance();
   // Listen for shared data when the app starts
   if (Platform.isIOS) {
     await Firebase.initializeApp(
