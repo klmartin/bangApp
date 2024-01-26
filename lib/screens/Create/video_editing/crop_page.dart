@@ -133,21 +133,21 @@ class CropPage extends StatelessWidget {
 
   Widget _buildCropButton(BuildContext context, Fraction f) {
     if (controller.preferredCropAspectRatio != null &&
-        controller.preferredCropAspectRatio! > 1) f = f!.inverse();
+        controller.preferredCropAspectRatio! > 1) f = f.inverse();
 
     return Flexible(
       child: TextButton(
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          backgroundColor: controller.preferredCropAspectRatio == f?.toDouble()
+          backgroundColor: controller.preferredCropAspectRatio == f.toDouble()
               ? Colors.grey.shade800
               : null,
-          foregroundColor: controller.preferredCropAspectRatio == f?.toDouble()
+          foregroundColor: controller.preferredCropAspectRatio == f.toDouble()
               ? Colors.white
               : null,
           textStyle: Theme.of(context).textTheme.bodySmall,
         ),
-        onPressed: () => controller.preferredCropAspectRatio = f?.toDouble(),
+        onPressed: () => controller.preferredCropAspectRatio = f.toDouble(),
         child: Text(f == null ? 'free' : '${f.numerator}:${f.denominator}'),
       ),
     );

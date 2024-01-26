@@ -1,4 +1,3 @@
-import 'package:bangapp/constants/urls.dart';
 
 class NotificationModel {
   final List<NotificationItem> notifications;

@@ -1,14 +1,9 @@
-import 'dart:convert';
 
 import 'package:bangapp/inspiration/inspirations.dart';
 import 'package:bangapp/message/screens/chats/chats_screen.dart';
 import 'package:bangapp/providers/chat_provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;

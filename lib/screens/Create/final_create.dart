@@ -1,13 +1,10 @@
 import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:video_compress/video_compress.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:bangapp/services/service.dart';
 import '../../nav.dart';
 import 'package:video_player/video_player.dart';

@@ -1,4 +1,3 @@
-import 'package:bangapp/screens/Widgets/battle_like.dart';
 import 'package:bangapp/widgets/build_media.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +5,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart'; // Import the BoxDataProvider
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chewie/chewie.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:video_player/video_player.dart';
 import 'package:bangapp/widgets/video_player.dart';
 import '../../services/service.dart';
-import '../../widgets/video_player_item.dart';
 import '../Comments/battleComment.dart';
 
 class SmallBoxCarousel extends StatefulWidget {

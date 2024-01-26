@@ -1,4 +1,3 @@
-import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:flutter/cupertino.dart';

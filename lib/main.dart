@@ -139,7 +139,7 @@ class _AuthenticateState extends State<Authenticate> {
               context,
               MaterialPageRoute(
                 builder: (context) => VideoEditor(
-                  video: File(filePath)!,
+                  video: File(filePath),
                 ),
               ),
             );
@@ -183,7 +183,7 @@ class _AuthenticateState extends State<Authenticate> {
             context,
             MaterialPageRoute(
               builder: (context) => VideoEditor(
-                video: File(filePath)!,
+                video: File(filePath),
               ),
             ),
           );

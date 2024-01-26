@@ -557,7 +557,7 @@ class Service {
   }
 
   Future<void> setUserProfile(
-      date_of_birth,
+      dateOfBirth,
       int? phoneNumber,
       String Hobbies,
       occupation,
@@ -576,7 +576,7 @@ class Service {
         'user_id': prefs.getInt('user_id').toString(),
         'phoneNumber': phoneNumber?.toString() ?? '', // Check for null before converting to string
         'hobbies': selectedHobbiesText,
-        'date_of_birth': date_of_birth.toString(),
+        'date_of_birth': dateOfBirth.toString(),
         'occupation': occupation,
         'bio': bio,
         'name': name

@@ -1,27 +1,19 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/constants.dart';
 import 'package:bangapp/message/models/ChatMessage.dart';
 import 'package:bangapp/message/screens/messages/components/message.dart'
     as MSG;
 import 'package:bangapp/providers/chat_provider.dart';
-import 'package:bangapp/screens/Profile/profile_upload.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:mime/mime.dart';
-import 'package:open_filex/open_filex.dart';
 import 'package:video_player/video_player.dart';
 
-import 'components/body.dart';
 
 class MessagesScreen extends StatefulWidget {
   int receiverId;

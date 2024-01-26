@@ -1,11 +1,9 @@
 import 'package:bangapp/constants/urls.dart';
-import 'package:bangapp/message/components/filled_outline_button.dart';
 import 'package:bangapp/message/constants.dart';
 import 'package:bangapp/message/models/Chat.dart' as Chat;
 import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,15 +1,10 @@
 import 'package:bangapp/constants/urls.dart';
-import 'package:bangapp/screens/Profile/profile.dart';
 import 'package:date_formatter/date_formatter.dart';
 import 'package:filter_list/filter_list.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/screens/Profile/profile_upload.dart';
 import 'package:bangapp/services/service.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import '../../models/hobby.dart';
 import '../../nav.dart';
@@ -115,7 +110,7 @@ class _EditPageState extends State<EditPage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
-                            widget.userImage!, // Provide the remote URL here
+                            widget.userImage, // Provide the remote URL here
                             fit: BoxFit.cover,
                             width: 100,
                             height: 100,
@@ -365,8 +360,8 @@ class _EditPageState extends State<EditPage> {
 
                     child: TextButton(
                         onPressed: () async {
-                          print([widget.date_of_birth,widget.phoneNumber!,widget.selectedHobbiesText,widget.occupation,rimage,widget.name]);
-                          await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber!,widget.selectedHobbiesText,widget.occupation,widget.bio,rimage,widget.name);
+                          print([widget.date_of_birth,widget.phoneNumber,widget.selectedHobbiesText,widget.occupation,rimage,widget.name]);
+                          await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber,widget.selectedHobbiesText,widget.occupation,widget.bio,rimage,widget.name);
                           Navigator.push(
                             context,
                             MaterialPageRoute(

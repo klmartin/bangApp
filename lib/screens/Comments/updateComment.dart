@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../../constants/urls.dart';
 import '../../providers/bang_update_provider.dart';
-import '../Explore/explore_page2.dart';
 
 class UpdateCommentsPage extends StatefulWidget {
   final int? userId;

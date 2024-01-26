@@ -5,7 +5,6 @@ import 'package:fraction/fraction.dart';
 import 'package:path/path.dart' as path;
 import 'package:video_player/video_player.dart';
 
-import '../final_create.dart';
 
 Future<void> _getImageDimension(File file,
     { required Function(Size) onResult}) async {
@@ -40,7 +39,7 @@ class _VideoResultPopupState extends State<VideoResultPopup> {
   @override
   void dispose() {
     if (_isGif) {
-      _fileImage?.evict();
+      _fileImage.evict();
     } else {
       _controller?.pause();
       _controller?.dispose();
@@ -108,7 +107,7 @@ class _CoverResultPopupState extends State<CoverResultPopup> {
                 description: {
                   'Cover path': widget.cover.path,
                   'Cover ratio':
-                  Fraction.fromDouble(_fileDimension?.aspectRatio ?? 0)
+                  Fraction.fromDouble(_fileDimension.aspectRatio ?? 0)
                       .reduce()
                       .toString(),
                   'Cover dimension': _fileDimension.toString(),

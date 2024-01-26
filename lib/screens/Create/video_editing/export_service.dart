@@ -31,13 +31,11 @@ class ExportService {
         if (ReturnCode.isSuccess(code)) {
           onCompleted(File(execute.outputPath));
         } else {
-          if (onError != null) {
-            onError(
-              Exception(
-                  'FFmpeg process exited with state $state and return code $code.\n${await session.getOutput()}'),
-              StackTrace.current,
-            );
-          }
+          onError(
+            Exception(
+                'FFmpeg process exited with state $state and return code $code.\n${await session.getOutput()}'),
+            StackTrace.current,
+          );
           return;
         }
       },

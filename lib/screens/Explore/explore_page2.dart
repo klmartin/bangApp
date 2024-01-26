@@ -1,7 +1,5 @@
 import 'package:bangapp/widgets/buildBangUpdate2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:bangapp/services/service.dart';
 import 'package:provider/provider.dart';
 import '../../providers/bang_update_provider.dart';

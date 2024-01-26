@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:bangapp/constants/urls.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import '../models/image_post.dart';
 import '../services/api_cache_helper.dart';
 
@@ -40,12 +38,12 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   void increaseLikes(int postId) {
-    final post = _posts?.firstWhere((update) => update.postId == postId);
-    if (post!.isLikedA) {
-      post?.likeCountA--;
-      post!.isLikedA = false;
+    final post = _posts.firstWhere((update) => update.postId == postId);
+    if (post.isLikedA) {
+      post.likeCountA--;
+      post.isLikedA = false;
     } else {
-      post!.likeCountA++;
+      post.likeCountA++;
       post.isLikedA = true;
     }
     notifyListeners();

@@ -10,8 +10,6 @@ import '../screens/Explore/bang_updates_like_button.dart';
 import '../screens/Widgets/readmore.dart';
 import '../services/animation.dart';
 import 'package:bangapp/widgets/user_profile.dart';
-import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -229,9 +227,9 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async {
                     key: Key('chewie_key'), // Provide a unique key
                     onVisibilityChanged: (VisibilityInfo info) {
                       if (info.visibleFraction == 0.0) {
-                        _videoPlayerController?.pause();
+                        _videoPlayerController.pause();
                       } else {
-                        _videoPlayerController?.play();
+                        _videoPlayerController.play();
                       }
                     },
                     child: VideoPlayer(_videoPlayerController))

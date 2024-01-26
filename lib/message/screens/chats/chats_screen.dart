@@ -1,12 +1,8 @@
 import 'package:bangapp/custom_appbar.dart';
 import 'package:bangapp/message/constants.dart';
-import 'package:bangapp/message/models/Chat.dart';
-import 'package:bangapp/message/screens/chats/components/chat_card.dart';
-import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/screens/Activity/activity_page.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
-import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:bangapp/screens/Home/Home2.dart';
 import 'package:bangapp/screens/Profile/profile.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';

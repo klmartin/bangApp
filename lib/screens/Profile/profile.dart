@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:date_formatter/date_formatter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -606,7 +605,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
           if (provider.updates.isEmpty && provider.isLoading == false  ) {
             return Center(child: Text('No Posts Available'));
           }
-          else if(provider.isLoading == false && !provider.updates.isEmpty) {
+          else if(provider.isLoading == false && provider.updates.isNotEmpty) {
             return SingleChildScrollView(
               controller: _scrollController,
               child: GridView(
@@ -631,7 +630,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                                   print('pressed');
                                 },
                                 child: CachedNetworkImage(
-                                  imageUrl: provider.updates[i].filename!,
+                                  imageUrl: provider.updates[i].filename,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -713,7 +712,7 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
             if(provider.posts.isEmpty && provider.isLoading == false){
               return Center(child: Text('No Posts Available'));
             }
-            else if ( provider.isLoading == false && !provider.posts.isEmpty){
+            else if ( provider.isLoading == false && provider.posts.isNotEmpty){
               return SingleChildScrollView(
                 controller: _scrollController,
                 child: GridView(
@@ -744,8 +743,8 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                     provider.posts[i].postId!,
                                     provider.posts[i].commentCount!,
                                     provider.posts[i].userId!,
-                                    provider.posts[i].isLikedA!,
-                                    provider.posts[i].likeCountA!,
+                                    provider.posts[i].isLikedA,
+                                    provider.posts[i].likeCountA,
                                     provider.posts[i].type!,
                                     provider.posts[i].followerCount!,
                                     provider.posts[i].createdAt!,
@@ -778,8 +777,8 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                   provider.posts[i].postId!,
                                   provider.posts[i].commentCount!,
                                   provider.posts[i].userId!,
-                                  provider.posts[i].isLikedA!,
-                                  provider.posts[i].likeCountA!,
+                                  provider.posts[i].isLikedA,
+                                  provider.posts[i].likeCountA,
                                   provider.posts[i].type!,
                                   provider.posts[i].followerCount!,
                                   provider.posts[i].createdAt!,
@@ -814,8 +813,8 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                         provider.posts[i].postId!,
                                         provider.posts[i].commentCount!,
                                         provider.posts[i].userId!,
-                                        provider.posts[i].isLikedA!,
-                                        provider.posts[i].likeCountA!,
+                                        provider.posts[i].isLikedA,
+                                        provider.posts[i].likeCountA,
                                         provider.posts[i].type!,
                                         provider.posts[i].followerCount!,
                                         provider.posts[i].createdAt!,
@@ -858,8 +857,8 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                         provider.posts[i].postId!,
                                         provider.posts[i].commentCount!,
                                         provider.posts[i].userId!,
-                                        provider.posts[i].isLikedA!,
-                                        provider.posts[i].likeCountA!,
+                                        provider.posts[i].isLikedA,
+                                        provider.posts[i].likeCountA,
                                         provider.posts[i].type!,
                                         provider.posts[i].followerCount!,
                                         provider.posts[i].createdAt!,
@@ -888,8 +887,8 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                           provider.posts[i].postId!,
                                           provider.posts[i].commentCount!,
                                           provider.posts[i].userId!,
-                                          provider.posts[i].isLikedA!,
-                                          provider.posts[i].likeCountA!,
+                                          provider.posts[i].isLikedA,
+                                          provider.posts[i].likeCountA,
                                           provider.posts[i].type!,
                                           provider.posts[i].followerCount!,
                                           provider.posts[i].createdAt!,

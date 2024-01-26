@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,19 +6,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mime/mime.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import '../../services/animation.dart';
-import '../../services/extension.dart';
 import '../../widgets/user_profile.dart';
 import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 import '../Create/video_editing/video_edit.dart';
-import '../Profile/profile.dart';
 import 'dart:io';
 
 Widget? postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type,createdAt){
   Future<Uint8List> fileToUint8List(File file) async {
-    if (file != null) {
-      List<int> bytes = await file.readAsBytes();
-      return Uint8List.fromList(bytes);
-    }
+    List<int> bytes = await file.readAsBytes();
+    return Uint8List.fromList(bytes);
     return Uint8List(0);
   }
   return  Padding(

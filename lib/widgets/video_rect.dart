@@ -1,8 +1,6 @@
-import 'package:bangapp/message/models/ChatMessage.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-import 'package:bangapp/constants/urls.dart';
 
 import '../message/constants.dart';
 class VideoRect extends StatefulWidget {

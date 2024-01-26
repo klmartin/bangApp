@@ -1,10 +1,7 @@
 import 'dart:convert';
 
 import 'package:bangapp/constants/urls.dart';
-import 'package:bangapp/screens/Widgets/small_box2.dart';
 import 'package:flutter/material.dart';
-import '../services/service.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 

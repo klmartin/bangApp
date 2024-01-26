@@ -4,12 +4,6 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:provider/provider.dart';
-import '../../components/square_tiles.dart';
-import '../../constants/colors.dart';
-import '../../models/userprovider.dart';
-import '../../services/auth_services.dart';
 import '../../services/token_storage_helper.dart';
 import 'login_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -18,7 +12,6 @@ import 'dart:convert';
 import 'package:bangapp/services/service.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:filter_list/filter_list.dart';
 import 'package:bangapp/constants/urls.dart';
 
 

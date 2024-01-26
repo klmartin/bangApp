@@ -1,8 +1,5 @@
-import 'dart:convert';
 import 'package:bangapp/constants/urls.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/models/bang_update.dart';
 
 import '../services/api_cache_helper.dart';

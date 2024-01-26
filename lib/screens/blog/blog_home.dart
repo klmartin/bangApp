@@ -1,9 +1,7 @@
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/widgets/SearchBox.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/screens/blog/video_detail_screen.dart';
-import 'package:bangapp/screens/blog/home_video.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
