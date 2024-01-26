@@ -69,13 +69,14 @@ class _AppSettings extends State<AppSettings> {
             title: Text("About"),
           ),
           ListTile(
-            leading: Icon(
-                Icons.logout
-            ),
+            leading: Icon(Icons.logout),
             title: Text("Logout"),
             onTap: () async {
               await TokenManager.clearToken();
-              Navigator.pushNamed(context, LoginScreen.id);
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(
+                  builder: (context) => LoginScreen()
+              ));
             },
           ),
         ],
