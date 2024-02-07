@@ -40,6 +40,7 @@ class FinalCreate extends StatefulWidget {
 
 class _FinaleCreateState extends State<FinalCreate> {
   Service service = Service();
+  VideoPlayerController? videoController;
 
   late int myRole = 0;
   void initState() {
@@ -61,7 +62,6 @@ class _FinaleCreateState extends State<FinalCreate> {
   int pinPost = 0;
   XFile? mediaFile;
   bool isLoading = false;
-  VideoPlayerController? videoController;
 
   Future<String> saveUint8ListAsFile(Uint8List data, String fileName) async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -345,7 +345,8 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(body, filePath);
                                   } else {
-                                    await service.addImage(body, compressedImage.path);
+                                    await service.addImage(
+                                        body, compressedImage.path);
                                   }
                                 } else if (widget.editedImage != null &&
                                     widget.editedImage2 == null &&
@@ -378,6 +379,8 @@ class _FinaleCreateState extends State<FinalCreate> {
                                         prefs.getInt('user_id').toString(),
                                     'body': caption ?? "",
                                     'type': widget.type!,
+                                    'contentID':'20',
+                                    'aspect_ratio':'1.5',
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
                                   if (bangUpdate == 1) {
@@ -392,9 +395,10 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     widget.type == 'video') {
                                   String? filePath1 = widget.editedVideo;
                                   Map<String, String> body = {
-                                    'user_id':
-                                        prefs.getInt('user_id').toString(),
+                                    'user_id':prefs.getInt('user_id').toString(),
                                     'body': caption ?? "",
+                                    'contentID':'20',
+                                    'aspect_ratio':'1.5',
                                     'type': widget.type!,
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
@@ -418,17 +422,19 @@ class _FinaleCreateState extends State<FinalCreate> {
                                       body, filePath1, filePath2);
                                 }
                                 prefs.setBool('i_just_posted', true);
-                                if(bangUpdate == 1){Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Nav(initialIndex: 1)));}
-                                else{
+                                if (bangUpdate == 1) {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Nav(initialIndex: 0)));
+                                          builder: (context) =>
+                                              Nav(initialIndex: 1)));
+                                } else {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Nav(initialIndex: 0)));
                                 }
-
                               } finally {
                                 // After your button logic is done, set loading back to false
                                 setState(() {

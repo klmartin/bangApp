@@ -7,6 +7,7 @@ import 'package:bangapp/providers/BoxDataProvider.dart'; // Import the BoxDataPr
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:bangapp/widgets/video_player.dart';
+import '../../services/payment_service.dart';
 import '../../services/service.dart';
 import '../Comments/battleComment.dart';
 
@@ -50,7 +51,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
   );
 }
 
-  buildFab(value, BuildContext context) {
+  buildFab(value, BuildContext context,price,subtitle) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -84,11 +85,12 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                   size: 25.0,
                 ),
                 title: Text('Pay to Vote'),
-                trailing: Text('500 tshs'),
+                subtitle: Text(subtitle),
+                trailing: Text('$price tshs'),
                 // subtitle: Text('to Vote'),
                 onTap: () {
                   Navigator.pop(context);
-                  buildPayments('value', context);
+                  buildPayments(price, context);
                 },
               ),
 
@@ -99,7 +101,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
     );
   }
 
-  buildPayments(value, BuildContext context) {
+  buildPayments(price, BuildContext context) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -142,7 +144,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                   size: 25.0,
                 ),
                 title: Text('Airtel Money'),
-                onTap: () {},
+                onTap: () { PaymentService.airtelMoney(int.parse(price));},
               ),
               ListTile(
                 leading: Icon(
@@ -457,7 +459,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                             onTap: () {
                                               if(box.pinned){
                                                 print('this is pinned');
-                                                buildFab(1, context);
+                                                buildFab(1, context,box.price,box.subtitle);
                                               }
                                               else{
                                                 final countUpdate =
@@ -527,7 +529,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                               onTap: () {
                                                 if(box.pinned){
                                                   print('this is pinned');
-                                                  buildFab(1, context);
+                                                  buildFab(1, context,box.price,box.subtitle);
                                                 }
                                                 else{
                                                   final countUpdate = Provider.of<

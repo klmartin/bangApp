@@ -75,6 +75,8 @@ class BoxData2 {
   final String imageUrl1;
   final String imageUrl2;
   final String text;
+  final String subtitle;
+  final String price;
   final int battleId;
   bool pinned = false;
   int likeCountA;
@@ -96,6 +98,8 @@ class BoxData2 {
     required this.imageUrl1,
     required this.imageUrl2,
     required this.text,
+    required this.price,
+    required this.subtitle,
     required this.battleId,
     required this.type,
     required this.pinned,
@@ -109,6 +113,8 @@ class BoxData2 {
         imageUrl1: json['battle1'] ?? "",
         imageUrl2: json['battle2'] ?? "",
         text: json['body'],
+        price: json['price'],
+        subtitle: json['subtitle'],
         battleId: json['id'],
         isLikedA: json['isLikedA'],
         isLikedB: json['isLikedB'],

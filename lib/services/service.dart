@@ -53,30 +53,63 @@ class Service {
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = await TokenManager.getToken();
+    print('this is body');
+    print(body);
     final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
-    String addimageUrl = '$baseUrl/imageadd';
-    var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
-      ..headers.addAll(headers)
-      ..fields.addAll(body)
-      ..files.add(await http.MultipartFile.fromPath('image', filepath));
-    try {
-      var response = await http.Response.fromStream(await request.send());
-      prefs.setBool('i_just_posted', true);
-      prefs.setBool('i_just_posted_profile', true);
-      print(response.body);
-      if (response.statusCode == 201) {
-        final response2 = jsonDecode(response.body);
-        if (response2['data']) {
+    if(body['type']=="video"){
+      print(body);
+      print('this is video body');
+      String addvideoUrl = 'https://video.bangapp.pro/api/v1/upload-video';
+      var request = http.MultipartRequest('POST', Uri.parse(addvideoUrl))
+        ..headers.addAll(headers)
+        ..fields.addAll(body)
+        ..files.add(await http.MultipartFile.fromPath('video', filepath));
+      try {
+        var response = await http.Response.fromStream(await request.send());
+        prefs.setBool('i_just_posted', true);
+        prefs.setBool('i_just_posted_profile', true);
+        print(response.body);
+        print('video uploaded');
+        if (response.statusCode == 201) {
+          final response2 = jsonDecode(response.body);
+          if (response2['data']) {
 
-        } else {}
-        return true;
-      } else {
+          } else {}
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
+        print(e);
         return false;
       }
-    } catch (e) {
-      print(e);
-      return false;
     }
+    else{
+      String addimageUrl = '$baseUrl/imageadd';
+      var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
+        ..headers.addAll(headers)
+        ..fields.addAll(body)
+        ..files.add(await http.MultipartFile.fromPath('image', filepath));
+      try {
+        var response = await http.Response.fromStream(await request.send());
+        prefs.setBool('i_just_posted', true);
+        prefs.setBool('i_just_posted_profile', true);
+        print(response.body);
+        if (response.statusCode == 201) {
+          final response2 = jsonDecode(response.body);
+          if (response2['data']) {
+
+          } else {}
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
+        print(e);
+        return false;
+      }
+    }
+
   }
 
   Future<bool> addBangUpdate(Map<String, String> body, String filepath) async {
