@@ -47,6 +47,8 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
   Future<void> _fetchComments() async {
     final response = await Service().getUpdateComments(widget.postId.toString());
     final comments = response;
+    print('responsebangupdate');
+    print(response);
     setState(() {
       filedata = comments.map((comment) {
         return {

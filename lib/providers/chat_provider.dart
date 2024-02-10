@@ -194,7 +194,8 @@ Future<void> sendMessage(BuildContext context, int user1Id, int user2Id,
       'user2_id': user2Id.toString(),
       'message': message,
     });
-
+    print(response.body);
+    print('responsevideo');
     if (response.statusCode == 200) {
       final newMessage = Message.fromJson(jsonDecode(response.body));
       final serv = new Service();
