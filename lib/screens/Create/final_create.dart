@@ -14,7 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'create_page.dart';
 
-class FinalCreate extends StatefulWidget {
+class FinalCreate extends StatefulWidget  {
   static const String id = 'final_posts';
   final Uint8List? editedImage;
   final Uint8List? editedImage2;
@@ -40,15 +40,25 @@ class FinalCreate extends StatefulWidget {
   _FinaleCreateState createState() => _FinaleCreateState();
 }
 
-class _FinaleCreateState extends State<FinalCreate> {
+class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixin {
   Service service = Service();
   VideoPlayerController? videoController;
 
   bool isLoading2 = false;
   double progress = 0.0; // Initialize progress to 0
 
+  late AnimationController controller;
+
   late int myRole = 0;
   void initState() {
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..addListener(() {
+        setState(() {});
+      });
+    controller.repeat(reverse: true);
+
     super.initState();
     _initializeSharedPreferences();
   }
@@ -353,8 +363,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   } else {
                                     await service.addImage(
                                         body, compressedImage.path);
-                                         simulateProgress();
-
+                                    simulateProgress();
                                   }
                                 } else if (widget.editedImage != null &&
                                     widget.editedImage2 == null &&
@@ -371,8 +380,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   };
                                   await service.addChallenge(
                                       body, filePath, widget.userChallenged!);
-                                     simulateProgress();
-
+                                  simulateProgress();
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 == null &&
                                     widget.type == 'video') {
@@ -396,12 +404,11 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(
                                         body, mediaInfo?.path ?? '');
-                                        simulateProgress();
+                                    simulateProgress();
                                   } else {
                                     await service.addImage(
                                         body, mediaInfo?.path ?? '');
-                                   simulateProgress();
-
+                                    simulateProgress();
                                   }
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 != null &&
@@ -420,7 +427,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                       body,
                                       widget.editedVideo!,
                                       widget.editedVideo2!);
-                                              simulateProgress();
+                                  simulateProgress();
                                 } else {
                                   String filePath1 = await saveUint8ListAsFile(
                                       widget.editedImage!, 'image.jpg');
@@ -435,8 +442,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   };
                                   await service.addChallengImage(
                                       body, filePath1, filePath2);
-                                    simulateProgress();
-
+                                  simulateProgress();
                                 }
                                 prefs.setBool('i_just_posted', true);
                                 if (bangUpdate == 1) {
@@ -474,8 +480,12 @@ class _FinaleCreateState extends State<FinalCreate> {
                           Visibility(
                             visible:
                                 isLoading, // Show the CircularProgressIndicator when loading
-                            child:
-                                PercentageLoadingIndicator(progress: progress),
+                            child: LinearProgressIndicator(
+                              value: controller.value,
+                              semanticsLabel: 'Linear progress indicator',
+                            ),
+
+                            // PercentageLoadingIndicator(progress: progress),
 
                             // CircularProgressIndicator(), // Display the CircularProgressIndicator
                           ),
