@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:bangapp/services/service.dart';
+import '../../components/progressIndicator.dart';
 import '../../nav.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,6 +43,10 @@ class FinalCreate extends StatefulWidget {
 class _FinaleCreateState extends State<FinalCreate> {
   Service service = Service();
   VideoPlayerController? videoController;
+
+  bool isLoading2 = false;
+  double progress = 0.0; // Initialize progress to 0
+
 
   late int myRole = 0;
   void initState() {
@@ -458,7 +464,10 @@ class _FinaleCreateState extends State<FinalCreate> {
                             visible:
                                 isLoading, // Show the CircularProgressIndicator when loading
                             child:
-                                CircularProgressIndicator(), // Display the CircularProgressIndicator
+
+                            PercentageLoadingIndicator(progress: progress),
+                            
+                                // CircularProgressIndicator(), // Display the CircularProgressIndicator
                           ),
                         ],
                       ),
@@ -470,4 +479,23 @@ class _FinaleCreateState extends State<FinalCreate> {
           ],
         ));
   }
+
+
+  // Function to simulate progress updates
+  void simulateProgress() {
+    const duration = const Duration(milliseconds: 100);
+    Timer.periodic(duration, (Timer timer) {
+      if (progress < 1) {
+        setState(() {
+          progress += 0.1; // Increment progress by 10%
+        });
+      } else {
+        timer.cancel();
+        setState(() {
+          isLoading = false; // Hide the loading indicator when progress is complete
+        });
+      }
+    });
+  }
+
 }
