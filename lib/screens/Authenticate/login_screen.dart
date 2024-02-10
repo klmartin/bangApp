@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             //Do something with the user input.
                           },
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            labelText: 'Email or Phone no',
                             labelStyle: TextStyle(color: Colors.black),
                             prefixIcon: Icon(Icons.mail_outline),
                             enabledBorder: UnderlineInputBorder(

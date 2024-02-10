@@ -66,16 +66,18 @@ class UserBubble extends StatelessWidget {
         child: GestureDetector(
           onTap: () {
             print("presses");
-            SearchHistoryManager().saveSearch({
-              'profileUrl' : this.profileUrl,
-              'selected_user': this.selectedUser,
-              'name': this.name,
-              'bio': this.bio,
-              'followCount': this.followCount,
-              'followingCount': followingCount,
-              'postCount': postCount,
-              'isMe': this.isMe
-            });
+            SearchHistoryManager().saveSearch([
+              {
+                'profileUrl' : this.profileUrl,
+                'selected_user': this.selectedUser,
+                'name': this.name,
+                'bio': this.bio,
+                'followCount': this.followCount,
+                'followingCount': followingCount,
+                'postCount': postCount,
+                'isMe': this.isMe
+              }
+            ]);
             Navigator.push(
               context,
               createRoute(
@@ -236,7 +238,11 @@ class _UsersStreamState extends State<UsersStream> {
               : ListView.builder(
             itemCount: searchHistoryManager.searchHistory.length,
             itemBuilder: (context, index) {
-              final user = searchHistoryManager.searchHistory[index];
+              final entry = searchHistoryManager.searchHistory[index];
+
+              // Accessing the first map in the entry
+              final user = entry.isNotEmpty ? entry.first : {};
+
               print(user);
               print('this is printed user');
               return UserBubble(
