@@ -67,6 +67,7 @@ class UserBubble extends StatelessWidget {
           onTap: () {
             print("presses");
             SearchHistoryManager().saveSearch({
+              'profileUrl' : this.profileUrl,
               'selected_user': this.selectedUser,
               'name': this.name,
               'bio': this.bio,
@@ -236,8 +237,10 @@ class _UsersStreamState extends State<UsersStream> {
             itemCount: searchHistoryManager.searchHistory.length,
             itemBuilder: (context, index) {
               final user = searchHistoryManager.searchHistory[index];
+              print(user);
+              print('this is printed user');
               return UserBubble(
-                profileUrl: user['profileUrl'],
+                profileUrl: user['profileUrl'] ?? "",
                 name: user['name'],
                 selectedUser: user['selected_user'],
                 bio: user['bio'] ?? '',
