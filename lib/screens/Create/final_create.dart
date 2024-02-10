@@ -47,7 +47,6 @@ class _FinaleCreateState extends State<FinalCreate> {
   bool isLoading2 = false;
   double progress = 0.0; // Initialize progress to 0
 
-
   late int myRole = 0;
   void initState() {
     super.initState();
@@ -350,9 +349,12 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   };
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(body, filePath);
+                                    simulateProgress();
                                   } else {
                                     await service.addImage(
                                         body, compressedImage.path);
+                                         simulateProgress();
+
                                   }
                                 } else if (widget.editedImage != null &&
                                     widget.editedImage2 == null &&
@@ -369,6 +371,8 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   };
                                   await service.addChallenge(
                                       body, filePath, widget.userChallenged!);
+                                     simulateProgress();
+
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 == null &&
                                     widget.type == 'video') {
@@ -385,26 +389,30 @@ class _FinaleCreateState extends State<FinalCreate> {
                                         prefs.getInt('user_id').toString(),
                                     'body': caption ?? "",
                                     'type': widget.type!,
-                                    'contentID':'20',
-                                    'aspect_ratio':'1.5',
+                                    'contentID': '20',
+                                    'aspect_ratio': '1.5',
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(
                                         body, mediaInfo?.path ?? '');
+                                        simulateProgress();
                                   } else {
                                     await service.addImage(
                                         body, mediaInfo?.path ?? '');
+                                   simulateProgress();
+
                                   }
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 != null &&
                                     widget.type == 'video') {
                                   String? filePath1 = widget.editedVideo;
                                   Map<String, String> body = {
-                                    'user_id':prefs.getInt('user_id').toString(),
+                                    'user_id':
+                                        prefs.getInt('user_id').toString(),
                                     'body': caption ?? "",
-                                    'contentID':'20',
-                                    'aspect_ratio':'1.5',
+                                    'contentID': '20',
+                                    'aspect_ratio': '1.5',
                                     'type': widget.type!,
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
@@ -412,6 +420,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                       body,
                                       widget.editedVideo!,
                                       widget.editedVideo2!);
+                                              simulateProgress();
                                 } else {
                                   String filePath1 = await saveUint8ListAsFile(
                                       widget.editedImage!, 'image.jpg');
@@ -426,6 +435,8 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   };
                                   await service.addChallengImage(
                                       body, filePath1, filePath2);
+                                    simulateProgress();
+
                                 }
                                 prefs.setBool('i_just_posted', true);
                                 if (bangUpdate == 1) {
@@ -463,9 +474,10 @@ class _FinaleCreateState extends State<FinalCreate> {
                           Visibility(
                             visible:
                                 isLoading, // Show the CircularProgressIndicator when loading
-                            child:  PercentageLoadingIndicator(progress: progress),
-                            
-                                // CircularProgressIndicator(), // Display the CircularProgressIndicator
+                            child:
+                                PercentageLoadingIndicator(progress: progress),
+
+                            // CircularProgressIndicator(), // Display the CircularProgressIndicator
                           ),
                         ],
                       ),
@@ -478,7 +490,6 @@ class _FinaleCreateState extends State<FinalCreate> {
         ));
   }
 
-
   // Function to simulate progress updates
   void simulateProgress() {
     const duration = const Duration(milliseconds: 100);
@@ -490,10 +501,10 @@ class _FinaleCreateState extends State<FinalCreate> {
       } else {
         timer.cancel();
         setState(() {
-          isLoading2 = false; // Hide the loading indicator when progress is complete
+          isLoading2 =
+              false; // Hide the loading indicator when progress is complete
         });
       }
     });
   }
-
 }
