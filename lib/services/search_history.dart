@@ -18,10 +18,8 @@ class SearchHistoryManager {
   }
 
   Future<void> saveSearch(Map<String, dynamic> user) async {
-    // Remove existing entry if user is already in history
     _searchHistory.removeWhere((entry) => entry['selected_user'] == user['selected_user']);
 
-    // Add the new user to the front of the list
     _searchHistory.insert(0, user);
 
     // Trim the list to the maximum size
