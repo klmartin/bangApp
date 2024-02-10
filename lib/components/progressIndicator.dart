@@ -12,7 +12,7 @@ class PercentageLoadingIndicator extends StatelessWidget {
     return LinearProgressIndicator(
       value: progress,
       minHeight: 10,
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Color.fromARGB(255, 239, 90, 4),
       valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
     );
   }

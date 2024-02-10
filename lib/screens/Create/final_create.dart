@@ -463,9 +463,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                           Visibility(
                             visible:
                                 isLoading, // Show the CircularProgressIndicator when loading
-                            child:
-
-                            PercentageLoadingIndicator(progress: progress),
+                            child:  PercentageLoadingIndicator(progress: progress),
                             
                                 // CircularProgressIndicator(), // Display the CircularProgressIndicator
                           ),
@@ -492,7 +490,7 @@ class _FinaleCreateState extends State<FinalCreate> {
       } else {
         timer.cancel();
         setState(() {
-          isLoading = false; // Hide the loading indicator when progress is complete
+          isLoading2 = false; // Hide the loading indicator when progress is complete
         });
       }
     });
