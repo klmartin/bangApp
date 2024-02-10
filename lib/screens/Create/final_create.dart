@@ -47,6 +47,7 @@ class _FinaleCreateState extends State<FinalCreate> {
   bool isLoading2 = false;
   double progress = 0.0; // Initialize progress to 0
 
+
   late int myRole = 0;
   void initState() {
     super.initState();
@@ -384,8 +385,8 @@ class _FinaleCreateState extends State<FinalCreate> {
                                         prefs.getInt('user_id').toString(),
                                     'body': caption ?? "",
                                     'type': widget.type!,
-                                    'contentID': '20',
-                                    'aspect_ratio': '1.5',
+                                    'contentID':'20',
+                                    'aspect_ratio':'1.5',
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
                                   if (bangUpdate == 1) {
@@ -400,11 +401,10 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     widget.type == 'video') {
                                   String? filePath1 = widget.editedVideo;
                                   Map<String, String> body = {
-                                    'user_id':
-                                        prefs.getInt('user_id').toString(),
+                                    'user_id':prefs.getInt('user_id').toString(),
                                     'body': caption ?? "",
-                                    'contentID': '20',
-                                    'aspect_ratio': '1.5',
+                                    'contentID':'20',
+                                    'aspect_ratio':'1.5',
                                     'type': widget.type!,
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
@@ -463,10 +463,9 @@ class _FinaleCreateState extends State<FinalCreate> {
                           Visibility(
                             visible:
                                 isLoading, // Show the CircularProgressIndicator when loading
-                            child:
-                                PercentageLoadingIndicator(progress: progress),
-
-                            // CircularProgressIndicator(), // Display the CircularProgressIndicator
+                            child:  PercentageLoadingIndicator(progress: progress),
+                            
+                                // CircularProgressIndicator(), // Display the CircularProgressIndicator
                           ),
                         ],
                       ),
@@ -479,6 +478,7 @@ class _FinaleCreateState extends State<FinalCreate> {
         ));
   }
 
+
   // Function to simulate progress updates
   void simulateProgress() {
     const duration = const Duration(milliseconds: 100);
@@ -490,10 +490,10 @@ class _FinaleCreateState extends State<FinalCreate> {
       } else {
         timer.cancel();
         setState(() {
-          isLoading =
-              false; // Hide the loading indicator when progress is complete
+          isLoading2 = false; // Hide the loading indicator when progress is complete
         });
       }
     });
   }
+
 }
