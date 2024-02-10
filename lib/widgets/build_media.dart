@@ -53,7 +53,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
       ),
     );
   }
-  else if (type == 'video') {
+  else if (type == 'video' && isPinned==0) {
     return VideoPlayerPage(mediaUrl: mediaUrl);
   } else {
     return Container();

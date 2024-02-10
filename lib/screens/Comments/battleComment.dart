@@ -6,8 +6,6 @@ import 'package:bangapp/services/service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
 class BattleComment extends StatefulWidget {
   final postId;
 
@@ -34,7 +32,8 @@ class _BattleCommentState extends State<BattleComment> {
   }
 
   Future<void> _fetchComments() async {
-    final response = await Service().getBattleComments(widget.postId.toString());
+    final response =
+        await Service().getBattleComments(widget.postId.toString());
     final comments = response;
 
     setState(() {
@@ -49,17 +48,17 @@ class _BattleCommentState extends State<BattleComment> {
       }).toList();
     });
   }
+
   String userImageURL = "";
+  String userName = "";
 
   void getUserImageFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userImageURL = prefs.getString('user_image') ?? "";
-      print(userImageURL);
-      print("this is image after set state");
+      userName = prefs.getString('name') ?? "";
     });
   }
-
   Widget commentChild(data) {
     return ListView(
       children: [
@@ -125,24 +124,25 @@ class _BattleCommentState extends State<BattleComment> {
           withBorder: false,
           sendButtonMethod: () async {
             if (formKey.currentState!.validate()) {
-              final response = await Service().postBattleComment(
-                widget.postId,
-                commentController.text,
-              );
-               final battleComment =
-                  Provider.of<BoxDataProvider>(context, listen: false);
-              battleComment.updateCommentCount(
-                  widget.postId);
               setState(() {
                 var value = {
-                  'name': response['data']['user']['name'],
-                  'pic': response['data']['user']['image'],
+                  'name': userName,
+                  'pic': userImageURL,
                   'message': commentController.text,
                   'date': '2021-01-01'
                 };
                 filedata.insert(0, value);
               });
               commentController.clear();
+              final response = await Service().postBattleComment(
+                widget.postId,
+                commentController.text,
+              );
+
+              final battleComment =
+                  Provider.of<BoxDataProvider>(context, listen: false);
+              battleComment.updateCommentCount(widget.postId);
+
               FocusScope.of(context).unfocus();
             } else {
               print("Not validated");

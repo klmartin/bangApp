@@ -396,11 +396,11 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/postUpdateComment'),
-        body: {
+        body: jsonEncode({
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
           'body': commentText,
-        },
+        }),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':
@@ -420,11 +420,11 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/postBattleComment'),
-        body: {
+        body: jsonEncode({
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
           'body': commentText,
-        },
+        }),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':

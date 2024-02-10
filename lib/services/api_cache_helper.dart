@@ -77,6 +77,8 @@ class ApiCacheHelper {
         .inMinutes;
 
     if (cachedData.isNotEmpty && minutes <= 3 || iJustPosted != true) {
+      print(cachedData);
+      print("hello cache data");
       data = json.decode(cachedData);
     } else {
       data = await apiCall();
@@ -298,7 +300,7 @@ class ApiCacheHelper {
                 'application/json', // Include other headers as needed
           },
         );
-        print('chembe');
+        print('chembea');
         print(token);
         if (response.statusCode == 200) {
           return json.decode(response.body);

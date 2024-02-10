@@ -59,7 +59,6 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
     });
   }
 
-
   Widget commentChild(data) {
     return ListView(
       children: [

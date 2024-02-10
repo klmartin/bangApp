@@ -14,7 +14,7 @@ class POstView2 extends StatefulWidget {
   ProfileProvider? myProvider;
 
   POstView2(
-     
+
       this.myProvider,
       );
   static const id = 'postview';
@@ -115,7 +115,7 @@ class _PostCardState extends State<PostCard> {
                     viewImage(context, widget.postUrl);
                   },
                   child: AspectRatio(
-                    aspectRatio: widget.imgWidth / widget.imgHeight,
+                    aspectRatio: 16 / 9,
                     child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned),
                   ),
                 ),
@@ -219,7 +219,6 @@ class _PostCardState extends State<PostCard> {
             )));
   }
 }
-
 class PostCaptionWidget extends StatefulWidget {
   final String? caption;
   final String? name;
