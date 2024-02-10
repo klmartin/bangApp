@@ -492,7 +492,7 @@ class _FinaleCreateState extends State<FinalCreate> {
 
   // Function to simulate progress updates
   void simulateProgress() {
-    const duration = const Duration(milliseconds: 100);
+    const duration = const Duration(milliseconds: 2500);
     Timer.periodic(duration, (Timer timer) {
       if (progress < 1) {
         setState(() {
