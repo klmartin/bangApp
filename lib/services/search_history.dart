@@ -28,7 +28,6 @@ class SearchHistoryManager {
         // Handle or ignore the error based on your requirements
       }
     }
-
     // Take only up to _maxHistorySize entries
     _searchHistory = _searchHistory.take(_maxHistorySize).toList();
   }

@@ -340,4 +340,33 @@ class ApiCacheHelper {
     );
   }
 
+  Future<List<dynamic>> getMyNotification() async {
+    final token = await TokenManager.getToken();
+    return getCachedData3(
+      cacheKey: 'cached_get_my_update',
+      apiCall: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final userId = prefs.getInt('user_id').toString();
+        final response = await http.get(
+          Uri.parse(
+            "$baseUrl/getNotifications/$userId",
+          ),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type':
+            'application/json', // Include other headers as needed
+          },
+        );
+        if (response.statusCode == 200) {
+          print(json.decode(response.body));
+          print('this is notification reposnse');
+          return json.decode(response.body);
+        } else {
+          // Handle server error
+          throw Exception('Failed to load data');
+        }
+      },
+    );
+  }
+
 }

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants/urls.dart';
 import '../../providers/bang_update_provider.dart';
@@ -34,14 +35,19 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
     super.initState();
     CircularProgressIndicator();
     _fetchComments();
-    _getMyInfo();
+    getUserImageFromSharedPreferences();
   }
 
-  void _getMyInfo() async {
-    var myInfo = await Service().getMyInformation();
-
+  String userImageURL = "";
+  String userName = "";
+  void getUserImageFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print( prefs.getString('name'));
+    print('this is name');
     setState(() {
-      myImage = myInfo['user_image_url'] ?? "";
+      userImageURL = prefs.getString('user_image') ?? "";
+      userName = prefs.getString('name') ?? "";
+
     });
   }
   Future<void> _fetchComments() async {
@@ -82,7 +88,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                   child: CircleAvatar(
                       radius: 50,
                       backgroundImage: CommentBox.commentImageParser(
-                          imageURLorPath:  myImage)),
+                          imageURLorPath:  data[i]['pic'])),
                 ),
               ),
               title: Text(
@@ -119,7 +125,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
       body: Container(
         child: CommentBox(
           userImage: CommentBox.commentImageParser(
-              imageURLorPath:myImage),
+              imageURLorPath:userImageURL),
           child: commentChild(filedata),
           labelText: 'Write a comment...',
           errorText: 'Comment cannot be blank',
@@ -127,24 +133,25 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
           withBorder: false,
           sendButtonMethod: () async {
             if (formKey.currentState!.validate()) {
-              final response = await Service().postUpdateComment(
-                widget.postId,
-                commentController.text,
-              );
               final up = Provider.of<BangUpdateProvider>(context, listen: false);
               up.updateCommentCount(widget.postId, 1);
-
               print(commentController.text);
               setState(() {
                 var value = {
-                  'name': response['data']['user']['name'],
-                  'pic': response['data']['user']['image'],
+                  'name': userName,
+                  'pic': userImageURL,
                   'message': commentController.text,
                   'date': '2021-01-01 12:00:00'
                 };
                 filedata.insert(0, value);
               });
               commentController.clear();
+              final response = await Service().postUpdateComment(
+                widget.postId,
+                commentController.text,
+              );
+
+
               FocusScope.of(context).unfocus();
             } else {
               print("Not validated");

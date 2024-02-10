@@ -7,7 +7,6 @@ class NotificationModel {
     List<NotificationItem> notifications = notificationList
         .map((notification) => NotificationItem.fromJson(notification))
         .toList();
-
     return NotificationModel(notifications: notifications);
   }
 }

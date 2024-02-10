@@ -69,7 +69,6 @@ class _BattleCommentState extends State<BattleComment> {
               leading: GestureDetector(
                 onTap: () async {
                   // Display the image in large form.
-                  print("Comment Clicked");
                 },
                 child: Container(
                   height: 50.0,

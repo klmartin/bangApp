@@ -328,9 +328,8 @@ class Service {
       );
 
       if (response.statusCode == 200) {
-        // Assuming your response body is a list, modify this based on your actual response structure
-        List<dynamic> comments = jsonDecode(response.body);
-        return comments;
+        final responseData = json.decode(response.body);
+        return responseData['comments'];
       } else {
         // Handle other status codes if needed
         return [];
@@ -352,7 +351,10 @@ class Service {
         'application/json', // Include other headers as needed
       },
       );
+      print(response.body);
+      print('boddyyy');
       if (response.statusCode == 200) {
+
         final responseData = json.decode(response.body);
         return responseData['comments'];
       } else {
@@ -394,6 +396,7 @@ class Service {
     final token = await TokenManager.getToken();
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
       final response = await http.post(
         Uri.parse('$baseUrl/postUpdateComment'),
         body: jsonEncode({

@@ -7,8 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:bangapp/models/notification.dart';
 import 'package:bangapp/constants/urls.dart';
-import 'package:bangapp/screens/Posts/postView_model.dart';
-
+import 'package:bangapp/screens/Posts/notificationView_model.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../services/token_storage_helper.dart';
 
@@ -97,7 +96,7 @@ class _Activity extends State<Activity> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => POstView(
+            builder: (context) => NotifyView(
                 postDetails[0]['user']['name'],
                 postDetails[0]['body'] ?? "",
                 postDetails[0]['image'],
