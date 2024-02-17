@@ -2,6 +2,7 @@ import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -62,45 +63,122 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
           'pic': comment['user']['user_image_url'],
           'message': comment['body'],
           'date': comment['created_at'],
+          'user_id': comment['user_id'],
+          'comment_id': comment['id']
         };
       }).toList();
     });
   }
 
+  Future<int?> handleSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? currentUserId = prefs.getInt('user_id');
+    // Use currentUserId as needed
+    return currentUserId;
+  }
+
   Widget commentChild(data) {
-    return ListView(
-      children: [
-        for (var i = 0; i < data.length; i++)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
-            child: ListTile(
-              leading: GestureDetector(
-                onTap: () async {
-                  // Display the image in large form.
-                  print("Comment Clicked");
-                },
-                child: Container(
-                  height: 50.0,
-                  width: 50.0,
-                  decoration: new BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: new BorderRadius.all(Radius.circular(50))),
-                  child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: CommentBox.commentImageParser(
-                          imageURLorPath:  data[i]['pic'])),
+
+    return FutureBuilder(
+        future: handleSharedPreferences(),
+        builder: (context,snapshot) {
+          int? currentUserId = snapshot.data as int?;
+
+          return ListView(
+            children: [
+              for (var i = 0; i < data.length; i++)
+                currentUserId == data[i]['user_id']
+
+                    ? Dismissible(
+                  key: Key(data[i]['id'].toString()),
+                  onDismissed: (direction) async {
+                    final response = await Service().deleteComment(data[i]['comment_id']);
+                    if (response['message'] == 'Comment deleted successfully')
+                    {
+                      Fluttertoast.showToast(msg: response['message']);
+                    }setState(() {
+                      data.removeAt(i);
+                    });
+                  },
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+                    child: ListTile(
+                      leading: GestureDetector(
+                        onTap: () async {
+                          // Display the image in large form.
+                          print("Comment Clicked");
+                        },
+                        child: Container(
+                          height: 50.0,
+                          width: 50.0,
+                          decoration: new BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: new BorderRadius.all(Radius.circular(50)),
+                          ),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: CommentBox.commentImageParser(
+                              imageURLorPath: data[i]['pic'],
+                            ),
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        data[i]['name'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(data[i]['message']),
+                      trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                    ),
+                  ),
+                )
+                    : Padding(
+                  padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+                  child: ListTile(
+                    leading: GestureDetector(
+                      onTap: () async {
+                        // Display the image in large form.
+                        print("Comment Clicked");
+                      },
+                      child: Container(
+                        height: 50.0,
+                        width: 50.0,
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.all(Radius.circular(50)),
+                        ),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: CommentBox.commentImageParser(
+                            imageURLorPath: data[i]['pic'],
+                          ),
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      data[i]['name'],
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(data[i]['message']),
+                    trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                  ),
                 ),
-              ),
-              title: Text(
-                data[i]['name'],
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(data[i]['message']),
-              trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
-            ),
-          )
-      ],
+            ],
+          );
+        }
     );
+
   }
 
   @override
@@ -145,13 +223,12 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                 };
                 filedata.insert(0, value);
               });
-              commentController.clear();
+
               final response = await Service().postUpdateComment(
                 widget.postId,
                 commentController.text,
               );
-
-
+              commentController.clear();
               FocusScope.of(context).unfocus();
             } else {
               print("Not validated");

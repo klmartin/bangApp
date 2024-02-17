@@ -103,18 +103,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
     );
   }
-// }
 
-// class ChatProviderx {
-//   int totalUnreadMessages = 0;
-
-//   Future<void> getTotalUnreadMessages() async {
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     final userId = prefs.getInt('user_id');
-//     final url = "http://192.168.100.118/getTotalUnreadMessages?user_id=$userId";
-//     final response = await http.get(Uri.parse(url));
-//     final data = jsonDecode(response.body);
-//     totalUnreadMessages = data['totalUnreadMessages']; // Replace with the correct key in your JSON response.
-//   }
-// }
 }

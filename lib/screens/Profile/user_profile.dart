@@ -677,6 +677,7 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
       // User has reached the end, load more data here
       final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
       profileProvider.getUserPost(widget.userid);
+
     }
   }
   @override
@@ -729,9 +730,7 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                   provider,
                                 )));
                               },
-
-                              child:
-                              CachedNetworkImage(
+                              child: CachedNetworkImage(
                                 imageUrl: provider.posts[i].imageUrl!,
                                 fit: BoxFit.cover,
                               ),

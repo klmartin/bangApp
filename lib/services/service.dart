@@ -274,6 +274,7 @@ class Service {
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         }),
       );
+
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
@@ -351,8 +352,7 @@ class Service {
         'application/json', // Include other headers as needed
       },
       );
-      print(response.body);
-      print('boddyyy');
+
       if (response.statusCode == 200) {
 
         final responseData = json.decode(response.body);
@@ -370,7 +370,10 @@ class Service {
   Future postComment(BuildContext context, postId, commentText, userId) async {
     try {
       final token = await TokenManager.getToken();
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      print([postId,commentText,prefs.getInt('user_id')]);
+      print('this is token');
       final response = await http.post(
         Uri.parse('$baseUrl/postComment'),
         body: jsonEncode({
@@ -441,23 +444,84 @@ class Service {
     }
   }
 
-  Future deletePost(postId) async {
+  Future<Map<String, dynamic>> deletePost(postId) async {
     try {
       final token = await TokenManager.getToken();
       final response = await http.delete(
-        Uri.parse('$baseUrl/deletePost/$postId'),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },
+        Uri.parse('$baseUrl/deletePost/$postId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
       );
-      print([response, postId]);
-      return jsonDecode(response.body);
+      print([response.body, postId]);
+      print('Post Delete');
+
+      if (response.body.isNotEmpty) {
+        return jsonDecode(response.body);
+      } else {
+        // Handle the case where response.body is empty
+        return {'error': 'Empty response body'};
+      }
     } catch (e) {
       print(e);
-      return e;
+      return {'error': e.toString()};
     }
   }
+
+
+  Future<Map<String, dynamic>> deleteComment(commentId) async {
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.delete(
+        Uri.parse('$baseUrl/deleteComment/$commentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+
+        },
+      );
+      print([response.body]);
+      print('commment Delete');
+      if (response.body.isNotEmpty) {
+        return jsonDecode(response.body);
+      } else {
+        // Handle the case where response.body is empty
+        return {'error': 'Empty response body'};
+      }
+    } catch (e) {
+      print(e);
+      return {'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteBattleComment(commentId) async {
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.delete(
+        Uri.parse('$baseUrl/deleteBattleComment/$commentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+
+
+        },
+      );
+      print([response.body]);
+      print('commment Delete');
+      if (response.body.isNotEmpty) {
+        return jsonDecode(response.body);
+      } else {
+        // Handle the case where response.body is empty
+        return {'error': 'Empty response body'};
+      }
+    } catch (e) {
+      print(e);
+      return {'error': e.toString()};
+    }
+  }
+
+
 
   Future acceptChallenge(postId) async {
     try {
@@ -666,11 +730,11 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/likeBangBattle'),
-        body: {
+        body: jsonEncode({
           'battle_id': postId.toString(),
           'like_type': type,
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
-        },
+        }),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':

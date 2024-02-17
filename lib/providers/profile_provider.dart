@@ -26,6 +26,8 @@ class ProfileProvider extends ChangeNotifier {
     _posts.addAll(data.map((json) => ImagePost.fromJson(json)).toList());
     _isLoading = false;
     _pageNumber++;
+    print('pageNumber');
+    print(_pageNumber);
     notifyListeners();
   }
 
@@ -34,6 +36,8 @@ class ProfileProvider extends ChangeNotifier {
     _posts.addAll(data.map((json) => ImagePost.fromJson(json)).toList());
     _isLoading = false;
     _pageNumber++;
+    print('pageNumber');
+    print(_pageNumber);
     notifyListeners();
   }
 

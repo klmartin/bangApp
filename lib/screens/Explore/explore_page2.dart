@@ -38,10 +38,18 @@ class _BangUpdates2State extends State<BangUpdates2> {
   }
 }
 
-class BangUpdates3 extends StatelessWidget {
+class BangUpdates3 extends StatefulWidget {
+  @override
+  _BangUpdates3State createState() => _BangUpdates3State();
+}
+
+class _BangUpdates3State extends State<BangUpdates3> {
+  late BangUpdateProvider bangUpdateProvider;
+  int currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
-    final bangUpdateProvider = Provider.of<BangUpdateProvider>(context);
+    bangUpdateProvider = Provider.of<BangUpdateProvider>(context);
     return PreloadPageView.builder(
       controller: PreloadPageController(),
       preloadPagesCount: 3,
@@ -50,20 +58,27 @@ class BangUpdates3 extends StatelessWidget {
       itemBuilder: (context, index) {
         final bangUpdate = bangUpdateProvider.bangUpdates[index];
         Service().updateBangUpdateIsSeen(bangUpdate.postId);
-        return FutureBuilder<Widget>(
-          future: buildBangUpdate2(context, bangUpdate, index),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return snapshot.data ?? Container(); // Use the widget if available, or a fallback Container
-            } else {
-              // Loading indicator or placeholder while content is being loaded
-              return CircularProgressIndicator();
-            }
-          },
-        );
+        return buildBangUpdate2(context, bangUpdate, index);
       },
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    processUpdates();
+  }
+
+  Future<void> processUpdates() async {
+    for (int i = 0; i < bangUpdateProvider.bangUpdates.length; i++) {
+      final bangUpdate = bangUpdateProvider.bangUpdates[i];
+      await Service().updateBangUpdateIsSeen(bangUpdate.postId);
+      await Future.delayed(Duration.zero);
+      setState(() {
+        currentIndex = i;
+      });
+    }
+  }
 }
+
 

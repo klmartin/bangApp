@@ -91,7 +91,7 @@ class _ProfileState extends State<Profile> {
     print(prefs.getInt('user_id').toString());
     var userId = prefs.getInt('user_id').toString();
     var response = await http.get(Uri.parse(
-        "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"));
+        "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId"));
     print(response.body);
     var data = json.decode(response.body);
     return data['data']['data'];
@@ -727,6 +727,7 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                     children: [
                       for (var i = 0; i < provider.posts.length; i++)
                         if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=='' && provider.posts[i].pinned == 0)
+
                           ...[
                             ClipRRect(
                               borderRadius: BorderRadius.circular(5),
