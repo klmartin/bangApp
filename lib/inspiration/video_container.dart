@@ -3,8 +3,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 
-// ignore: must_be_immutable
 class VideoContainer extends StatelessWidget {
+  int inspirationVideoId;
+  String videotitle;
+  String channelName;
+  String viewsCount;
+  String pubDate;
+  String thumbnail;
+  String channelIcon;
+  String videoLink;
   VideoContainer({
     required this.inspirationVideoId,
     required this.channelName,
@@ -15,14 +22,7 @@ class VideoContainer extends StatelessWidget {
     required this.channelIcon,
     required this.videoLink,
   });
-  int inspirationVideoId;
-  String videotitle;
-  String channelName;
-  String viewsCount;
-  String pubDate;
-  String thumbnail;
-  String channelIcon;
-  String videoLink;
+
 
   @override
   Widget build(BuildContext context) {

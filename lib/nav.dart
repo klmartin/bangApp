@@ -120,8 +120,6 @@ class _NavState extends State<Nav> {
                   );
                 },
               )
-
-
             ],
           ),
           Icon(

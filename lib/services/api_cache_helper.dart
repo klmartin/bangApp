@@ -62,6 +62,30 @@ class ApiCacheHelper {
     return data['data']['data'];
   }
 
+  Future<List<dynamic>> getCachedData5({
+    required String cacheKey,
+    required Function apiCall,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final iJustPosted = prefs.getBool('i_just_posted_profile');
+    final String cachedData = prefs.getString(cacheKey) ?? '';
+    final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+
+    var data = {};
+    var minutes = DateTime.now()
+        .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+        .inMinutes;
+
+
+      data = await apiCall();
+      prefs.setString(cacheKey, json.encode(data));
+      prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+
+    print(data);
+    print('this is data');
+    return data['data']['data'];
+  }
+
   Future<List<dynamic>> getCachedData3({
     required String cacheKey,
     required Function apiCall,
@@ -76,13 +100,36 @@ class ApiCacheHelper {
         .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
         .inMinutes;
 
-    if (cachedData.isNotEmpty && minutes <= 3 || iJustPosted != true) {
+    if (cachedData.isNotEmpty && minutes <= 3 && iJustPosted != true) {
+      print(cachedData);
+      print("hello cache data");
       data = json.decode(cachedData);
     } else {
       data = await apiCall();
       prefs.setString(cacheKey, json.encode(data));
       prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
     }
+
+    return data;
+  }
+
+  Future<List<dynamic>> getCachedData6({
+    required String cacheKey,
+    required Function apiCall,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final iJustPosted = prefs.getBool('i_just_posted');
+    final String cachedData = prefs.getString(cacheKey) ?? '';
+    final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+
+    List<dynamic> data;
+
+
+
+      data = await apiCall();
+      prefs.setString(cacheKey, json.encode(data));
+      prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+
 
     return data;
   }
@@ -152,7 +199,7 @@ class ApiCacheHelper {
         final userId = prefs.getInt('user_id').toString();
         final response = await http.get(
           Uri.parse(
-            "$baseUrl/getMyPosts?_page=$pageNumber&_limit=$numberOfPostsPerRequest&user_id=$userId",
+            "$baseUrl/getMyPosts?_page=$pageNumber&_limit=$numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId",
           ),
           headers: {
             'Authorization': 'Bearer $token',
@@ -172,12 +219,14 @@ class ApiCacheHelper {
 
   Future<List<dynamic>> getUserPost({required int pageNumber, userId}) async {
     final token = await TokenManager.getToken();
-    return getCachedData2(
+    return getCachedData5(
       cacheKey: 'cached_user_profile_posts_$userId',
       apiCall: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final viewerId = prefs.getInt('user_id').toString();
         final response = await http.get(
           Uri.parse(
-            "$baseUrl/getMyPosts?_page=$pageNumber&_limit=$numberOfPostsPerRequest&user_id=$userId",
+            "$baseUrl/getMyPosts?_page=$pageNumber&_limit=$numberOfPostsPerRequest&user_id=$userId&viewer_id=$viewerId",
           ),
           headers: {
             'Authorization': 'Bearer $token',
@@ -283,7 +332,7 @@ class ApiCacheHelper {
 
   Future<List<dynamic>> fetchBangUpdates({required int pageNumber}) async {
     final token = await TokenManager.getToken();
-    return getCachedData3(
+    return getCachedData6(
       cacheKey: 'cached_get_my_update',
       apiCall: () async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -298,8 +347,8 @@ class ApiCacheHelper {
                 'application/json', // Include other headers as needed
           },
         );
-        print('chembe');
-        print(token);
+        print('chembea');
+
         if (response.statusCode == 200) {
           return json.decode(response.body);
         } else {
@@ -329,6 +378,35 @@ class ApiCacheHelper {
           },
         );
         if (response.statusCode == 200) {
+          return json.decode(response.body);
+        } else {
+          // Handle server error
+          throw Exception('Failed to load data');
+        }
+      },
+    );
+  }
+
+  Future<List<dynamic>> getMyNotification() async {
+    final token = await TokenManager.getToken();
+    return getCachedData3(
+      cacheKey: 'cached_get_my_update',
+      apiCall: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final userId = prefs.getInt('user_id').toString();
+        final response = await http.get(
+          Uri.parse(
+            "$baseUrl/getNotifications/$userId",
+          ),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type':
+            'application/json', // Include other headers as needed
+          },
+        );
+        if (response.statusCode == 200) {
+          print(json.decode(response.body));
+          print('this is notification reposnse');
           return json.decode(response.body);
         } else {
           // Handle server error

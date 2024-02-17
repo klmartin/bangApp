@@ -1,14 +1,9 @@
-import 'dart:convert';
 
 import 'package:bangapp/inspiration/inspirations.dart';
 import 'package:bangapp/message/screens/chats/chats_screen.dart';
 import 'package:bangapp/providers/chat_provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -108,18 +103,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
     );
   }
-// }
 
-// class ChatProviderx {
-//   int totalUnreadMessages = 0;
-
-//   Future<void> getTotalUnreadMessages() async {
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     final userId = prefs.getInt('user_id');
-//     final url = "http://192.168.100.118/getTotalUnreadMessages?user_id=$userId";
-//     final response = await http.get(Uri.parse(url));
-//     final data = jsonDecode(response.body);
-//     totalUnreadMessages = data['totalUnreadMessages']; // Replace with the correct key in your JSON response.
-//   }
-// }
 }

@@ -1,21 +1,20 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:video_compress/video_compress.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:bangapp/services/service.dart';
+import '../../components/progressIndicator.dart';
 import '../../nav.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'create_page.dart';
 
-class FinalCreate extends StatefulWidget {
+class FinalCreate extends StatefulWidget  {
   static const String id = 'final_posts';
   final Uint8List? editedImage;
   final Uint8List? editedImage2;
@@ -41,11 +40,25 @@ class FinalCreate extends StatefulWidget {
   _FinaleCreateState createState() => _FinaleCreateState();
 }
 
-class _FinaleCreateState extends State<FinalCreate> {
+class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixin {
   Service service = Service();
+  VideoPlayerController? videoController;
+
+  bool isLoading2 = false;
+  double progress = 0.0; // Initialize progress to 0
+
+  late AnimationController controller;
 
   late int myRole = 0;
   void initState() {
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10),
+    )..addListener(() {
+        setState(() {});
+      });
+    controller.repeat(reverse: true);
+
     super.initState();
     _initializeSharedPreferences();
   }
@@ -64,7 +77,6 @@ class _FinaleCreateState extends State<FinalCreate> {
   int pinPost = 0;
   XFile? mediaFile;
   bool isLoading = false;
-  VideoPlayerController? videoController;
 
   Future<String> saveUint8ListAsFile(Uint8List data, String fileName) async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -347,8 +359,11 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   };
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(body, filePath);
+                                    simulateProgress();
                                   } else {
-                                    await service.addImage(body, compressedImage.path);
+                                    await service.addImage(
+                                        body, compressedImage.path);
+                                    simulateProgress();
                                   }
                                 } else if (widget.editedImage != null &&
                                     widget.editedImage2 == null &&
@@ -365,6 +380,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   };
                                   await service.addChallenge(
                                       body, filePath, widget.userChallenged!);
+                                  simulateProgress();
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 == null &&
                                     widget.type == 'video') {
@@ -380,14 +396,18 @@ class _FinaleCreateState extends State<FinalCreate> {
                                         prefs.getInt('user_id').toString(),
                                     'body': caption ?? "",
                                     'type': widget.type!,
+                                    'contentID': '20',
+                                    'aspect_ratio': '1.5',
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(
                                         body, mediaInfo?.path ?? '');
+                                    simulateProgress();
                                   } else {
                                     await service.addImage(
                                         body, mediaInfo?.path ?? '');
+                                    simulateProgress();
                                   }
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 != null &&
@@ -397,6 +417,8 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
                                     'body': caption ?? "",
+                                    'contentID': '20',
+                                    'aspect_ratio': '1.5',
                                     'type': widget.type!,
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
@@ -404,6 +426,7 @@ class _FinaleCreateState extends State<FinalCreate> {
                                       body,
                                       widget.editedVideo!,
                                       widget.editedVideo2!);
+                                  simulateProgress();
                                 } else {
                                   String filePath1 = await saveUint8ListAsFile(
                                       widget.editedImage!, 'image.jpg');
@@ -418,19 +441,22 @@ class _FinaleCreateState extends State<FinalCreate> {
                                   };
                                   await service.addChallengImage(
                                       body, filePath1, filePath2);
+                                  simulateProgress();
                                 }
                                 prefs.setBool('i_just_posted', true);
-                                if(bangUpdate == 1){Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Nav(initialIndex: 1)));}
-                                else{
+                                if (bangUpdate == 1) {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Nav(initialIndex: 0)));
+                                          builder: (context) =>
+                                              Nav(initialIndex: 1)));
+                                } else {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Nav(initialIndex: 0)));
                                 }
-
                               } finally {
                                 // After your button logic is done, set loading back to false
                                 setState(() {
@@ -453,8 +479,14 @@ class _FinaleCreateState extends State<FinalCreate> {
                           Visibility(
                             visible:
                                 isLoading, // Show the CircularProgressIndicator when loading
-                            child:
-                                CircularProgressIndicator(), // Display the CircularProgressIndicator
+                            child: LinearProgressIndicator(
+                              value: controller.value,
+                              semanticsLabel: 'Linear progress indicator',
+                            ),
+
+                            // PercentageLoadingIndicator(progress: progress),
+
+                            // CircularProgressIndicator(), // Display the CircularProgressIndicator
                           ),
                         ],
                       ),
@@ -465,5 +497,23 @@ class _FinaleCreateState extends State<FinalCreate> {
             ]))
           ],
         ));
+  }
+
+  // Function to simulate progress updates
+  void simulateProgress() {
+    const duration = const Duration(milliseconds: 2500);
+    Timer.periodic(duration, (Timer timer) {
+      if (progress < 1) {
+        setState(() {
+          progress += 0.1; // Increment progress by 10%
+        });
+      } else {
+        timer.cancel();
+        setState(() {
+          isLoading2 =
+              false; // Hide the loading indicator when progress is complete
+        });
+      }
+    });
   }
 }

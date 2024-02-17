@@ -1,17 +1,11 @@
 import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:like_button/like_button.dart';
 import '../../providers/Profile_Provider.dart';
-import '../../services/animation.dart';
-import '../../services/extension.dart';
 import 'package:bangapp/services/service.dart';
 import '../../widgets/build_media.dart';
-import '../../widgets/user_profile.dart';
 import '../Comments/post_comment.dart';
-import '../Profile/profile.dart';
 import '../Widgets/readmore.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 
@@ -234,11 +228,11 @@ class _PostCardState extends State<PostCard> {
                                   Service().likeAction(widget.postId, "A", widget.userId);
                                    setState(() {
 
-                                     if (widget!.isLiked) {
-                                       widget?.likeCount--;
-                                       widget!.isLiked = false;
+                                     if (widget.isLiked) {
+                                       widget.likeCount--;
+                                       widget.isLiked = false;
                                      } else {
-                                       widget!.likeCount++;
+                                       widget.likeCount++;
                                        widget.isLiked = true;
                                      }
                                    });
@@ -302,7 +296,7 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
     if (widget.isEditing) {
       return TextField(
         controller: _captionController,
-        style: Theme.of(context).textTheme.bodyText1!,
+        style: Theme.of(context).textTheme.bodyLarge!,
         decoration: InputDecoration(
           hintText: 'Type your caption...',
         ),

@@ -1,17 +1,11 @@
 import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:like_button/like_button.dart';
 import '../../providers/Profile_Provider.dart';
-import '../../services/animation.dart';
-import '../../services/extension.dart';
 import 'package:bangapp/services/service.dart';
 import '../../widgets/build_media.dart';
-import '../../widgets/user_profile.dart';
 import '../Comments/post_comment.dart';
-import '../Profile/profile.dart';
 import '../Widgets/readmore.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 
@@ -20,7 +14,7 @@ class POstView2 extends StatefulWidget {
   ProfileProvider? myProvider;
 
   POstView2(
-     
+
       this.myProvider,
       );
   static const id = 'postview';
@@ -37,7 +31,8 @@ class _POstViewState2 extends State<POstView2> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: PostCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!,widget.myProvider!),
+            child: Text("data"),
+            // child: PostCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!,widget.myProvider!),
           ),
         ),
       ),
@@ -121,7 +116,7 @@ class _PostCardState extends State<PostCard> {
                     viewImage(context, widget.postUrl);
                   },
                   child: AspectRatio(
-                    aspectRatio: widget.imgWidth / widget.imgHeight,
+                    aspectRatio: 16 / 9,
                     child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned),
                   ),
                 ),
@@ -225,7 +220,6 @@ class _PostCardState extends State<PostCard> {
             )));
   }
 }
-
 class PostCaptionWidget extends StatefulWidget {
   final String? caption;
   final String? name;
@@ -252,7 +246,7 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
     if (widget.isEditing) {
       return TextField(
         controller: _captionController,
-        style: Theme.of(context).textTheme.bodyText1!,
+        style: Theme.of(context).textTheme.bodyLarge!,
         decoration: InputDecoration(
           hintText: 'Type your caption...',
         ),
@@ -261,7 +255,7 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
       return ReadMoreText(
         widget.caption ?? "",
         trimLines: 2,
-        style: Theme.of(context).textTheme.bodyText1!,
+        style: Theme.of(context).textTheme.bodyLarge!,
         colorClickableText: Theme.of(context).primaryColor,
         trimMode: TrimMode.line,
         trimCollapsedText: '...Show more',

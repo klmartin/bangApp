@@ -126,7 +126,7 @@ class PostsProvider with ChangeNotifier {
   }
 
   void addPost(Post post) {
-    _posts!.add(post);
+    _posts.add(post);
     notifyListeners();
   }
 
@@ -135,7 +135,7 @@ class PostsProvider with ChangeNotifier {
       // Print the postId being searched for
 
       // ignore: unrelated_type_equality_checks
-      final post = _posts?.firstWhere((update) => update.postId == postId);
+      final post = _posts.firstWhere((update) => update.postId == postId);
 
       if (post != null) {
         post.commentCount++;
@@ -148,12 +148,12 @@ class PostsProvider with ChangeNotifier {
   }
 
   void increaseLikes(int postId) {
-    final post = _posts?.firstWhere((update) => update.postId == postId);
-    if (post?.isLiked) {
-      post?.likeCountA--;
-      post!.isLiked = false;
+    final post = _posts.firstWhere((update) => update.postId == postId);
+    if (post.isLiked) {
+      post.likeCountA--;
+      post.isLiked = false;
     } else {
-      post!.likeCountA++;
+      post.likeCountA++;
       post.isLiked = true;
     }
     notifyListeners();

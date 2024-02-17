@@ -3,13 +3,6 @@ import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:bangapp/widgets/LikeCounterWidget.dart';
-import 'package:bangapp/widgets/user_profile.dart';
-import 'package:bangapp/screens/Explore/bang_updates_like_button.dart';
-import 'package:bangapp/constants/urls.dart';
-import '../screens/Comments/updateComment.dart';
-import '../services/animation.dart';
 
 Widget? buildBangUpdate(BuildContext context, filename,type,caption,postId,likeCount,index) {
   if ( type == 'image') {

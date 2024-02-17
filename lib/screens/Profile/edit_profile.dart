@@ -1,26 +1,15 @@
 import 'package:bangapp/constants/urls.dart';
-import 'package:bangapp/screens/Home/Home2.dart';
-import 'package:bangapp/screens/Widgets/fab_container.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:date_format/date_format.dart';
 import 'package:date_formatter/date_formatter.dart';
 import 'package:filter_list/filter_list.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bangapp/screens/Profile/profile_upload.dart';
 import 'package:bangapp/services/service.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 import '../../models/hobby.dart';
 import '../../nav.dart';
 import '../../services/api_cache_helper.dart';
-import 'edit_profile.dart';
 
 late String? _descr;
 late String phoneNumber;

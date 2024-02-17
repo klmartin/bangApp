@@ -1,4 +1,3 @@
-import 'package:bangapp/screens/Widgets/battle_like.dart';
 import 'package:bangapp/widgets/build_media.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +5,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart'; // Import the BoxDataProvider
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chewie/chewie.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:video_player/video_player.dart';
 import 'package:bangapp/widgets/video_player.dart';
+import '../../services/payment_service.dart';
 import '../../services/service.dart';
-import '../../widgets/video_player_item.dart';
 import '../Comments/battleComment.dart';
 
 class SmallBoxCarousel extends StatefulWidget {
@@ -54,7 +51,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
   );
 }
 
-  buildFab(value, BuildContext context) {
+  buildFab(value, BuildContext context,price,subtitle) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -88,11 +85,12 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                   size: 25.0,
                 ),
                 title: Text('Pay to Vote'),
-                trailing: Text('500 tshs'),
+                subtitle: Text(subtitle),
+                trailing: Text('$price tshs'),
                 // subtitle: Text('to Vote'),
                 onTap: () {
                   Navigator.pop(context);
-                  buildPayments('value', context);
+                  buildPayments(price, context);
                 },
               ),
 
@@ -103,7 +101,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
     );
   }
 
-  buildPayments(value, BuildContext context) {
+  buildPayments(price, BuildContext context) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -146,7 +144,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                   size: 25.0,
                 ),
                 title: Text('Airtel Money'),
-                onTap: () {},
+                onTap: () { PaymentService.airtelMoney(int.parse(price));},
               ),
               ListTile(
                 leading: Icon(
@@ -461,7 +459,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                             onTap: () {
                                               if(box.pinned){
                                                 print('this is pinned');
-                                                buildFab(1, context);
+                                                buildFab(1, context,box.price,box.subtitle);
                                               }
                                               else{
                                                 final countUpdate =
@@ -531,7 +529,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                               onTap: () {
                                                 if(box.pinned){
                                                   print('this is pinned');
-                                                  buildFab(1, context);
+                                                  buildFab(1, context,box.price,box.subtitle);
                                                 }
                                                 else{
                                                   final countUpdate = Provider.of<

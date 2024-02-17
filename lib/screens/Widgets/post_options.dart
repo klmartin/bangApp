@@ -1,4 +1,5 @@
-import 'dart:typed_data';
+import 'dart:developer';
+import 'package:bangapp/services/service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,22 +7,28 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mime/mime.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/animation.dart';
-import '../../services/extension.dart';
+import '../../widgets/delete_post.dart';
 import '../../widgets/user_profile.dart';
 import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 import '../Create/video_editing/video_edit.dart';
-import '../Profile/profile.dart';
 import 'dart:io';
 
-Widget? postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type,createdAt){
+Widget postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type,createdAt)  {
   Future<Uint8List> fileToUint8List(File file) async {
-    if (file != null) {
-      List<int> bytes = await file.readAsBytes();
-      return Uint8List.fromList(bytes);
-    }
+    List<int> bytes = await file.readAsBytes();
+    return Uint8List.fromList(bytes);
     return Uint8List(0);
   }
+  Future<int?> handleSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? currentUserId = prefs.getInt('user_id');
+    // Use currentUserId as needed
+    return currentUserId;
+  }
+
+
   return  Padding(
     padding: const EdgeInsets.symmetric(
         horizontal: 16.0, vertical: 8.0),
@@ -92,171 +99,145 @@ Widget? postOptions (BuildContext context,userId,userImage,userName,followerCoun
               backgroundColor:Colors.black,
               context: context,
               builder: (BuildContext ctx) {
-                return Container(
-                    color: Colors.white,
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(
-                            height: 14,
-                          ),
-                          Container(
-                            height: 5,
-                            width: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius:
-                              BorderRadius.circular(20),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          // if (widget.currentUser.id ==
-                          //     widget.post.userId)
-                          //   Column(
-                          //     children: [
-                          //       ListTile(
-                          //         onTap: () {
-                          //           BlocProvider.of<
-                          //               PostCubit>(
-                          //               context)
-                          //               .deletePost(
-                          //               widget
-                          //                   .currentUser
-                          //                   .id,
-                          //               widget.post
-                          //                   .postId);
-                          //           Navigator.pop(context);
-                          //         },
-                          //         minLeadingWidth: 20,
-                          //         leading: Icon(
-                          //           CupertinoIcons.delete,
-                          //           color: Theme.of(context)
-                          //               .primaryColor,
-                          //         ),
-                          //         title: Text(
-                          //           "Delete Post",
-                          //           style: Theme.of(context)
-                          //               .textTheme
-                          //               .bodyText1,
-                          //         ),
-                          //       ),
-                          //       Divider(
-                          //         height: .5,
-                          //         thickness: .5,
-                          //         color:
-                          //         Colors.grey.shade800,
-                          //       )
-                          //     ],
-                          //   ),
-                          Column(
+
+                return FutureBuilder(
+                    future: handleSharedPreferences(),
+                  builder: (context,snapshot) {
+                    int? currentUserId = snapshot.data as int?;
+                    return Container(
+                        color: Colors.white,
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              ListTile(
-                                // onTap: () async {
-                                //   final url = await getUrl(
-                                //     description:
-                                //     state.post.caption,
-                                //     image: state
-                                //         .post.postImageUrl,
-                                //     title:
-                                //     'Check out this post by ${state.post.name}',
-                                //     url:
-                                //     'https://ansh-rathod-blog.netlify.app/socialapp?post_user_id=${state.post.userId}&post_id=${state.post.postId}&type=post',
-                                //   );
-                                //   Clipboard.setData(
-                                //       ClipboardData(
-                                //           text: url
-                                //               .toString()));
-                                //   Navigator.pop(context);
-                                //   Toast(
-                                //     context,
-                                //     'Copied to clipboard',
-                                //     Colors.green,
-                                //   );
-                                // },
-                                minLeadingWidth: 20,
-                                leading: Icon(
-                                  CupertinoIcons.link,
-                                  color: Theme.of(context)
-                                      .primaryColor,
-                                ),
-                                title: Text(
-                                  "Copy URL",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge,
+                              const SizedBox(
+                                height: 14,
+                              ),
+                              Container(
+                                height: 5,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius:
+                                  BorderRadius.circular(20),
                                 ),
                               ),
-                              Divider(
-                                height: .5,
-                                thickness: .5,
-                                color: Colors.grey.shade800,
-                              )
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              ListTile(
-                                onTap: () async {
-                                  FilePickerResult? result = await FilePicker.platform.pickFiles();
-                                  if (result != null) {
-                                    File file = File(result.files.first.path!);
-                                    final mimeType = lookupMimeType(file.path);
-                                    if(mimeType!.startsWith('image/')){
-                                      Uint8List image = await fileToUint8List(file);
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ImageEditor(
-                                               image: image,
-                                               postId: imagePostId,
-                                               userChallenged:imageUserId,
-                                               challengeImg: true,
-                                               image2: null,
-                                               allowMultiple: true
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    else if(mimeType.startsWith('video/')){
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => VideoEditor(
-                                            video: File(file.path),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    else{
-                                      Fluttertoast.showToast(msg: "Unsupported file type.");
-                                    }
-                                  } else {
-                                    // User canceled the picker
-                                  }
-                                },
-                                minLeadingWidth: 20,
-                                leading: Icon(
-                                  CupertinoIcons.photo,
-                                  color: Theme.of(context)
-                                      .primaryColor,
-                                ),
-                                title: Text(
-                                  "Challenge $type",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge,
-                                ),
+                              const SizedBox(
+                                height: 20,
                               ),
-                              Divider(
-                                height: .5,
-                                thickness: .5,
-                                color: Colors.grey.shade800,
-                              )
-                            ],
-                          ),
-                        ]));
+                              if (userId == currentUserId)
+                                Column(
+                                  children: [
+                                    DeletePostWidget(imagePostId: imagePostId),
+
+                                    Divider(
+                                      height: .5,
+                                      thickness: .5,
+                                      color:
+                                      Colors.grey.shade800,
+                                    )
+                                  ],
+                                ),
+                              Column(
+                                children: [
+                                  ListTile(
+                                    onTap: () async {
+                                      Clipboard.setData(
+                                          ClipboardData(
+                                              text: imagePost.toString()));
+                                      Navigator.pop(context);
+                                      Fluttertoast.showToast(
+                                        msg:'Copied to clipboard',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.CENTER,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: Colors.red,
+                                        textColor: Colors.white,
+                                      );
+                                    },
+                                    minLeadingWidth: 20,
+                                    leading: Icon(
+                                      CupertinoIcons.link,
+                                      color: Theme.of(context)
+                                          .primaryColor,
+                                    ),
+                                    title: Text(
+                                      "Copy URL",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge,
+                                    ),
+                                  ),
+                                  Divider(
+                                    height: .5,
+                                    thickness: .5,
+                                    color: Colors.grey.shade800,
+                                  )
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  ListTile(
+                                    onTap: () async {
+                                      FilePickerResult? result = await FilePicker.platform.pickFiles();
+                                      if (result != null) {
+                                        File file = File(result.files.first.path!);
+                                        final mimeType = lookupMimeType(file.path);
+                                        if(mimeType!.startsWith('image/')){
+                                          Uint8List image = await fileToUint8List(file);
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => ImageEditor(
+                                                   image: image,
+                                                   postId: imagePostId,
+                                                   userChallenged:imageUserId,
+                                                   challengeImg: true,
+                                                   image2: null,
+                                                   allowMultiple: true
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        else if(mimeType.startsWith('video/')){
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => VideoEditor(
+                                                video: File(file.path),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        else{
+                                          Fluttertoast.showToast(msg: "Unsupported file type.");
+                                        }
+                                      } else {
+                                        // User canceled the picker
+                                      }
+                                    },
+                                    minLeadingWidth: 20,
+                                    leading: Icon(
+                                      CupertinoIcons.photo,
+                                      color: Theme.of(context)
+                                          .primaryColor,
+                                    ),
+                                    title: Text(
+                                      "Challenge $type",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge,
+                                    ),
+                                  ),
+                                  Divider(
+                                    height: .5,
+                                    thickness: .5,
+                                    color: Colors.grey.shade800,
+                                  )
+                                ],
+                              ),
+                            ]));
+                  }
+                );
               },
             );
           },

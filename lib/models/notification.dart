@@ -1,4 +1,3 @@
-import 'package:bangapp/constants/urls.dart';
 
 class NotificationModel {
   final List<NotificationItem> notifications;
@@ -8,7 +7,6 @@ class NotificationModel {
     List<NotificationItem> notifications = notificationList
         .map((notification) => NotificationItem.fromJson(notification))
         .toList();
-
     return NotificationModel(notifications: notifications);
   }
 }

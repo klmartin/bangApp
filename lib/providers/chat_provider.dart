@@ -4,7 +4,6 @@ import 'package:bangapp/services/service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -195,7 +194,8 @@ Future<void> sendMessage(BuildContext context, int user1Id, int user2Id,
       'user2_id': user2Id.toString(),
       'message': message,
     });
-
+    print(response.body);
+    print('responsevideo');
     if (response.statusCode == 200) {
       final newMessage = Message.fromJson(jsonDecode(response.body));
       final serv = new Service();

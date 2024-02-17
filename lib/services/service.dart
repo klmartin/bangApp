@@ -53,30 +53,63 @@ class Service {
   Future<bool> addImage(Map<String, String> body, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = await TokenManager.getToken();
+    print('this is body');
+    print(body);
     final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
-    String addimageUrl = '$baseUrl/imageadd';
-    var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
-      ..headers.addAll(headers)
-      ..fields.addAll(body)
-      ..files.add(await http.MultipartFile.fromPath('image', filepath));
-    try {
-      var response = await http.Response.fromStream(await request.send());
-      prefs.setBool('i_just_posted', true);
-      prefs.setBool('i_just_posted_profile', true);
-      print(response.body);
-      if (response.statusCode == 201) {
-        final response2 = jsonDecode(response.body);
-        if (response2['data']) {
+    if(body['type']=="video"){
+      print(body);
+      print('this is video body');
+      String addvideoUrl = 'https://video.bangapp.pro/api/v1/upload-video';
+      var request = http.MultipartRequest('POST', Uri.parse(addvideoUrl))
+        ..headers.addAll(headers)
+        ..fields.addAll(body)
+        ..files.add(await http.MultipartFile.fromPath('video', filepath));
+      try {
+        var response = await http.Response.fromStream(await request.send());
+        prefs.setBool('i_just_posted', true);
+        prefs.setBool('i_just_posted_profile', true);
+        print(response.body);
+        print('video uploaded');
+        if (response.statusCode == 201) {
+          final response2 = jsonDecode(response.body);
+          if (response2['data']) {
 
-        } else {}
-        return true;
-      } else {
+          } else {}
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
+        print(e);
         return false;
       }
-    } catch (e) {
-      print(e);
-      return false;
     }
+    else{
+      String addimageUrl = '$baseUrl/imageadd';
+      var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
+        ..headers.addAll(headers)
+        ..fields.addAll(body)
+        ..files.add(await http.MultipartFile.fromPath('image', filepath));
+      try {
+        var response = await http.Response.fromStream(await request.send());
+        prefs.setBool('i_just_posted', true);
+        prefs.setBool('i_just_posted_profile', true);
+        print(response.body);
+        if (response.statusCode == 201) {
+          final response2 = jsonDecode(response.body);
+          if (response2['data']) {
+
+          } else {}
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
+        print(e);
+        return false;
+      }
+    }
+
   }
 
   Future<bool> addBangUpdate(Map<String, String> body, String filepath) async {
@@ -241,6 +274,7 @@ class Service {
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         }),
       );
+
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
@@ -295,9 +329,8 @@ class Service {
       );
 
       if (response.statusCode == 200) {
-        // Assuming your response body is a list, modify this based on your actual response structure
-        List<dynamic> comments = jsonDecode(response.body);
-        return comments;
+        final responseData = json.decode(response.body);
+        return responseData['comments'];
       } else {
         // Handle other status codes if needed
         return [];
@@ -319,7 +352,9 @@ class Service {
         'application/json', // Include other headers as needed
       },
       );
+
       if (response.statusCode == 200) {
+
         final responseData = json.decode(response.body);
         return responseData['comments'];
       } else {
@@ -335,7 +370,10 @@ class Service {
   Future postComment(BuildContext context, postId, commentText, userId) async {
     try {
       final token = await TokenManager.getToken();
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      print([postId,commentText,prefs.getInt('user_id')]);
+      print('this is token');
       final response = await http.post(
         Uri.parse('$baseUrl/postComment'),
         body: jsonEncode({
@@ -361,13 +399,14 @@ class Service {
     final token = await TokenManager.getToken();
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
       final response = await http.post(
         Uri.parse('$baseUrl/postUpdateComment'),
-        body: {
+        body: jsonEncode({
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
           'body': commentText,
-        },
+        }),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':
@@ -387,11 +426,11 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/postBattleComment'),
-        body: {
+        body: jsonEncode({
           'post_id': postId.toString(),
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
           'body': commentText,
-        },
+        }),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':
@@ -405,23 +444,84 @@ class Service {
     }
   }
 
-  Future deletePost(postId) async {
+  Future<Map<String, dynamic>> deletePost(postId) async {
     try {
       final token = await TokenManager.getToken();
       final response = await http.delete(
-        Uri.parse('$baseUrl/deletePost/$postId'),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },
+        Uri.parse('$baseUrl/deletePost/$postId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
       );
-      print([response, postId]);
-      return jsonDecode(response.body);
+      print([response.body, postId]);
+      print('Post Delete');
+
+      if (response.body.isNotEmpty) {
+        return jsonDecode(response.body);
+      } else {
+        // Handle the case where response.body is empty
+        return {'error': 'Empty response body'};
+      }
     } catch (e) {
       print(e);
-      return e;
+      return {'error': e.toString()};
     }
   }
+
+
+  Future<Map<String, dynamic>> deleteComment(commentId) async {
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.delete(
+        Uri.parse('$baseUrl/deleteComment/$commentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+
+        },
+      );
+      print([response.body]);
+      print('commment Delete');
+      if (response.body.isNotEmpty) {
+        return jsonDecode(response.body);
+      } else {
+        // Handle the case where response.body is empty
+        return {'error': 'Empty response body'};
+      }
+    } catch (e) {
+      print(e);
+      return {'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteBattleComment(commentId) async {
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.delete(
+        Uri.parse('$baseUrl/deleteBattleComment/$commentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+
+
+        },
+      );
+      print([response.body]);
+      print('commment Delete');
+      if (response.body.isNotEmpty) {
+        return jsonDecode(response.body);
+      } else {
+        // Handle the case where response.body is empty
+        return {'error': 'Empty response body'};
+      }
+    } catch (e) {
+      print(e);
+      return {'error': e.toString()};
+    }
+  }
+
+
 
   Future acceptChallenge(postId) async {
     try {
@@ -557,7 +657,7 @@ class Service {
   }
 
   Future<void> setUserProfile(
-      date_of_birth,
+      dateOfBirth,
       int? phoneNumber,
       String Hobbies,
       occupation,
@@ -576,7 +676,7 @@ class Service {
         'user_id': prefs.getInt('user_id').toString(),
         'phoneNumber': phoneNumber?.toString() ?? '', // Check for null before converting to string
         'hobbies': selectedHobbiesText,
-        'date_of_birth': date_of_birth.toString(),
+        'date_of_birth': dateOfBirth.toString(),
         'occupation': occupation,
         'bio': bio,
         'name': name
@@ -630,11 +730,11 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/likeBangBattle'),
-        body: {
+        body: jsonEncode({
           'battle_id': postId.toString(),
           'like_type': type,
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
-        },
+        }),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':

@@ -1,12 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Chat/calls_chat.dart';
 import 'package:bangapp/screens/Chat/chat_model.dart';
 import 'package:bangapp/screens/Chat/new_message_chat.dart';
-import 'package:bangapp/widgets/SearchBox.dart';
 // import 'group_chat.dart';
 import 'package:bangapp/models/chat_message.dart';
 import 'package:bangapp/services/service.dart';

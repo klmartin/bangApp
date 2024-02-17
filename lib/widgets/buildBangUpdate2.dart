@@ -10,15 +10,12 @@ import '../screens/Explore/bang_updates_like_button.dart';
 import '../screens/Widgets/readmore.dart';
 import '../services/animation.dart';
 import 'package:bangapp/widgets/user_profile.dart';
-import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
-
-
 class ZoomableImageScreen extends StatelessWidget {
-  final List<String> imageUrls; // If you have multiple images, provide a list of URLs
+  final List<String>
+      imageUrls; // If you have multiple images, provide a list of URLs
 
   ZoomableImageScreen({required this.imageUrls});
 
@@ -44,43 +41,41 @@ class ZoomableImageScreen extends StatelessWidget {
   }
 }
 
-
-
-Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async {
+Widget buildBangUpdate2(BuildContext context, bangUpdate, index)  {
   if (bangUpdate.type == 'image') {
     return Stack(
       children: [
         Container(
           color: Colors.black,
           child: Center(
-            child: Container(
-  height: 400,
-  width: double.infinity,
-  child: GestureDetector(
-    onTap: () {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) {
-            return ZoomableImageScreen(imageUrls: [bangUpdate.filename]);
-          },
-        ),
-      );
-    },
-    child: CachedNetworkImage(
-      fit: BoxFit.cover,
-      imageUrl: bangUpdate.filename,
-      placeholder: (context, url) => Shimmer.fromColors(
-        baseColor: const Color.fromARGB(255, 30, 34, 45),
-        highlightColor:
-            const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-        child: Container(
-          color: const Color.fromARGB(255, 30, 34, 45),
-        ),
-      ),
-    ),
-  ),
-)
-          ),
+              child: Container(
+            height: 400,
+            width: double.infinity,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return ZoomableImageScreen(
+                          imageUrls: [bangUpdate.filename]);
+                    },
+                  ),
+                );
+              },
+              child: CachedNetworkImage(
+                fit: BoxFit.cover,
+                imageUrl: bangUpdate.filename,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: const Color.fromARGB(255, 30, 34, 45),
+                  highlightColor:
+                      const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
+                  child: Container(
+                    color: const Color.fromARGB(255, 30, 34, 45),
+                  ),
+                ),
+              ),
+            ),
+          )),
         ),
         Positioned(
           bottom: 0,
@@ -196,7 +191,7 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async {
   } else if (bangUpdate.type == 'video') {
     VideoPlayerController _videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(bangUpdate.filename));
-    await _videoPlayerController
+     _videoPlayerController
         .initialize(); // Initialize the video player controller
     ChewieController _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
@@ -229,9 +224,9 @@ Future<Widget> buildBangUpdate2(BuildContext context, bangUpdate, index) async {
                     key: Key('chewie_key'), // Provide a unique key
                     onVisibilityChanged: (VisibilityInfo info) {
                       if (info.visibleFraction == 0.0) {
-                        _videoPlayerController?.pause();
+                        _videoPlayerController.pause();
                       } else {
-                        _videoPlayerController?.play();
+                        _videoPlayerController.play();
                       }
                     },
                     child: VideoPlayer(_videoPlayerController))

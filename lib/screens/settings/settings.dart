@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Authenticate/login_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
  import "package:bangapp/services/service.dart";
 
 import '../../services/token_storage_helper.dart';
@@ -71,13 +69,14 @@ class _AppSettings extends State<AppSettings> {
             title: Text("About"),
           ),
           ListTile(
-            leading: Icon(
-                Icons.logout
-            ),
+            leading: Icon(Icons.logout),
             title: Text("Logout"),
             onTap: () async {
               await TokenManager.clearToken();
-              Navigator.pushNamed(context, LoginScreen.id);
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(
+                  builder: (context) => LoginScreen()
+              ));
             },
           ),
         ],

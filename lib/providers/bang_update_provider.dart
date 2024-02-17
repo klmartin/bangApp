@@ -1,10 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/api_cache_helper.dart';
+import '../services/token_storage_helper.dart';
 
 
 class BangUpdate {
@@ -37,14 +40,27 @@ class BangUpdateProvider extends ChangeNotifier {
   List<BangUpdate> _bangUpdates = [];
 
   List<BangUpdate> get bangUpdates => _bangUpdates;
-  ApiCacheHelper apiCacheHelper = ApiCacheHelper(
-    baseUrl: baseUrl,
-    numberOfPostsPerRequest: 10,
-  );
+
 
   Future<void> fetchBangUpdates() async {
+    final token = await TokenManager.getToken();
+     // = await apiCacheHelper.fetchBangUpdates(pageNumber: 1);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id').toString();
+    final response = await http.get(
+      Uri.parse(
+        "$baseUrl/bang-updates/user_id=$userId",
+      ),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type':
+        'application/json', // Include other headers as needed
+      },
+    );
+    print('chembea');
 
-    var data = await apiCacheHelper.fetchBangUpdates(pageNumber: 1);
+
+    var data = json.decode(response.body);
 
     _bangUpdates = List<BangUpdate>.from(data.map((post) {
       return BangUpdate(

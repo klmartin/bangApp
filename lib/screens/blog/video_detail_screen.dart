@@ -348,7 +348,7 @@ class _VideoDetailPageState extends State<VideoDetailScreen> {
   }
 
   Future<bool> _clearPrevious() async {
-    await _controller?.pause();
+    await _controller.pause();
     return true;
   }
 

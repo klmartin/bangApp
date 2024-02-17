@@ -1,30 +1,20 @@
-import 'dart:developer';
 import 'dart:typed_data';
 import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:bangapp/screens/Widgets/readmore.dart';
-import 'package:bangapp/screens/blog/colors.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:bangapp/widgets/like_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:like_button/like_button.dart';
-import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:video_player/video_player.dart';
 import '../../models/post.dart';
-import '../../providers/comment_provider.dart';
 import '../../services/animation.dart';
-import '../../services/extension.dart';
 import '../../widgets/build_media.dart';
-import '../../widgets/user_profile.dart';
 import '../Comments/commentspage.dart';
 import 'dart:io';
 
@@ -105,10 +95,8 @@ void viewImage(BuildContext context, String imageUrl) {
 }
 
   Future<Uint8List> fileToUint8List(File file) async {
-    if (file != null) {
-      List<int> bytes = await file.readAsBytes();
-      return Uint8List.fromList(bytes);
-    }
+    List<int> bytes = await file.readAsBytes();
+    return Uint8List.fromList(bytes);
     return Uint8List(0);
   }
 

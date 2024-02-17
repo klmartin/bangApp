@@ -3,26 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants/urls.dart';
+import '../services/token_storage_helper.dart';
 
 
 class BangInspirationsProvider with ChangeNotifier {
   List<BangInspiration> _inspirations = [];
   bool _isLoading = false;
+  bool _fetched = false;
 
+  bool get isFetched => _fetched;
   List<BangInspiration> get inspirations => _inspirations;
   bool get isLoading => _isLoading;
 
   Future<void> fetchInspirations(BuildContext context) async {
     try {
       _isLoading = true;
-      notifyListeners();
-      final response = await http.get(Uri.parse('$baseUrl/get/bangInspirations'));
+      final token = await TokenManager.getToken();
+      final response = await http.get(Uri.parse('$baseUrl/get/bangInspirations'), headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },);
       print(response.body);
+      print('bangInpo response');
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         _inspirations = data.map((json) => BangInspiration.fromJson(json)).toList();
         print(inspirations);
-        notifyListeners();
       } else {
         throw Exception('Failed to fetch inspirations');
       }
@@ -34,6 +40,7 @@ class BangInspirationsProvider with ChangeNotifier {
       );
     } finally {
       _isLoading = false;
+      _fetched = true;
       notifyListeners();
     }
   }
@@ -57,15 +64,15 @@ class BangInspiration {
   final int id;
   final String? title;
   final String? profileUrl;
-  final String? videoUrl;
-  final String? thumbnail;
+  final String videoUrl;
+  final String thumbnail;
 
   BangInspiration({
     required this.id,
      this.title,
      this.profileUrl,
-     this.videoUrl,
-     this.thumbnail,
+     required this.videoUrl,
+     required this.thumbnail,
 
 
   });

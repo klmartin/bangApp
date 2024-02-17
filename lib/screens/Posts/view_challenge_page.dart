@@ -1,13 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:like_button/like_button.dart';
 import '../../nav.dart';
 import '../../services/animation.dart';
 import '../../services/extension.dart';
 import 'package:bangapp/services/service.dart';
 import '../../widgets/build_media.dart';
 import '../../widgets/user_profile.dart';
-import '../Comments/commentspage.dart';
 import '../Profile/profile.dart';
 import '../Widgets/readmore.dart';
 import 'package:http/http.dart' as http;
@@ -181,7 +178,7 @@ class _PostCardState extends State<PostCard> {
                                   ),
                                   style: Theme.of(context)
                                       .textTheme
-                                      .bodyText1)
+                                      .bodyLarge)
                             ],
                           ),
                         ],
@@ -284,7 +281,7 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
     if (widget.isEditing) {
       return TextField(
         controller: _captionController,
-        style: Theme.of(context).textTheme.bodyText1!,
+        style: Theme.of(context).textTheme.bodyLarge!,
         decoration: InputDecoration(
           hintText: 'Type your caption...',
         ),
@@ -293,7 +290,7 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
       return ReadMoreText(
         widget.caption ?? "",
         trimLines: 2,
-        style: Theme.of(context).textTheme.bodyText1!,
+        style: Theme.of(context).textTheme.bodyLarge!,
         colorClickableText: Theme.of(context).primaryColor,
         trimMode: TrimMode.line,
         trimCollapsedText: '...Show more',

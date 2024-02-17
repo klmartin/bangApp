@@ -5,6 +5,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:photo_view/photo_view.dart';
 
+import '../components/video_player.dart';
 import '../constants/urls.dart';
 
 Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
@@ -32,8 +33,6 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
         ),
     );
   }
-
-
   else if (type == 'image' || type== 'video' && isPinned==1) {
     return GestureDetector(
       onTap: () {
@@ -53,8 +52,10 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
       ),
     );
   }
-  else if (type == 'video') {
+  else if (type == 'video' && isPinned==0) {
+    // return CustomVideoPlayer(videoUrl: mediaUrl, cachingVideoUrl: mediaUrl,thumbnailUrl: '',);
     return VideoPlayerPage(mediaUrl: mediaUrl);
+
   } else {
     return Container();
   }

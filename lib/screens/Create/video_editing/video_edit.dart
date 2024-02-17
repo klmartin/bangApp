@@ -4,7 +4,6 @@ import 'package:bangapp/screens/Create/video_editing/crop_page.dart';
 import 'package:bangapp/screens/Create/video_editing/export_service.dart';
 import 'package:bangapp/screens/Create/video_editing/export_result.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:video_editor/video_editor.dart';
 
 import '../final_create.dart';

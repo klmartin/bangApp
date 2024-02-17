@@ -1,18 +1,13 @@
-import 'package:bangapp/message/screens/messages/message_screen.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bangapp/constants/urls.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 
 import '../../services/animation.dart';
-import '../../services/fetch_post.dart';
+import '../../services/search_history.dart';
 import '../../services/token_storage_helper.dart';
-import '../Chat/chat_model.dart';
 
 void main() => runApp(ProfileList());
 
@@ -70,6 +65,19 @@ class UserBubble extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
+            print("presses");
+            SearchHistoryManager().saveSearch([
+              {
+                'profileUrl' : this.profileUrl,
+                'selected_user': this.selectedUser,
+                'name': this.name,
+                'bio': this.bio,
+                'followCount': this.followCount,
+                'followingCount': followingCount,
+                'postCount': postCount,
+                'isMe': this.isMe
+              }
+            ]);
             Navigator.push(
               context,
               createRoute(
@@ -95,8 +103,7 @@ class UserBubble extends StatelessWidget {
                         CircleAvatar(
                           backgroundColor: Colors.blueGrey,
                           radius: 32,
-                          backgroundImage:
-                              NetworkImage(this.profileUrl),
+                          backgroundImage: NetworkImage(this.profileUrl),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 10.0, left: 20.0),
@@ -147,15 +154,18 @@ class UsersStream extends StatefulWidget {
 
 class _UsersStreamState extends State<UsersStream> {
   TextEditingController _searchController = TextEditingController();
+  final SearchHistoryManager searchHistoryManager = SearchHistoryManager();
   List<Map<String, dynamic>> _searchResults = [];
   void _fetchSearchResults(String keyword) async {
     final token = await TokenManager.getToken();
     final url = Uri.parse('$baseUrl/users/search?keyword=$keyword');
-    final response = await http.get(url,headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type':
-      'application/json', // Include other headers as needed
-    },);
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json', // Include other headers as needed
+      },
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
@@ -176,6 +186,16 @@ class _UsersStreamState extends State<UsersStream> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    loadSearchHistory();
+  }
+
+  Future<void> loadSearchHistory() async {
+    await searchHistoryManager.loadSearchHistory();
+    setState(() {}); // Refresh the UI after loading search history
+  }
+
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -198,7 +218,8 @@ class _UsersStreamState extends State<UsersStream> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
+          child: _searchController.text.isNotEmpty
+              ? ListView.builder(
             itemCount: _searchResults.length,
             itemBuilder: (context, index) {
               final user = _searchResults[index];
@@ -210,7 +231,29 @@ class _UsersStreamState extends State<UsersStream> {
                 followCount: user['followCount'],
                 followingCount: user['followCount'],
                 postCount: user['postCount'],
-                isMe: false, // Assuming the logged-in user is not shown in search results
+                isMe: false,
+              );
+            },
+          )
+              : ListView.builder(
+            itemCount: searchHistoryManager.searchHistory.length,
+            itemBuilder: (context, index) {
+              final entry = searchHistoryManager.searchHistory[index];
+
+              // Accessing the first map in the entry
+              final user = entry.isNotEmpty ? entry.first : {};
+
+              print(user);
+              print('this is printed user');
+              return UserBubble(
+                profileUrl: user['profileUrl'] ?? "",
+                name: user['name'],
+                selectedUser: user['selected_user'],
+                bio: user['bio'] ?? '',
+                followCount: user['followCount'],
+                followingCount: user['followingCount'],
+                postCount: user['postCount'],
+                isMe: user['isMe'],
               );
             },
           ),
@@ -218,5 +261,5 @@ class _UsersStreamState extends State<UsersStream> {
       ],
     );
   }
-}
 
+}

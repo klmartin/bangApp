@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
-import 'dart:io';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
-import '../../services/animation.dart';
 
 class Create extends StatefulWidget {
   Create({Key? key, this.title}) : super(key: key);
@@ -229,17 +227,22 @@ class _CreateState extends State<Create> {
                         );
                       } else {
                         return FutureBuilder<Uint8List?>(
-                          future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+                          future: asset.thumbnailDataWithSize(ThumbnailSize(_selectedAssets[index].height.toInt(),  _selectedAssets[index].width.toInt())),
                           builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
                             if (snapshot.connectionState == ConnectionState.done) {
                               final thumbnailData = snapshot.data!;
                               return Image.memory(
                                 thumbnailData,
-                                height: _selectedAssets[index].height.toDouble(),
-                                width:  _selectedAssets[index].width.toDouble(),
+                                // Consider using BoxFit.cover or BoxFit.fill based on your layout
                                 fit: BoxFit.contain,
+                                height: _selectedAssets[index].height.toDouble(),
+                                width: _selectedAssets[index].width.toDouble(),
                               );
+                            } else if (snapshot.hasError) {
+                              // Handle errors if any
+                              return Text('Error loading thumbnail');
                             } else {
+                              // Loading indicator while waiting for the thumbnail
                               return CircularProgressIndicator();
                             }
                           },

@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:bangapp/constants/urls.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import '../models/image_post.dart';
 import '../services/api_cache_helper.dart';
 
@@ -28,6 +26,8 @@ class ProfileProvider extends ChangeNotifier {
     _posts.addAll(data.map((json) => ImagePost.fromJson(json)).toList());
     _isLoading = false;
     _pageNumber++;
+    print('pageNumber');
+    print(_pageNumber);
     notifyListeners();
   }
 
@@ -36,16 +36,18 @@ class ProfileProvider extends ChangeNotifier {
     _posts.addAll(data.map((json) => ImagePost.fromJson(json)).toList());
     _isLoading = false;
     _pageNumber++;
+    print('pageNumber');
+    print(_pageNumber);
     notifyListeners();
   }
 
   void increaseLikes(int postId) {
-    final post = _posts?.firstWhere((update) => update.postId == postId);
-    if (post!.isLikedA) {
-      post?.likeCountA--;
-      post!.isLikedA = false;
+    final post = _posts.firstWhere((update) => update.postId == postId);
+    if (post.isLikedA) {
+      post.likeCountA--;
+      post.isLikedA = false;
     } else {
-      post!.likeCountA++;
+      post.likeCountA++;
       post.isLikedA = true;
     }
     notifyListeners();

@@ -2,18 +2,13 @@ import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:like_button/like_button.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../providers/posts_provider.dart';
 import '../../services/animation.dart';
-import '../../services/extension.dart';
 import 'package:bangapp/services/service.dart';
 import '../../widgets/build_media.dart';
-import '../../widgets/user_profile.dart';
 import '../Comments/post_comment.dart';
-import '../Profile/profile.dart';
 import '../Widgets/readmore.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 

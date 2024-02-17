@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:bangapp/services/service.dart';
 import 'package:flutter/cupertino.dart';
 
 class LikeButton extends StatefulWidget {
