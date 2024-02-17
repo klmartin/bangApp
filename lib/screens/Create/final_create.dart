@@ -375,7 +375,6 @@ class _FinaleCreateState extends State<FinalCreate> {
                                     quality: VideoQuality.Res640x480Quality,
                                     deleteOrigin: true,
                                   );
-
                                   Map<String, String> body = {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
