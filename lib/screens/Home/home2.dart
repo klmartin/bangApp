@@ -115,6 +115,9 @@ class _Home2ContentState extends State<Home2Content> {
                   post.isLikedB,
                   post.createdAt,
                   post.userImage,
+                  post.cacheUrl,
+                  post.thumbnailUrl,
+                  post.aspectRatio,
                   myProvider: postsProvider,
                 )
               ],
@@ -141,6 +144,9 @@ class _Home2ContentState extends State<Home2Content> {
               post.isLikedB,
               post.createdAt,
               post.userImage,
+              post.cacheUrl,
+              post.thumbnailUrl,
+              post.aspectRatio,
               myProvider: postsProvider,
             );
           }

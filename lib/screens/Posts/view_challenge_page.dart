@@ -73,6 +73,9 @@ class _ViewChallengePageState extends State<ViewChallengePage> {
                       challengeData['created_at'],
                       challengeData['width'],
                       challengeData['height'],
+                      challengeData['cache_url'],
+                      challengeData['thumbnail_url'],
+                      challengeData['aspect_ratio'],
                       _scrollController,
                     ),
                   ),
@@ -103,8 +106,11 @@ class PostCard extends StatefulWidget {
   final created_at;
   var width;
   var height;
+  String? cacheUrl;
+  String? thumbnailUrl;
+  String? aspectRatio;
   ScrollController _scrollController = ScrollController();
-  PostCard(this.id,this.post_id,this.user_id,this.user_name, this.user_image, this.type, this.challenge_img, this.body,this.created_at,this.width,this.height,this._scrollController);
+  PostCard(this.id,this.post_id,this.user_id,this.user_name, this.user_image, this.type, this.challenge_img, this.body,this.created_at,this.width,this.height,this.cacheUrl,this.thumbnailUrl,this.aspectRatio,this._scrollController);
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -195,7 +201,7 @@ class _PostCardState extends State<PostCard> {
               },
               child: AspectRatio(
                 aspectRatio: widget.width / widget.height,
-                child: buildMediaWidget(context, widget.challenge_img,widget.type,widget.width,widget.height,0),
+                child: buildMediaWidget(context, widget.challenge_img,widget.type,widget.width,widget.height,0,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio),
               ),
             ),
             Row(

@@ -483,9 +483,7 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                               value: controller.value,
                               semanticsLabel: 'Linear progress indicator',
                             ),
-
                             // PercentageLoadingIndicator(progress: progress),
-
                             // CircularProgressIndicator(), // Display the CircularProgressIndicator
                           ),
                         ],
@@ -493,7 +491,8 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                     ),
                   ),
                 ),
-              )
+              ),
+
             ]))
           ],
         ));

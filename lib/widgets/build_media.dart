@@ -8,7 +8,7 @@ import 'package:photo_view/photo_view.dart';
 import '../components/video_player.dart';
 import '../constants/urls.dart';
 
-Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned) {
+Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned,cacheUrl,thumbnailUrl,aspectRatio) {
   if ( type == 'image' && isPinned==0) {
     return  AspectRatio(
       aspectRatio: imgWidth / imgHeight,
@@ -53,8 +53,8 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
     );
   }
   else if (type == 'video' && isPinned==0) {
-    // return CustomVideoPlayer(videoUrl: mediaUrl, cachingVideoUrl: mediaUrl,thumbnailUrl: '',);
-    return VideoPlayerPage(mediaUrl: mediaUrl);
+     return CustomVideoPlayer(videoUrl: mediaUrl, cachingVideoUrl: mediaUrl,thumbnailUrl: thumbnailUrl,aspectRatio: aspectRatio);
+    //return VideoPlayerPage(mediaUrl: mediaUrl);
 
   } else {
     return Container();

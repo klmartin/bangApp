@@ -279,6 +279,9 @@ class _AuthenticateState extends State<Authenticate> {
                 postData[0]['created_at']  ?? '',
                 postData[0]['user_image_url'],
                 postData[0]['pinned'],
+                postData[0]['cache_url'],
+                postData[0]['thumbnail_url'],
+                postData[0]['aspect_ratio'],
                 Provider.of<ProfileProvider>(context, listen: false)
             ),
           ),

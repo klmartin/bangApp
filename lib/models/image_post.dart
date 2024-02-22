@@ -18,6 +18,9 @@ class ImagePost {
   String? createdAt;
   String? userImage;
   int? pinned;
+   String? cacheUrl;
+   String? thumbnailUrl;
+   String? aspectRatio;
 
   ImagePost(
       {this.name,
@@ -37,7 +40,11 @@ class ImagePost {
       this.followerCount,
       this.createdAt,
       this.userImage,
-      this.pinned});
+      this.pinned,
+        this.cacheUrl,
+        this.thumbnailUrl,
+        this.aspectRatio,
+      });
 
   factory ImagePost.fromJson(Map<String, dynamic> json) {
     return ImagePost(
@@ -58,7 +65,10 @@ class ImagePost {
         followerCount:json['user']['followerCount'],
         createdAt:json['created_at'],
         userImage:json['user_image_url'],
-        pinned: json['pinned']
+        pinned: json['pinned'],
+      cacheUrl: json['cache_url'],
+      thumbnailUrl: json['thumbnail_url'],
+      aspectRatio: json['aspect_ratio'],
     );
 
 

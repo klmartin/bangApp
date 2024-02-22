@@ -26,6 +26,9 @@ class POstView extends StatefulWidget {
   String? created;
   String? user_image;
   int? pinnedImage;
+  String? cacheUrl;
+  String? thumbnailUrl;
+  String? aspectRatio;
   ProfileProvider? myProvider;
 
   POstView(
@@ -45,6 +48,9 @@ class POstView extends StatefulWidget {
       this.created,
       this.user_image,
       this.pinnedImage,
+      this.cacheUrl,
+      this.thumbnailUrl,
+      this.aspectRatio,
       this.myProvider,
       );
   static const id = 'postview';
@@ -63,7 +69,7 @@ class _POstViewState extends State<POstView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: PostCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!,widget.myProvider!),
+            child: PostCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio,widget.myProvider!),
           ),
         ),
       ),
@@ -88,9 +94,12 @@ class PostCard extends StatefulWidget {
   String createdAt;
   String userImage;
   int pinned;
+  String? cacheUrl;
+  String? thumbnailUrl;
+  String? aspectRatio;
   ProfileProvider myProvider;
   ScrollController _scrollController = ScrollController();
-  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned,this.myProvider);
+  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned,this.cacheUrl,this.thumbnailUrl,this.aspectRatio,this.myProvider);
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -148,7 +157,7 @@ class _PostCardState extends State<PostCard> {
               },
               child: AspectRatio(
                 aspectRatio: widget.imgWidth / widget.imgHeight,
-                child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned),
+                child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio),
               ),
             ),
 

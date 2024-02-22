@@ -10,7 +10,7 @@ class ProfileProvider extends ChangeNotifier {
   late int myFollowerCount= 0;
   late int myFollowingCount= 0;
   late String description= "";
-  final int _numberOfPostsPerRequest = 20;
+  final int _numberOfPostsPerRequest = 10;
   int _pageNumber = 1;
   List<ImagePost> _posts = [];
   List<ImagePost> get posts => _posts;

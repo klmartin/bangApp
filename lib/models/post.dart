@@ -20,6 +20,9 @@ class Post {
   var isLikedA;
   var  isLikedB;
   final String userImage;
+  String? cacheUrl;
+  String? thumbnailUrl;
+  String? aspectRatio;
 
 
   Post({
@@ -43,6 +46,9 @@ class Post {
     required this.isLikedB,
     required this.createdAt,
     required this.userImage,
+    required this.cacheUrl,
+    required this.thumbnailUrl,
+    required this.aspectRatio
   });
 }
 

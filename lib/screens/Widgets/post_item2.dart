@@ -40,6 +40,9 @@ class PostItem2 extends StatelessWidget {
   var like_count_A;
   var like_count_B;
   var createdAt;
+  String? cacheUrl;
+  String? thumbnailUrl;
+  String? aspectRatio;
   final String userImage;
 
   PostsProvider myProvider;
@@ -65,6 +68,9 @@ class PostItem2 extends StatelessWidget {
       this.isLikedB,
       this.createdAt,
       this.userImage,
+      this.cacheUrl,
+      this.thumbnailUrl,
+      this.aspectRatio,
       {required this.myProvider});
 
 void viewImage(BuildContext context, String imageUrl) {
@@ -582,7 +588,7 @@ void viewImage(BuildContext context, String imageUrl) {
             postOptions(context, userId, userImage, name, followerCount, image,
                     postId, userId, type, createdAt) ??
                 Container(),
-            buildMediaWidget(context, image, type, width, height, isPinned) ??
+            buildMediaWidget(context, image, type, width, height, isPinned,cacheUrl,thumbnailUrl,aspectRatio) ??
                 Container(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -723,7 +729,7 @@ void viewImage(BuildContext context, String imageUrl) {
                     return AspectRatio(
                       aspectRatio: width / height,
                       child: buildMediaWidget(
-                          context, imageUrl, type, width, height, isPinned),
+                          context, imageUrl, type, width, height, isPinned,cacheUrl,thumbnailUrl,aspectRatio),
                     );
                   },
                 ),

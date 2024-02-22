@@ -122,7 +122,11 @@ class PostsProvider with ChangeNotifier {
         isLikedB: data['isLikedB'],
         isLikedA: data['isLikedA'],
         createdAt: data['created_at'],
-        userImage: data['user_image_url']);
+        userImage: data['user_image_url'],
+      cacheUrl: data['cache_url'],
+      thumbnailUrl: data['thumbnail_url'],
+      aspectRatio: data['aspect_ratio'],
+    );
   }
 
   void addPost(Post post) {

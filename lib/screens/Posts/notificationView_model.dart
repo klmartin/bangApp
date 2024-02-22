@@ -88,6 +88,9 @@ class NotifyCard extends StatefulWidget {
   String createdAt;
   String userImage;
   int pinned;
+  String? cacheUrl;
+  String? thumbnailUrl;
+  String? aspectRatio;
   ProfileProvider myProvider;
   ScrollController _scrollController = ScrollController();
   NotifyCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned,this.myProvider);
@@ -148,7 +151,7 @@ class _NotifyCardState extends State<NotifyCard> {
                   },
                   child: AspectRatio(
                     aspectRatio: widget.imgWidth / widget.imgHeight,
-                    child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned),
+                    child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio),
                   ),
                 ),
 
