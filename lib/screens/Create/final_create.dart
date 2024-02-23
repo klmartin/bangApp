@@ -12,6 +12,7 @@ import '../../nav.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import '../Widgets/video_upload.dart';
 import 'create_page.dart';
 
 class FinalCreate extends StatefulWidget  {
@@ -45,19 +46,10 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
   VideoPlayerController? videoController;
 
   bool isLoading2 = false;
-  double progress = 0.0; // Initialize progress to 0
-
-  late AnimationController controller;
 
   late int myRole = 0;
   void initState() {
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 10),
-    )..addListener(() {
-        setState(() {});
-      });
-    controller.repeat(reverse: true);
+
 
     super.initState();
     _initializeSharedPreferences();
@@ -359,11 +351,9 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                   };
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(body, filePath);
-                                    simulateProgress();
                                   } else {
                                     await service.addImage(
                                         body, compressedImage.path);
-                                    simulateProgress();
                                   }
                                 } else if (widget.editedImage != null &&
                                     widget.editedImage2 == null &&
@@ -380,17 +370,16 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                   };
                                   await service.addChallenge(
                                       body, filePath, widget.userChallenged!);
-                                  simulateProgress();
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 == null &&
                                     widget.type == 'video') {
-                                  MediaInfo? mediaInfo =
-                                      await VideoCompress.compressVideo(
-                                    widget.editedVideo
-                                        .toString(), // Use the path property
-                                    quality: VideoQuality.Res640x480Quality,
-                                    deleteOrigin: true,
-                                  );
+                                  // MediaInfo? mediaInfo =
+                                  //     await VideoCompress.compressVideo(
+                                  //   widget.editedVideo
+                                  //       .toString(), // Use the path property
+                                  //   quality: VideoQuality.Res640x480Quality,
+                                  //   deleteOrigin: true,
+                                  // );
                                   Map<String, String> body = {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
@@ -401,13 +390,16 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
                                   if (bangUpdate == 1) {
-                                    await service.addBangUpdate(
-                                        body, mediaInfo?.path ?? '');
-                                    simulateProgress();
+                                    // await service.addBangUpdate(
+                                    //     body, mediaInfo?.path ?? '');
                                   } else {
-                                    await service.addImage(
-                                        body, mediaInfo?.path ?? '');
-                                    simulateProgress();
+                                    print("heerererersfdsfdsf");
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => VideoUpload(video: widget.editedVideo, body: body),
+                                      ),
+                                    );
                                   }
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 != null &&
@@ -426,7 +418,6 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                       body,
                                       widget.editedVideo!,
                                       widget.editedVideo2!);
-                                  simulateProgress();
                                 } else {
                                   String filePath1 = await saveUint8ListAsFile(
                                       widget.editedImage!, 'image.jpg');
@@ -441,22 +432,22 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                   };
                                   await service.addChallengImage(
                                       body, filePath1, filePath2);
-                                  simulateProgress();
                                 }
-                                prefs.setBool('i_just_posted', true);
-                                if (bangUpdate == 1) {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Nav(initialIndex: 1)));
-                                } else {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Nav(initialIndex: 0)));
-                                }
+                                // prefs.setBool('i_just_posted', true);
+                                // if (bangUpdate == 1) {
+                                //   Navigator.pushReplacement(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //           builder: (context) =>
+                                //               Nav(initialIndex: 1)));
+                                // } else {
+                                //   print("navvv");
+                                //   Navigator.pushReplacement(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //           builder: (context) =>
+                                //               Nav(initialIndex: 0)));
+                                // }
                               } finally {
                                 // After your button logic is done, set loading back to false
                                 setState(() {
@@ -479,12 +470,7 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                           Visibility(
                             visible:
                                 isLoading, // Show the CircularProgressIndicator when loading
-                            child: LinearProgressIndicator(
-                              value: controller.value,
-                              semanticsLabel: 'Linear progress indicator',
-                            ),
-                            // PercentageLoadingIndicator(progress: progress),
-                            // CircularProgressIndicator(), // Display the CircularProgressIndicator
+                            child: CircularProgressIndicator(), // Display the CircularProgressIndicator
                           ),
                         ],
                       ),
@@ -498,21 +484,4 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
         ));
   }
 
-  // Function to simulate progress updates
-  void simulateProgress() {
-    const duration = const Duration(milliseconds: 2500);
-    Timer.periodic(duration, (Timer timer) {
-      if (progress < 1) {
-        setState(() {
-          progress += 0.1; // Increment progress by 10%
-        });
-      } else {
-        timer.cancel();
-        setState(() {
-          isLoading2 =
-              false; // Hide the loading indicator when progress is complete
-        });
-      }
-    });
-  }
 }

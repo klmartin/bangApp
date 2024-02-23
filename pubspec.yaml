@@ -93,6 +93,7 @@ dependencies:
   video_compress: ^3.1.2
   flutter_native_image: ^0.0.6
   flutter_hooks: ^0.20.5
+  light_compressor: ^2.2.0
 
 
 dev_dependencies:
