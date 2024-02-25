@@ -448,14 +448,14 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                           builder: (context) =>
                                               Nav(initialIndex: 1)));
                                 }
-                                //else {
-                                //   print("navvv");
-                                //   Navigator.pushReplacement(
-                                //       context,
-                                //       MaterialPageRoute(
-                                //           builder: (context) =>
-                                //               Nav(initialIndex: 0)));
-                                // }
+                                else {
+                                  print("navvv");
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Nav(initialIndex: 0)));
+                                }
                               } finally {
                                 setState(() {
                                   isLoading = false;
