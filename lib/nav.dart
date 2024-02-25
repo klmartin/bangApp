@@ -1,3 +1,4 @@
+import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/custom_appbar.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
@@ -18,7 +19,9 @@ import 'package:bangapp/screens/Create/create_page.dart' as CR;
 class Nav extends StatefulWidget {
   static const String id = 'nav';
   final int initialIndex;
-  Nav({required this.initialIndex});
+  String? video;
+  final Map<String, String>? videoBody;
+  Nav({required this.initialIndex,this.video,this.videoBody});
   @override
   _NavState createState() => _NavState();
 }
@@ -26,10 +29,21 @@ class Nav extends StatefulWidget {
 class _NavState extends State<Nav> {
   bool _isAppBarEnabled = true; // Variable to track app bar state
   int _selectedIndex = 0;
+  late List<Widget> _widgetOptions ;
+
   @override
   void initState() {
+    print("nav videooo");
+    print(widget.videoBody);
     super.initState();
     _selectedIndex = widget.initialIndex;
+    _widgetOptions = [
+      Home2(video: widget.video,videoBody:widget.videoBody),
+      BangUpdates2(),
+      CR.Create(),
+      Activity(),
+      Profile(),
+    ];
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     chatProvider.getTotalUnreadMessages();
   }
@@ -41,14 +55,6 @@ class _NavState extends State<Nav> {
       _isAppBarEnabled = index != 2 && index != 1;
     });
   }
-
-  List<Widget> _widgetOptions = [
-    Home2(),
-    BangUpdates2(),
-    CR.Create(),
-    Activity(),
-    Profile(),
-  ];
 
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([

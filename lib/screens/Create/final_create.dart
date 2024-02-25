@@ -390,15 +390,22 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                     'pinned': pinPost == 1 ? '1' : '0',
                                   };
                                   if (bangUpdate == 1) {
-                                    // await service.addBangUpdate(
-                                    //     body, mediaInfo?.path ?? '');
+                                    MediaInfo? mediaInfo =
+                                        await VideoCompress.compressVideo(
+                                      widget.editedVideo
+                                          .toString(), // Use the path property
+                                      quality: VideoQuality.Res640x480Quality,
+                                      deleteOrigin: true,
+                                    );
+                                    await service.addBangUpdate(
+                                        body, mediaInfo?.path ?? '');
                                   } else {
-                                    print("heerererersfdsfdsf");
+
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => VideoUpload(video: widget.editedVideo, body: body),
-                                      ),
+                                          builder: (context) =>
+                                              Nav(initialIndex: 0,video: widget.editedVideo,videoBody: body)),
                                     );
                                   }
                                 } else if (widget.editedVideo != null &&
@@ -434,13 +441,14 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                       body, filePath1, filePath2);
                                 }
                                 // prefs.setBool('i_just_posted', true);
-                                // if (bangUpdate == 1) {
-                                //   Navigator.pushReplacement(
-                                //       context,
-                                //       MaterialPageRoute(
-                                //           builder: (context) =>
-                                //               Nav(initialIndex: 1)));
-                                // } else {
+                                if (bangUpdate == 1) {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Nav(initialIndex: 1)));
+                                }
+                                //else {
                                 //   print("navvv");
                                 //   Navigator.pushReplacement(
                                 //       context,
@@ -449,7 +457,6 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                 //               Nav(initialIndex: 0)));
                                 // }
                               } finally {
-                                // After your button logic is done, set loading back to false
                                 setState(() {
                                   isLoading = false;
                                 });

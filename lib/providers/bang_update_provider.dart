@@ -41,15 +41,15 @@ class BangUpdateProvider extends ChangeNotifier {
 
   List<BangUpdate> get bangUpdates => _bangUpdates;
 
-
   Future<void> fetchBangUpdates() async {
     final token = await TokenManager.getToken();
      // = await apiCacheHelper.fetchBangUpdates(pageNumber: 1);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id').toString();
+    print(token);
     final response = await http.get(
       Uri.parse(
-        "$baseUrl/bang-updates/user_id=$userId",
+        "$baseUrl/bang-updates/$userId",
       ),
       headers: {
         'Authorization': 'Bearer $token',
@@ -86,8 +86,10 @@ class BangUpdateProvider extends ChangeNotifier {
     notifyListeners();
   }
   void increaseLikes(int postId) {
+    print("jjjjjjjjjjjjjjjj");
     final bangUpdate =
     _bangUpdates.firstWhere((update) => update.postId == postId);
+    print(bangUpdate.isLiked);
     if (bangUpdate.isLiked) {
       bangUpdate.likeCount--;
       bangUpdate.isLiked = false;

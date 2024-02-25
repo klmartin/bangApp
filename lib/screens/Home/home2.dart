@@ -6,21 +6,31 @@ import '../Widgets/post_item2.dart';
 import '../Widgets/small_box2.dart';
 import 'package:bangapp/services/service.dart';
 
+import '../Widgets/video_upload.dart';
+
 class Home2 extends StatelessWidget {
   int _pageNumber = 1;
+  String? video;
+  final Map<String, String>? videoBody;
 
+  Home2({this.video, this.videoBody});
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: ChangeNotifierProvider(
         create: (context) => PostsProvider(),
-        child: Home2Content(),
+        child: Home2Content( video: this.video, videoBody: this.videoBody),
       ),
     );
   }
 }
 
 class Home2Content extends StatefulWidget {
+  String? video;
+  final Map<String, String>? videoBody;
+
+  Home2Content({this.video,required this.videoBody});
   @override
   _Home2ContentState createState() => _Home2ContentState();
 }
@@ -31,6 +41,7 @@ class _Home2ContentState extends State<Home2Content> {
 
   @override
   void initState() {
+
     super.initState();
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     postsProvider.fetchData(_pageNumber);
@@ -94,6 +105,7 @@ class _Home2ContentState extends State<Home2Content> {
             return Column(
               children: [
                 SmallBoxCarousel(),
+                widget.video != null ? VideoUpload(video: widget.video, body: widget.videoBody) : Container(),
                 PostItem2(
                   post.postId,
                   post.userId,

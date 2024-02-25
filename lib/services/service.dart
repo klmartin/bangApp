@@ -113,6 +113,7 @@ class Service {
   }
 
   Future<bool> addBangUpdate(Map<String, String> body, String filepath) async {
+    print('updateee');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = await TokenManager.getToken();
     final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
@@ -123,6 +124,8 @@ class Service {
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
+      print(response.body);
+      print('update responseee');
       if (response.statusCode == 201) {
         final response2 = jsonDecode(response.body);
         prefs.setBool('i_just_posted_bang_update', true);
@@ -259,9 +262,11 @@ class Service {
   }
 
   Future<void> likeBangUpdate(likeCount, isLiked, postId) async {
+    print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      print([postId,prefs.getInt('user_id').toString()]);
       final response = await http.post(
         Uri.parse('$baseUrl/likeBangUpdate'),
         headers: {
@@ -274,6 +279,8 @@ class Service {
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         }),
       );
+      print(response.body);
+
 
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
