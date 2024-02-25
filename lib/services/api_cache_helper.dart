@@ -76,10 +76,9 @@ class ApiCacheHelper {
         .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
         .inMinutes;
 
-
-      data = await apiCall();
-      prefs.setString(cacheKey, json.encode(data));
-      prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+    data = await apiCall();
+    prefs.setString(cacheKey, json.encode(data));
+    prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
 
     print(data);
     print('this is data');
@@ -124,16 +123,12 @@ class ApiCacheHelper {
 
     List<dynamic> data;
 
-
-
-      data = await apiCall();
-      prefs.setString(cacheKey, json.encode(data));
-      prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
-
+    data = await apiCall();
+    prefs.setString(cacheKey, json.encode(data));
+    prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
 
     return data;
   }
-
 
   Future<List<dynamic>> getCachedData4({
     required String cacheKey,
@@ -160,8 +155,6 @@ class ApiCacheHelper {
 
     return data;
   }
-
-
 
   Future<Map<dynamic, dynamic>> fetchData({required int pageNumber}) async {
     final token = await TokenManager.getToken();
@@ -192,6 +185,12 @@ class ApiCacheHelper {
 
   Future<List<dynamic>> getMyPosts({required int pageNumber}) async {
     final token = await TokenManager.getToken();
+    print(token);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id').toString();
+    print(
+      "$baseUrl/getMyPosts?_page=$pageNumber&_limit=$numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId",
+    );
     return getCachedData2(
       cacheKey: 'cached_profile_posts',
       apiCall: () async {
@@ -219,6 +218,13 @@ class ApiCacheHelper {
 
   Future<List<dynamic>> getUserPost({required int pageNumber, userId}) async {
     final token = await TokenManager.getToken();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final viewerId = prefs.getInt('user_id').toString();
+
+    print(token);
+    print(
+        "$baseUrl/getMyPosts?_page=$pageNumber&_limit=$numberOfPostsPerRequest&user_id=$userId&viewer_id=$viewerId");
     return getCachedData5(
       cacheKey: 'cached_user_profile_posts_$userId',
       apiCall: () async {
@@ -234,6 +240,7 @@ class ApiCacheHelper {
                 'application/json', // Include other headers as needed
           },
         );
+
         if (response.statusCode == 200) {
           return json.decode(response.body);
         } else {
@@ -374,7 +381,7 @@ class ApiCacheHelper {
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type':
-            'application/json', // Include other headers as needed
+                'application/json', // Include other headers as needed
           },
         );
         if (response.statusCode == 200) {
@@ -401,7 +408,7 @@ class ApiCacheHelper {
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type':
-            'application/json', // Include other headers as needed
+                'application/json', // Include other headers as needed
           },
         );
         if (response.statusCode == 200) {
@@ -415,5 +422,4 @@ class ApiCacheHelper {
       },
     );
   }
-
 }

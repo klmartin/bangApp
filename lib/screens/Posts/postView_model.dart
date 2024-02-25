@@ -245,6 +245,8 @@ class _PostCardState extends State<PostCard> {
                                        widget.isLiked = true;
                                      }
                                    });
+
+                                   
                                 },
                                 child: widget.isLiked
                                     ? Icon(CupertinoIcons.heart_fill,

@@ -238,9 +238,7 @@ class _CreateState extends State<Create> {
                                 height: _selectedAssets[index].height.toDouble(),
                                 width: _selectedAssets[index].width.toDouble(),
                               );
-                            } else if (snapshot.hasError) {
                               // Handle errors if any
-                              return Text('Error loading thumbnail');
                             } else {
                               // Loading indicator while waiting for the thumbnail
                               return CircularProgressIndicator();
