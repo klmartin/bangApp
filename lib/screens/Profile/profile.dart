@@ -827,6 +827,10 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                         provider.posts[i].createdAt!,
                                         provider.posts[i].userImage!,
                                         provider.posts[i].pinned!,
+                                        provider.posts[i].isLikedA,
+                                        provider.posts[i].isLikedB,
+
+
 
                                     )));
                                   },

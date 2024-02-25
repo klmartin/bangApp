@@ -793,6 +793,7 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                       provider.posts[i].imgHeight!,
                                       provider.posts[i].postId!,
                                       provider.posts[i].commentCount!,
+                                      
                                       provider.posts[i].userId!,
                                       provider.posts[i].isLikedA,
                                       provider.posts[i].likeCountA,
@@ -800,7 +801,10 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                       provider.posts[i].followerCount!,
                                       provider.posts[i].createdAt!,
                                       provider.posts[i].userImage!,
-                                      provider.posts[i].pinned!
+                                      provider.posts[i].pinned!,
+                                      provider.posts[i].isLikedA,
+                                      provider.posts[i].isLikedB,
+
                                   )));
                                 },
 

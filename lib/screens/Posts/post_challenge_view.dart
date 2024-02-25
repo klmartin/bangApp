@@ -29,6 +29,8 @@ class POstChallengeView extends StatefulWidget {
   String created;
   String user_image;
   int pinnedImage;
+  bool isLikedA; 
+  bool isLikedB;
 
   POstChallengeView(
       this.name,
@@ -46,7 +48,9 @@ class POstChallengeView extends StatefulWidget {
       this.followerCount,
       this.created,
       this.user_image,
-      this.pinnedImage
+      this.pinnedImage,
+      this.isLikedA, 
+      this.isLikedB
       );
   static const id = 'postview';
   @override
@@ -62,7 +66,7 @@ class _POstViewState extends State<POstChallengeView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: PostCard(widget.name,widget.caption,widget.imgurl,widget.challengeImgUrl,widget.imgWidth,widget.imgHeight,widget.postId,widget.commentCount,widget.userId,widget.isLiked,widget.likeCount,widget.type,widget.followerCount,widget.created,widget.user_image,widget.pinnedImage),
+            child: PostCard(widget.name,widget.caption,widget.imgurl,widget.challengeImgUrl,widget.imgWidth,widget.imgHeight,widget.postId,widget.commentCount,widget.userId,widget.isLiked,widget.likeCount,widget.type,widget.followerCount,widget.created,widget.user_image,widget.pinnedImage, widget.isLikedA, widget.isLikedB),
           ),
         ),
       ),
@@ -87,9 +91,13 @@ class PostCard extends StatefulWidget {
   String createdAt;
   String userImage;
   int pinned;
+  bool isLikedA;
+  bool isLikedB;
+
 
   ScrollController _scrollController = ScrollController();
-  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned);
+  
+  PostCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned, this.isLikedA, this.isLikedB);
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -261,7 +269,7 @@ class _PostCardState extends State<PostCard> {
                         countUpdate.increaseLikes2(widget.postId, 1);
                         Service().likeAction(widget.postId, "A", widget.userId);
                       },
-                      child: widget.isLiked
+                      child: widget.isLikedA
                           ? Icon(CupertinoIcons.heart_fill,
                           color: Colors.red, size: 25)
                           : Icon(CupertinoIcons.heart,
@@ -310,7 +318,7 @@ class _PostCardState extends State<PostCard> {
                             countUpdate.increaseLikes2(widget.postId, 2);
                             Service().likeAction(widget.postId, "B", widget.userId);
                           },
-                          child: widget.isLiked
+                          child: widget.isLikedB
                               ? Icon(CupertinoIcons.heart_fill,
                               color: Colors.red, size: 25)
                               : Icon(CupertinoIcons.heart,

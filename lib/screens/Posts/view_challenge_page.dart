@@ -49,11 +49,7 @@ class _ViewChallengePageState extends State<ViewChallengePage> {
               return Center(
                 child: CircularProgressIndicator(),
               );
-            } else if (snapshot.hasError) {
-              // If there's an error, show an error message
-              return Center(
-                child: Text('Error fetching data'),
-              );
+          
             } else {
               // If data is successfully fetched, pass it to the PostCard widget
               final challengeData = snapshot.data;
