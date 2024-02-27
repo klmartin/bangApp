@@ -57,7 +57,7 @@ class _Activity extends State<Activity> {
                 'application/json', // Include other headers as needed
           },
         );
-        print(response.body);
+
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = json.decode(response.body);
           final notificationModel =
@@ -88,11 +88,8 @@ class _Activity extends State<Activity> {
   GestureDetector _notificationList(NotificationItem notification) {
     return GestureDetector(
       onTap: () async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var userId = prefs.getInt('user_id');
         var postDetails =
-            await Service().getPostInfo(notification.postId, userId);
-        var firstPost = postDetails[0]['image'];
+            await Service().getPostInfo(notification.postId);
         Navigator.push(
           context,
           MaterialPageRoute(

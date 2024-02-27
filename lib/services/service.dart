@@ -212,10 +212,13 @@ class Service {
     }
   }
 
-  Future<List<dynamic>> getPostInfo(postId, userId) async {
+  Future<List<dynamic>> getPostInfo(postId) async {
+
     final token = await TokenManager.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('user_id');
+    print([userId, postId]);
+    print('this is data');
     final response =
         await http.get(Uri.parse('$baseUrl/getPostInfo/$postId/$userId'),headers: {
           'Authorization': 'Bearer $token',

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart' as provider;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -12,6 +13,8 @@ import '../../nav.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import '../../providers/posts_provider.dart';
+import '../../providers/video_upload.dart';
 import '../Widgets/video_upload.dart';
 import 'create_page.dart';
 
@@ -400,12 +403,14 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                     await service.addBangUpdate(
                                         body, mediaInfo?.path ?? '');
                                   } else {
+                                    final videoUploadProvider = provider.Provider.of<VideoUploadProvider>(context, listen: false);
 
+                                    videoUploadProvider.startUpload(body, widget.editedVideo);
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              Nav(initialIndex: 0,video: widget.editedVideo,videoBody: body)),
+                                              Nav(initialIndex: 0)),
                                     );
                                   }
                                 } else if (widget.editedVideo != null &&
@@ -449,7 +454,8 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                               Nav(initialIndex: 1)));
                                 }
                                 else {
-                                  print("navvv");
+                                  final postsProvider = provider.Provider.of<PostsProvider>(context, listen: false);
+                                  postsProvider.refreshData();
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(

@@ -830,8 +830,6 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].isLikedB,
 
-
-
                                     )));
                                   },
 

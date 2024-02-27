@@ -1,7 +1,9 @@
+import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/post.dart';
 import 'package:bangapp/providers/posts_provider.dart'; // Import your PostsProvider class
+import '../../providers/video_upload.dart';
 import '../Widgets/post_item2.dart';
 import '../Widgets/small_box2.dart';
 import 'package:bangapp/services/service.dart';
@@ -15,22 +17,14 @@ class Home2 extends StatelessWidget {
 
   Home2({this.video, this.videoBody});
   @override
-
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ChangeNotifierProvider(
-        create: (context) => PostsProvider(),
-        child: Home2Content( video: this.video, videoBody: this.videoBody),
-      ),
+      body: Home2Content(),
     );
   }
 }
 
 class Home2Content extends StatefulWidget {
-  String? video;
-  final Map<String, String>? videoBody;
-
-  Home2Content({this.video,required this.videoBody});
   @override
   _Home2ContentState createState() => _Home2ContentState();
 }
@@ -38,21 +32,28 @@ class Home2Content extends StatefulWidget {
 class _Home2ContentState extends State<Home2Content> {
   final ScrollController _scrollController = ScrollController();
   int _pageNumber = 1;
+  late VideoUploadProvider videoUploadProvider; // Declare it here
 
   @override
   void initState() {
-
     super.initState();
+    videoUploadProvider =Provider.of<VideoUploadProvider>(context, listen: false);
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     postsProvider.fetchData(_pageNumber);
+    videoUploadProvider.addListener(() {
+      if (videoUploadProvider.uploadText == 'Upload Complete') {
+        postsProvider.refreshData();
+      }
+    });
+
     _scrollController.addListener(_scrollListener);
   }
 
   void _scrollListener() {
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200) {
-      _pageNumber ++;
+        _scrollController.position.maxScrollExtent - 200) {
+      _pageNumber++;
       postsProvider.fetchData(_pageNumber); // Trigger loading of the next page
     }
   }
@@ -70,7 +71,7 @@ class _Home2ContentState extends State<Home2Content> {
       onRefresh: () async {
         final postsProvider =
             Provider.of<PostsProvider>(context, listen: false);
-        // postsProvider.refreshData();
+        postsProvider.refreshData();
       },
       child: Consumer<PostsProvider>(
         builder: (context, postsProvider, child) {
@@ -95,7 +96,7 @@ class _Home2ContentState extends State<Home2Content> {
       );
     }
     return ListView.builder(
-    controller: _scrollController, // Attach the ScrollController
+      controller: _scrollController, // Attach the ScrollController
       itemCount: postsProvider.posts!.length + 1,
       itemBuilder: (context, index) {
         if (index < postsProvider.posts!.length) {
@@ -105,7 +106,7 @@ class _Home2ContentState extends State<Home2Content> {
             return Column(
               children: [
                 SmallBoxCarousel(),
-                widget.video != null ? VideoUpload(video: widget.video, body: widget.videoBody) : Container(),
+                videoUploadProvider.isUploading ? VideoUpload() : Container(),
                 PostItem2(
                   post.postId,
                   post.userId,
@@ -163,13 +164,12 @@ class _Home2ContentState extends State<Home2Content> {
             );
           }
         } else if (postsProvider.isLoading) {
-          // Loading indicator while fetching the next page of posts
           return Center(child: CircularProgressIndicator());
         } else if (!postsProvider.isLastPage) {
-          // "Load More" button
           return ElevatedButton(
             onPressed: () {
-              postsProvider.fetchData(_pageNumber); // Trigger loading of the next page
+              postsProvider
+                  .fetchData(_pageNumber); // Trigger loading of the next page
             },
             child: Text('Load More'),
           );
@@ -203,7 +203,7 @@ class _Home2ContentState extends State<Home2Content> {
             onPressed: () {
               final postsProvider =
                   Provider.of<PostsProvider>(context, listen: false);
-              //   postsProvider.refreshData();
+              //postsProvider.fetchData(_pageNumber);
             },
             child: const Text(
               "Retry",
