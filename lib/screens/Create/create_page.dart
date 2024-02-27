@@ -64,8 +64,8 @@ class _CreateState extends State<Create> {
       setState(() {
         _chewieController = ChewieController(
           videoPlayerController: videoControllers[0], // Display the first video
-          autoPlay: true,
-          looping: true,
+          autoPlay: false,
+          looping: false,
         );
       });
     }
@@ -205,8 +205,8 @@ class _CreateState extends State<Create> {
                               final videoController = VideoPlayerController.file(fileSnapshot.data!);
                               final chewieController = ChewieController(
                                 videoPlayerController: videoController,
-                                autoPlay: true,
-                                looping: true,
+                                autoPlay: false,
+                                looping: false,
                                 aspectRatio:_chewieController?.aspectRatio
                               );
                               videoController.initialize().then((_) {

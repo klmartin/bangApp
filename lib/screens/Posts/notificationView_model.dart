@@ -226,8 +226,7 @@ class _NotifyCardState extends State<NotifyCard> {
                                   GestureDetector(
                                     onTap: () {
                                       print('tapped');
-                                      final countUpdate = Provider.of<ProfileProvider>(context, listen: false);
-                                      widget.myProvider.increaseLikes(widget.postId);
+
                                       Service().likeAction(widget.postId, "A", widget.userId);
                                       setState(() {
                                         if (widget.isLiked) {

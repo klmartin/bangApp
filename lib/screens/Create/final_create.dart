@@ -218,7 +218,7 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                             videoPlayerController:
                                 VideoPlayerController.network(
                                     widget.editedVideo!),
-                            autoPlay: true,
+                            autoPlay: false,
                             looping: false,
                           ),
                         ),

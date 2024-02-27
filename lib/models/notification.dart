@@ -23,6 +23,7 @@ class NotificationItem {
   final int isRead;
   final String createdAt;
   final String updatedAt;
+  final String postUrl;
 
   NotificationItem({
     required this.id,
@@ -36,6 +37,7 @@ class NotificationItem {
     required this.isRead,
     required this.createdAt,
     required this.updatedAt,
+    required this.postUrl
   });
 
   factory NotificationItem.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,7 @@ class NotificationItem {
       isRead: json['is_read'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      postUrl: json['post_image_url'],
     );
   }
 }
