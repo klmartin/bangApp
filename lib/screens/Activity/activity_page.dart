@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:bangapp/screens/Profile/user_profile.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -57,7 +59,7 @@ class _Activity extends State<Activity> {
                 'application/json', // Include other headers as needed
           },
         );
-        print(response.body);
+
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = json.decode(response.body);
           final notificationModel =
@@ -88,11 +90,7 @@ class _Activity extends State<Activity> {
   GestureDetector _notificationList(NotificationItem notification) {
     return GestureDetector(
       onTap: () async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var userId = prefs.getInt('user_id');
-        var postDetails =
-            await Service().getPostInfo(notification.postId, userId);
-        var firstPost = postDetails[0]['image'];
+        var postDetails = await Service().getPostInfo(notification.postId);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -118,39 +116,113 @@ class _Activity extends State<Activity> {
         );
       },
       child: ListTile(
-        leading: CircleAvatar(
-          // Update based on notification data
-          backgroundImage: NetworkImage(notification.userImage),
-          radius: 28.0,
-        ),
-        title: Text(
-          notification.userName.toString(),
-          style: TextStyle(
-            fontFamily: 'Metropolis',
-            fontWeight: FontWeight.bold,
-            fontSize: 15.0,
-          ),
-        ),
-        subtitle: Text(
-          notification.message,
-          style: TextStyle(
-            fontFamily: 'Metropolis',
-            fontSize: 12.0,
-          ),
-        ),
-        trailing: IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.userPlus,
-            color: Colors.blueAccent,
-            size: 19.0,
-          ),
-          onPressed: () {
-            // Handle the action when the user presses the IconButton
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserProfile(userid: notification.userId),
+              ),
+            );
           },
+          child: CircleAvatar(
+            // Update based on notification data
+            backgroundImage: NetworkImage(notification.userImage),
+            radius: 28.0,
+          ),
+        ),
+        title: InkWell(
+          onTap: () async {
+            var postDetails = await Service().getPostInfo(notification.postId);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NotifyView(
+                    postDetails[0]['user']['name'],
+                    postDetails[0]['body'] ?? "",
+                    postDetails[0]['image'],
+                    postDetails[0]['challenge_img'] ?? '',
+                    postDetails[0]['width'],
+                    postDetails[0]['height'],
+                    postDetails[0]['id'],
+                    postDetails[0]['commentCount'],
+                    postDetails[0]['user_id'],
+                    postDetails[0]['isLiked'],
+                    postDetails[0]['like_count_A'] ?? 0,
+                    postDetails[0]['type'],
+                    postDetails[0]['user']['followerCount'],
+                    postDetails[0]['created_at'],
+                    postDetails[0]['user_image_url'],
+                    postDetails[0]['pinned'],
+                    Provider.of<ProfileProvider>(context, listen: false)),
+              ),
+            );
+
+          },
+          child: Text(
+            notification.userName.toString(),
+            style: TextStyle(
+              fontFamily: 'Metropolis',
+              fontWeight: FontWeight.bold,
+              fontSize: 15.0,
+            ),
+          ),
+        ),
+        subtitle: InkWell(
+          onTap: () async {
+            var postDetails = await Service().getPostInfo(notification.postId);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NotifyView(
+                    postDetails[0]['user']['name'],
+                    postDetails[0]['body'] ?? "",
+                    postDetails[0]['image'],
+                    postDetails[0]['challenge_img'] ?? '',
+                    postDetails[0]['width'],
+                    postDetails[0]['height'],
+                    postDetails[0]['id'],
+                    postDetails[0]['commentCount'],
+                    postDetails[0]['user_id'],
+                    postDetails[0]['isLiked'],
+                    postDetails[0]['like_count_A'] ?? 0,
+                    postDetails[0]['type'],
+                    postDetails[0]['user']['followerCount'],
+                    postDetails[0]['created_at'],
+                    postDetails[0]['user_image_url'],
+                    postDetails[0]['pinned'],
+                    Provider.of<ProfileProvider>(context, listen: false)),
+              ),
+            );
+          },
+          child: Text(
+            notification.message,
+            style: TextStyle(
+              fontFamily: 'Metropolis',
+              fontSize: 12.0,
+            ),
+          ),
+        ),
+        trailing: ClipRRect(
+          borderRadius: BorderRadius.circular(10.0),
+          child: Container(
+            height: 50.0,
+            width: 40.0,
+            color: Color(0xffFF0E58),
+            child: CachedNetworkImage(
+              imageUrl: notification.postUrl,
+              placeholder: (context, url) => Center(
+                child: CircularProgressIndicator(),
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+              fit: BoxFit.cover, // You can adjust the fit based on your needs
+            ),
+          ),
         ),
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

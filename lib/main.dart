@@ -11,8 +11,10 @@ import 'package:bangapp/providers/comment_provider.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
 import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/providers/posts_provider.dart';
+import 'package:bangapp/providers/video_upload.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
+import 'package:bangapp/screens/Widgets/video_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -59,6 +61,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => BoxDataProvider()),
     ChangeNotifierProvider(create: (context) => ProfileProvider()),
     ChangeNotifierProvider(create: (context) => UserLikesProvider()),
+    ChangeNotifierProvider(create: (context) => VideoUploadProvider()),
   ], child: MyApp()));
 }
 
@@ -256,9 +259,8 @@ class _AuthenticateState extends State<Authenticate> {
       if (message.data["type"] == "like" || message.data["type"] == "comment") {
         int notificationId = int.parse(message.data['notification_id']);
         String? userName = message.data['user_name'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var userId = prefs.getInt('user_id');
-        var postData = await Service().getPostInfo(message.data['notification_id'],userId);
+
+        var postData = await Service().getPostInfo(message.data['notification_id']);
         Navigator.push(
           context,
           MaterialPageRoute(

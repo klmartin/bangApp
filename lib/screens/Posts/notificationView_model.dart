@@ -109,7 +109,6 @@ class _NotifyCardState extends State<NotifyCard> {
   }
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         appBar: AppBar(
           title:  GestureDetector(
@@ -226,11 +225,10 @@ class _NotifyCardState extends State<NotifyCard> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      final countUpdate = Provider.of<ProfileProvider>(context, listen: false);
-                                      widget.myProvider.increaseLikes(widget.postId);
+                                      print('tapped');
+
                                       Service().likeAction(widget.postId, "A", widget.userId);
                                       setState(() {
-
                                         if (widget.isLiked) {
                                           widget.likeCount--;
                                           widget.isLiked = false;

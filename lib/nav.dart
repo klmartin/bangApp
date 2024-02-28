@@ -19,9 +19,8 @@ import 'package:bangapp/screens/Create/create_page.dart' as CR;
 class Nav extends StatefulWidget {
   static const String id = 'nav';
   final int initialIndex;
-  String? video;
-  final Map<String, String>? videoBody;
-  Nav({required this.initialIndex,this.video,this.videoBody});
+
+  Nav({required this.initialIndex});
   @override
   _NavState createState() => _NavState();
 }
@@ -33,12 +32,11 @@ class _NavState extends State<Nav> {
 
   @override
   void initState() {
-    print("nav videooo");
-    print(widget.videoBody);
+
     super.initState();
     _selectedIndex = widget.initialIndex;
     _widgetOptions = [
-      Home2(video: widget.video,videoBody:widget.videoBody),
+      Home2(),
       BangUpdates2(),
       CR.Create(),
       Activity(),

@@ -704,6 +704,7 @@ class _ProfilePostsStreamContentState
   @override
   Widget build(BuildContext context) {
     // Use the ProfileProvider here to build your UI based on the fetched posts
+<<<<<<< HEAD
     return Consumer<ProfileProvider>(builder: (context, provider, child) {
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));
@@ -731,6 +732,159 @@ class _ProfilePostsStreamContentState
                               context,
                               MaterialPageRoute(
                                   builder: (context) => POstView(
+=======
+      return Consumer<ProfileProvider>(
+          builder: (context, provider, child) {
+            if(provider.posts.isEmpty && provider.isLoading == false){
+              return Center(child: Text('No Posts Available'));
+            }
+            else if ( provider.isLoading == false && provider.posts.isNotEmpty){
+              return SingleChildScrollView(
+                controller: _scrollController,
+                child: GridView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    children: [
+                      for (var i = 0; i < provider.posts.length; i++)
+                        if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=='' && provider.posts[i].pinned == 0)
+
+                          ...[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context, MaterialPageRoute(builder: (context) => POstView(
+                                    provider.posts[i].name!,
+                                    provider.posts[i].caption!,
+                                    provider.posts[i].imageUrl!,
+                                    provider.posts[i].challengeImgUrl!,
+                                    provider.posts[i].imgWidth!,
+                                    provider.posts[i].imgHeight!,
+                                    provider.posts[i].postId!,
+                                    provider.posts[i].commentCount!,
+                                    provider.posts[i].userId!,
+                                    provider.posts[i].isLikedA,
+                                    provider.posts[i].likeCountA,
+                                    provider.posts[i].type!,
+                                    provider.posts[i].followerCount!,
+                                    provider.posts[i].createdAt!,
+                                    provider.posts[i].userImage!,
+                                    provider.posts[i].pinned!,
+                                    provider.posts[i].cacheUrl,
+                                    provider.posts[i].thumbnailUrl,
+                                    provider.posts[i].aspectRatio,
+                                    provider,
+                                  )));
+                                },
+
+                                child:
+                                CachedNetworkImage(
+                                  imageUrl: provider.posts[i].imageUrl!,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ), ]
+                        else if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=="" && provider.posts[i].pinned == 1) ...[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context, MaterialPageRoute(builder: (context) => POstView(
+                                  provider.posts[i].name!,
+                                  provider.posts[i].caption!,
+                                  provider.posts[i].imageUrl!,
+                                  provider.posts[i].challengeImgUrl!,
+                                  provider.posts[i].imgWidth!,
+                                  provider.posts[i].imgHeight!,
+                                  provider.posts[i].postId!,
+                                  provider.posts[i].commentCount!,
+                                  provider.posts[i].userId!,
+                                  provider.posts[i].isLikedA,
+                                  provider.posts[i].likeCountA,
+                                  provider.posts[i].type!,
+                                  provider.posts[i].followerCount!,
+                                  provider.posts[i].createdAt!,
+                                  provider.posts[i].userImage!,
+                                  provider.posts[i].pinned!,
+                                  provider.posts[i].cacheUrl,
+                                  provider.posts[i].thumbnailUrl,
+                                  provider.posts[i].aspectRatio,
+                                  provider,
+                                )));
+                              },
+                              child:
+                              Image.network(
+                                pinnedUrl,
+                                fit: BoxFit.cover,
+                                width: 100,
+                                height: 100,
+                              ),
+                            ),
+                          ),
+                        ]
+                        else if(provider.posts[i].type =='image' &&provider.posts[i].challengeImgUrl != ''&& provider.posts[i].pinned == 0)...[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context, MaterialPageRoute(builder: (context) => POstChallengeView(
+                                        provider.posts[i].name!,
+                                        provider.posts[i].caption!,
+                                        provider.posts[i].imageUrl!,
+                                        provider.posts[i].challengeImgUrl!,
+                                        provider.posts[i].imgWidth!,
+                                        provider.posts[i].imgHeight!,
+                                        provider.posts[i].postId!,
+                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].userId!,
+                                        provider.posts[i].isLikedA,
+                                        provider.posts[i].likeCountA,
+                                        provider.posts[i].type!,
+                                        provider.posts[i].followerCount!,
+                                        provider.posts[i].createdAt!,
+                                        provider.posts[i].userImage!,
+                                        provider.posts[i].pinned!,
+                                        provider.posts[i].isLikedA,
+                                        provider.posts[i].isLikedB,
+
+                                    )));
+                                  },
+
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: CachedNetworkImage(
+                                          imageUrl: provider.posts[i].imageUrl!,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: CachedNetworkImage(
+                                          imageUrl: provider.posts[i].challengeImgUrl!,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                              ),
+                            ),
+                          ]
+                          else if(provider.posts[i].type == 'video'&& provider.posts[i].challengeImgUrl=="")...[
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context, MaterialPageRoute(builder: (context) => POstView(
+>>>>>>> 904ae370ee246483cd9371559657ce459b566e39
                                         provider.posts[i].name!,
                                         provider.posts[i].caption!,
                                         provider.posts[i].imageUrl!,

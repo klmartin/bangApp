@@ -37,19 +37,24 @@ class PostsProvider with ChangeNotifier {
         final token = await TokenManager.getToken();
         var responseData = {};
 
-        var minutes = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp)).inMinutes;
-        if (minutes <= 3  && iJustPosted != true ) {
+        var minutes = DateTime.now()
+            .difference(
+                DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+            .inMinutes;
+        if (minutes <= 3 && iJustPosted != true) {
           // Use cached data if it exists and is not expired
           responseData = json.decode(cachedData);
-
         } else {
           try {
-            print("$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
-            final response = await get(Uri.parse(
-                "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
-                  headers: {
-                    'Authorization': 'Bearer $token', // Include other headers as needed
-                  },
+            print(
+                "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
+            final response = await get(
+              Uri.parse(
+                  "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
+              headers: {
+                'Authorization':
+                    'Bearer $token', // Include other headers as needed
+              },
             );
 
             if (response.statusCode == 200) {
@@ -101,28 +106,86 @@ class PostsProvider with ChangeNotifier {
     }
   }
 
+  Future<void> refreshData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id').toString();
+    final String cacheKey = 'cached_posts';
+    final iJustPosted = prefs.getBool('i_just_posted');
+    final String cachedData = prefs.getString(cacheKey) ?? '';
+    final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+    final token = await TokenManager.getToken();
+    var responseData = {};
+    try {
+      print(
+          "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
+      final response = await get(
+        Uri.parse(
+            "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
+        headers: {
+          'Authorization': 'Bearer $token', // Include other headers as needed
+        },
+      );
+
+      if (response.statusCode == 200) {
+        responseData = json.decode(response.body);
+      } else {
+        // Handle server error (e.g., response.statusCode is not 200)
+        // You may want to set an error flag or log the error
+      }
+      if (responseData.containsKey('data')) {
+        List<dynamic> responseList = responseData['data']['data'];
+        final newPosts = responseList.map((data) {
+          List<dynamic>? challengesList = data['challenges'];
+          List<Challenge> challenges = (challengesList ?? [])
+              .map((challengeData) => Challenge(
+                    id: challengeData['id'],
+                    postId: challengeData['post_id'],
+                    userId: challengeData['user_id'],
+                    challengeImg: challengeData['challenge_img'],
+                    body: challengeData['body'] ?? '',
+                    type: challengeData['type'],
+                    confirmed: challengeData['confirmed'],
+                  ))
+              .toList();
+          return newPost(data, challenges);
+        }).toList();
+        _posts.clear();
+        _posts.addAll(newPosts);
+
+        _loading = false;
+        notifyListeners();
+      } else {
+        _loading = false;
+        _error = true;
+        notifyListeners();
+      }
+    } catch (e) {
+      // Handle the error here...
+    }
+  }
+
   Post newPost(data, List<Challenge> challenges) {
     return Post(
-        postId: data['id'],
-        userId: data['user_id'],
-        name: data['user']['name'],
-        image: data['image'],
-        challengeImg: data['challenge_img'],
-        caption: data['body'] ?? 'hi',
-        type: data['type'],
-        width: data['width'],
-        height: data['height'],
-        likeCountA: data['like_count_A'],
-        likeCountB: data['like_count_B'],
-        commentCount: data['commentCount'],
-        followerCount: data['user']['followerCount'],
-        isLiked: data['isLiked'],
-        isPinned: data['pinned'],
-        challenges: challenges,
-        isLikedB: data['isLikedB'],
-        isLikedA: data['isLikedA'],
-        createdAt: data['created_at'],
-        userImage: data['user_image_url'],
+      postId: data['id'],
+      userId: data['user_id'],
+      name: data['user']['name'],
+      image: data['image'],
+      challengeImg: data['challenge_img'],
+      caption: data['body'] ?? 'hi',
+      type: data['type'],
+      width: data['width'],
+      height: data['height'],
+      likeCountA: data['like_count_A'],
+      likeCountB: data['like_count_B'],
+      commentCount: data['commentCount'],
+      followerCount: data['user']['followerCount'],
+      isLiked: data['isLiked'],
+      isPinned: data['pinned'],
+      challenges: challenges,
+      isLikedB: data['isLikedB'],
+      isLikedA: data['isLikedA'],
+      createdAt: data['created_at'],
+      userImage: data['user_image_url'],
       cacheUrl: data['cache_url'],
       thumbnailUrl: data['thumbnail_url'],
       aspectRatio: data['aspect_ratio'],
