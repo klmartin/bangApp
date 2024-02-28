@@ -85,7 +85,6 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-
   Future<List<dynamic>> getMyPosts(int pageNumber) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print(prefs.getInt('user_id').toString());
@@ -96,7 +95,6 @@ class _ProfileState extends State<Profile> {
     var data = json.decode(response.body);
     return data['data']['data'];
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -184,23 +182,25 @@ class _ProfileState extends State<Profile> {
               padding: const EdgeInsets.all(8.0),
               child: OutlinedButton(
                   onPressed: () {
-                    Navigator.push(context,
+                    Navigator.push(
+                        context,
                         MaterialPageRoute(
-                        builder: (context) =>  EditPage(
-                          nameController: TextEditingController(),
-                          userImage: myImage,
-                          name: myName,
-                          date_of_birth: date_of_birth,
-                          phoneNumber: phoneNumber!,
-                          selectedHobbiesText: selectedHobbiesText,
-                          occupation: occupation!,
-                          bio: myBio,
-                          occupationController: TextEditingController(),
-                          dateOfBirthController: TextEditingController(),
-                          phoneNumberController: TextEditingController(),
-                          bioController: TextEditingController(),
-                      ),
-                    ));                  },
+                          builder: (context) => EditPage(
+                            nameController: TextEditingController(),
+                            userImage: myImage,
+                            name: myName,
+                            date_of_birth: date_of_birth,
+                            phoneNumber: phoneNumber!,
+                            selectedHobbiesText: selectedHobbiesText,
+                            occupation: occupation!,
+                            bio: myBio,
+                            occupationController: TextEditingController(),
+                            dateOfBirthController: TextEditingController(),
+                            phoneNumberController: TextEditingController(),
+                            bioController: TextEditingController(),
+                          ),
+                        ));
+                  },
                   child: Text(
                     'Edit profile',
                     style: TextStyle(color: Colors.black),
@@ -214,7 +214,8 @@ class _ProfileState extends State<Profile> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AppSettings(privacySwitchValue: privacySwitchValue),
+                          builder: (context) => AppSettings(
+                              privacySwitchValue: privacySwitchValue),
                         ));
                   },
                   child: Text(
@@ -581,8 +582,8 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
         Provider.of<BangUpdateProfileProvider>(context, listen: false);
     updateProvider.getMyUpdate();
     _scrollController.addListener(_scrollListener);
-
   }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -590,11 +591,12 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       // User has reached the end, load more data here
-      final updateProvider = Provider.of<BangUpdateProfileProvider>(context, listen: false);
+      final updateProvider =
+          Provider.of<BangUpdateProfileProvider>(context, listen: false);
       updateProvider.getMyUpdate(); // Trigger loading of the next page
-
     }
   }
 
@@ -602,68 +604,59 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
   Widget build(BuildContext context) {
     return Consumer<BangUpdateProfileProvider>(
         builder: (context, provider, child) {
-          if (provider.updates.isEmpty && provider.isLoading == false  ) {
-            return Center(child: Text('No Posts Available'));
-          }
-          else if(provider.isLoading == false && provider.updates.isNotEmpty) {
-            return SingleChildScrollView(
-              controller: _scrollController,
-              child: GridView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                  ),
-                  children: [
-                    for (var i = 0; i < provider.updates.length; i++)
-                      if(provider.updates[i].type == 'image')
-                        ...[
-                          Container(
-                            height: 250,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: InkWell(
-                                onTap: () {
-                                  print('pressed');
-                                },
-                                child: CachedNetworkImage(
-                                  imageUrl: provider.updates[i].filename,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ), ]
-                      else if(provider.updates[i].type == 'video') ...[
-                        Container(
-                          height: 250,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: InkWell(
-                                onTap: () {
-                                  print('pressed');
-                                },
-                                child:VideoRect(message:provider.updates[i].filename)
-
-                            ),
-                          ),
-                        )
-                      ]
-                  ]
+      if (provider.updates.isEmpty && provider.isLoading == false) {
+        return Center(child: Text('No Posts Available'));
+      } else if (provider.isLoading == false && provider.updates.isNotEmpty) {
+        return SingleChildScrollView(
+          controller: _scrollController,
+          child: GridView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
               ),
-
-            );
-          }
-          else{
-            return Center(child: CircularProgressIndicator());
-          }
+              children: [
+                for (var i = 0; i < provider.updates.length; i++)
+                  if (provider.updates[i].type == 'image') ...[
+                    Container(
+                      height: 250,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: InkWell(
+                          onTap: () {
+                            print('pressed');
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: provider.updates[i].filename,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ] else if (provider.updates[i].type == 'video') ...[
+                    Container(
+                      height: 250,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: InkWell(
+                            onTap: () {
+                              print('pressed');
+                            },
+                            child: VideoRect(
+                                message: provider.updates[i].filename)),
+                      ),
+                    )
+                  ]
+              ]),
+        );
+      } else {
+        return Center(child: CircularProgressIndicator());
       }
-    );
+    });
   }
 }
-
 
 class ProfilePostsStream extends StatelessWidget {
   @override
@@ -681,8 +674,8 @@ class _ProfilePostsStreamContent extends StatefulWidget {
       _ProfilePostsStreamContentState();
 }
 
-class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> {
-
+class _ProfilePostsStreamContentState
+    extends State<_ProfilePostsStreamContent> {
   ScrollController _scrollController = ScrollController();
   @override
   void initState() {
@@ -691,6 +684,7 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
     providerPost.getMyPosts();
     _scrollController.addListener(_scrollListener);
   }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -698,168 +692,45 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       // User has reached the end, load more data here
-      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      final profileProvider =
+          Provider.of<ProfileProvider>(context, listen: false);
       profileProvider.getMyPosts();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     // Use the ProfileProvider here to build your UI based on the fetched posts
-      return Consumer<ProfileProvider>(
-          builder: (context, provider, child) {
-            if(provider.posts.isEmpty && provider.isLoading == false){
-              return Center(child: Text('No Posts Available'));
-            }
-            else if ( provider.isLoading == false && provider.posts.isNotEmpty){
-              return SingleChildScrollView(
-                controller: _scrollController,
-                child: GridView(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                    ),
-                    children: [
-                      for (var i = 0; i < provider.posts.length; i++)
-                        if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=='' && provider.posts[i].pinned == 0)
-
-                          ...[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context, MaterialPageRoute(builder: (context) => POstView(
-                                    provider.posts[i].name!,
-                                    provider.posts[i].caption!,
-                                    provider.posts[i].imageUrl!,
-                                    provider.posts[i].challengeImgUrl!,
-                                    provider.posts[i].imgWidth!,
-                                    provider.posts[i].imgHeight!,
-                                    provider.posts[i].postId!,
-                                    provider.posts[i].commentCount!,
-                                    provider.posts[i].userId!,
-                                    provider.posts[i].isLikedA,
-                                    provider.posts[i].likeCountA,
-                                    provider.posts[i].type!,
-                                    provider.posts[i].followerCount!,
-                                    provider.posts[i].createdAt!,
-                                    provider.posts[i].userImage!,
-                                    provider.posts[i].pinned!,
-                                    provider.posts[i].cacheUrl,
-                                    provider.posts[i].thumbnailUrl,
-                                    provider.posts[i].aspectRatio,
-                                    provider,
-                                  )));
-                                },
-
-                                child:
-                                CachedNetworkImage(
-                                  imageUrl: provider.posts[i].imageUrl!,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ), ]
-                        else if(provider.posts[i].type == 'image' && provider.posts[i].challengeImgUrl=="" && provider.posts[i].pinned == 1) ...[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context, MaterialPageRoute(builder: (context) => POstView(
-                                  provider.posts[i].name!,
-                                  provider.posts[i].caption!,
-                                  provider.posts[i].imageUrl!,
-                                  provider.posts[i].challengeImgUrl!,
-                                  provider.posts[i].imgWidth!,
-                                  provider.posts[i].imgHeight!,
-                                  provider.posts[i].postId!,
-                                  provider.posts[i].commentCount!,
-                                  provider.posts[i].userId!,
-                                  provider.posts[i].isLikedA,
-                                  provider.posts[i].likeCountA,
-                                  provider.posts[i].type!,
-                                  provider.posts[i].followerCount!,
-                                  provider.posts[i].createdAt!,
-                                  provider.posts[i].userImage!,
-                                  provider.posts[i].pinned!,
-                                  provider.posts[i].cacheUrl,
-                                  provider.posts[i].thumbnailUrl,
-                                  provider.posts[i].aspectRatio,
-                                  provider,
-                                )));
-                              },
-                              child:
-                              Image.network(
-                                pinnedUrl,
-                                fit: BoxFit.cover,
-                                width: 100,
-                                height: 100,
-                              ),
-                            ),
-                          ),
-                        ]
-                        else if(provider.posts[i].type =='image' &&provider.posts[i].challengeImgUrl != ''&& provider.posts[i].pinned == 0)...[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context, MaterialPageRoute(builder: (context) => POstChallengeView(
-                                        provider.posts[i].name!,
-                                        provider.posts[i].caption!,
-                                        provider.posts[i].imageUrl!,
-                                        provider.posts[i].challengeImgUrl!,
-                                        provider.posts[i].imgWidth!,
-                                        provider.posts[i].imgHeight!,
-                                        provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
-                                        provider.posts[i].userId!,
-                                        provider.posts[i].isLikedA,
-                                        provider.posts[i].likeCountA,
-                                        provider.posts[i].type!,
-                                        provider.posts[i].followerCount!,
-                                        provider.posts[i].createdAt!,
-                                        provider.posts[i].userImage!,
-                                        provider.posts[i].pinned!,
-                                        provider.posts[i].isLikedA,
-                                        provider.posts[i].isLikedB,
-
-
-
-                                    )));
-                                  },
-
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: CachedNetworkImage(
-                                          imageUrl: provider.posts[i].imageUrl!,
-                                        ),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: CachedNetworkImage(
-                                          imageUrl: provider.posts[i].challengeImgUrl!,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                              ),
-                            ),
-                          ]
-                          else if(provider.posts[i].type == 'video'&& provider.posts[i].challengeImgUrl=="")...[
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context, MaterialPageRoute(builder: (context) => POstView(
+    return Consumer<ProfileProvider>(builder: (context, provider, child) {
+      if (provider.posts.isEmpty && provider.isLoading == false) {
+        return Center(child: Text('No Posts Available'));
+      } else if (provider.isLoading == false && provider.posts.isNotEmpty) {
+        return SingleChildScrollView(
+          controller: _scrollController,
+          child: GridView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+              ),
+              children: [
+                for (var i = 0; i < provider.posts.length; i++)
+                  if (provider.posts[i].type == 'image' &&
+                      provider.posts[i].challengeImgUrl == '' &&
+                      provider.posts[i].pinned == 0) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => POstView(
                                         provider.posts[i].name!,
                                         provider.posts[i].caption!,
                                         provider.posts[i].imageUrl!,
@@ -879,20 +750,67 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                         provider.posts[i].cacheUrl,
                                         provider.posts[i].thumbnailUrl,
                                         provider.posts[i].aspectRatio,
-                                        provider
-                                    )));
-                                  },
-                                  child: VideoRect(message:provider.posts[i].imageUrl),
-                                ),
-                              ),
-                            ]
-                            else if(provider.posts[i].type == 'video' && provider.posts[i].challengeImgUrl!="")...[
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context, MaterialPageRoute(builder: (context) => POstVideoChallengeView(
+                                        provider,
+                                      )));
+                        },
+                        child: CachedNetworkImage(
+                          imageUrl: provider.posts[i].imageUrl!,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ] else if (provider.posts[i].type == 'image' &&
+                      provider.posts[i].challengeImgUrl == "" &&
+                      provider.posts[i].pinned == 1) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => POstView(
+                                        provider.posts[i].name!,
+                                        provider.posts[i].caption!,
+                                        provider.posts[i].imageUrl!,
+                                        provider.posts[i].challengeImgUrl!,
+                                        provider.posts[i].imgWidth!,
+                                        provider.posts[i].imgHeight!,
+                                        provider.posts[i].postId!,
+                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].userId!,
+                                        provider.posts[i].isLikedA,
+                                        provider.posts[i].likeCountA,
+                                        provider.posts[i].type!,
+                                        provider.posts[i].followerCount!,
+                                        provider.posts[i].createdAt!,
+                                        provider.posts[i].userImage!,
+                                        provider.posts[i].pinned!,
+                                        provider.posts[i].cacheUrl,
+                                        provider.posts[i].thumbnailUrl,
+                                        provider.posts[i].aspectRatio,
+                                        provider,
+                                      )));
+                        },
+                        child: Image.network(
+                          pinnedUrl,
+                          fit: BoxFit.cover,
+                          width: 100,
+                          height: 100,
+                        ),
+                      ),
+                    ),
+                  ] else if (provider.posts[i].type == 'image' &&
+                      provider.posts[i].challengeImgUrl != '' &&
+                      provider.posts[i].pinned == 0) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => POstChallengeView(
                                           provider.posts[i].name!,
                                           provider.posts[i].caption!,
                                           provider.posts[i].imageUrl!,
@@ -909,33 +827,111 @@ class _ProfilePostsStreamContentState extends State<_ProfilePostsStreamContent> 
                                           provider.posts[i].createdAt!,
                                           provider.posts[i].userImage!,
                                           provider.posts[i].pinned!,
-
+                                          provider.posts[i].isLikedA,
+                                          provider.posts[i].isLikedB,
+                                          provider.posts[i].likeCountA,
+                                          provider.posts[i].likeCountB,
+                                           provider,
                                         )));
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: VideoRect(message:provider.posts[i].imageUrl),
-                                          ),
-                                          Expanded(
-                                            child: VideoRect(message:provider.posts[i].challengeImgUrl),
-                                          ),
-                                        ],
-                                      )
-                                  ),
+                          },
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  imageUrl: provider.posts[i].imageUrl!,
                                 ),
-                              ]
-                    ]
-                ),
-              );
-            }
-            else {
-              return Center(child: CircularProgressIndicator());
-            }
-
-         }
-      );
-
-
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  imageUrl: provider.posts[i].challengeImgUrl!,
+                                ),
+                              ),
+                            ],
+                          )),
+                    ),
+                  ] else if (provider.posts[i].type == 'video' &&
+                      provider.posts[i].challengeImgUrl == "") ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => POstView(
+                                      provider.posts[i].name!,
+                                      provider.posts[i].caption!,
+                                      provider.posts[i].imageUrl!,
+                                      provider.posts[i].challengeImgUrl!,
+                                      provider.posts[i].imgWidth!,
+                                      provider.posts[i].imgHeight!,
+                                      provider.posts[i].postId!,
+                                      provider.posts[i].commentCount!,
+                                      provider.posts[i].userId!,
+                                      provider.posts[i].isLikedA,
+                                      provider.posts[i].likeCountA,
+                                      provider.posts[i].type!,
+                                      provider.posts[i].followerCount!,
+                                      provider.posts[i].createdAt!,
+                                      provider.posts[i].userImage!,
+                                      provider.posts[i].pinned!,
+                                      provider.posts[i].cacheUrl,
+                                      provider.posts[i].thumbnailUrl,
+                                      provider.posts[i].aspectRatio,
+                                      provider)));
+                        },
+                        child: VideoRect(message: provider.posts[i].imageUrl),
+                      ),
+                    ),
+                  ] else if (provider.posts[i].type == 'video' &&
+                      provider.posts[i].challengeImgUrl != "") ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        POstVideoChallengeView(
+                                          provider.posts[i].name!,
+                                          provider.posts[i].caption!,
+                                          provider.posts[i].imageUrl!,
+                                          provider.posts[i].challengeImgUrl!,
+                                          provider.posts[i].imgWidth!,
+                                          provider.posts[i].imgHeight!,
+                                          provider.posts[i].postId!,
+                                          provider.posts[i].commentCount!,
+                                          provider.posts[i].userId!,
+                                          provider.posts[i].isLikedA,
+                                          provider.posts[i].likeCountA,
+                                          provider.posts[i].type!,
+                                          provider.posts[i].followerCount!,
+                                          provider.posts[i].createdAt!,
+                                          provider.posts[i].userImage!,
+                                          provider.posts[i].pinned!,
+                                        )));
+                          },
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: VideoRect(
+                                    message: provider.posts[i].imageUrl),
+                              ),
+                              Expanded(
+                                child: VideoRect(
+                                    message: provider.posts[i].challengeImgUrl),
+                              ),
+                            ],
+                          )),
+                    ),
+                  ]
+              ]),
+        );
+      } else {
+        return Center(child: CircularProgressIndicator());
+      }
+    });
   }
 }

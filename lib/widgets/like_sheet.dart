@@ -25,33 +25,38 @@ class LikesModal {
                   ),
                   SizedBox(height: 16.0),
                   Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: likedUsersProvider.likedUsers.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ListTile(
-                          leading: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                createRoute(
-                                  User.UserProfile(
-                                    userid: likedUsersProvider
-                                  .likedUsers[index].id,
+                    child: likedUsersProvider.isLoading
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: likedUsersProvider.likedUsers.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                leading: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      createRoute(
+                                        User.UserProfile(
+                                          userid: likedUsersProvider
+                                              .likedUsers[index].id,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        likedUsersProvider
+                                            .likedUsers[index].userImageUrl),
                                   ),
                                 ),
+                                title: Text(likedUsersProvider
+                                    .likedUsers[index].name),
                               );
                             },
-                            child: CircleAvatar(
-                              backgroundImage: NetworkImage(likedUsersProvider
-                                  .likedUsers[index].userImageUrl),
-                            ),
                           ),
-                          title:
-                              Text(likedUsersProvider.likedUsers[index].name),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),

@@ -1,4 +1,7 @@
+import 'package:bangapp/providers/bang_update_provider.dart';
+import 'package:bangapp/services/service.dart';
 import 'package:chewie/chewie.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -41,7 +44,7 @@ class ZoomableImageScreen extends StatelessWidget {
   }
 }
 
-Widget buildBangUpdate2(BuildContext context, bangUpdate, index)  {
+Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
   if (bangUpdate.type == 'image') {
     return Stack(
       children: [
@@ -82,10 +85,19 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index)  {
           right: 0,
           child: Column(
             children: [
-              BangUpdateLikeButton(
-                  likeCount: bangUpdate.likeCount,
-                  isLiked: bangUpdate.isLiked,
-                  postId: bangUpdate.postId),
+              GestureDetector(
+                onTap: () async {
+                  final upt =
+                      Provider.of<BangUpdateProvider>(context, listen: false);
+                  upt.increaseLikes(bangUpdate.postId);
+                  await Service().likeBangUpdate(bangUpdate.likeCount,
+                      bangUpdate.isLiked, bangUpdate.postId);
+                },
+                child: bangUpdate.isLiked
+                    ? Icon(CupertinoIcons.heart_fill,
+                        color: Colors.red, size: 30)
+                    : Icon(CupertinoIcons.heart, color: Colors.white, size: 30),
+              ),
               SizedBox(height: 10),
               Text(
                 bangUpdate.likeCount.toString(),
@@ -191,7 +203,7 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index)  {
   } else if (bangUpdate.type == 'video') {
     VideoPlayerController _videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(bangUpdate.filename));
-     _videoPlayerController
+    _videoPlayerController
         .initialize(); // Initialize the video player controller
     ChewieController _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,

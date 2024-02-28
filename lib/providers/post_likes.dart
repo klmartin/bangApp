@@ -6,40 +6,47 @@ import 'package:http/http.dart' as http;
 import '../services/token_storage_helper.dart';
 
 
-
 class UserLikesProvider extends ChangeNotifier {
-  final List<dynamic> _likedUsers = [];
+  final List<User> _likedUsers = [];
+  bool _isLoading = false;
 
-  get likedUsers => _likedUsers;
+  List<User> get likedUsers => _likedUsers;
+  bool get isLoading => _isLoading;
 
   Future<void> getUserLikedPost(int postId) async {
+    _isLoading = true;
+    notifyListeners();
+
     final token = await TokenManager.getToken();
-  try {
-    final url = Uri.parse("$baseUrl/getPostLikes/$postId");
-    final response = await http.get(url, headers: {
-    'Authorization': 'Bearer $token',
-    'Content-Type':
-    'application/json', // Include other headers as needed
-    },);
+    try {
+      final url = Uri.parse("$baseUrl/getPostLikes/$postId");
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type':
+            'application/json', // Include other headers as needed
+      });
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      _likedUsers.clear();
-      _likedUsers.addAll(
-        (data['liked_users'] as List)
-            .map((user) => User.fromJson(user))
-            .toList(),
-      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _likedUsers.clear();
+        _likedUsers.addAll(
+          (data['liked_users'] as List)
+              .map((user) => User.fromJson(user))
+              .toList(),
+        );
+        notifyListeners();
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Exception: $error");
+    } finally {
+      _isLoading = false;
       notifyListeners();
-    } else {
-      print("Error: ${response.statusCode}");
     }
-  } catch (error) {
-    print("Exception: $error");
   }
-  }
-
 }
+
 
 class User {
   final int id;
