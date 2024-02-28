@@ -93,8 +93,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
                     });
                   }
 
-                  videoController!.setLooping(false);
-                  videoController!.setVolume(0.0);
+
 
                   chewieController = ChewieController(
                     videoPlayerController: videoController!,
@@ -120,9 +119,6 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
                       isControllerReady = true;
                     });
                   }
-
-                  videoController!.setLooping(false);
-                  videoController!.setVolume(0.0);
 
                   chewieController = ChewieController(
                     videoPlayerController: videoController!,
@@ -151,25 +147,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
                 isPlaying = false;
               });
             }
-            // //debugPrint("Am here ####");
-            // WidgetsBinding.instance.addPostFrameCallback((_) {
-            //   //debugPrint("Am here");
-            //   //   if (activeController == videoController) {
-            //   //     activeController = null;
-            //   //   }
 
-            //   //   videoController?.dispose().then((_) {
-            //   //     if (mounted) {
-            //   //       setState(() {
-            //   //         videoController = null;
-
-            //   //         videoPlayerInitializedCompleter =
-            //   //             Completer(); // resets the Completer
-            //   //       });
-            //   //     }
-            //   //   });
-            //   //   // chewieController!.dispose();
-            // });
           }
         },
         child: FutureBuilder(
@@ -189,12 +167,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                // child: const Center(
-                //   child: SpinKitFadingCircle(
-                //     color: AppColors.greenColor,
-                //     size: 30,
-                //   ),
-                // ),
+
               ),
             );
           },
