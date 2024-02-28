@@ -11,6 +11,7 @@ import '../services/token_storage_helper.dart';
 class PostsProvider with ChangeNotifier {
   bool _isLastPage = false;
   int _pageNumber = 0;
+  late  int _currentPageNumber = 0;
   bool _error = false;
   bool _loading = true;
   final int _numberOfPostsPerRequest = 10;
@@ -27,83 +28,101 @@ class PostsProvider with ChangeNotifier {
 
   Future<void> fetchData(int _pageNumber) async {
     if (!_isLastPage) {
+      print('nipo hapa');
+
       try {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         final userId = prefs.getInt('user_id').toString();
         final String cacheKey = 'cached_posts';
-        final iJustPosted = prefs.getBool('i_just_posted');
+
         final String cachedData = prefs.getString(cacheKey) ?? '';
         final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
         final token = await TokenManager.getToken();
-        var responseData = {};
 
         var minutes = DateTime.now()
             .difference(
-                DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+            DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
             .inMinutes;
-        if (minutes <= 3 && iJustPosted != true) {
-          // Use cached data if it exists and is not expired
-          responseData = json.decode(cachedData);
-        } else {
-          try {
-            print(
-                "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
-            final response = await get(
-              Uri.parse(
-                  "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
-              headers: {
-                'Authorization':
-                    'Bearer $token', // Include other headers as needed
-              },
-            );
 
-            if (response.statusCode == 200) {
-              responseData = json.decode(response.body);
-              // Process data from the server...
-              // Save data and timestamp to SharedPreferences
-              prefs.setString(cacheKey, json.encode(responseData));
-              prefs.setInt(
-                  '${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
-            } else {
-              // Handle server error (e.g., response.statusCode is not 200)
-              // You may want to set an error flag or log the error
-            }
-          } catch (e) {
-            // Handle other exceptions (e.g., network error)
-            // You may want to set an error flag or log the error
+        if (minutes > 3 || _pageNumber != _currentPageNumber) {
+          print('Fetching new data');
+
+          // Set loading to true to avoid simultaneous fetches
+          _loading = true;
+          notifyListeners();
+
+          final response = await get(
+            Uri.parse(
+                "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
+            headers: {
+              'Authorization': 'Bearer $token',
+            },
+          );
+
+          if (response.statusCode == 200) {
+            final responseData = json.decode(response.body);
+
+            prefs.setString(cacheKey, json.encode(responseData));
+            prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+
+            processResponseData(responseData);
+          } else {
+            handleServerError();
           }
-        }
-
-        if (responseData.containsKey('data')) {
-          List<dynamic> responseList = responseData['data']['data'];
-          final newPosts = responseList.map((data) {
-            List<dynamic>? challengesList = data['challenges'];
-            List<Challenge> challenges = (challengesList ?? [])
-                .map((challengeData) => Challenge(
-                      id: challengeData['id'],
-                      postId: challengeData['post_id'],
-                      userId: challengeData['user_id'],
-                      challengeImg: challengeData['challenge_img'],
-                      body: challengeData['body'] ?? '',
-                      type: challengeData['type'],
-                      confirmed: challengeData['confirmed'],
-                    ))
-                .toList();
-            return newPost(data, challenges);
-          }).toList();
-          _posts.addAll(newPosts);
-
           _loading = false;
           notifyListeners();
+          // Update the current page number
+          _currentPageNumber = _pageNumber;
         } else {
-          _loading = false;
-          _error = true;
-          notifyListeners();
+          print('Using cached data');
+          // Continue with the existing cached data handling logic
         }
       } catch (e) {
+        print(e);
         // Handle the error here...
       }
     }
+  }
+
+  void processResponseData(Map<String, dynamic> responseData) {
+    if (responseData.containsKey('data')) {
+      List<dynamic> responseList = responseData['data']['data'];
+      // Ensure that only new posts are added when fetching additional pages
+      if (_pageNumber == 1) {
+        print('naingia huku');
+        _posts.clear(); // Clear existing posts only when fetching the first page
+      }
+      final newPosts = responseList.map((data) {
+        List<dynamic>? challengesList = data['challenges'];
+        List<Challenge> challenges = (challengesList ?? []).map((challengeData) => Challenge(
+          id: challengeData['id'],
+          postId: challengeData['post_id'],
+          userId: challengeData['user_id'],
+          challengeImg: challengeData['challenge_img'],
+          body: challengeData['body'] ?? '',
+          type: challengeData['type'],
+          confirmed: challengeData['confirmed'],
+        )).toList();
+        return newPost(data, challenges);
+      }).toList();
+      _posts.addAll(newPosts);
+      _loading = false;
+      notifyListeners();
+    } else {
+      _loading = false;
+      _error = true;
+      notifyListeners();
+    }
+  }
+
+  void handleServerError() {
+    // Handle server error (e.g., response.statusCode is not 200)
+    // You may want to set an error flag or log the error
+  }
+
+  void handleError(dynamic error) {
+    // Handle other exceptions (e.g., network error)
+    // You may want to set an error flag or log the error
   }
 
   Future<void> refreshData() async {
@@ -149,9 +168,7 @@ class PostsProvider with ChangeNotifier {
               .toList();
           return newPost(data, challenges);
         }).toList();
-        _posts.clear();
         _posts.addAll(newPosts);
-
         _loading = false;
         notifyListeners();
       } else {

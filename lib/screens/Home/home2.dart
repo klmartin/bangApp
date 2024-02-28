@@ -10,8 +10,7 @@ import 'package:bangapp/services/service.dart';
 
 import '../Widgets/video_upload.dart';
 
-class Home2 extends StatelessWidget {
-  int _pageNumber = 1;
+class Home2 extends StatelessWidget  {
   String? video;
   final Map<String, String>? videoBody;
 
@@ -24,16 +23,18 @@ class Home2 extends StatelessWidget {
   }
 }
 
-class Home2Content extends StatefulWidget {
+class Home2Content extends StatefulWidget  {
   @override
   _Home2ContentState createState() => _Home2ContentState();
 }
 
-class _Home2ContentState extends State<Home2Content> {
+class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClientMixin {
+  bool get wantKeepAlive => true;
+
   final ScrollController _scrollController = ScrollController();
   int _pageNumber = 1;
   late VideoUploadProvider videoUploadProvider; // Declare it here
-
+  double _scrollPosition = 0.0;
   @override
   void initState() {
     super.initState();
@@ -45,7 +46,9 @@ class _Home2ContentState extends State<Home2Content> {
         postsProvider.refreshData();
       }
     });
-
+    _scrollController.addListener(() {
+      _scrollPosition = _scrollController.offset;
+    });
     _scrollController.addListener(_scrollListener);
   }
 
@@ -54,6 +57,8 @@ class _Home2ContentState extends State<Home2Content> {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       _pageNumber++;
+      print(_pageNumber);
+      print('this is page number');
       postsProvider.fetchData(_pageNumber); // Trigger loading of the next page
     }
   }
@@ -88,14 +93,16 @@ class _Home2ContentState extends State<Home2Content> {
       );
     } else if (postsProvider.isError) {
       return Center(
-        child: Text(""),
+        child: errorDialog(size: 10),
       );
     } else if (postsProvider.posts == null || postsProvider.posts!.isEmpty) {
       return Center(
         child: Text("No posts available."),
       );
     }
+
     return ListView.builder(
+      key: const PageStorageKey<String>('page'),
       controller: _scrollController, // Attach the ScrollController
       itemCount: postsProvider.posts!.length + 1,
       itemBuilder: (context, index) {
@@ -203,7 +210,7 @@ class _Home2ContentState extends State<Home2Content> {
             onPressed: () {
               final postsProvider =
                   Provider.of<PostsProvider>(context, listen: false);
-              //postsProvider.fetchData(_pageNumber);
+              postsProvider.fetchData(_pageNumber);
             },
             child: const Text(
               "Retry",
@@ -215,3 +222,6 @@ class _Home2ContentState extends State<Home2Content> {
     );
   }
 }
+
+
+
