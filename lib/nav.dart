@@ -98,7 +98,6 @@ class _NavState extends State<Nav> {
                 builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                   final notificationCount = snapshot.data ?? 0;
                   bool isNotificationCountGreaterThanZero = notificationCount > 0;
-
                   return Visibility(
                     visible: isNotificationCountGreaterThanZero,
                     child: Positioned(

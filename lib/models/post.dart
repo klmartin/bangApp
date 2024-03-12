@@ -23,6 +23,7 @@ class Post {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
+  String? price;
 
 
   Post({
@@ -48,7 +49,8 @@ class Post {
     required this.userImage,
     required this.cacheUrl,
     required this.thumbnailUrl,
-    required this.aspectRatio
+    required this.aspectRatio,
+    required this.price,
   });
 }
 

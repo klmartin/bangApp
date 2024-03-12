@@ -30,7 +30,7 @@ class _MessageState extends State<Message> {
 
   @override
   Widget build(BuildContext context) {
-    Widget messageContaint(ChatMessage message) {
+    Widget messageContent(ChatMessage message) {
       switch (message.messageType) {
         case ChatMessageType.text:
           return TextMessage(message: message);
@@ -59,7 +59,7 @@ class _MessageState extends State<Message> {
             ),
             const SizedBox(width: kDefaultPadding / 2),
           ],
-          messageContaint(widget.message),
+          messageContent(widget.message),
           if (widget.message.isSender)
             MessageStatusDot(status: widget.message.messageStatus)
         ],

@@ -21,6 +21,7 @@ class ImagePost {
    String? cacheUrl;
    String? thumbnailUrl;
    String? aspectRatio;
+   int? price;
 
   ImagePost(
       {this.name,
@@ -44,6 +45,7 @@ class ImagePost {
         this.cacheUrl,
         this.thumbnailUrl,
         this.aspectRatio,
+        this.price,
       });
 
   factory ImagePost.fromJson(Map<String, dynamic> json) {

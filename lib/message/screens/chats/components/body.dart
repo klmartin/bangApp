@@ -66,7 +66,7 @@ class Body extends StatelessWidget {
                               builder: (context) => MessagesScreen(
                                   conv.receiverId ?? 0,
                                   conv.receiverName ?? "Username",
-                                  conv.image ?? logoUrl
+                                  conv.image ?? logoUrl,conv.privacySwitchValue,conv.id,conv.price
                               ),
                             ),
                           ),

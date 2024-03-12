@@ -50,7 +50,7 @@ class ApiCacheHelper {
         .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
         .inMinutes;
 
-    if (cachedData.isNotEmpty && minutes <= 3 && iJustPosted != true) {
+    if (cachedData.isNotEmpty && minutes > 3) {
       data = json.decode(cachedData);
     } else {
       data = await apiCall();

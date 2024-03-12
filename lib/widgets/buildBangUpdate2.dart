@@ -1,5 +1,6 @@
 import 'package:bangapp/providers/bang_update_provider.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:bangapp/widgets/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -167,10 +168,10 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
                   Padding(
                     padding: const EdgeInsets.only(left: 70),
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
+                      width: MediaQuery.of(context).size.width,
                       child: ReadMoreText(
                         bangUpdate.caption,
-                        trimLines: 1,
+                        trimLines: 2,
                         colorClickableText: Colors.white,
                         trimMode: TrimMode.line,
                         trimCollapsedText: '...Show more',
@@ -201,149 +202,123 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
       ],
     );
   } else if (bangUpdate.type == 'video') {
-    VideoPlayerController _videoPlayerController =
-        VideoPlayerController.networkUrl(Uri.parse(bangUpdate.filename));
-    _videoPlayerController
-        .initialize(); // Initialize the video player controller
-    ChewieController _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      autoPlay: true,
-      autoInitialize: false,
-      looping: true,
-      placeholder: Container(
-        color: const Color.fromARGB(255, 30, 34, 45),
-      ),
-    );
-    return Stack(children: [
-      Container(
-        width: double.infinity,
-        child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => Scaffold(
-                  body: Chewie(
-                    controller: _chewieController,
-                  ),
-                ),
-              ),
-            );
-          },
-          child: AspectRatio(
-            aspectRatio: _videoPlayerController.value.aspectRatio,
-            child: _videoPlayerController.value.isInitialized
-                ? VisibilityDetector(
-                    key: Key('chewie_key'), // Provide a unique key
-                    onVisibilityChanged: (VisibilityInfo info) {
-                      if (info.visibleFraction == 0.0) {
-                        _videoPlayerController.pause();
-                      } else {
-                        _videoPlayerController.play();
-                      }
-                    },
-                    child: VideoPlayer(_videoPlayerController))
-                : Container(), // Display an empty container if the video is not yet initialized
+
+    return Stack(
+      children: [
+        Container(
+          color: Colors.black,
+          width: double.infinity,
+          child: GestureDetector(
+            onTap: () {
+
+            },
+            child: VideoPlayerPage(mediaUrl: bangUpdate.filename),
           ),
         ),
-      ),
-      Positioned(
-        bottom: 0,
-        right: 0,
-        child: Column(
-          children: [
-            BangUpdateLikeButton(
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Column(
+            children: [
+              BangUpdateLikeButton(
                 likeCount: bangUpdate.likeCount,
                 isLiked: bangUpdate.isLiked,
-                postId: bangUpdate.postId),
-            SizedBox(height: 10),
-            Text(
-              bangUpdate.likeCount.toString(),
-              style: TextStyle(
-                fontSize: 12.5,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+                postId: bangUpdate.postId,
               ),
-            ),
-            SizedBox(height: 20),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  createRoute(
-                    UpdateCommentsPage(
-                      postId: bangUpdate.postId, userId: bangUpdate.postId,
-                      // currentUser: 1,
-                    ),
-                  ),
-                );
-              },
-              child: Icon(
-                CupertinoIcons.chat_bubble,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(bangUpdate.commentCount.toString(),
+              SizedBox(height: 10),
+              Text(
+                bangUpdate.likeCount.toString(),
                 style: TextStyle(
                   fontSize: 12.5,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                )),
-            SizedBox(height: 20),
-            Icon(CupertinoIcons.paperplane, color: Colors.white, size: 30),
-            SizedBox(height: 20),
-          ],
-        ),
-      ),
-      Positioned(
-        bottom: 30,
-        left: -50,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 70),
-              child: Row(
-                children: [
-                  UserProfile(url: bangUpdate.userImage, size: 35),
-                  SizedBox(width: 5),
-                  Text(
-                    bangUpdate.userName,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 70),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: ReadMoreText(
-                  bangUpdate.caption,
-                  trimLines: 1,
-                  style: Theme.of(context).textTheme.bodyLarge!,
-                  colorClickableText: Theme.of(context).primaryColor,
-                  trimMode: TrimMode.line,
-                  trimCollapsedText: '...Show more',
-                  trimExpandedText: '...Show less',
-                  textColor: Colors.white,
-                  moreStyle: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+              SizedBox(height: 20),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    createRoute(
+                      UpdateCommentsPage(
+                        postId: bangUpdate.postId,
+                        userId: bangUpdate.postId,
+                        // currentUser: 1,
+                      ),
+                    ),
+                  );
+                },
+                child: Icon(
+                  CupertinoIcons.chat_bubble,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                bangUpdate.commentCount.toString(),
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20),
+              Icon(CupertinoIcons.paperplane, color: Colors.white, size: 30),
+              SizedBox(height: 20),
+            ],
+          ),
+        ),
+        Positioned(
+          bottom: 30,
+          left: -50,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 70),
+                child: Row(
+                  children: [
+                    UserProfile(url: bangUpdate.userImage, size: 35),
+                    SizedBox(width: 5),
+                    Text(
+                      bangUpdate.userName,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 70),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ReadMoreText(
+                    bangUpdate.caption,
+                    trimLines: 2,
+                    style: Theme.of(context).textTheme.bodyLarge!,
+                    colorClickableText: Theme.of(context).primaryColor,
+                    trimMode: TrimMode.line,
+                    trimCollapsedText: '...Show more',
+                    trimExpandedText: '...Show less',
+                    textColor: Colors.white,
+                    moreStyle: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    ]);
-  } else {
+      ],
+    );
+  }
+  else {
     return Container(); // Return an empty container if the media type is unknown or unsupported
   }
 }

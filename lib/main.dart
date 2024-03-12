@@ -8,7 +8,9 @@ import 'package:bangapp/providers/Profile_Provider.dart';
 import 'package:bangapp/providers/bang_update_provider.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
+import 'package:bangapp/providers/image_upload.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
+import 'package:bangapp/providers/payment_provider.dart';
 import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/providers/video_upload.dart';
@@ -27,7 +29,7 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
 import 'firebase_options.dart';
-import 'models/userprovider.dart';
+import 'package:bangapp/providers/user_provider.dart';
 import 'screens/Authenticate/welcome_screen.dart';
 import 'screens/Profile/edit_profile.dart';
 import 'screens/Authenticate/register_screen.dart';
@@ -37,7 +39,6 @@ import 'package:bangapp/screens/Create/final_create.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:bangapp/services/service.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,11 +63,12 @@ void main() async {
     ChangeNotifierProvider(create: (context) => ProfileProvider()),
     ChangeNotifierProvider(create: (context) => UserLikesProvider()),
     ChangeNotifierProvider(create: (context) => VideoUploadProvider()),
+    ChangeNotifierProvider(create: (context) => ImageUploadProvider()),
+    ChangeNotifierProvider(create: (context) => PaymentProvider()),
   ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -114,30 +116,32 @@ class _AuthenticateState extends State<Authenticate> {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
-    // For sharing images coming from outside the app while the app is in memory
-    _intentDataStreamSubscription =
-        ReceiveSharingIntent.getMediaStream().listen(
-      (List<SharedMediaFile> value) {
-        // Check the first shared file's extension
-        final firstSharedFile = value.isNotEmpty ? value[0] : null;
-        if (firstSharedFile != null) {
-          final filePath = firstSharedFile.path;
+
+
+
+// For sharing images coming from outside the app while the app is closed
+    ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
+      final firstSharedFile = value.isNotEmpty ? value[0] : null;
+
+      if (firstSharedFile != null) {
+        final filePath = firstSharedFile.path;
+
+        if (value.length == 1) {
+          // Single file
+          print('single file');
           if (filePath.toLowerCase().endsWith('.jpg') ||
-              filePath.toLowerCase().endsWith('.png') ||
-              filePath.toLowerCase().endsWith('.jpeg')) {
-            // It's an image
+              filePath.toLowerCase().endsWith('.png')) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => ImageEditor(
                   image: fileToUint8List(File(filePath)),
-                  allowMultiple: true,
+                  allowMultiple: false,
                 ),
               ),
             );
           } else if (filePath.toLowerCase().endsWith('.mp4') ||
               filePath.toLowerCase().endsWith('.avi')) {
-            // It's a video
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -147,54 +151,42 @@ class _AuthenticateState extends State<Authenticate> {
               ),
             );
           } else {
-            // Handle other file types or show an error message
             print('Unsupported file type: $filePath');
           }
-        }
-        setState(() {
-          _sharedFiles = value;
-          print("Shared:" + (_sharedFiles?.map((f) => f.path).join(",") ?? ""));
-        });
-      },
-      onError: (err) {
-        print("getIntentDataStream error: $err");
-      },
-    );
-
-// For sharing images coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
-      // Check the first shared file's extension
-      final firstSharedFile = value.isNotEmpty ? value[0] : null;
-      if (firstSharedFile != null) {
-        final filePath = firstSharedFile.path;
-        if (filePath.toLowerCase().endsWith('.jpg') ||
-            filePath.toLowerCase().endsWith('.png')) {
-          // It's an image
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ImageEditor(
-                image: fileToUint8List(File(filePath)),
-                allowMultiple: true,
+        } else if (value.length >= 2) {
+          // Multiple files
+          print('multiple files');
+          if (value.every((file) =>
+              file.path.toLowerCase().endsWith('.jpg') ||
+              file.path.toLowerCase().endsWith('.png'))) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ImageEditor(
+                  image: fileToUint8List(File(filePath)),
+                  image2: fileToUint8List(File(value[1].path)),
+                  allowMultiple: true,
+                ),
               ),
-            ),
-          );
-        } else if (filePath.toLowerCase().endsWith('.mp4') ||
-            filePath.toLowerCase().endsWith('.avi')) {
-          // It's a video
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VideoEditor(
-                video: File(filePath),
+            );
+          } else if (value.every((file) =>
+              file.path.toLowerCase().endsWith('.mp4') ||
+              file.path.toLowerCase().endsWith('.avi'))) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VideoEditor(
+                  video: File(filePath),
+                  video2: File(value[1].path),
+                ),
               ),
-            ),
-          );
-        } else {
-          // Handle other file types or show an error message
-          print('Unsupported file type: $filePath');
+            );
+          } else {
+            print('Unsupported file type for multiple selection');
+          }
         }
       }
+
       setState(() {
         _sharedFiles = value;
         print("Shared:" + (_sharedFiles?.map((f) => f.path).join(",") ?? ""));
@@ -217,16 +209,14 @@ class _AuthenticateState extends State<Authenticate> {
       if (message.data["type"] == "message") {
         int notificationId = int.parse(message.data['notification_id']);
         String? userName = message.data['user_name'];
-      print("THis is of object type ${notificationId.runtimeType} and is $notificationId user is $userName");
+        print(
+            "THis is of object type ${notificationId.runtimeType} and is $notificationId user is $userName");
 
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MessagesScreen(
-                notificationId,
-                message.data['user_name'] ?? "Username",
-                logoUrl
-            ),
+            builder: (context) => MessagesScreen(notificationId,
+                message.data['user_name'] ?? "Username", logoUrl,false,0,"0"),
           ),
         );
       }
@@ -239,6 +229,8 @@ class _AuthenticateState extends State<Authenticate> {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      print('notification type');
+      print(message.data["type"] == "message");
       // Handle notification tap when the app is in the background or terminated.
       // Navigate the user to the relevant screen based on the notification data.
       if (message.data["type"] == "message") {
@@ -247,11 +239,8 @@ class _AuthenticateState extends State<Authenticate> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MessagesScreen(
-                notificationId,
-                userName ?? "Username",
-                logoUrl
-            ),
+            builder: (context) =>
+                MessagesScreen(notificationId, userName ?? "Username", logoUrl,false,0,"0"),
           ),
         );
       }
@@ -260,7 +249,8 @@ class _AuthenticateState extends State<Authenticate> {
         int notificationId = int.parse(message.data['notification_id']);
         String? userName = message.data['user_name'];
 
-        var postData = await Service().getPostInfo(message.data['notification_id']);
+        var postData =
+            await Service().getPostInfo(message.data['notification_id']);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -278,19 +268,18 @@ class _AuthenticateState extends State<Authenticate> {
                 postData[0]['like_count_A'] ?? 0,
                 postData[0]['type'],
                 postData[0]['user']['followerCount'],
-                postData[0]['created_at']  ?? '',
+                postData[0]['created_at'] ?? '',
                 postData[0]['user_image_url'],
                 postData[0]['pinned'],
                 postData[0]['cache_url'],
                 postData[0]['thumbnail_url'],
                 postData[0]['aspect_ratio'],
-                Provider.of<ProfileProvider>(context, listen: false)
-            ),
+                postData[0]['price'],
+                Provider.of<ProfileProvider>(context, listen: false)),
           ),
         );
       }
       if (message.data["type"] == "challenge") {
-
         print('this is the challenge data');
         print(message.data["notification_id"]);
         int? challengeId = message.data['notification_id'] != null
@@ -335,12 +324,20 @@ class _AuthenticateState extends State<Authenticate> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+
+    if (userProvider.userData.isEmpty) {
+      print('this is userData');
+      userProvider.fetchUserData();
+    }
+    // Fetch user data when the app starts
     return FutureBuilder<SharedPreferences>(
       future: SharedPreferences.getInstance(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           String? token = snapshot.data?.getString('token');
           if (token != null) {
+
             return Nav(initialIndex: 0);
           } else {
             return Welcome();

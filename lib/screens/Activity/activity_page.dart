@@ -20,55 +20,73 @@ class Activity extends StatefulWidget {
 
 class _Activity extends State<Activity> {
   List<NotificationItem> notifications = [];
+  final ScrollController _scrollController = ScrollController();
+  double _scrollPosition = 0.0;
+  int _pageNumber = 1;
+  int _perPage = 15;
+
   bool isLoading = true; // Initially set to true to show the loader
   @override
   void initState() {
     super.initState();
-    fetchNotifications();
+    fetchNotifications(_pageNumber,_perPage);
+    _scrollController.addListener(() {
+      _scrollPosition = _scrollController.offset;
+    });
+    _scrollController.addListener(_scrollListener);
   }
 
-  Future<void> fetchNotifications() async {
+  void _scrollListener() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _pageNumber++;
+      print(_pageNumber);
+      print('this is page number');
+      loadMoreNotifications(_pageNumber,); // Trigger loading of the next page
+    }
+  }
+
+  Future<void> fetchNotifications(int page, int perPage) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id');
     final String cacheKey = 'cached_notifications';
     final String cachedData = prefs.getString(cacheKey) ?? '';
     final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+
     try {
       if (cachedData.isNotEmpty &&
           DateTime.now()
-                  .difference(
-                      DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
-                  .inMinutes <=
+              .difference(
+              DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+              .inMinutes <=
               2) {
-        // Use cached data if it exists and is not expired
-        final Map<String, dynamic> data = json.decode(cachedData);
-        final notificationModel =
-            NotificationModel.fromJson(data); // Parse JSON
+        final  data = json.decode(cachedData);
+        List<dynamic> responseList = data['notifications']['data'];
+        final notificationModel = NotificationModel.fromJson(responseList); // Parse JSON
         setState(() {
           notifications = notificationModel.notifications;
           isLoading = false;
         });
       } else {
         final token = await TokenManager.getToken();
-        // Fetch data from the server
+        // Fetch data from the server with page and perPage parameters
         final response = await http.get(
-          Uri.parse('$baseUrl/getNotifications/$userId'),
+          Uri.parse('$baseUrl/getNotifications/$userId/$page/$perPage'),
           headers: {
             'Authorization': 'Bearer $token',
-            'Content-Type':
-                'application/json', // Include other headers as needed
+            'Content-Type': 'application/json', // Include other headers as needed
           },
         );
-
         if (response.statusCode == 200) {
-          final Map<String, dynamic> data = json.decode(response.body);
+          final  data = json.decode(response.body);
+          List<dynamic> responseList = data['notifications']['data'];
+          print(data);
           final notificationModel =
-              NotificationModel.fromJson(data); // Parse JSON
+          NotificationModel.fromJson(responseList); // Parse JSON
           setState(() {
             notifications = notificationModel.notifications;
             isLoading = false; // Set isLoading to false when data is loaded
           });
-
           // Save data and timestamp to SharedPreferences
           prefs.setString(cacheKey, response.body);
           prefs.setInt(
@@ -86,6 +104,11 @@ class _Activity extends State<Activity> {
       print('Error fetching notifications: $e');
     }
   }
+
+  Future<void> loadMoreNotifications(pageNumber) async {
+    print(pageNumber);
+  }
+
 
   GestureDetector _notificationList(NotificationItem notification) {
     return GestureDetector(
@@ -191,6 +214,7 @@ class _Activity extends State<Activity> {
                     postDetails[0]['created_at'],
                     postDetails[0]['user_image_url'],
                     postDetails[0]['pinned'],
+
                     Provider.of<ProfileProvider>(context, listen: false)),
               ),
             );
@@ -210,7 +234,7 @@ class _Activity extends State<Activity> {
             width: 40.0,
             color: Color(0xffFF0E58),
             child: CachedNetworkImage(
-              imageUrl: notification.postUrl,
+              imageUrl: notification.postType == 'video' ? notification.thumbnailUrl : notification.postUrl,
               placeholder: (context, url) => Center(
                 child: CircularProgressIndicator(),
               ),
@@ -233,6 +257,8 @@ class _Activity extends State<Activity> {
                     CircularProgressIndicator(), // Display a loading indicator
               )
             : ListView.builder(
+                key: const PageStorageKey<String>('notification'),
+                controller: _scrollController, // Attach the ScrollController
                 itemCount: notifications.length,
                 itemBuilder: (context, index) {
                   final notification = notifications[index];

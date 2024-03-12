@@ -142,8 +142,8 @@ class _CommentsPageState extends State<CommentsPage> {
                   child: ListTile(
                     leading: GestureDetector(
                       onTap: () async {
-                        // Display the image in large form.
-                        print("Comment Clicked");
+
+
                       },
                       child: Container(
                         height: 50.0,
@@ -165,7 +165,14 @@ class _CommentsPageState extends State<CommentsPage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(data[i]['message']),
-                    trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                    trailing: Column(
+                      children:[
+                        Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                        Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                      ]
+
+                    ),
+                    // trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
                   ),
                 ),
             ],

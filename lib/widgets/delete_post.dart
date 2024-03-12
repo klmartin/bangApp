@@ -2,11 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:provider/provider.dart';
+
+import '../nav.dart';
+import '../providers/Profile_Provider.dart';
+import '../providers/posts_provider.dart';
 
 class DeletePostWidget extends StatefulWidget {
   final int imagePostId;
-
-  const DeletePostWidget({required this.imagePostId, Key? key}) : super(key: key);
+  final String type;
+  const DeletePostWidget(
+      {required this.imagePostId, required this.type, Key? key})
+      : super(key: key);
 
   @override
   _DeletePostWidgetState createState() => _DeletePostWidgetState();
@@ -22,9 +29,24 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
 
     try {
       final responseBody = await Service().deletePost(widget.imagePostId);
-
-      if (responseBody != null && responseBody['message'] == 'Post deleted successfully') {
+      if (responseBody != null &&
+          responseBody['message'] == 'Post deleted successfully') {
         Fluttertoast.showToast(msg: responseBody['message']);
+
+        if (widget.type == 'posts') {
+          final postsProvider =
+              Provider.of<PostsProvider>(context, listen: false);
+          postsProvider.deletePostById(widget.imagePostId);
+          Navigator.pop(context);
+        } else if (widget.type == 'profile') {
+          print(widget.type);
+          print('this is the widget type');
+          final providerPost =
+              Provider.of<ProfileProvider>(context, listen: false);
+          providerPost.deletePostById(widget.imagePostId);
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => Nav(initialIndex: 4)));
+        }
       }
     } catch (e) {
       // Handle errors if needed
@@ -32,8 +54,6 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
       setState(() {
         _isLoading = false;
       });
-
-      Navigator.pop(context);
     }
   }
 

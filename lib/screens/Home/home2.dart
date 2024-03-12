@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/post.dart';
 import 'package:bangapp/providers/posts_provider.dart'; // Import your PostsProvider class
+import '../../providers/image_upload.dart';
+import '../../providers/payment_provider.dart';
 import '../../providers/video_upload.dart';
+import '../Widgets/image_upload.dart';
 import '../Widgets/post_item2.dart';
 import '../Widgets/small_box2.dart';
 import 'package:bangapp/services/service.dart';
@@ -34,18 +37,42 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
   final ScrollController _scrollController = ScrollController();
   int _pageNumber = 1;
   late VideoUploadProvider videoUploadProvider; // Declare it here
+  late ImageUploadProvider imageUploadProvider;
+  late PaymentProvider paymentProvider;
   double _scrollPosition = 0.0;
   @override
   void initState() {
     super.initState();
     videoUploadProvider =Provider.of<VideoUploadProvider>(context, listen: false);
+    imageUploadProvider =Provider.of<ImageUploadProvider>(context, listen: false);
+    paymentProvider = Provider.of<PaymentProvider>(context, listen:false);
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     postsProvider.fetchData(_pageNumber);
+
     videoUploadProvider.addListener(() {
       if (videoUploadProvider.uploadText == 'Upload Complete') {
+        print('this is a new post');
         postsProvider.refreshData();
+        _scrollController.jumpTo(0);
+      }
+
+    });
+
+    paymentProvider.addListener(() {
+      if (paymentProvider.isFinishPaying == true) {
+        postsProvider.deletePinnedById(paymentProvider.payedPost);
       }
     });
+
+    imageUploadProvider.addListener(() {
+      if(imageUploadProvider.uploadText == 'Upload Complete'){
+        print('this is an image post');
+        postsProvider.refreshData();
+        _scrollController.jumpTo(0);
+      }
+    });
+
+
     _scrollController.addListener(() {
       _scrollPosition = _scrollController.offset;
     });
@@ -59,7 +86,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
       _pageNumber++;
       print(_pageNumber);
       print('this is page number');
-      postsProvider.fetchData(_pageNumber); // Trigger loading of the next page
+      postsProvider.loadMoreData(_pageNumber); // Trigger loading of the next page
     }
   }
 
@@ -77,6 +104,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
         final postsProvider =
             Provider.of<PostsProvider>(context, listen: false);
         postsProvider.refreshData();
+        _scrollController.jumpTo(0);
       },
       child: Consumer<PostsProvider>(
         builder: (context, postsProvider, child) {
@@ -108,11 +136,12 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
       itemBuilder: (context, index) {
         if (index < postsProvider.posts!.length) {
           final Post post = postsProvider.posts![index];
-          Service().updateIsSeen(post.postId);
+          // Service().updateIsSeen(post.postId);
           if (index == 0) {
             return Column(
               children: [
                 SmallBoxCarousel(),
+                imageUploadProvider.isUploading ? ImageUpload() : Container(),
                 videoUploadProvider.isUploading ? VideoUpload() : Container(),
                 PostItem2(
                   post.postId,
@@ -138,6 +167,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
                   post.cacheUrl,
                   post.thumbnailUrl,
                   post.aspectRatio,
+                  post.price,
                   myProvider: postsProvider,
                 )
               ],
@@ -167,6 +197,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
               post.cacheUrl,
               post.thumbnailUrl,
               post.aspectRatio,
+              post.price,
               myProvider: postsProvider,
             );
           }

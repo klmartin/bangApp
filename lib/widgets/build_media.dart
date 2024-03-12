@@ -1,42 +1,45 @@
-import 'package:bangapp/widgets/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:photo_view/photo_view.dart';
-
+import 'package:bangapp/providers/user_provider.dart';
 import '../components/video_player.dart';
 import '../constants/urls.dart';
+import '../providers/payment_provider.dart';
+import '../services/azampay.dart';
 
-Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeight,isPinned,cacheUrl,thumbnailUrl,aspectRatio) {
-  if ( type == 'image' && isPinned==0) {
-    return  AspectRatio(
+Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
+    imgHeight, isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
+  if (type == 'image' && isPinned == 0) {
+    return AspectRatio(
       aspectRatio: imgWidth / imgHeight,
       child: GestureDetector(
-          onTap: () {
-            viewImage(context, mediaUrl);
-          },
-          child: CachedNetworkImage(
-            imageUrl: mediaUrl,
-            height: imgHeight.toDouble(),
-            width: imgWidth.toDouble(),
-            fit: BoxFit.cover,
-            placeholder: (context, url) => AspectRatio(
-              aspectRatio: imgWidth / imgHeight,
-              child: Shimmer.fromColors(
-                baseColor: const Color.fromARGB(255, 30, 34, 45),
-                highlightColor: const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
-                child: Container(color: const Color.fromARGB(255, 30, 34, 45)),
-              ),
+        onTap: () {
+          viewImage(context, mediaUrl);
+        },
+        child: CachedNetworkImage(
+          imageUrl: mediaUrl,
+          height: imgHeight.toDouble(),
+          width: imgWidth.toDouble(),
+          fit: BoxFit.cover,
+          placeholder: (context, url) => AspectRatio(
+            aspectRatio: imgWidth / imgHeight,
+            child: Shimmer.fromColors(
+              baseColor: const Color.fromARGB(255, 30, 34, 45),
+              highlightColor:
+                  const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
+              child: Container(color: const Color.fromARGB(255, 30, 34, 45)),
             ),
           ),
         ),
+      ),
     );
-  }
-  else if (type == 'image' || type== 'video' && isPinned==1) {
+  } else if (type == 'image' || type == 'video' && isPinned == 1) {
     return GestureDetector(
       onTap: () {
-        buildFab(isPinned,context);
+        buildFab(context, price, postId);
       },
       child: CachedNetworkImage(
         fit: BoxFit.cover,
@@ -45,61 +48,31 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl,type, imgWidth, imgHeigh
           aspectRatio: imgWidth / imgHeight,
           child: Shimmer.fromColors(
             baseColor: const Color.fromARGB(255, 30, 34, 45),
-            highlightColor: const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
+            highlightColor:
+                const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
             child: Container(color: const Color.fromARGB(255, 30, 34, 45)),
           ),
         ),
       ),
     );
-  }
-  else if (type == 'video' && isPinned==0) {
-     return CustomVideoPlayer(videoUrl: mediaUrl, cachingVideoUrl: mediaUrl,thumbnailUrl: thumbnailUrl,aspectRatio: aspectRatio);
+  } else if (type == 'video' && isPinned == 0) {
+    return CustomVideoPlayer(
+        videoUrl: mediaUrl,
+        cachingVideoUrl: cacheUrl,
+        thumbnailUrl: thumbnailUrl,
+        aspectRatio: aspectRatio);
     //return VideoPlayerPage(mediaUrl: mediaUrl);
-
   } else {
     return Container();
   }
 }
 
-
 void viewImage(BuildContext context, String imageUrl) {
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => Scaffold(
-        body: SizedBox.expand(
-          child: Hero(
-            tag: imageUrl,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ZoomableImage(imageUrl: imageUrl),
-                  ),
-                );
-              },
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-class ZoomableImage extends StatelessWidget {
-  final String imageUrl;
-
-  ZoomableImage({required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: PhotoView(
-          imageProvider: NetworkImage(imageUrl),
+        body: PhotoView(
+          imageProvider: CachedNetworkImageProvider(imageUrl),
           minScale: PhotoViewComputedScale.contained,
           maxScale: PhotoViewComputedScale.covered * 2,
           enableRotation: true,
@@ -108,95 +81,88 @@ class ZoomableImage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
-
-buildFab(value,BuildContext context) {
+buildFab(BuildContext context, price, postId) {
+  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
   return showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10.0),
     ),
     builder: (BuildContext context) {
-      return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Center(
-                child: Text(
-                  'Payment Options',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
+      return Builder(
+        builder: (BuildContext innerContext) {
+          final userProvider = Provider.of<UserProvider>(innerContext);
+          final TextEditingController phoneNumberController =
+              TextEditingController(
+            text: userProvider.userData['phone_number'].toString(),
+          );
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Center(
+                    child: Text(
+                      'Pay to View $price Tshs',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                TextField(
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  controller: phoneNumberController,
+                  decoration: InputDecoration(
+                    labelText: 'Phone number',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(Icons.phone),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                ),
+                paymentProvider.isPaying
+                    ? CircularProgressIndicator()
+                    : TextButton(
+                        onPressed: () async {
+                          paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, postId, 'post');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors
+                              .red, // Set the background color of the button
+                        ),
+                        child: Text(
+                          'Pay',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        )),
+              ],
             ),
-            Divider(),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.money_dollar_circle,
-                size: 25.0,
-              ),
-              title: Text('Tigo Pesa'),
-              onTap: () {
-                print(value);
-
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.money_dollar_circle,
-                size: 25.0,
-              ),
-              title: Text('M-pesa'),
-              onTap: () async {
-                print(value);
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.money_dollar_circle,
-                size: 25.0,
-              ),
-              title: Text('Airtel Money'),
-              onTap: () {
-                print(value);
-                // Navigator.pop(context);
-                // Navigator.of(context).push(
-                //   CupertinoPageRoute(
-                //     builder: (_) => CreatePost(),
-                //   ),
-                // );
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.money_dollar_circle,
-                size: 25.0,
-              ),
-              title: Text('Halo Pesa'),
-              onTap: () {
-                print(value);
-                // Navigator.pop(context);
-                // Navigator.of(context).push(
-                //   CupertinoPageRoute(
-                //     builder: (_) => CreatePost(),
-                //   ),
-                // );
-              },
-            ),
-          ],
-        ),
+          );
+        },
       );
     },
-  );
+  ).then((result) {
+    var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    paymentProvider.paymentCanceled = true;
+    print( paymentProvider.isPaying);
+    print('Modal bottom sheet closed: $result');
+  });
 }
-
-

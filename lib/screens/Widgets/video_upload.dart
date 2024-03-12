@@ -17,10 +17,8 @@ class _VideoUploadState extends State<VideoUpload> {
   bool isProcessing = false;
 
   @override
-  void initState()  {
-
+  void initState() {
     super.initState();
-
   }
 
   @override
@@ -29,46 +27,26 @@ class _VideoUploadState extends State<VideoUpload> {
     _statusTimer?.cancel();
   }
 
-
   @override
-  // Widget build(BuildContext context) {
-  //   final videoUploadProvider = Provider.of<VideoUploadProvider>(context);
-  //
-  //   return Container(
-  //     height: 25,
-  //     child: Column(
-  //       children: [
-  //         LinearProgressIndicator(
-  //           value: videoUploadProvider.uploadProgress / 100.0, // Ensure the value is between 0.0 and 1.0
-  //           color: Colors.red,
-  //           backgroundColor: Colors.black,
-  //         ),
-  //         Text(videoUploadProvider.uploadText)
-  //       ],
-  //     ),
-  //   );
-  //
-  // }
-
   Widget build(BuildContext context) {
     final videoUploadProvider = Provider.of<VideoUploadProvider>(context);
-
     return Container(
       height: 25,
       child: Column(
         children: [
-          LinearProgressIndicator(
-            value: videoUploadProvider.uploadProgress / 100.0,
-            color: Colors.red,
-            backgroundColor: Colors.black,
-          ),
+          videoUploadProvider.uploadText == "Uploading Video..."
+              ? LinearProgressIndicator(
+                  color: Colors.red,
+                  backgroundColor: Colors.black,
+                )
+              : LinearProgressIndicator(
+                  value: videoUploadProvider.uploadProgress / 100.0,
+                  color: Colors.red,
+                  backgroundColor: Colors.black,
+                ),
           Text(videoUploadProvider.uploadText)
         ],
       ),
     );
   }
-
-
-
 }
-

@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Authenticate/login_screen.dart';
  import "package:bangapp/services/service.dart";
-
+import 'package:bangapp/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 import '../../services/token_storage_helper.dart';
 
 class AppSettings extends StatefulWidget {
   @override
-  bool privacySwitchValue = false;
-  AppSettings({required this.privacySwitchValue});
+
   _AppSettings createState() => _AppSettings();
 }
 
 
 class _AppSettings extends State<AppSettings> {
   @override
-
+  var price;
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -43,14 +46,72 @@ class _AppSettings extends State<AppSettings> {
           ListTile(
             leading: FaIcon(FontAwesomeIcons.message),
             title: Text("Pin Messages"),
-            trailing: Switch(
-              value: widget.privacySwitchValue,
-              onChanged: (value) {
-                print(value);
-                Service().pinMessage();
+            subtitle:userProvider.userData['public'] == 1 ? TextFormField(
+              decoration: InputDecoration(
+                hintText: userProvider.userData['price'].toString() + ' Tshs',
+                focusedBorder: UnderlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number, // Allow only numbers
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Price is required';
+                }
+                // Additional validation for numbers
+                if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                  return 'Enter a valid number';
+                }
+                int price = int.parse(value);
+                if (price < 1000) {
+                  return 'Price must be at least 1000';
+                }
+                return null; // Validation passed
+              },
+              onChanged: (val) async {
+                print('changed');
+                var newPrice = await Service().setUserPinPrice(val);
+                print(newPrice);
+                if(newPrice['message'] == 'Price set successfully'){
+                  userProvider.userData['price'] = newPrice['price'];
+                }
+                print('this is new Price');
+                print(val);
+                Fluttertoast.showToast(
+                  msg: newPrice['message'],
+                  toastLength: Toast
+                      .LENGTH_SHORT, // or Toast.LENGTH_LONG
+                  gravity:
+                  ToastGravity.CENTER, // Toast position
+                  timeInSecForIosWeb:
+                  1, // Time duration for iOS and web
+                  backgroundColor: Colors.grey[600],
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                );
                 setState(() {
-                  widget.privacySwitchValue = value;
+                  price = val;
                 });
+              },
+            ) : Container(),
+            trailing: Switch(
+              value: userProvider.userData['public']==1 ? true : false,
+              onChanged: (value) async {
+                var valueRes = await Service().pinMessage();
+                userProvider.userData['public'] = valueRes['value'];
+                Fluttertoast.showToast(
+                  msg: valueRes['message'],
+                  toastLength: Toast
+                      .LENGTH_SHORT, // or Toast.LENGTH_LONG
+                  gravity:
+                  ToastGravity.CENTER, // Toast position
+                  timeInSecForIosWeb:
+                  1, // Time duration for iOS and web
+                  backgroundColor: Colors.grey[600],
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                );
+                // setState(() {
+                //    value = ;
+                // });
               },
             ),
           ),

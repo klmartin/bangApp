@@ -56,7 +56,7 @@ class POstChallengeView extends StatefulWidget {
       this.isLikedA,
       this.isLikedB,
       this.likeCountA,
-      this.likeCountB, 
+      this.likeCountB,
       this.provider,
       );
   static const id = 'postview';
@@ -127,7 +127,7 @@ class PostCard extends StatefulWidget {
 
 
   ScrollController _scrollController = ScrollController();
-  
+
 
   PostCard(
       this.name,
@@ -206,7 +206,7 @@ class _PostCardState extends State<PostCard> {
                       widget.postId,
                       widget.userId,
                       widget.type,
-                      widget.createdAt) ??
+                      widget.createdAt,"profile") ??
                   Container(),
               AspectRatio(
                 aspectRatio: 190 / 120,

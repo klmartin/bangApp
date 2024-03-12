@@ -92,12 +92,10 @@ class Service {
         ..files.add(await http.MultipartFile.fromPath('image', filepath));
       try {
         var response = await http.Response.fromStream(await request.send());
-        prefs.setBool('i_just_posted', true);
-        prefs.setBool('i_just_posted_profile', true);
-        print(response.body);
+
         if (response.statusCode == 201) {
           final response2 = jsonDecode(response.body);
-          if (response2['data']) {
+          if (response2['url']) {
 
           } else {}
           return true;
@@ -113,7 +111,6 @@ class Service {
   }
 
   Future<bool> addBangUpdate(Map<String, String> body, String filepath) async {
-    print('updateee');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = await TokenManager.getToken();
     final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
@@ -128,8 +125,7 @@ class Service {
       print('update responseee');
       if (response.statusCode == 201) {
         final response2 = jsonDecode(response.body);
-        prefs.setBool('i_just_posted_bang_update', true);
-        prefs.setBool('i_just_posted_profile', true);
+
         if (response2['data']) {
         } else {
           print("No response.........");
@@ -265,7 +261,7 @@ class Service {
   }
 
   Future<void> likeBangUpdate(likeCount, isLiked, postId) async {
-    print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
+
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -290,10 +286,7 @@ class Service {
         final responseData = json.decode(response.body);
         final updatedLikeCount = responseData['likeCount'];
 
-        setState(() {
-          likeCount = updatedLikeCount;
-          isLiked = !isLiked;
-        });
+
       } else {
         // Handle API error, if necessary
       }
@@ -305,6 +298,8 @@ class Service {
 
   Future<List<dynamic>> getComments(String postId) async {
     try {
+      print(postId);
+      print('the postId');
       final token = await TokenManager.getToken();
       final response = await http.get(
         Uri.parse('$baseUrl/getComments/$postId'),
@@ -316,6 +311,7 @@ class Service {
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+        print(responseData);
         return responseData['comments'];
       } else {
         return [];
@@ -326,6 +322,35 @@ class Service {
       // Handle exceptions, if any
     }
   }
+
+
+  Future<List<dynamic>> getCommentReplies(String commentId) async {
+    try {
+      print(commentId);
+      print('the postId');
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse('$baseUrl/getCommentsReplies/$commentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type':
+          'application/json', // Include other headers as needed
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+        return responseData['commentsReplies'];
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e);
+      return ['err'];
+      // Handle exceptions, if any
+    }
+  }
+
 
   Future<List<dynamic>> getUpdateComments(String postId) async {
     try {
@@ -398,6 +423,33 @@ class Service {
       );
       print(response.body);
       print('this is app');
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future postCommentReply(BuildContext context, postId, commentId, commentText) async {
+    try {
+      final token = await TokenManager.getToken();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      print([commentId,commentText,prefs.getInt('user_id')]);
+      final response = await http.post(
+        Uri.parse('$baseUrl/postCommentReply'),
+        body: jsonEncode({
+          'comment_id': commentId.toString(),
+          'user_id': prefs.getInt('user_id').toString(),
+          'body': commentText,
+          'post_id':postId,
+        }),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      print(response.body);
+      print('this is reply comment response');
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -539,9 +591,9 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/acceptChallenge'),
-        body: {
+        body:jsonEncode ({
           'post_id': postId.toString(),
-        },
+        }),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':
@@ -561,9 +613,9 @@ class Service {
       final token = await TokenManager.getToken();
       final response = await http.post(
         Uri.parse('$baseUrl/declineChallenge'),
-        body: {
+        body: jsonEncode({
           'post_id': postId.toString(),
-        },
+        }),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':
@@ -608,13 +660,13 @@ class Service {
       print("nimefika kwenye notification");
       final response = await http.post(
         Uri.parse('$baseUrl/sendNotification'),
-        body: {
+        body:jsonEncode( {
           'user_id': userId.toString(),
           'heading': name,
           'body': body,
           'type': type,
           'challengeId': challengeId.toString(),
-        },
+        }),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':
@@ -708,7 +760,7 @@ class Service {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
 
-        setState(() {});
+
       } else {
         // Handle other response codes or errors
       }
@@ -757,7 +809,7 @@ class Service {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
         print(responseData);
-        setState(() {});
+
       } else {}
     } catch (e) {
       print(e);
@@ -985,7 +1037,7 @@ class Service {
     }
   }
 
-  Future<void> pinMessage() async {
+  Future<Map<String, dynamic>> pinMessage() async {
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -995,23 +1047,49 @@ class Service {
         'Content-Type':
         'application/json', // Include other headers as needed
       },
-        body: {
+        body: jsonEncode({
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
-        },
+        }),
       );
-      print(response.body);
+
       if (response.statusCode == 200) {
-        // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
-        print(responseData);
+        return responseData;
       } else {
+        return {};
         // Handle API error, if necessary
       }
     } catch (e) {
-      print(e);
-      // Handle exceptions, if any
+      return {};
     }
   }
 
-  void setState(Null Function() param0) {}
+  Future<Map<String, dynamic>> setUserPinPrice(price) async {
+    try {
+      final token = await TokenManager.getToken();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(
+        Uri.parse('$baseUrl/setUserPinPrice'),headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type':
+        'application/json', // Include other headers as needed
+      },
+        body: jsonEncode({
+          'user_id': prefs.getInt('user_id').toString(), // Convert to string
+          'price': price
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else {
+        return {};
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      return {};
+    }
+  }
+
 }

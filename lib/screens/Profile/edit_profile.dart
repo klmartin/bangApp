@@ -12,7 +12,7 @@ import '../../nav.dart';
 import '../../services/api_cache_helper.dart';
 
 late String? _descr;
-late String phoneNumber;
+late String? phoneNumber;
 late String occupation;
 String selectedHobbiesText = "";
 DateTime date_of_birth = DateTime.now();
@@ -412,7 +412,7 @@ class _EditPageState extends State<EditPage> {
                         onPressed: () async {
                           await Service().setUserProfile(
                               date_of_birth,
-                              int.parse(phoneNumber),
+                              int.parse(phoneNumber!),
                               selectedHobbiesText,
                               occupation,
                               _descr,

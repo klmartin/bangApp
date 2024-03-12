@@ -19,6 +19,8 @@ class Conversation {
   int unreadCount;
   int id;
   String messageType;
+  bool? privacySwitchValue;
+  String? price;
 
   Conversation({
     required this.id,
@@ -30,6 +32,8 @@ class Conversation {
     required this.isActive,
     required this.unreadCount,
     required this.messageType,
+    this.privacySwitchValue,
+    this.price,
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
@@ -42,7 +46,9 @@ class Conversation {
       isActive: json['isActive'],
       receiverId: json['receiver_id'],
       unreadCount: json['unreadCount'],
-        messageType: "text",
+      messageType: "text",
+      privacySwitchValue: json['public'] == 1 ? true : false,
+      price: json['price'] ?? "0",
     );
   }
 }
@@ -382,9 +388,7 @@ Future<void> sendImageMessage(
       final newMessage = Message.fromJson(data);
       final createdAt = DateTime.parse(data['created_at']);
       final timeAgo = timeago.format(createdAt);
-      print("Datttttttttttttttttta");
-      print(data);
-      print("End dataaaaaaaaaaaaa");
+
       final rawMessage = {
         'conversation_id': data['conversation_id'].toString(),
         'sender_id': user1Id.toString(),
@@ -392,7 +396,6 @@ Future<void> sendImageMessage(
         'message': data['message'],
         'time': timeAgo,
       };
-      print("The above is image response.................");
 
     //  _sendMessageToSocket(rawMessage);
 
@@ -408,6 +411,16 @@ Future<void> sendImageMessage(
     _showSnackbar('Error sending image message: $error', context); // You need to define this function
   }
 }
+
+  void deletePinnedById(int payedPost) {
+    conversations.forEach((conv) {
+      if (conv.id == payedPost) {
+        conv.privacySwitchValue = false;
+      }
+    });
+    notifyListeners();
+
+  }
 
 
 }

@@ -27,71 +27,102 @@ class PostsProvider with ChangeNotifier {
   num get nextPageTrigger => _nextPageTrigger;
 
   Future<void> fetchData(int _pageNumber) async {
-    if (!_isLastPage) {
-      print('nipo hapa');
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('user_id').toString();
+      final String cacheKey = 'cached_posts';
 
-      try {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        final userId = prefs.getInt('user_id').toString();
-        final String cacheKey = 'cached_posts';
+      final String cachedData = prefs.getString(cacheKey) ?? '';
+      final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+      final token = await TokenManager.getToken();
 
-        final String cachedData = prefs.getString(cacheKey) ?? '';
-        final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
-        final token = await TokenManager.getToken();
+      var minutes = DateTime.now()
+          .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+          .inMinutes;
 
-        var minutes = DateTime.now()
-            .difference(
-            DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
-            .inMinutes;
+      if (minutes > 3 || cachedData.isEmpty) {
+        print('Fetching new data');
+        _loading = true;
+        notifyListeners();
 
-        if (minutes > 3 || _pageNumber != _currentPageNumber) {
-          print('Fetching new data');
+        final response = await get(
+          Uri.parse(
+              "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        );
 
-          // Set loading to true to avoid simultaneous fetches
-          _loading = true;
-          notifyListeners();
-
-          final response = await get(
-            Uri.parse(
-                "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
-            headers: {
-              'Authorization': 'Bearer $token',
-            },
-          );
-
-          if (response.statusCode == 200) {
-            final responseData = json.decode(response.body);
-
-            prefs.setString(cacheKey, json.encode(responseData));
-            prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
-
-            processResponseData(responseData);
-          } else {
-            handleServerError();
-          }
-          _loading = false;
-          notifyListeners();
-          // Update the current page number
-          _currentPageNumber = _pageNumber;
+        if (response.statusCode == 200) {
+          final responseData = json.decode(response.body);
+          prefs.setString(cacheKey, json.encode(responseData));
+          prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+          processResponseData(responseData);
         } else {
-          print('Using cached data');
-          // Continue with the existing cached data handling logic
+          handleServerError();
         }
-      } catch (e) {
-        print(e);
-        // Handle the error here...
+
+        _currentPageNumber = _pageNumber;
+      } else {
+        print('Using cached data');
+        final cacheData = prefs.getString(cacheKey);
+        if (cacheData != null) {
+          processResponseData(json.decode(cacheData));
+        }
+        // Continue with the existing cached data handling logic
       }
+    } catch (e) {
+      print(e);
+      // Handle the error here...
+    } finally {
+      _loading = false;
+      notifyListeners();
     }
   }
+
+  Future<void> loadMoreData(int _pageNumber) async {
+    try {
+      print('get more data');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('user_id').toString();
+      final String cacheKey = 'cached_posts';
+      final token = await TokenManager.getToken();
+
+      notifyListeners();
+
+      final response = await get(
+        Uri.parse(
+            "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        prefs.setString(cacheKey, json.encode(responseData));
+        prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+        processResponseData(responseData);
+      } else {
+        handleServerError();
+      }
+
+      _currentPageNumber = _pageNumber;
+    } catch (e) {
+      print(e);
+      // Handle the error here...
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
 
   void processResponseData(Map<String, dynamic> responseData) {
     if (responseData.containsKey('data')) {
       List<dynamic> responseList = responseData['data']['data'];
       // Ensure that only new posts are added when fetching additional pages
-      if (_pageNumber == 1) {
-        print('naingia huku');
-        _posts.clear(); // Clear existing posts only when fetching the first page
-      }
+
       final newPosts = responseList.map((data) {
         List<dynamic>? challengesList = data['challenges'];
         List<Challenge> challenges = (challengesList ?? []).map((challengeData) => Challenge(
@@ -128,28 +159,22 @@ class PostsProvider with ChangeNotifier {
   Future<void> refreshData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id').toString();
-    final String cacheKey = 'cached_posts';
-    final iJustPosted = prefs.getBool('i_just_posted');
-    final String cachedData = prefs.getString(cacheKey) ?? '';
-    final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
     final token = await TokenManager.getToken();
     var responseData = {};
     try {
       print(
-          "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
+          "$baseUrl/getPost?_page=1&_limit=$_numberOfPostsPerRequest&user_id=$userId");
       final response = await get(
         Uri.parse(
-            "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
+            "$baseUrl/getPost?_page=1&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
         headers: {
           'Authorization': 'Bearer $token', // Include other headers as needed
         },
       );
-
       if (response.statusCode == 200) {
         responseData = json.decode(response.body);
       } else {
-        // Handle server error (e.g., response.statusCode is not 200)
-        // You may want to set an error flag or log the error
+
       }
       if (responseData.containsKey('data')) {
         List<dynamic> responseList = responseData['data']['data'];
@@ -168,6 +193,7 @@ class PostsProvider with ChangeNotifier {
               .toList();
           return newPost(data, challenges);
         }).toList();
+        _posts.clear();
         _posts.addAll(newPosts);
         _loading = false;
         notifyListeners();
@@ -206,11 +232,26 @@ class PostsProvider with ChangeNotifier {
       cacheUrl: data['cache_url'],
       thumbnailUrl: data['thumbnail_url'],
       aspectRatio: data['aspect_ratio'],
+      price: data["price"] ?? '0',
     );
   }
 
   void addPost(Post post) {
     _posts.add(post);
+    notifyListeners();
+  }
+
+  void deletePostById(int postId) {
+    _posts.removeWhere((post) => post.postId == postId);
+    notifyListeners();
+  }
+
+  void deletePinnedById(int postId) {
+    _posts.forEach((post) {
+      if (post.postId == postId) {
+        post.isPinned = 0;
+      }
+    });
     notifyListeners();
   }
 

@@ -7,6 +7,8 @@ import 'package:bangapp/providers/BoxDataProvider.dart'; // Import the BoxDataPr
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:bangapp/widgets/video_player.dart';
+import 'package:bangapp/providers/user_provider.dart';
+import '../../providers/payment_provider.dart';
 import '../../services/payment_service.dart';
 import '../../services/service.dart';
 import '../Comments/battleComment.dart';
@@ -24,34 +26,12 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
     provider.fetchData();
   }
 
-  void viewImage(BuildContext context, String imageUrl) {
-  Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (context) => Scaffold(
-        body: SizedBox.expand(
-          child: Hero(
-            tag: imageUrl,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ZoomableImage(imageUrl: imageUrl),
-                  ),
-                );
-              },
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-  buildFab(value, BuildContext context,price,subtitle) {
+  buildFab(BuildContext context, price, subtitle, battleId) {
+    var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final TextEditingController phoneNumberController = TextEditingController(
+      text: userProvider.userData['phone_number'].toString(),
+    );
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -68,7 +48,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Center(
                   child: Text(
-                    'Pinned battle',
+                    'Pay to Vote $price Tshs',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -79,99 +59,57 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
               ),
               Divider(),
               ListTile(
-                leading: Icon(
-                  CupertinoIcons.circle_fill,
-                  color: Colors.orange.shade600,
-                  size: 25.0,
-                ),
-                title: Text('Pay to Vote'),
-                subtitle: Text(subtitle),
-                trailing: Text('$price tshs'),
-                // subtitle: Text('to Vote'),
+                title: Text(subtitle),
                 onTap: () {
                   Navigator.pop(context);
-                  buildPayments(price, context);
                 },
               ),
-
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  buildPayments(price, BuildContext context) {
-    return showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Center(
-                  child: Text(
-                    'Packages',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
+              TextField(
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                controller: phoneNumberController,
+                decoration: InputDecoration(
+                  labelText: 'Phone number',
+                  labelStyle: TextStyle(color: Colors.black),
+                  prefixIcon: Icon(Icons.phone),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.black,
               ),
-              Divider(),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.circle_fill,
-                  color: Colors.blue.shade600,
-                  size: 25.0,
-                ),
-                title: Text('Tigo Pesa'),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.circle_fill,
-                  color: Colors.red.shade600,
-                  size: 25.0,
-                ),
-                title: Text('Airtel Money'),
-                onTap: () { PaymentService.airtelMoney(int.parse(price));},
-              ),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.circle_fill,
-                  color: Colors.red,
-                  size: 25.0,
-                ),
-                title: Text('M-pesa'),
-                onTap: () async {},
-              ),
-              ListTile(
-                leading: Icon(
-                  CupertinoIcons.circle_fill,
-                  color: Colors.yellowAccent,
-                  size: 25.0,
-                ),
-                title: Text('Halo-pesa'),
-                onTap: () {},
-              ),
+              paymentProvider.isPaying
+                  ? CircularProgressIndicator()
+                  : TextButton(
+                      onPressed: () async {
+                        paymentProvider.startPaying(
+                            userProvider.userData['phone_number'].toString(),
+                            price,
+                            battleId,
+                            'battle');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors
+                            .red, // Set the background color of the button
+                      ),
+                      child: Text(
+                        'Pay',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ))
             ],
           ),
         );
       },
     );
   }
-  @override
 
+  @override
   Widget build(BuildContext context) {
     double halfScreenWidth = MediaQuery.of(context).size.width / 2;
     return Column(
@@ -208,237 +146,273 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                             margin: EdgeInsets.symmetric(horizontal: 1.0),
                             child: Column(
                               children: [
-                              Row(
-                                children: [
-                                if(box.type=='image')
-                                GestureDetector(
-                                    onTap: () {
-                                    viewImage(context, box.imageUrl1);
-                                    },
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          height: 200,
-                                          width: halfScreenWidth - 8 ,
-                                          child: CachedNetworkImage(
-                                            imageUrl: box.imageUrl1,
-                                            placeholder: (context, url) => AspectRatio(
-                                              aspectRatio: 200 / 200,
-                                              child: Shimmer.fromColors(
-                                                baseColor:
-                                                const Color.fromARGB(255, 30, 34, 45),
-                                                highlightColor:
-                                                const Color.fromARGB(255, 30, 34, 45)
-                                                    .withOpacity(.85),
-                                                child: Container(
-                                                    color: const Color.fromARGB(
-                                                        255, 30, 34, 45)),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          bottom: 5,
-                                          child: Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(50),
-                                            ),
-                                            child: Text(
-                                              "A",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 34,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                SizedBox(width: 5),
-                                  GestureDetector(
-                                  onTap: () {
-                                  viewImage(context, box.imageUrl2);
-                                  },
-                                  child: Stack(
+                                Row(
                                   children: [
-                                  Container(
-                                  height: 200,
-                                  width:halfScreenWidth - 5 ,
-                                  child: CachedNetworkImage(
-                                    imageUrl: box.imageUrl2,
-                                    placeholder: (context, url) => AspectRatio(
-                                      aspectRatio: 200 / 200,
-                                      child: Shimmer.fromColors(
-                                        baseColor:
-                                        const Color.fromARGB(255, 30, 34, 45),
-                                        highlightColor:
-                                        const Color.fromARGB(255, 30, 34, 45)
-                                            .withOpacity(.85),
-                                        child: Container(
-                                            color: const Color.fromARGB(
-                                                255, 30, 34, 45)),
+                                    if (box.type == 'image')
+                                      GestureDetector(
+                                        onTap: () {
+                                          viewImage(context, box.imageUrl1);
+                                        },
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              height: 200,
+                                              width: halfScreenWidth - 8,
+                                              child: CachedNetworkImage(
+                                                imageUrl: box.imageUrl1,
+                                                placeholder: (context, url) =>
+                                                    AspectRatio(
+                                                  aspectRatio: 200 / 200,
+                                                  child: Shimmer.fromColors(
+                                                    baseColor:
+                                                        const Color.fromARGB(
+                                                            255, 30, 34, 45),
+                                                    highlightColor:
+                                                        const Color.fromARGB(
+                                                                255, 30, 34, 45)
+                                                            .withOpacity(.85),
+                                                    child: Container(
+                                                        color: const Color
+                                                                .fromARGB(
+                                                            255, 30, 34, 45)),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              bottom: 5,
+                                              child: Container(
+                                                margin:
+                                                    EdgeInsets.only(left: 10),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                child: Text(
+                                                  "A",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 34,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    SizedBox(width: 5),
+                                    GestureDetector(
+                                      onTap: () {
+                                        viewImage(context, box.imageUrl2);
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            height: 200,
+                                            width: halfScreenWidth - 5,
+                                            child: CachedNetworkImage(
+                                              imageUrl: box.imageUrl2,
+                                              placeholder: (context, url) =>
+                                                  AspectRatio(
+                                                aspectRatio: 200 / 200,
+                                                child: Shimmer.fromColors(
+                                                  baseColor:
+                                                      const Color.fromARGB(
+                                                          255, 30, 34, 45),
+                                                  highlightColor:
+                                                      const Color.fromARGB(
+                                                              255, 30, 34, 45)
+                                                          .withOpacity(.85),
+                                                  child: Container(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255, 30, 34, 45)),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            bottom: 5,
+                                            right: 0,
+                                            child: Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: Container(
+                                                margin:
+                                                    EdgeInsets.only(right: 10),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                child: Text(
+                                                  "B",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 34,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  ),
-                                  Positioned(
-                                    bottom: 5, right: 0,
-                                    child: Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: Container(
-                                    margin: EdgeInsets.only(right: 10),
-                                    decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  child: Text(
-                                    "B",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 34,
+                                    if (box.type == 'video')
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Scaffold(
+                                                          appBar: AppBar(
+                                                            backgroundColor:
+                                                                Colors.white,
+                                                            leading: IconButton(
+                                                              onPressed: () =>
+                                                                  Navigator.pop(
+                                                                      context),
+                                                              icon: Icon(
+                                                                CupertinoIcons
+                                                                    .back,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          body: VideoPlayerPage(
+                                                              mediaUrl: box
+                                                                  .imageUrl1))));
+                                          // MaterialPageRoute(builder: (context) => VideoPlayerPage(mediaUrl: box.imageUrl1)));
+                                        },
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              height: 200,
+                                              width: halfScreenWidth - 8,
+                                              child: CachedNetworkImage(
+                                                imageUrl: box.coverImage,
+                                                placeholder: (context, url) =>
+                                                    AspectRatio(
+                                                  aspectRatio: 200 / 200,
+                                                  child: Shimmer.fromColors(
+                                                    baseColor:
+                                                        const Color.fromARGB(
+                                                            255, 30, 34, 45),
+                                                    highlightColor:
+                                                        const Color.fromARGB(
+                                                                255, 30, 34, 45)
+                                                            .withOpacity(.85),
+                                                    child: Container(
+                                                        color: const Color
+                                                                .fromARGB(
+                                                            255, 30, 34, 45)),
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                         ),
-                                       ),
+                                            Positioned(
+                                              bottom: 5,
+                                              child: Container(
+                                                margin:
+                                                    EdgeInsets.only(left: 10),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                child: Text(
+                                                  "A",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 34,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    SizedBox(width: 5),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => Scaffold(
+                                                    appBar: AppBar(
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      leading: IconButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                        icon: Icon(
+                                                          CupertinoIcons.back,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    body: VideoPlayerPage(
+                                                        mediaUrl:
+                                                            box.imageUrl2))));
+                                        // MaterialPageRoute(builder: (context) => VideoPlayerPage(mediaUrl: box.imageUrl2)));
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            height: 200,
+                                            width: halfScreenWidth - 5,
+                                            child: CachedNetworkImage(
+                                              imageUrl: box.coverImage2,
+                                              placeholder: (context, url) =>
+                                                  AspectRatio(
+                                                aspectRatio: 200 / 200,
+                                                child: Shimmer.fromColors(
+                                                  baseColor:
+                                                      const Color.fromARGB(
+                                                          255, 30, 34, 45),
+                                                  highlightColor:
+                                                      const Color.fromARGB(
+                                                              255, 30, 34, 45)
+                                                          .withOpacity(.85),
+                                                  child: Container(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255, 30, 34, 45)),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            bottom: 5,
+                                            right: 0,
+                                            child: Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: Container(
+                                                margin:
+                                                    EdgeInsets.only(right: 10),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                child: Text(
+                                                  "B",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 34,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
-                                  ),
-                              ),
-                              if(box.type=='video')
-                                GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(
-                                          builder: (context) => Scaffold(
-                                          appBar: AppBar(
-                                            backgroundColor: Colors.white,
-                                            leading: IconButton(
-                                              onPressed: () => Navigator.pop(context),
-                                              icon: Icon(
-                                                CupertinoIcons.back,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                          body: VideoPlayerPage(
-                                              mediaUrl: box.imageUrl1
-                                          )
-                                          )));
-                                          // MaterialPageRoute(builder: (context) => VideoPlayerPage(mediaUrl: box.imageUrl1)));
-                                    },
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          height: 200,
-                                          width: halfScreenWidth - 8 ,
-                                          child: CachedNetworkImage(
-                                            imageUrl: box.coverImage,
-                                            placeholder: (context, url) => AspectRatio(
-                                              aspectRatio: 200 / 200,
-                                              child: Shimmer.fromColors(
-                                                baseColor:
-                                                const Color.fromARGB(255, 30, 34, 45),
-                                                highlightColor:
-                                                const Color.fromARGB(255, 30, 34, 45)
-                                                    .withOpacity(.85),
-                                                child: Container(
-                                                    color: const Color.fromARGB(
-                                                        255, 30, 34, 45)),
-                                              ),
-                                            ),
-                                          ),                                        ),
-                                        Positioned(
-                                          bottom: 5,
-                                          child: Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(50),
-                                            ),
-                                            child: Text(
-                                              "A",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 34,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                SizedBox(width: 5),
-                                GestureDetector(
-                                  onTap: () {
-
-                                    Navigator.push(context,
-                                        MaterialPageRoute(
-                                        builder: (context) => Scaffold(
-                                        appBar: AppBar(
-                                          backgroundColor: Colors.white,
-                                          leading: IconButton(
-                                            onPressed: () => Navigator.pop(context),
-                                            icon: Icon(
-                                              CupertinoIcons.back,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                        body: VideoPlayerPage(
-                                            mediaUrl: box.imageUrl2
-                                        ))));
-                                        // MaterialPageRoute(builder: (context) => VideoPlayerPage(mediaUrl: box.imageUrl2)));
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        height: 200,
-                                        width:halfScreenWidth - 5 ,
-                                        child: CachedNetworkImage(
-                                          imageUrl: box.coverImage2,
-                                          placeholder: (context, url) => AspectRatio(
-                                            aspectRatio: 200 / 200,
-                                            child: Shimmer.fromColors(
-                                              baseColor:
-                                              const Color.fromARGB(255, 30, 34, 45),
-                                              highlightColor:
-                                              const Color.fromARGB(255, 30, 34, 45)
-                                                  .withOpacity(.85),
-                                              child: Container(
-                                                  color: const Color.fromARGB(
-                                                      255, 30, 34, 45)),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        bottom: 5, right: 0,
-                                        child: Align(
-                                          alignment: Alignment.bottomRight,
-                                          child: Container(
-                                            margin: EdgeInsets.only(right: 10),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(50),
-                                            ),
-                                            child: Text(
-                                              "B",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 34,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
-                              ],
-                            ),
                                 Text(
                                   box.text,
                                   style: TextStyle(
@@ -457,20 +431,20 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                         children: [
                                           GestureDetector(
                                             onTap: () {
-                                              if(box.pinned){
+                                              if (box.pinned) {
                                                 print('this is pinned');
-                                                buildFab(1, context,box.price,box.subtitle);
-                                              }
-                                              else{
-                                                final countUpdate =
-                                                Provider.of<BoxDataProvider>(
+                                                buildFab(context, box.price,
+                                                    box.subtitle, box.postId);
+                                              } else {
+                                                final countUpdate = Provider.of<
+                                                        BoxDataProvider>(
                                                     context,
                                                     listen: false);
-                                                Service().likeBattle(box.postId, "A");
+                                                Service().likeBattle(
+                                                    box.postId, "A");
                                                 countUpdate.increaseLikes(
                                                     box.postId, 1);
                                               }
-
                                             },
                                             child: box.isLikedA
                                                 ? Icon(
@@ -513,7 +487,8 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                                     MaterialPageRoute(
                                                         builder: (builder) =>
                                                             BattleComment(
-                                                              postId: box.postId,
+                                                              postId:
+                                                                  box.postId,
                                                             )));
                                               },
                                               child: const Icon(
@@ -527,15 +502,15 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                             ),
                                             GestureDetector(
                                               onTap: () {
-                                                if(box.pinned){
+                                                if (box.pinned) {
                                                   print('this is pinned');
-                                                  buildFab(1, context,box.price,box.subtitle);
-                                                }
-                                                else{
-                                                  final countUpdate = Provider.of<
-                                                      BoxDataProvider>(
-                                                      context,
-                                                      listen: false);
+                                                  buildFab(context, box.price,
+                                                      box.subtitle, box.postId);
+                                                } else {
+                                                  final countUpdate = Provider
+                                                      .of<BoxDataProvider>(
+                                                          context,
+                                                          listen: false);
                                                   Service().likeBattle(
                                                       box.postId, "B");
                                                   countUpdate.increaseLikes(

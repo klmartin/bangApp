@@ -3,22 +3,25 @@ import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' as provider;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:bangapp/services/service.dart';
 import '../../components/progressIndicator.dart';
+import 'package:bangapp/providers/user_provider.dart';
 import '../../nav.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import '../../providers/image_upload.dart';
 import '../../providers/posts_provider.dart';
 import '../../providers/video_upload.dart';
-import '../Widgets/video_upload.dart';
+import 'package:bangapp/screens/Create/create_page.dart' as CR;
 import 'create_page.dart';
 
-class FinalCreate extends StatefulWidget  {
+class FinalCreate extends StatefulWidget {
   static const String id = 'final_posts';
   final Uint8List? editedImage;
   final Uint8List? editedImage2;
@@ -44,30 +47,35 @@ class FinalCreate extends StatefulWidget  {
   _FinaleCreateState createState() => _FinaleCreateState();
 }
 
-class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixin {
+class _FinaleCreateState extends State<FinalCreate>
+    with TickerProviderStateMixin {
   Service service = Service();
   VideoPlayerController? videoController;
 
   bool isLoading2 = false;
 
-  late int myRole = 0;
   void initState() {
-
-
     super.initState();
-    _initializeSharedPreferences();
   }
 
-  void _initializeSharedPreferences() async {
-    var myInfo = await Service().getMyInformation();
-    setState(() {
-      myRole = myInfo['role_id'] ?? 0;
-    });
+  Future<double> _initializeVideoPlayer(String mediaUrl) async {
+    late VideoPlayerController _videoPlayerController;
+    _videoPlayerController = VideoPlayerController.network(mediaUrl);
+
+    try {
+      await _videoPlayerController.initialize();
+      double aspectRatio = _videoPlayerController.value.aspectRatio;
+      return aspectRatio;
+    } catch (error) {
+      print('Error initializing video player: $error');
+      return 0.0; // Return 0.0 or another default value in case of an error
+    }
   }
 
   var image;
   bool light = true;
   var caption;
+  var price;
   int bangUpdate = 0;
   int pinPost = 0;
   XFile? mediaFile;
@@ -100,6 +108,10 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    if (userProvider.userData.isEmpty) {
+      userProvider.fetchUserData();
+    }
     List<Uint8List> images = [];
     List<String> videos = [];
     if (widget.editedImage != null &&
@@ -122,7 +134,7 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Create(),
+                      builder: (context) => CR.Create(),
                     ),
                   );
                 },
@@ -218,7 +230,7 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                             videoPlayerController:
                                 VideoPlayerController.network(
                                     widget.editedVideo!),
-                            autoPlay: false,
+                            autoPlay: true,
                             looping: false,
                           ),
                         ),
@@ -292,7 +304,7 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                       });
                     },
                   ),
-                  myRole == 1
+                  userProvider.userData['role_id'] == 1
                       ? Container(
                           child: Row(
                             children: [
@@ -318,6 +330,35 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                       : Container()
                 ],
               ),
+              pinPost == 1
+                  ? TextFormField(
+                      decoration: InputDecoration(
+                        hintText: 'Enter Price!',
+                        focusedBorder: UnderlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number, // Allow only numbers
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Price is required';
+                        }
+                        // Additional validation for numbers
+                        if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                          return 'Enter a valid number';
+                        }
+                        int price = int.parse(value);
+                        if (price < 1000) {
+                          return 'Price must be at least 1000';
+                        }
+                        return null; // Validation passed
+                      },
+                      onChanged: (val) {
+                        setState(() {
+                          price = val;
+                        });
+                      },
+                    )
+                  : Container(),
+
               SizedBox(height: 15),
               // Initially, loading is set to false
               Align(
@@ -343,20 +384,31 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                       widget.editedImage!, 'image.jpg');
                                   File compressedImage =
                                       await compressFile(File(filePath));
-                                  print("this is compressed");
-                                  print(compressedImage);
+
                                   Map<String, String> body = {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
                                     'body': caption ?? " ",
                                     'pinned': pinPost == 1 ? '1' : '0',
                                     'type': widget.type!,
+                                    'price': price ?? '0',
                                   };
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(body, filePath);
                                   } else {
-                                    await service.addImage(
+                                    final imageUploadProvider =
+                                        provider.Provider.of<
+                                                ImageUploadProvider>(context,
+                                            listen: false);
+
+                                    imageUploadProvider.startUpload(
                                         body, compressedImage.path);
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Nav(initialIndex: 0)),
+                                    );
                                   }
                                 } else if (widget.editedImage != null &&
                                     widget.editedImage2 == null &&
@@ -370,6 +422,7 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                     'post_id': widget.postId.toString(),
                                     'pinned': pinPost == 1 ? '1' : '0',
                                     'type': widget.type!,
+                                    'price': price ?? '0',
                                   };
                                   await service.addChallenge(
                                       body, filePath, widget.userChallenged!);
@@ -391,6 +444,7 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                     'contentID': '20',
                                     'aspect_ratio': '1.5',
                                     'pinned': pinPost == 1 ? '1' : '0',
+                                    'price': price ?? '0',
                                   };
                                   if (bangUpdate == 1) {
                                     MediaInfo? mediaInfo =
@@ -403,9 +457,13 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                     await service.addBangUpdate(
                                         body, mediaInfo?.path ?? '');
                                   } else {
-                                    final videoUploadProvider = provider.Provider.of<VideoUploadProvider>(context, listen: false);
+                                    final videoUploadProvider =
+                                        provider.Provider.of<
+                                                VideoUploadProvider>(context,
+                                            listen: false);
 
-                                    videoUploadProvider.startUpload(body, widget.editedVideo);
+                                    videoUploadProvider.startUpload(
+                                        body, widget.editedVideo);
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -425,6 +483,7 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                     'aspect_ratio': '1.5',
                                     'type': widget.type!,
                                     'pinned': pinPost == 1 ? '1' : '0',
+                                    'price': price ?? '0',
                                   };
                                   await service.addChallengImage(
                                       body,
@@ -440,22 +499,19 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                                         prefs.getInt('user_id').toString(),
                                     'body': caption ?? "",
                                     'pinned': pinPost == 1 ? '1' : '0',
+                                    'price': price ?? '0',
                                     'type': widget.type!,
                                   };
                                   await service.addChallengImage(
                                       body, filePath1, filePath2);
                                 }
-                                // prefs.setBool('i_just_posted', true);
                                 if (bangUpdate == 1) {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               Nav(initialIndex: 1)));
-                                }
-                                else {
-                                  final postsProvider = provider.Provider.of<PostsProvider>(context, listen: false);
-                                  postsProvider.refreshData();
+                                } else {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -483,7 +539,8 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                           Visibility(
                             visible:
                                 isLoading, // Show the CircularProgressIndicator when loading
-                            child: CircularProgressIndicator(), // Display the CircularProgressIndicator
+                            child:
+                                CircularProgressIndicator(), // Display the CircularProgressIndicator
                           ),
                         ],
                       ),
@@ -491,10 +548,8 @@ class _FinaleCreateState extends State<FinalCreate> with TickerProviderStateMixi
                   ),
                 ),
               ),
-
             ]))
           ],
         ));
   }
-
 }

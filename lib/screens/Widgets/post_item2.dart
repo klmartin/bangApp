@@ -17,6 +17,7 @@ import '../../services/animation.dart';
 import '../../widgets/build_media.dart';
 import '../Comments/commentspage.dart';
 import 'dart:io';
+import 'package:photo_view/photo_view.dart';
 
 class PostItem2 extends StatelessWidget {
   final int postId;
@@ -43,6 +44,7 @@ class PostItem2 extends StatelessWidget {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
+  String? price;
   final String userImage;
 
   PostsProvider myProvider;
@@ -71,34 +73,9 @@ class PostItem2 extends StatelessWidget {
       this.cacheUrl,
       this.thumbnailUrl,
       this.aspectRatio,
+      this.price,
       {required this.myProvider});
 
-void viewImage(BuildContext context, String imageUrl) {
-  Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (context) => Scaffold(
-        body: SizedBox.expand(
-          child: Hero(
-            tag: imageUrl,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ZoomableImage(imageUrl: imageUrl),
-                  ),
-                );
-              },
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-}
 
   Future<Uint8List> fileToUint8List(File file) async {
     List<int> bytes = await file.readAsBytes();
@@ -107,7 +84,9 @@ void viewImage(BuildContext context, String imageUrl) {
   }
 
   Widget build(BuildContext context) {
-    if (challengeImg != null && challenges.isEmpty && type == 'image') //challenge image
+    if (challengeImg != null &&
+        challenges.isEmpty &&
+        type == 'image') //challenge image
     {
       return Container(
         decoration: const BoxDecoration(
@@ -116,7 +95,7 @@ void viewImage(BuildContext context, String imageUrl) {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt) ??
+                    postId, userId, type, createdAt,"posts") ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -125,7 +104,7 @@ void viewImage(BuildContext context, String imageUrl) {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        viewImage(context, image);
+                         viewImage(context, image);
                       },
                       child: Container(
                         height: 250,
@@ -173,7 +152,7 @@ void viewImage(BuildContext context, String imageUrl) {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        viewImage(context, challengeImg);
+                         viewImage(context, challengeImg);
                       },
                       child: Container(
                         height: 250, // Set your desired fixed height here
@@ -315,7 +294,9 @@ void viewImage(BuildContext context, String imageUrl) {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 5), // Add some spacing between the username and caption
+                    SizedBox(
+                        width:
+                            5), // Add some spacing between the username and caption
                     Expanded(
                       child: ReadMoreText(
                         caption,
@@ -350,7 +331,9 @@ void viewImage(BuildContext context, String imageUrl) {
           ],
         ),
       );
-    } else if (challengeImg != null && challenges.isEmpty && type == 'video') //challenge video
+    } else if (challengeImg != null &&
+        challenges.isEmpty &&
+        type == 'video') //challenge video
     {
       return Container(
         decoration: const BoxDecoration(
@@ -359,7 +342,7 @@ void viewImage(BuildContext context, String imageUrl) {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt) ??
+                    postId, userId, type, createdAt,"posts") ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -368,7 +351,7 @@ void viewImage(BuildContext context, String imageUrl) {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        viewImage(context, image);
+                         viewImage(context, image);
                       },
                       child: Container(
                         height: 250,
@@ -406,7 +389,7 @@ void viewImage(BuildContext context, String imageUrl) {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        viewImage(context, challengeImg);
+                         viewImage(context, challengeImg);
                       },
                       child: Container(
                         height: 250, // Set your desired fixed height here
@@ -586,9 +569,10 @@ void viewImage(BuildContext context, String imageUrl) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt) ??
+                    postId, userId, type, createdAt,"posts") ??
                 Container(),
-            buildMediaWidget(context, image, type, width, height, isPinned,cacheUrl,thumbnailUrl,aspectRatio) ??
+            buildMediaWidget(context, image, type, width, height, isPinned,
+                    cacheUrl, thumbnailUrl, aspectRatio,postId,price) ??
                 Container(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -678,10 +662,11 @@ void viewImage(BuildContext context, String imageUrl) {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                    Provider.of<UserLikesProvider>(context, listen: false).getUserLikedPost(postId);
+                                  Provider.of<UserLikesProvider>(context,
+                                          listen: false)
+                                      .getUserLikedPost(postId);
 
-                                  LikesModal.showLikesModal(
-                                      context, postId);
+                                  LikesModal.showLikesModal(context, postId);
                                 },
                                 child: Text(
                                   "$likeCountA likes",
@@ -718,7 +703,7 @@ void viewImage(BuildContext context, String imageUrl) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               postOptions(context, userId, userImage, name, followerCount,
-                      image, postId, userId, type, createdAt) ??
+                      image, postId, userId, type, createdAt,"posts") ??
                   Container(),
               SizedBox(
                 height: 400,
@@ -729,7 +714,15 @@ void viewImage(BuildContext context, String imageUrl) {
                     return AspectRatio(
                       aspectRatio: width / height,
                       child: buildMediaWidget(
-                          context, imageUrl, type, width, height, isPinned,cacheUrl,thumbnailUrl,aspectRatio),
+                          context,
+                          imageUrl,
+                          type,
+                          width,
+                          height,
+                          isPinned,
+                          cacheUrl,
+                          thumbnailUrl,
+                          aspectRatio,postId,price),
                     );
                   },
                 ),
@@ -753,12 +746,13 @@ void viewImage(BuildContext context, String imageUrl) {
                             ),
                             SizedBox(
                                 width:
-                                5), // Add some spacing between the username and caption
+                                    5), // Add some spacing between the username and caption
                             Expanded(
                               child: ReadMoreText(
                                 caption,
                                 trimLines: 1,
-                                colorClickableText: Theme.of(context).primaryColor,
+                                colorClickableText:
+                                    Theme.of(context).primaryColor,
                                 trimMode: TrimMode.line,
                                 textColor: Colors.black,
                                 trimCollapsedText: '...Show more',
@@ -812,20 +806,23 @@ void viewImage(BuildContext context, String imageUrl) {
                                     GestureDetector(
                                       onTap: () {
                                         final countUpdate =
-                                        Provider.of<PostsProvider>(context,
-                                            listen: false);
+                                            Provider.of<PostsProvider>(context,
+                                                listen: false);
                                         countUpdate.increaseLikes(postId);
-                                        Service().likeAction(postId, "A", userId);
+                                        Service()
+                                            .likeAction(postId, "A", userId);
                                       },
                                       child: isLiked
                                           ? Icon(CupertinoIcons.heart_fill,
-                                          color: Colors.red, size: 25)
+                                              color: Colors.red, size: 25)
                                           : Icon(CupertinoIcons.heart,
-                                          color: Colors.red, size: 25),
+                                              color: Colors.red, size: 25),
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        Provider.of<UserLikesProvider>(context, listen: false).getUserLikedPost(postId);
+                                        Provider.of<UserLikesProvider>(context,
+                                                listen: false)
+                                            .getUserLikedPost(postId);
 
                                         LikesModal.showLikesModal(
                                             context, postId);
@@ -854,7 +851,6 @@ void viewImage(BuildContext context, String imageUrl) {
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
             ],
           ));

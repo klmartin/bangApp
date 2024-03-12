@@ -137,7 +137,7 @@ class _PostCardState extends State<PostCard> {
     color: Color.fromARGB(1, 30, 34, 45),
     ),
     child: Column(
-    children: [postOptions(context, widget.userId, widget.userImage, widget.name, widget.followerCount, widget.postUrl, widget.postId, widget.userId, widget.type,widget.createdAt) ?? Container(),
+    children: [postOptions(context, widget.userId, widget.userImage, widget.name, widget.followerCount, widget.postUrl, widget.postId, widget.userId, widget.type,widget.createdAt,"profile") ?? Container(),
     AspectRatio(
     aspectRatio: 190 / 120,
     child: Row(

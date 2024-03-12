@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../providers/Profile_Provider.dart';
 import 'package:bangapp/services/service.dart';
+import '../../providers/post_likes.dart';
 import '../../widgets/build_media.dart';
+import '../../widgets/like_sheet.dart';
 import '../Comments/post_comment.dart';
 import '../Widgets/readmore.dart';
 import 'package:provider/provider.dart';
@@ -91,6 +93,7 @@ class NotifyCard extends StatefulWidget {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
+  int? price;
   ProfileProvider myProvider;
   ScrollController _scrollController = ScrollController();
   NotifyCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned,this.myProvider);
@@ -143,14 +146,14 @@ class _NotifyCardState extends State<NotifyCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                postOptions(context, widget.userId, widget.userImage, widget.name, widget.followerCount, widget.postUrl, widget.postId, widget.userId, widget.type,widget.createdAt) ?? Container(),
+                postOptions(context, widget.userId, widget.userImage, widget.name, widget.followerCount, widget.postUrl, widget.postId, widget.userId, widget.type,widget.createdAt,"notification") ?? Container(),
                 InkWell(
                   onTap: () {
                     viewImage(context, widget.postUrl);
                   },
                   child: AspectRatio(
                     aspectRatio: widget.imgWidth / widget.imgHeight,
-                    child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio),
+                    child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio,widget.postId,widget.postId),
                   ),
                 ),
 
@@ -244,12 +247,22 @@ class _NotifyCardState extends State<NotifyCard> {
                                         : Icon(CupertinoIcons.heart,
                                         color: Colors.red, size: 25),
                                   ),
-                                  Text(
-                                    "${widget.likeCount.toString()} likes",
-                                    style: TextStyle(
-                                      fontSize: 12.5,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
+                                  GestureDetector(
+                                    onTap: () {
+                                      Provider.of<UserLikesProvider>(context,
+                                          listen: false)
+                                          .getUserLikedPost(widget.postId);
+
+                                      LikesModal.showLikesModal(
+                                          context, widget.postId);
+                                    },
+                                    child: Text(
+                                      "${widget.likeCount.toString()} likes",
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ],

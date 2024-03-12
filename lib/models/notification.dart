@@ -1,15 +1,24 @@
 
 class NotificationModel {
   final List<NotificationItem> notifications;
+
   NotificationModel({required this.notifications});
-  factory NotificationModel.fromJson(Map<String, dynamic> json) {
-    List<dynamic> notificationList = json['notifications'];
-    List<NotificationItem> notifications = notificationList
+
+  factory NotificationModel.fromJson(List<dynamic> json) {
+    // Extract the 'notifications' field as a dynamic
+    final dynamic notificationData = json;
+
+    // Check if it's a List<dynamic> or a single Map<String, dynamic>
+    final List<NotificationItem> notifications = (notificationData is List<dynamic>)
+        ? notificationData
         .map((notification) => NotificationItem.fromJson(notification))
-        .toList();
+        .toList()
+        : [NotificationItem.fromJson(notificationData)];
+
     return NotificationModel(notifications: notifications);
   }
 }
+
 
 class NotificationItem {
   final int id;
@@ -24,7 +33,8 @@ class NotificationItem {
   final String createdAt;
   final String updatedAt;
   final String postUrl;
-
+  final String thumbnailUrl;
+  final String postType;
   NotificationItem({
     required this.id,
     required this.userId,
@@ -37,7 +47,9 @@ class NotificationItem {
     required this.isRead,
     required this.createdAt,
     required this.updatedAt,
-    required this.postUrl
+    required this.postUrl,
+    required this.thumbnailUrl,
+    required this.postType,
   });
 
   factory NotificationItem.fromJson(Map<String, dynamic> json) {
@@ -54,6 +66,8 @@ class NotificationItem {
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       postUrl: json['post_image_url'],
+      thumbnailUrl: json['post_thumbnail_url'] ?? "",
+      postType: json['post_type'] ?? "",
     );
   }
 }

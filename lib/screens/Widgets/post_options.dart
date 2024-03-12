@@ -15,7 +15,7 @@ import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 import '../Create/video_editing/video_edit.dart';
 import 'dart:io';
 
-Widget postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type,createdAt)  {
+Widget postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type,createdAt,widgetType)  {
   Future<Uint8List> fileToUint8List(File file) async {
     List<int> bytes = await file.readAsBytes();
     return Uint8List.fromList(bytes);
@@ -127,8 +127,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                               if (userId == currentUserId)
                                 Column(
                                   children: [
-                                    DeletePostWidget(imagePostId: imagePostId),
-
+                                    DeletePostWidget(imagePostId: imagePostId,type: widgetType,),
                                     Divider(
                                       height: .5,
                                       thickness: .5,

@@ -30,6 +30,7 @@ class POstView extends StatefulWidget {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
+  int? price;
   ProfileProvider? myProvider;
 
   POstView(
@@ -52,6 +53,7 @@ class POstView extends StatefulWidget {
     this.cacheUrl,
     this.thumbnailUrl,
     this.aspectRatio,
+    this.price,
     this.myProvider,
   );
   static const id = 'postview';
@@ -88,6 +90,7 @@ class _POstViewState extends State<POstView> {
                 widget.cacheUrl,
                 widget.thumbnailUrl,
                 widget.aspectRatio,
+                widget.price,
                 widget.myProvider!),
           ),
         ),
@@ -116,6 +119,7 @@ class PostCard extends StatefulWidget {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
+  int? price;
   ProfileProvider myProvider;
   ScrollController _scrollController = ScrollController();
   PostCard(
@@ -138,6 +142,7 @@ class PostCard extends StatefulWidget {
       this.cacheUrl,
       this.thumbnailUrl,
       this.aspectRatio,
+      this.price,
       this.myProvider);
   @override
   State<PostCard> createState() => _PostCardState();
@@ -196,7 +201,7 @@ class _PostCardState extends State<PostCard> {
                         widget.postId,
                         widget.userId,
                         widget.type,
-                        widget.createdAt) ??
+                        widget.createdAt,"profile") ??
                     Container(),
                 InkWell(
                   onTap: () {
@@ -213,7 +218,10 @@ class _PostCardState extends State<PostCard> {
                         widget.pinned,
                         widget.cacheUrl,
                         widget.thumbnailUrl,
-                        widget.aspectRatio),
+                        widget.aspectRatio,
+                        widget.postId,
+                        widget.price,
+                    ),
                   ),
                 ),
                 Row(

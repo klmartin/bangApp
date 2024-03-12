@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import '../../nav.dart';
 import '../../services/animation.dart';
 import '../../services/extension.dart';
 import 'package:bangapp/services/service.dart';
+import '../../services/token_storage_helper.dart';
 import '../../widgets/build_media.dart';
 import '../../widgets/user_profile.dart';
 import '../Profile/profile.dart';
@@ -30,7 +32,16 @@ class _ViewChallengePageState extends State<ViewChallengePage> {
   Future<Map<String, dynamic>> getChallenge() async {
     print(widget.challengeId);
     print('this is the data');
-    var response = await http.get(Uri.parse('$baseUrl/getChallenge/${widget.challengeId}'));
+    final token = await TokenManager.getToken();
+    final response = await get(
+      Uri.parse(
+          "$baseUrl/getChallenge/${widget.challengeId}"),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    print(json.decode(response.body));
+    print('data');
     var data = json.decode(response.body);
     return data['data'];
   }
@@ -49,7 +60,7 @@ class _ViewChallengePageState extends State<ViewChallengePage> {
               return Center(
                 child: CircularProgressIndicator(),
               );
-          
+
             } else {
               // If data is successfully fetched, pass it to the PostCard widget
               final challengeData = snapshot.data;
@@ -62,7 +73,7 @@ class _ViewChallengePageState extends State<ViewChallengePage> {
                       challengeData['post_id'],
                       challengeData['user_id'],
                       challengeData['user']['name'],
-                      challengeData['user']['image'],
+                      challengeData['user']['user_image_url'],
                       challengeData['type'],
                       challengeData['challenge_img'],
                       challengeData['body'],
@@ -72,6 +83,7 @@ class _ViewChallengePageState extends State<ViewChallengePage> {
                       challengeData['cache_url'],
                       challengeData['thumbnail_url'],
                       challengeData['aspect_ratio'],
+                      challengeData['price'],
                       _scrollController,
                     ),
                   ),
@@ -105,8 +117,9 @@ class PostCard extends StatefulWidget {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
+  int? price;
   ScrollController _scrollController = ScrollController();
-  PostCard(this.id,this.post_id,this.user_id,this.user_name, this.user_image, this.type, this.challenge_img, this.body,this.created_at,this.width,this.height,this.cacheUrl,this.thumbnailUrl,this.aspectRatio,this._scrollController);
+  PostCard(this.id,this.post_id,this.user_id,this.user_name, this.user_image, this.type, this.challenge_img, this.body,this.created_at,this.width,this.height,this.cacheUrl,this.thumbnailUrl,this.aspectRatio,this.price,this._scrollController);
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -197,7 +210,7 @@ class _PostCardState extends State<PostCard> {
               },
               child: AspectRatio(
                 aspectRatio: widget.width / widget.height,
-                child: buildMediaWidget(context, widget.challenge_img,widget.type,widget.width,widget.height,0,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio),
+                child: buildMediaWidget(context, widget.challenge_img,widget.type,widget.width,widget.height,0,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio,widget.post_id,widget.price),
               ),
             ),
             Row(

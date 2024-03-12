@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:bangapp/models/userprovider.dart';
 import 'package:provider/provider.dart';
 import '../../api/google_signin_api.dart';
 import '../../constants/urls.dart';
@@ -33,7 +32,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<UserProvider>(context, listen: false);
   }
 
   Future signIn() async {
@@ -171,9 +169,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _firebaseMessaging
                                     .getToken()
                                     .then((token) async {
-                                  Provider.of<UserProvider>(context,
-                                      listen: false)
-                                      .setUser(responseBody);
                                   SharedPreferences prefs =
                                   await SharedPreferences.getInstance();
                                   prefs.setInt(
