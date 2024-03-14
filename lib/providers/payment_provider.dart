@@ -28,27 +28,27 @@ class PaymentProvider extends ChangeNotifier {
   Future<bool> startPaying(phoneNumber, price, postId,type) async {
     _isPaying = true;
     _payedPost = postId;
+    print(postId);
+    print(postId);
     notifyListeners();
-    Map<String, dynamic> pay =
-        await AzamPay().checkoutData(phoneNumber, price, postId,type);
+    Map<String, dynamic> pay = await AzamPay().checkoutData(phoneNumber, price, postId,type);
     var transactionId = pay['response']['transactionId'];
-
-    if(_paymentCanceled == false && transactionId){
+    // this line is to comment;
+    await AzamPay().saveDummyAzamPay(pay['response']['transactionId']);
+    // if(transactionId){
       _isPaying = false;
       _processingStatusTimer = Timer.periodic(Duration(seconds: 3), (timer) {
         _fetchPaymentStatus(transactionId);
         notifyListeners();
       });
-    }
+    // }
 
     return true;
   }
 
   Future<bool> _fetchPaymentStatus(transactionId) async {
     var status = await AzamPay().getPaymentStatus(transactionId);
-    print(status);
-    print('this is status');
-    if (status == true) {
+    if (status == true || _paymentCanceled== true) {
       _isFinishPaying = true;
       _processingStatusTimer?.cancel();
       notifyListeners();

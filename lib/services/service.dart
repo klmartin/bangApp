@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
+import '../models/hobby.dart';
 import '../providers/BoxDataProvider.dart';
 
 class Service {
@@ -351,6 +352,55 @@ class Service {
     }
   }
 
+  Future<List<Hobby>> fetchHobbies() async {
+    final token = await TokenManager.getToken();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String cacheKey = 'cached_hobby';
+    final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+    final String cachedData = prefs.getString(cacheKey) ?? '';
+    var minutes = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp)).inMinutes;
+
+    if (minutes > 1000 || cachedData.isEmpty) {
+      final response = await http.get(
+        Uri.parse('$baseUrl/hobbies'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        prefs.setString(cacheKey, response.body);
+        prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Hobby.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load hobbies');
+      }
+    } else {
+      if (cachedData.isNotEmpty) {
+        final List<dynamic> data = json.decode(cachedData);
+        return data.map((json) => Hobby.fromJson(json)).toList();
+      } else {
+        final response = await http.get(
+          Uri.parse('$baseUrl/hobbies'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          prefs.setString(cacheKey, response.body);
+          prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+          final List<dynamic> data = json.decode(response.body);
+          return data.map((json) => Hobby.fromJson(json)).toList();
+        } else {
+          throw Exception('Failed to load hobbies');
+        }
+      }
+    }
+  }
 
   Future<List<dynamic>> getUpdateComments(String postId) async {
     try {

@@ -14,6 +14,7 @@ import 'screens/Profile/profile.dart';
 import 'package:bangapp/screens/Widgets/fab_container.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
+import 'package:bangapp/providers/user_provider.dart';
 
 
 class Nav extends StatefulWidget {
@@ -55,6 +56,7 @@ class _NavState extends State<Nav> {
   }
 
   Widget build(BuildContext context) {
+
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,

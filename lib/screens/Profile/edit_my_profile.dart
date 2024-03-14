@@ -410,7 +410,7 @@ class _EditPageState extends State<EditPage> {
   void openFilterDialog() async {
     await FilterListDialog.display<Hobby>(
       context,
-      listData:  await fetchHobbies(), // Use hobbyList as the data source
+      listData:  await Service().fetchHobbies(), // Use hobbyList as the data source
       selectedListData: selectedHobbyList,
       choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
       validateSelectedItem: (list, val) => list!.contains(val),

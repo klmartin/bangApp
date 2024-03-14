@@ -1,4 +1,3 @@
-import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/post.dart';
@@ -9,7 +8,7 @@ import '../../providers/video_upload.dart';
 import '../Widgets/image_upload.dart';
 import '../Widgets/post_item2.dart';
 import '../Widgets/small_box2.dart';
-import 'package:bangapp/services/service.dart';
+import 'package:bangapp/providers/user_provider.dart';
 
 import '../Widgets/video_upload.dart';
 
@@ -84,8 +83,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       _pageNumber++;
-      print(_pageNumber);
-      print('this is page number');
+
       postsProvider.loadMoreData(_pageNumber); // Trigger loading of the next page
     }
   }
@@ -99,6 +97,12 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    print(userProvider.userData);
+    print('this is userdata');
+    if (userProvider.userData.isEmpty) {
+      userProvider.fetchUserData();
+    }
     return RefreshIndicator(
       onRefresh: () async {
         final postsProvider =

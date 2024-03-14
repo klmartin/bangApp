@@ -38,6 +38,32 @@ class AzamPay {
     }
   }
 
+  Future<Map<String, dynamic>> saveDummyAzamPay(transactionId) async {
+    print(transactionId);
+    print('this is transactionId data');
+    final String apiUrl = '$baseUrl/saveDummyAzampPay';
+
+    Map<String, String> data = {
+      'transactionId': transactionId,
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      print('response saveDummyAzamPay body');
+      return jsonDecode(response.body);
+    } else {
+      return {};
+    }
+  }
+
   Future<bool>getPaymentStatus(transactionId) async {
     final http.Response response = await http.get(
       Uri.parse('$baseUrl/getPaymentStatus/$transactionId'),

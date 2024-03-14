@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import '../../services/token_storage_helper.dart';
 import 'login_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -13,6 +14,7 @@ import 'package:bangapp/services/service.dart';
 import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/providers/user_provider.dart';
 
 class Register extends StatefulWidget {
   static const String id = 'register';
@@ -206,6 +208,10 @@ class _RegisterState extends State<Register> {
                             prefs.setString('name', responseBody['name']);
                             prefs.setString('email', responseBody['email']);
                             print(prefs.getString('name'));
+                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            if (userProvider.userData.isEmpty) {
+                              userProvider.fetchUserData();
+                            }
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(

@@ -200,8 +200,7 @@ Future<void> sendMessage(BuildContext context, int user1Id, int user2Id,
       'user2_id': user2Id.toString(),
       'message': message,
     });
-    print(response.body);
-    print('responsevideo');
+
     if (response.statusCode == 200) {
       final newMessage = Message.fromJson(jsonDecode(response.body));
       final serv = new Service();
@@ -378,10 +377,8 @@ Future<void> sendImageMessage(
     var request = http.MultipartRequest('POST', url);
     request.fields['sender_id'] = user1Id.toString();
     request.fields['user2_id'] = user2Id.toString();
-
     // Add the image file to the request
     request.files.add(await http.MultipartFile.fromPath('attachment', imageFile.path));
-
     var response = await request.send();
     if (response.statusCode == 200) {
       final data = jsonDecode(await response.stream.bytesToString()); // Corrected this line
@@ -398,7 +395,6 @@ Future<void> sendImageMessage(
       };
 
     //  _sendMessageToSocket(rawMessage);
-
       socket.emit('updateLastMessageInConversation', rawMessage);
       chatProvider._messages.insert(0, newMessage);
       notifyListeners();
@@ -413,13 +409,12 @@ Future<void> sendImageMessage(
 }
 
   void deletePinnedById(int payedPost) {
-    conversations.forEach((conv) {
+    _conversations.forEach((conv) {
       if (conv.id == payedPost) {
         conv.privacySwitchValue = false;
+        notifyListeners();
       }
     });
-    notifyListeners();
-
   }
 
 

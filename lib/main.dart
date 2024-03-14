@@ -40,6 +40,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:bangapp/services/service.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferences.getInstance();
@@ -75,6 +76,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: Authenticate.id,
       routes: {
+        '/login': (context) => LoginScreen(),
         LoginScreen.id: (context) => LoginScreen(),
         NewMessageChat.id: (context) => NewMessageChat(),
         ChatHome.id: (context) => ChatHome(),
@@ -116,7 +118,6 @@ class _AuthenticateState extends State<Authenticate> {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
-
 
 
 // For sharing images coming from outside the app while the app is closed
@@ -324,26 +325,23 @@ class _AuthenticateState extends State<Authenticate> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
-
-    if (userProvider.userData.isEmpty) {
-      print('this is userData');
-      userProvider.fetchUserData();
-    }
-    // Fetch user data when the app starts
-    return FutureBuilder<SharedPreferences>(
-      future: SharedPreferences.getInstance(),
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    return FutureBuilder<Map<String, dynamic>>(
+      future: userProvider.readUserDataFromFile(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          String? token = snapshot.data?.getString('token');
-          if (token != null) {
-
-            return Nav(initialIndex: 0);
-          } else {
-            return Welcome();
-          }
-        } else {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          Map<String, dynamic>? userData = snapshot.data;
+          if (userData != null && userData.containsKey('device_token')) {
+            String token = userData['device_token'];
+            if (token.isNotEmpty) {
+              return Nav(initialIndex: 0);
+            }
+          }
+          return Welcome();
         }
       },
     );

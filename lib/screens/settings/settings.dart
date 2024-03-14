@@ -5,6 +5,7 @@ import 'package:bangapp/screens/Authenticate/login_screen.dart';
  import "package:bangapp/services/service.dart";
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/token_storage_helper.dart';
 
 class AppSettings extends StatefulWidget {
@@ -134,10 +135,9 @@ class _AppSettings extends State<AppSettings> {
             title: Text("Logout"),
             onTap: () async {
               await TokenManager.clearToken();
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(
-                  builder: (context) => LoginScreen()
-              ));
+              await userProvider.clearUserDataFile();
+              userProvider.clearUserData();
+              Navigator.pushReplacementNamed(context, '/login');
             },
           ),
         ],

@@ -1,18 +1,17 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:filter_list/filter_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Profile/edit_my_profile.dart';
-import 'package:http/http.dart' as http;
 import 'package:bangapp/screens/settings/settings.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/hobby.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
+import '../../providers/payment_provider.dart';
 import '../../widgets/build_media.dart';
 import '../../widgets/video_rect.dart';
 import '../Posts/postView_model.dart';
@@ -41,22 +40,32 @@ class _ProfileState extends State<Profile> {
   int? phoneNumber;
   DateTime date_of_birth = DateTime.now();
   String selectedHobbiesText = "";
-
+  List<Hobby>? selectedHobbyList;
+  List<Hobby> hobbyList = [];
+  List<int> selectedHobbyIds = [];
   bool privacySwitchValue = false;
+  late PaymentProvider paymentProvider;
+  late UserProvider userProvider;
   final int _numberOfPostsPerRequest = 20;
   int _pageNumber = 1;
   bool _persposts = true;
   List<ImagePost> allImagePosts = [];
+
   void initState() {
     super.initState();
-
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+    paymentProvider = Provider.of<PaymentProvider>(context, listen:false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
+    paymentProvider.addListener(() {
+      if (paymentProvider.isFinishPaying == true) {
+        userProvider.addFollowerCount(paymentProvider.payedPost);
+      }
+    });
   }
 
   void _scrollListener() {
     if (!_isLoading && _scrollController!.position.extentAfter < 200.0) {
-      // Load more posts when the user is close to the end of the list
       _pageNumber++;
     }
   }
@@ -64,7 +73,7 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context, listen: true);
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
@@ -86,7 +95,7 @@ class _ProfileState extends State<Profile> {
                       borderRadius: BorderRadius.circular(25),
                       image: DecorationImage(
                         image: CachedNetworkImageProvider(
-                            userProvider.userData['user_image_url'] ?? ""),
+                            userProvider.userData['user_image_url'] ?? "" ),
                         fit: BoxFit.cover,
                       )),
                   child: rimage != null
@@ -103,7 +112,8 @@ class _ProfileState extends State<Profile> {
               padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
               child: InkWell(
                 onTap: () {
-                  buildFab(1, context);
+                  print('no fat');
+                  openFilterDialog(context);
                 },
                 child: Container(
                   margin: EdgeInsets.only(right: 10),
@@ -161,9 +171,8 @@ class _ProfileState extends State<Profile> {
                             nameController: TextEditingController(),
                             userImage: userProvider.userData!['user_image_url'],
                             name: userProvider.userData!['name'],
-                            date_of_birth:
-                                userProvider.userData!['date_of_birth'],
-                            phoneNumber: userProvider.userData!['phone_number'],
+                            date_of_birth: DateTime.parse(userProvider.userData!['date_of_birth']),
+                            phoneNumber: int.parse(userProvider.userData!['phone_number']) ,
                             selectedHobbiesText: selectedHobbiesText,
                             occupation: userProvider.userData!['occupation'],
                             bio: userProvider.userData!['bio'],
@@ -367,22 +376,46 @@ class _ProfileState extends State<Profile> {
       ],
     );
   }
+
+void updateSelectedHobbiesText() {
+  setState(() {
+    selectedHobbiesText = selectedHobbyList!
+        .map((hobby) => hobby.name!)
+        .toList()
+        .join(", "); // Concatenate hobby names with a comma and space
+    selectedHobbyIds = selectedHobbyList!
+        .map((hobby) => hobby.id!) // Access the ID property of the Hobby
+        .toList();
+  });
 }
 
-Future<List<Hobby>> fetchHobbies() async {
-  print('fetching hobbies');
-  final response = await http.get(Uri.parse('$baseUrl/hobbies'));
-  if (response.statusCode == 200) {
-    final List<dynamic> data = json.decode(response.body);
-
-    print(json.decode(response.body));
-    return data.map((json) => Hobby.fromJson(json)).toList();
-  } else {
-    throw Exception('Failed to load hobbies');
-  }
+void openFilterDialog(BuildContext context) async {
+  selectedHobbyList?.clear();
+  await FilterListDialog.display<Hobby>(
+    context,
+    listData:  await Service().fetchHobbies(), // Use hobbyList as the data source
+    selectedListData: selectedHobbyList,
+    choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
+    validateSelectedItem: (list, val) => list!.contains(val),
+    onItemSearch: (hobby, query) {
+      return hobby.name!.toLowerCase().contains(query.toLowerCase());
+    },
+    onApplyButtonClick: (list) {
+      setState(() {
+        print(selectedHobbyList);
+        selectedHobbyList = List.from(list!);
+        updateSelectedHobbiesText();
+      });
+      Navigator.pop(context);
+      buildFab(context,selectedHobbiesText);
+    },
+  );
+}
 }
 
-buildFab(value, BuildContext context) {
+
+buildFab(BuildContext context,selectedHobbiesText) {
+  print(selectedHobbiesText);
   return showModalBottomSheet(
     isScrollControlled: true,
     context: context,
@@ -416,11 +449,11 @@ buildFab(value, BuildContext context) {
                 size: 25.0,
               ),
               title: Text('Bronze'),
-              trailing: Text('2,500 tshs'),
+              trailing: Text('2,500 Tshs'),
               subtitle: Text('500 followers'),
               onTap: () {
                 Navigator.pop(context);
-                buildPayments('value', context);
+                buildPayments(selectedHobbiesText, context,2500,500);
               },
             ),
             ListTile(
@@ -430,11 +463,11 @@ buildFab(value, BuildContext context) {
                 size: 25.0,
               ),
               title: Text('Silver'),
-              trailing: Text('5,000 tshs'),
+              trailing: Text('5,000 Tshs'),
               subtitle: Text('1,100 followers'),
               onTap: () async {
                 Navigator.pop(context);
-                buildPayments('value', context);
+                buildPayments(selectedHobbiesText, context,5000,1100);
               },
             ),
             ListTile(
@@ -444,11 +477,12 @@ buildFab(value, BuildContext context) {
                 size: 25.0,
               ),
               title: Text('Gold'),
-              trailing: Text('10,000 tshs'),
+              trailing: Text('10,000 Tshs'),
               subtitle: Text('2,300 followers'),
               onTap: () {
+                print(selectedHobbiesText);
                 Navigator.pop(context);
-                buildPayments('value', context);
+                buildPayments(selectedHobbiesText, context,10000,2300);
               },
             ),
           ],
@@ -458,74 +492,86 @@ buildFab(value, BuildContext context) {
   );
 }
 
-buildPayments(value, BuildContext context) {
+buildPayments(selectedHobbiesText, BuildContext context, price,count) {
+  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
   return showModalBottomSheet(
-    isScrollControlled: true,
     context: context,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10.0),
     ),
     builder: (BuildContext context) {
-      return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Center(
-                child: Text(
-                  'Packages',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
+      return Builder(
+        builder: (BuildContext innerContext) {
+          final userProvider = Provider.of<UserProvider>(innerContext);
+          final TextEditingController phoneNumberController =
+          TextEditingController(
+            text: userProvider.userData['phone_number'].toString(),
+          );
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Center(
+                    child: Text(
+                      'Pay $price Tshs for $selectedHobbiesText followers',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                TextField(
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  controller: phoneNumberController,
+                  decoration: InputDecoration(
+                    labelText: 'Phone number',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(Icons.phone),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                ),
+                paymentProvider.isPaying
+                    ? CircularProgressIndicator()
+                    : TextButton(
+                    onPressed: () async {
+                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, count, 'followers');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors
+                          .red, // Set the background color of the button
+                    ),
+                    child: Text(
+                      'Pay',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    )),
+              ],
             ),
-            Divider(),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.circle_fill,
-                color: Colors.blue.shade600,
-                size: 25.0,
-              ),
-              title: Text('Tigo Pesa'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.circle_fill,
-                color: Colors.red.shade600,
-                size: 25.0,
-              ),
-              title: Text('Airtel Money'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.circle_fill,
-                color: Colors.red,
-                size: 25.0,
-              ),
-              title: Text('M-pesa'),
-              onTap: () async {},
-            ),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.circle_fill,
-                color: Colors.yellowAccent,
-                size: 25.0,
-              ),
-              title: Text('Halo-pesa'),
-              onTap: () {},
-            ),
-          ],
-        ),
+          );
+        },
       );
     },
-  );
+  ).then((result) {
+    // var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    // // paymentProvider.paymentCanceled = true;
+    // print(paymentProvider.isPaying);
+    print('Modal bottom sheet closed: $result');
+  });
 }
 
 class Update extends StatelessWidget {
@@ -1045,4 +1091,7 @@ class _ProfilePostsStreamContentState
       }
     });
   }
+
+
 }
+

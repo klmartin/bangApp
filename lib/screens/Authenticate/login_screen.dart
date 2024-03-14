@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/screens/Authenticate/register_screen.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:bangapp/providers/user_provider.dart';
 
 import '../../services/token_storage_helper.dart';
 import '../Profile/edit_profile.dart';
@@ -180,14 +181,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);
                                   prefs.setString('role', responseBody['role']);
-                                  print('this is token');
-                                  print(token);
-                                  Service().sendTokenToBackend(
-                                      token, responseBody['user_id']);
+
+                                  Service().sendTokenToBackend(token, responseBody['user_id']);
+                                  final userProvider = Provider.of<UserProvider>(context, listen: false);
+                                  if (userProvider.userData.isEmpty) {
+                                    userProvider.fetchUserData();
+                                  }
 
                                 });
-
-
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -311,6 +312,35 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(width: 4),
                         const Text(
                           'SignUp',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  MaterialButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Register(),
+                        ),
+                      );
+                    },
+                    //child: Text('Sign Up', style: TextStyle(color: Colors.indigo)),
+
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Forgot Password?',
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                        const SizedBox(width: 4),
+                        const Text(
+                          'Reset Password',
                           style: TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.bold,

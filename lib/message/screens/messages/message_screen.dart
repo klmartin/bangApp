@@ -572,7 +572,7 @@ buildMessagePayment(BuildContext context, price, postId) {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Center(
                     child: Text(
-                      'Pay to View $price Tshs',
+                      'Pay to Chat $price Tshs',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,

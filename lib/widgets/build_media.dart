@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,17 +71,69 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
 void viewImage(BuildContext context, String imageUrl) {
   Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (context) => Scaffold(
-        body: PhotoView(
-          imageProvider: CachedNetworkImageProvider(imageUrl),
-          minScale: PhotoViewComputedScale.contained,
-          maxScale: PhotoViewComputedScale.covered * 2,
-          enableRotation: true,
-          backgroundDecoration: BoxDecoration(
-            color: Colors.black,
+        builder: (context) => Scaffold(
+
+          body: PhotoView(
+            imageProvider: CachedNetworkImageProvider(imageUrl),
+            minScale: PhotoViewComputedScale.contained,
+            maxScale: PhotoViewComputedScale.covered * 2,
+            enableRotation: true,
+            backgroundDecoration: BoxDecoration(
+              color: Colors.black,
+            ),
           ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              // Show the popup menu
+              final RenderBox fabRenderBox = context.findRenderObject() as RenderBox;
+              final fabOffset = fabRenderBox.localToGlobal(Offset.zero);
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  fabOffset.dx,
+                  fabOffset.dy - 200,
+                  fabOffset.dx,
+                  fabOffset.dy,
+                ),
+                // position: RelativeRect.fromLTRB(0, 0, 0, 100),
+                items: [
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: Icon(Icons.camera_alt),
+                      title: Text('Take a Photo or Video'),
+                      onTap: () async {
+                        final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+                        if (pickedFile != null) {
+
+                          print('Picked image from camera: ${pickedFile.path}');
+                        }
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: Icon(Icons.photo_library),
+                      title: Text('Select from Gallery'),
+                      onTap: () async {
+                        final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                        if (pickedFile != null) {
+
+                          print('Picked image from gallery: ${pickedFile.path}');
+                        }
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+            child: Icon(Icons.add),
+          ),
+          // Add a PopupMenuButton for displaying the options
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
         ),
-      ),
     ),
   );
 }
