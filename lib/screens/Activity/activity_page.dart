@@ -134,6 +134,9 @@ class _Activity extends State<Activity> {
                 postDetails[0]['created_at'],
                 postDetails[0]['user_image_url'],
                 postDetails[0]['pinned'],
+                postDetails[0]['cache_url'],
+                postDetails[0]['thumbnail_url'],
+                postDetails[0]['aspect_ratio'],
                 Provider.of<ProfileProvider>(context, listen: false)),
           ),
         );
@@ -177,6 +180,9 @@ class _Activity extends State<Activity> {
                     postDetails[0]['created_at'],
                     postDetails[0]['user_image_url'],
                     postDetails[0]['pinned'],
+                    postDetails[0]['cache_url'],
+                    postDetails[0]['thumbnail_url'],
+                    postDetails[0]['aspect_ratio'],
                     Provider.of<ProfileProvider>(context, listen: false)),
               ),
             );
@@ -214,7 +220,9 @@ class _Activity extends State<Activity> {
                     postDetails[0]['created_at'],
                     postDetails[0]['user_image_url'],
                     postDetails[0]['pinned'],
-
+                    postDetails[0]['cache_url'],
+                    postDetails[0]['thumbnail_url'],
+                    postDetails[0]['aspect_ratio'],
                     Provider.of<ProfileProvider>(context, listen: false)),
               ),
             );

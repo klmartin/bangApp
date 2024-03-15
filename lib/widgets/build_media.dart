@@ -14,6 +14,8 @@ import '../services/azampay.dart';
 Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
     imgHeight, isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
   if (type == 'image' && isPinned == 0) {
+    print('type1');
+    print(type);
     return AspectRatio(
       aspectRatio: imgWidth / imgHeight,
       child: GestureDetector(
@@ -38,6 +40,8 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
       ),
     );
   } else if (type == 'image' || type == 'video' && isPinned == 1) {
+    print('type2');
+    print(type);
     return GestureDetector(
       onTap: () {
         buildFab(context, price, postId);
@@ -57,6 +61,8 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
       ),
     );
   } else if (type == 'video' && isPinned == 0) {
+    print('type3');
+    print(mediaUrl);
     return CustomVideoPlayer(
         videoUrl: mediaUrl,
         cachingVideoUrl: cacheUrl,

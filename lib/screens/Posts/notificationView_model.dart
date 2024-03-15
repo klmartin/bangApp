@@ -28,6 +28,9 @@ class NotifyView extends StatefulWidget {
   String? created;
   String? user_image;
   int? pinnedImage;
+  String? cacheUrl;
+  String? thumbnailUrl;
+  String? aspectRatio;
   ProfileProvider? myProvider;
 
   NotifyView(
@@ -47,6 +50,9 @@ class NotifyView extends StatefulWidget {
       this.created,
       this.user_image,
       this.pinnedImage,
+      this.cacheUrl,
+      this.thumbnailUrl,
+      this.aspectRatio,
       this.myProvider,
       );
   static const id = 'postview';
@@ -65,7 +71,7 @@ class _NotifyViewState extends State<NotifyView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: NotifyCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!,widget.myProvider!),
+            child: NotifyCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!,widget.cacheUrl!,widget.thumbnailUrl!,widget.aspectRatio!,widget.myProvider!),
           ),
         ),
       ),
@@ -96,7 +102,7 @@ class NotifyCard extends StatefulWidget {
   int? price;
   ProfileProvider myProvider;
   ScrollController _scrollController = ScrollController();
-  NotifyCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned,this.myProvider);
+  NotifyCard(this.name,this.caption,this.postUrl,this.challengeImgUrl, this.imgWidth, this.imgHeight, this.postId, this.commentCount, this.userId,this.isLiked,this.likeCount,this.type,this.followerCount,this.createdAt,this.userImage,this.pinned,this.cacheUrl,this.thumbnailUrl,this.aspectRatio ,this.myProvider);
   @override
   State<NotifyCard> createState() => _NotifyCardState();
 }

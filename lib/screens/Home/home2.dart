@@ -9,6 +9,7 @@ import '../Widgets/image_upload.dart';
 import '../Widgets/post_item2.dart';
 import '../Widgets/small_box2.dart';
 import 'package:bangapp/providers/user_provider.dart';
+import 'package:bangapp/services/service.dart';
 
 import '../Widgets/video_upload.dart';
 
@@ -46,11 +47,12 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
     imageUploadProvider =Provider.of<ImageUploadProvider>(context, listen: false);
     paymentProvider = Provider.of<PaymentProvider>(context, listen:false);
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
+    print(_pageNumber);
+    print('this is page number');
     postsProvider.fetchData(_pageNumber);
 
     videoUploadProvider.addListener(() {
       if (videoUploadProvider.uploadText == 'Upload Complete') {
-        print('this is a new post');
         postsProvider.refreshData();
         _scrollController.jumpTo(0);
       }
@@ -83,7 +85,8 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       _pageNumber++;
-
+      print(_pageNumber);
+      print('this is page number to be added');
       postsProvider.loadMoreData(_pageNumber); // Trigger loading of the next page
     }
   }
@@ -140,7 +143,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
       itemBuilder: (context, index) {
         if (index < postsProvider.posts!.length) {
           final Post post = postsProvider.posts![index];
-          // Service().updateIsSeen(post.postId);
+          Service().updateIsSeen(post.postId);
           if (index == 0) {
             return Column(
               children: [
