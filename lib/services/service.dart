@@ -12,16 +12,19 @@ import '../providers/BoxDataProvider.dart';
 class Service {
   Future<List<dynamic>> getPosts() async {
     final token = await TokenManager.getToken();
-    var response = await http.get(Uri.parse('$baseUrl/getPosts'),headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type':
-      'application/json', // Include other headers as needed
-    },);
+    var response = await http.get(
+      Uri.parse('$baseUrl/getPosts'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json', // Include other headers as needed
+      },
+    );
     var data = json.decode(response.body);
     return data['data']['data'];
   }
 
-  Future<String> sendUserNotification1(userId, name, body, referenceId, type) async {
+  Future<String> sendUserNotification1(
+      userId, name, body, referenceId, type) async {
     try {
       final token = await TokenManager.getToken();
       final response = await http.post(
@@ -35,8 +38,7 @@ class Service {
         },
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
       );
       if (response.statusCode == 200) {
@@ -56,8 +58,11 @@ class Service {
     final token = await TokenManager.getToken();
     print('this is body');
     print(body);
-    final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
-    if(body['type']=="video"){
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data'
+    };
+    if (body['type'] == "video") {
       print(body);
       print('this is video body');
       String addvideoUrl = 'https://video.bangapp.pro/api/v1/upload-video';
@@ -74,7 +79,6 @@ class Service {
         if (response.statusCode == 201) {
           final response2 = jsonDecode(response.body);
           if (response2['data']) {
-
           } else {}
           return true;
         } else {
@@ -84,8 +88,7 @@ class Service {
         print(e);
         return false;
       }
-    }
-    else{
+    } else {
       String addimageUrl = '$baseUrl/imageadd';
       var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
         ..headers.addAll(headers)
@@ -97,7 +100,6 @@ class Service {
         if (response.statusCode == 201) {
           final response2 = jsonDecode(response.body);
           if (response2['url']) {
-
           } else {}
           return true;
         } else {
@@ -108,15 +110,20 @@ class Service {
         return false;
       }
     }
-
   }
 
   Future<bool> addBangUpdate(Map<String, String> body, String filepath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = await TokenManager.getToken();
-    final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data'
+    };
     String addimageUrl = '$baseUrl/addBangUpdate';
-    var request = http.MultipartRequest('POST', Uri.parse(addimageUrl),)
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse(addimageUrl),
+    )
       ..headers.addAll(headers)
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
@@ -141,10 +148,14 @@ class Service {
     }
   }
 
-  Future<bool> addChallengImage(Map<String, String> body, String filepath, String filepath2) async {
+  Future<bool> addChallengImage(
+      Map<String, String> body, String filepath, String filepath2) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = await TokenManager.getToken();
-    final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data'
+    };
     String addimageUrl = '$baseUrl/imagechallengadd';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
       ..headers.addAll(headers)
@@ -153,8 +164,7 @@ class Service {
       ..files.add(await http.MultipartFile.fromPath('image2', filepath2));
     try {
       var response = await http.Response.fromStream(await request.send());
-      prefs.setBool('i_just_posted', true);
-      prefs.setBool('i_just_posted_profile', true);
+
       if (response.statusCode == 201) {
         return true;
       } else {
@@ -166,9 +176,13 @@ class Service {
     }
   }
 
-  Future<bool> addChallenge(Map<String, String> body, String filepath, int userId) async {
+  Future<bool> addChallenge(
+      Map<String, String> body, String filepath, int userId) async {
     final token = await TokenManager.getToken();
-    final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'};
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data'
+    };
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String addimageUrl = '$baseUrl/addChallenge';
     var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
@@ -210,18 +224,18 @@ class Service {
   }
 
   Future<List<dynamic>> getPostInfo(postId) async {
-
     final token = await TokenManager.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('user_id');
     print([userId, postId]);
     print('this is data');
-    final response =
-        await http.get(Uri.parse('$baseUrl/getPostInfo/$postId/$userId'),headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
-        },);
+    final response = await http.get(
+      Uri.parse('$baseUrl/getPostInfo/$postId/$userId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json', // Include other headers as needed
+      },
+    );
     print(response.body);
     return jsonDecode(response.body);
   }
@@ -241,7 +255,6 @@ class Service {
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
           'like_type': likeType,
         }),
-
       );
       print(response.body);
       print('this is response');
@@ -262,17 +275,15 @@ class Service {
   }
 
   Future<void> likeBangUpdate(likeCount, isLiked, postId) async {
-
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      print([postId,prefs.getInt('user_id').toString()]);
+      print([postId, prefs.getInt('user_id').toString()]);
       final response = await http.post(
         Uri.parse('$baseUrl/likeBangUpdate'),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
         body: json.encode({
           'post_id': postId.toString(),
@@ -281,13 +292,10 @@ class Service {
       );
       print(response.body);
 
-
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
         final updatedLikeCount = responseData['likeCount'];
-
-
       } else {
         // Handle API error, if necessary
       }
@@ -305,11 +313,11 @@ class Service {
       final response = await http.get(
         Uri.parse('$baseUrl/getComments/$postId'),
         headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
       );
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         print(responseData);
@@ -324,7 +332,6 @@ class Service {
     }
   }
 
-
   Future<List<dynamic>> getCommentReplies(String commentId) async {
     try {
       print(commentId);
@@ -334,8 +341,7 @@ class Service {
         Uri.parse('$baseUrl/getCommentsReplies/$commentId'),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
       );
       if (response.statusCode == 200) {
@@ -358,7 +364,9 @@ class Service {
     final String cacheKey = 'cached_hobby';
     final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
     final String cachedData = prefs.getString(cacheKey) ?? '';
-    var minutes = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp)).inMinutes;
+    var minutes = DateTime.now()
+        .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+        .inMinutes;
 
     if (minutes > 1000 || cachedData.isEmpty) {
       final response = await http.get(
@@ -392,7 +400,8 @@ class Service {
 
         if (response.statusCode == 200) {
           prefs.setString(cacheKey, response.body);
-          prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+          prefs.setInt(
+              '${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
           final List<dynamic> data = json.decode(response.body);
           return data.map((json) => Hobby.fromJson(json)).toList();
         } else {
@@ -431,15 +440,14 @@ class Service {
     try {
       final token = await TokenManager.getToken();
       final response = await http.get(
-        Uri.parse('$baseUrl/bangBattleComment/$postId'),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },
+        Uri.parse('$baseUrl/bangBattleComment/$postId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
       );
 
       if (response.statusCode == 200) {
-
         final responseData = json.decode(response.body);
         return responseData['comments'];
       } else {
@@ -457,7 +465,7 @@ class Service {
       final token = await TokenManager.getToken();
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      print([postId,commentText,prefs.getInt('user_id')]);
+      print([postId, commentText, prefs.getInt('user_id')]);
       print('this is token');
       final response = await http.post(
         Uri.parse('$baseUrl/postComment'),
@@ -480,18 +488,19 @@ class Service {
     }
   }
 
-  Future postCommentReply(BuildContext context, postId, commentId, commentText) async {
+  Future postCommentReply(
+      BuildContext context, postId, commentId, commentText) async {
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      print([commentId,commentText,prefs.getInt('user_id')]);
+      print([commentId, commentText, prefs.getInt('user_id')]);
       final response = await http.post(
         Uri.parse('$baseUrl/postCommentReply'),
         body: jsonEncode({
           'comment_id': commentId.toString(),
           'user_id': prefs.getInt('user_id').toString(),
           'body': commentText,
-          'post_id':postId,
+          'post_id': postId,
         }),
         headers: {
           'Authorization': 'Bearer $token',
@@ -521,8 +530,7 @@ class Service {
         }),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
       );
       return jsonDecode(response.body);
@@ -545,8 +553,7 @@ class Service {
         }),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
       );
       return jsonDecode(response.body);
@@ -581,7 +588,6 @@ class Service {
     }
   }
 
-
   Future<Map<String, dynamic>> deleteComment(commentId) async {
     try {
       final token = await TokenManager.getToken();
@@ -590,7 +596,6 @@ class Service {
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
-
         },
       );
       print([response.body]);
@@ -615,8 +620,6 @@ class Service {
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
-
-
         },
       );
       print([response.body]);
@@ -633,21 +636,18 @@ class Service {
     }
   }
 
-
-
   Future acceptChallenge(postId) async {
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/acceptChallenge'),
-        body:jsonEncode ({
+        body: jsonEncode({
           'post_id': postId.toString(),
         }),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
       );
       prefs.setBool('i_just_posted', true);
@@ -668,8 +668,7 @@ class Service {
         }),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
       );
 
@@ -687,14 +686,12 @@ class Service {
         Uri.parse('$baseUrl/storeToken'),
         headers: {
           'Authorization': 'Bearer $authToken',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
-        body:jsonEncode({
+        body: jsonEncode({
           'user_id': id,
           'device_token': token,
         }),
-
       );
       if (response.statusCode == 200) {
       } else {}
@@ -710,7 +707,7 @@ class Service {
       print("nimefika kwenye notification");
       final response = await http.post(
         Uri.parse('$baseUrl/sendNotification'),
-        body:jsonEncode( {
+        body: jsonEncode({
           'user_id': userId.toString(),
           'heading': name,
           'body': body,
@@ -719,8 +716,7 @@ class Service {
         }),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
       );
       print(response.body);
@@ -752,8 +748,7 @@ class Service {
         },
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
       );
       if (response.statusCode == 200) {
@@ -769,14 +764,14 @@ class Service {
   }
 
   Future<void> setUserProfile(
-      dateOfBirth,
-      int? phoneNumber,
-      String Hobbies,
-      occupation,
-      bio,
-      filepath,
-      name,
-      ) async {
+    dateOfBirth,
+    int? phoneNumber,
+    String Hobbies,
+    occupation,
+    bio,
+    filepath,
+    name,
+  ) async {
     try {
       final token = await TokenManager.getToken();
       final headers = {
@@ -786,7 +781,8 @@ class Service {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       Map<String, String> body = {
         'user_id': prefs.getInt('user_id').toString(),
-        'phoneNumber': phoneNumber?.toString() ?? '', // Check for null before converting to string
+        'phoneNumber': phoneNumber?.toString() ??
+            '', // Check for null before converting to string
         'hobbies': selectedHobbiesText,
         'date_of_birth': dateOfBirth.toString(),
         'occupation': occupation,
@@ -794,9 +790,10 @@ class Service {
         'name': name
       };
 
-      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/setUserProfile'))
-        ..headers.addAll(headers)
-        ..fields.addAll(body);
+      var request =
+          http.MultipartRequest('POST', Uri.parse('$baseUrl/setUserProfile'))
+            ..headers.addAll(headers)
+            ..fields.addAll(body);
 
       // Add the file path only if it is not null
       if (filepath != null) {
@@ -809,8 +806,6 @@ class Service {
       if (response.statusCode == 200) {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
-
-
       } else {
         // Handle other response codes or errors
       }
@@ -822,11 +817,13 @@ class Service {
 
   Future<List<BoxData2>> getBangBattle() async {
     final token = await TokenManager.getToken();
-    var response = await http.get(Uri.parse('$baseUrl/getBangBattle'),headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type':
-      'application/json', // Include other headers as needed
-    },);
+    var response = await http.get(
+      Uri.parse('$baseUrl/getBangBattle'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json', // Include other headers as needed
+      },
+    );
     var data = json.decode(response.body)['data'];
 
     List<BoxData2> boxes = [];
@@ -849,8 +846,7 @@ class Service {
         }),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-          'application/json', // Include other headers as needed
+          'Content-Type': 'application/json', // Include other headers as needed
         },
       );
       print('this is response');
@@ -859,7 +855,6 @@ class Service {
         // Update the like count based on the response from the API
         final responseData = json.decode(response.body);
         print(responseData);
-
       } else {}
     } catch (e) {
       print(e);
@@ -877,8 +872,7 @@ class Service {
       },
       headers: {
         'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
+        'Content-Type': 'application/json', // Include other headers as needed
       },
     );
     if (response.statusCode == 200) {
@@ -905,8 +899,7 @@ class Service {
       },
       headers: {
         'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
+        'Content-Type': 'application/json', // Include other headers as needed
       },
     );
     if (response.statusCode == 200) {
@@ -924,7 +917,7 @@ class Service {
 
   Future<void> sendMessage(receiverId, String message) async {
     final token = await TokenManager.getToken();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse('$baseUrl/sendMessage'),
       body: {
@@ -934,8 +927,7 @@ class Service {
       },
       headers: {
         'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
+        'Content-Type': 'application/json', // Include other headers as needed
       },
     );
 
@@ -979,11 +971,13 @@ class Service {
     var userId = prefs.getInt('user_id');
     final url = Uri.parse('$baseUrl/getNotificationCount/$userId');
     try {
-      final response = await http.get(url,headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },);
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
 
@@ -1010,11 +1004,13 @@ class Service {
     final apiUrl =
         '$baseUrl/updateIsSeen/$postId/$userId'; // Replace with your actual API URL
     try {
-      final response = await http.get(Uri.parse(apiUrl),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },);
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
       print(response.body);
       if (response.statusCode == 200) {
       } else {
@@ -1034,11 +1030,13 @@ class Service {
     final apiUrl =
         '$baseUrl/updateBangUpdateIsSeen/$postId/$userId'; // Replace with your actual API URL
     try {
-      final response = await http.get(Uri.parse(apiUrl),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },);
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
       print(response.body);
       if (response.statusCode == 200) {
       } else {
@@ -1055,11 +1053,11 @@ class Service {
     try {
       final token = await TokenManager.getToken();
       final response = await http.get(
-        Uri.parse('$baseUrl/deleteNotification/$notificationId'),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },
+        Uri.parse('$baseUrl/deleteNotification/$notificationId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
       );
       print([response.body, notificationId]);
       return jsonDecode(response.body);
@@ -1073,11 +1071,11 @@ class Service {
     try {
       final token = await TokenManager.getToken();
       final response = await http.get(
-        Uri.parse('$baseUrl/notificationIsRead/$notificationId'),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },
+        Uri.parse('$baseUrl/notificationIsRead/$notificationId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
       );
       print([response.body, notificationId]);
       return jsonDecode(response.body);
@@ -1092,11 +1090,11 @@ class Service {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('$baseUrl/pinMessage'),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },
+        Uri.parse('$baseUrl/pinMessage'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
         body: jsonEncode({
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         }),
@@ -1119,11 +1117,11 @@ class Service {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
-        Uri.parse('$baseUrl/setUserPinPrice'),headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
-      },
+        Uri.parse('$baseUrl/setUserPinPrice'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
         body: jsonEncode({
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
           'price': price
@@ -1142,4 +1140,50 @@ class Service {
     }
   }
 
+  Future<Map<String, dynamic>> deleteUserAccount() async {
+    try {
+      final token = await TokenManager.getToken();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var userId = prefs.getInt('user_id').toString();
+      final response = await http.get(
+        Uri.parse('$baseUrl/deleteUserAccount/$userId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else {
+        return {};
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> getResetLink(email) async {
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse('$baseUrl/resetPassword/$email'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else {
+        return {};
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      return {};
+    }
+  }
 }

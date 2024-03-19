@@ -40,7 +40,7 @@ class PostsProvider with ChangeNotifier {
           .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
           .inMinutes;
 
-      if (minutes > 3 || cachedData.isEmpty) {
+      if (minutes > 15 || cachedData.isEmpty) {
         print('Fetching new data');
         _loading = true;
         notifyListeners();
@@ -257,7 +257,6 @@ class PostsProvider with ChangeNotifier {
 
   void incrementCommentCountByPostId(int postId) {
     try {
-      // Print the postId being searched for
 
       // ignore: unrelated_type_equality_checks
       final post = _posts.firstWhere((update) => update.postId == postId);

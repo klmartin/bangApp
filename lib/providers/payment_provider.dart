@@ -34,14 +34,14 @@ class PaymentProvider extends ChangeNotifier {
     Map<String, dynamic> pay = await AzamPay().checkoutData(phoneNumber, price, postId,type);
     var transactionId = pay['response']['transactionId'];
     // this line is to comment;
-    await AzamPay().saveDummyAzamPay(pay['response']['transactionId']);
-    // if(transactionId){
+    //await AzamPay().saveDummyAzamPay(pay['response']['transactionId']);
+     //if(transactionId){
       _isPaying = false;
       _processingStatusTimer = Timer.periodic(Duration(seconds: 3), (timer) {
         _fetchPaymentStatus(transactionId);
         notifyListeners();
       });
-    // }
+    //}
 
     return true;
   }

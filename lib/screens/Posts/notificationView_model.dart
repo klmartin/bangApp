@@ -71,7 +71,7 @@ class _NotifyViewState extends State<NotifyView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: NotifyCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!,widget.cacheUrl!,widget.thumbnailUrl!,widget.aspectRatio!,widget.myProvider!),
+            child: NotifyCard(widget.name!,widget.caption!,widget.imgurl!,widget.challengeImgUrl!,widget.imgWidth!,widget.imgHeight!,widget.postId!,widget.commentCount!,widget.userId!,widget.isLiked!,widget.likeCount!,widget.type!,widget.followerCount!,widget.created!,widget.user_image!,widget.pinnedImage!,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio,widget.myProvider!),
           ),
         ),
       ),
@@ -154,9 +154,7 @@ class _NotifyCardState extends State<NotifyCard> {
               children: [
                 postOptions(context, widget.userId, widget.userImage, widget.name, widget.followerCount, widget.postUrl, widget.postId, widget.userId, widget.type,widget.createdAt,"notification") ?? Container(),
                 InkWell(
-                  onTap: () {
-                    viewImage(context, widget.postUrl);
-                  },
+                  onTap: () => widget.type == 'image' ? viewImage(context, widget.postUrl) : null,
                   child: AspectRatio(
                     aspectRatio: widget.imgWidth / widget.imgHeight,
                     child: buildMediaWidget(context, widget.postUrl,widget.type,widget.imgWidth,widget.imgHeight,widget.pinned,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio,widget.postId,widget.postId),

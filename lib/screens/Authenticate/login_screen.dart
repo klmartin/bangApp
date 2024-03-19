@@ -13,7 +13,7 @@ import 'package:bangapp/screens/Authenticate/register_screen.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:bangapp/providers/user_provider.dart';
-
+import 'package:bangapp/screens/Authenticate/reset_password.dart';
 import '../../services/token_storage_helper.dart';
 import '../Profile/edit_profile.dart';
 
@@ -131,14 +131,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding:
                         EdgeInsets.symmetric(horizontal: 50.0, vertical: 100.0),
                     child: Container(
-                      // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
                       child: TextButton(
                           onPressed: () async {
                             setState(() {
-                              showSpinner = false;
+                              showSpinner = true;
                             });
                             try {
-                              print('$baseUrl/v1/login');
                               final response = await http.post(
                                 Uri.parse('$baseUrl/v1/login'),
                                 body: {
@@ -147,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                               );
                               final responseBody = jsonDecode(response.body);
-                              print(responseBody);
+
                               if (responseBody.containsKey('error') &&
                                   responseBody['error'] ==
                                       'invalid_credentials') {
@@ -163,36 +161,44 @@ class _LoginScreenState extends State<LoginScreen> {
                                   textColor: Colors.white,
                                   fontSize: 16.0,
                                 );
-                                showSpinner = false;
+                                setState(() {
+                                  showSpinner = false;
+                                });
                               } else {
-                                print(responseBody['token']);
-                                print('this is response body for access_token');
+                                setState(() {
+                                  showSpinner = false;
+                                });
                                 _firebaseMessaging
                                     .getToken()
                                     .then((token) async {
                                   SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
+                                      await SharedPreferences.getInstance();
                                   prefs.setInt(
                                       'user_id', responseBody['user_id']);
-                                  await TokenManager.saveToken(responseBody['token']);
+                                  await TokenManager.saveToken(
+                                      responseBody['token']);
                                   prefs.setString(
                                       'user_image', responseBody['user_image']);
-                                  prefs.setString('token', responseBody['token']);
+                                  prefs.setString(
+                                      'token', responseBody['token']);
                                   prefs.setString('name', responseBody['name']);
                                   prefs.setString('device_token', token!);
                                   prefs.setString('role', responseBody['role']);
 
-                                  Service().sendTokenToBackend(token, responseBody['user_id']);
-                                  final userProvider = Provider.of<UserProvider>(context, listen: false);
+                                  Service().sendTokenToBackend(
+                                      token, responseBody['user_id']);
+                                  final userProvider =
+                                      Provider.of<UserProvider>(context,
+                                          listen: false);
                                   if (userProvider.userData.isEmpty) {
                                     userProvider.fetchUserData();
                                   }
-
                                 });
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Nav(initialIndex: 0)),
+                                      builder: (context) =>
+                                          Nav(initialIndex: 0)),
                                 );
                               }
                             }
@@ -226,71 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(20.0)),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  const SizedBox(height: 20),
-                  //google + apple sign in buttons
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       //google button
-//                       /* SquareTile(
-//                         imagePath: 'assets/images/google.png',
-//                         //onTap: () => AuthService().signInWithGoogle(),),
-//                         onTap: () => AuthService().signIn(),
-//
-//                       ),
-//
-//
-//
-//                       const SizedBox(width: 10),
-//                       //apple button
-//                       SquareTile(
-//                           imagePath: 'assets/images/apple.png',
-//                           onTap: () => AuthService().signIn(),
-//                           ),
-// */
-//
-//                       MaterialButton(
-//                         onPressed: signIn,
-//                         child: Container(
-//                           padding: const EdgeInsets.all(20),
-//                           decoration: BoxDecoration(
-//                             border: Border.all(color: Colors.white),
-//                             borderRadius: BorderRadius.circular(16),
-//                             color: Colors.grey[200],
-//                           ),
-//                           child: Image.asset(
-//                             'assets/images/google.png',
-//                             height: 40,
-//                           ),
-//                         ),
-//                       ),
-//
-//                       const SizedBox(width: 10),
-//
-//                       MaterialButton(
-//                         onPressed: signIn,
-//                         child: Container(
-//                           padding: const EdgeInsets.all(20),
-//                           decoration: BoxDecoration(
-//                             border: Border.all(color: Colors.white),
-//                             borderRadius: BorderRadius.circular(16),
-//                             color: Colors.grey[200],
-//                           ),
-//                           child: Image.asset(
-//                             'assets/images/apple.png',
-//                             height: 40,
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-
-                  SizedBox(height: 20),
-
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   MaterialButton(
                     onPressed: () {
                       Navigator.push(
@@ -300,8 +242,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       );
                     },
-                    //child: Text('Sign Up', style: TextStyle(color: Colors.indigo)),
-
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -325,12 +265,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Register(),
+                          builder: (context) => ResetPassword(),
                         ),
                       );
                     },
-                    //child: Text('Sign Up', style: TextStyle(color: Colors.indigo)),
-
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

@@ -6,6 +6,7 @@ import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart';
 import 'package:bangapp/providers/Profile_Provider.dart';
 import 'package:bangapp/providers/bang_update_provider.dart';
+import 'package:bangapp/providers/challenge_upload.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
 import 'package:bangapp/providers/image_upload.dart';
@@ -66,6 +67,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => VideoUploadProvider()),
     ChangeNotifierProvider(create: (context) => ImageUploadProvider()),
     ChangeNotifierProvider(create: (context) => PaymentProvider()),
+    ChangeNotifierProvider(create: (context) => ChallengeUploadProvider()),
   ], child: MyApp()));
 }
 
@@ -156,7 +158,7 @@ class _AuthenticateState extends State<Authenticate> {
           }
         } else if (value.length >= 2) {
           // Multiple files
-          print('multiple files');
+
           if (value.every((file) =>
               file.path.toLowerCase().endsWith('.jpg') ||
               file.path.toLowerCase().endsWith('.png'))) {
@@ -232,8 +234,7 @@ class _AuthenticateState extends State<Authenticate> {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       print('notification type');
       print(message.data["type"] == "message");
-      // Handle notification tap when the app is in the background or terminated.
-      // Navigate the user to the relevant screen based on the notification data.
+
       if (message.data["type"] == "message") {
         int notificationId = int.parse(message.data['notification_id']);
         String? userName = message.data['user_name'];

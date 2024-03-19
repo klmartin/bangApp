@@ -22,8 +22,6 @@ class ProfileProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> getMyPosts(_pageNumber) async {
-    print('pageNumber');
-    print(_pageNumber);
     final token = await TokenManager.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id').toString();
@@ -34,7 +32,7 @@ class ProfileProvider extends ChangeNotifier {
     var minutes = DateTime.now()
         .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
         .inMinutes;
-    if (minutes >= 3) {
+    if (minutes >= 15) {
       final response = await get(
         Uri.parse(
           "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId",
@@ -189,6 +187,8 @@ class ProfileProvider extends ChangeNotifier {
 
   void increaseLikes2(int postId, int postType) {
     final post = _posts.firstWhere((update) => update.postId == postId);
+    print(post);
+    print('this is recieved post');
     // ignore: unnecessary_null_comparison
     if (post != null) {
       if (postType == 1) {

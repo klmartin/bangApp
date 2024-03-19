@@ -15,6 +15,7 @@ import '../../nav.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import '../../providers/challenge_upload.dart';
 import '../../providers/image_upload.dart';
 import '../../providers/posts_provider.dart';
 import '../../providers/video_upload.dart';
@@ -485,10 +486,21 @@ class _FinaleCreateState extends State<FinalCreate>
                                     'pinned': pinPost == 1 ? '1' : '0',
                                     'price': price ?? '0',
                                   };
-                                  await service.addChallengImage(
-                                      body,
-                                      widget.editedVideo!,
-                                      widget.editedVideo2!);
+
+                                  final challengeUploadProvider =
+                                  provider.Provider.of<
+                                      ChallengeUploadProvider>(context,
+                                      listen: false);
+
+                                  challengeUploadProvider.startUpload(
+                                      body, widget.editedVideo!,widget.editedVideo2!);
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Nav(initialIndex: 0)),
+                                  );
+
                                 } else {
                                   String filePath1 = await saveUint8ListAsFile(
                                       widget.editedImage!, 'image.jpg');
@@ -502,8 +514,20 @@ class _FinaleCreateState extends State<FinalCreate>
                                     'price': price ?? '0',
                                     'type': widget.type!,
                                   };
-                                  await service.addChallengImage(
-                                      body, filePath1, filePath2);
+
+                                  final challengeUploadProvider =
+                                  provider.Provider.of<
+                                      ChallengeUploadProvider>(context,
+                                      listen: false);
+
+                                  challengeUploadProvider.startUpload(
+                                      body, filePath1,filePath2);
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Nav(initialIndex: 0)),
+                                  );
                                 }
                                 if (bangUpdate == 1) {
                                   Navigator.pushReplacement(

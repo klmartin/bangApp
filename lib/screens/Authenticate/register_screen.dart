@@ -222,7 +222,6 @@ class _RegisterState extends State<Register> {
                       }
                       //Implement login functionality.
                       catch (e) {
-                        print(e);
                       } finally {
                         showSpinner = false;
                       }

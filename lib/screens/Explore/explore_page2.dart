@@ -50,24 +50,28 @@ class _BangUpdates3State extends State<BangUpdates3> {
   @override
   Widget build(BuildContext context) {
     bangUpdateProvider = Provider.of<BangUpdateProvider>(context);
-    return PreloadPageView.builder(
-      key: const PageStorageKey<String>('chemba'),
-      controller: PreloadPageController(),
-      preloadPagesCount: 3,
-      scrollDirection: Axis.vertical,
-      itemCount: bangUpdateProvider.bangUpdates.length,
-      itemBuilder: (context, index) {
-        final bangUpdate = bangUpdateProvider.bangUpdates[index];
-        // Service().updateBangUpdateIsSeen(bangUpdate.postId);
-        return buildBangUpdate2(context, bangUpdate, index);
-      },
+    return Stack(
+      children: [
+        PreloadPageView.builder(
+          key: const PageStorageKey<String>('chemba'),
+          controller: PreloadPageController(),
+          preloadPagesCount: 3,
+          scrollDirection: Axis.vertical,
+          itemCount: bangUpdateProvider.bangUpdates.length,
+          itemBuilder: (context, index) {
+            final bangUpdate = bangUpdateProvider.bangUpdates[index];
+            Service().updateBangUpdateIsSeen(bangUpdate.postId);
+            return buildBangUpdate2(context, bangUpdate, index);
+          },
+        ),
+        if (bangUpdateProvider.isLoading)
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+      ],
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
 
 }

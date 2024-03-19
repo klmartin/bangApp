@@ -112,7 +112,7 @@ class _CommentsPageState extends State<CommentsPage> {
                           padding:
                               const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
                           child: ExpansionTile(
-                            key: Key(data[i]['id'].toString()),
+                            key: Key('expansion_${data[i]['id']}'),
                             leading: GestureDetector(
                               onTap: () async {
                                 // Display the image in large form.
@@ -200,8 +200,7 @@ class _CommentsPageState extends State<CommentsPage> {
                                 ListTile(
                                   leading: GestureDetector(
                                     onTap: () async {
-                                      // Display the image in large form.
-                                      print("Comment Clicked");
+
                                     },
                                     child: Container(
                                       height: 30.0,

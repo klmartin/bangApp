@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/post.dart';
 import 'package:bangapp/providers/posts_provider.dart'; // Import your PostsProvider class
+import '../../providers/Profile_Provider.dart';
+import '../../providers/challenge_upload.dart';
 import '../../providers/image_upload.dart';
 import '../../providers/payment_provider.dart';
 import '../../providers/video_upload.dart';
@@ -14,10 +16,9 @@ import 'package:bangapp/services/service.dart';
 import '../Widgets/video_upload.dart';
 
 class Home2 extends StatelessWidget  {
-  String? video;
-  final Map<String, String>? videoBody;
 
-  Home2({this.video, this.videoBody});
+
+  Home2();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +40,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
   late VideoUploadProvider videoUploadProvider; // Declare it here
   late ImageUploadProvider imageUploadProvider;
   late PaymentProvider paymentProvider;
+  late ChallengeUploadProvider challengeUploadProvider;
   double _scrollPosition = 0.0;
   @override
   void initState() {
@@ -46,6 +48,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
     videoUploadProvider =Provider.of<VideoUploadProvider>(context, listen: false);
     imageUploadProvider =Provider.of<ImageUploadProvider>(context, listen: false);
     paymentProvider = Provider.of<PaymentProvider>(context, listen:false);
+    challengeUploadProvider = Provider.of<ChallengeUploadProvider>(context, listen: false);
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     print(_pageNumber);
     print('this is page number');
@@ -55,6 +58,8 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
       if (videoUploadProvider.uploadText == 'Upload Complete') {
         postsProvider.refreshData();
         _scrollController.jumpTo(0);
+        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+        profileProvider.getMyPosts(1);
       }
 
     });
@@ -67,12 +72,21 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
 
     imageUploadProvider.addListener(() {
       if(imageUploadProvider.uploadText == 'Upload Complete'){
-        print('this is an image post');
         postsProvider.refreshData();
         _scrollController.jumpTo(0);
+        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+        profileProvider.getMyPosts(1);
       }
     });
 
+    challengeUploadProvider.addListener(() {
+      if(challengeUploadProvider.uploadText == 'Upload Complete'){
+        postsProvider.refreshData();
+        _scrollController.jumpTo(0);
+        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+        profileProvider.getMyPosts(1);
+      }
+    });
 
     _scrollController.addListener(() {
       _scrollPosition = _scrollController.offset;
@@ -85,8 +99,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       _pageNumber++;
-      print(_pageNumber);
-      print('this is page number to be added');
+
       postsProvider.loadMoreData(_pageNumber); // Trigger loading of the next page
     }
   }
@@ -101,8 +114,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    print(userProvider.userData);
-    print('this is userdata');
+
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
@@ -149,6 +161,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
               children: [
                 SmallBoxCarousel(),
                 imageUploadProvider.isUploading ? ImageUpload() : Container(),
+                challengeUploadProvider.isUploading ? ImageUpload() : Container(),
                 videoUploadProvider.isUploading ? VideoUpload() : Container(),
                 PostItem2(
                   post.postId,

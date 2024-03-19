@@ -1,8 +1,6 @@
 
 import 'dart:convert';
 
-import 'package:bangapp/inspiration/category.dart';
-import 'package:bangapp/inspiration/video_container.dart';
 import 'package:bangapp/inspiration/view_video.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';

@@ -1,11 +1,9 @@
 import 'package:bangapp/providers/Profile_Provider.dart';
-import 'package:bangapp/providers/profile_provider.dart';
 import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../providers/posts_provider.dart';
 import '../../services/animation.dart';
 import 'package:bangapp/services/service.dart';
 import '../../widgets/build_media.dart';
@@ -34,7 +32,7 @@ class POstChallengeView extends StatefulWidget {
   bool isLikedB;
   int likeCountA;
   int likeCountB;
-  var provider;
+  ProfileProvider? myProvider;
 
   POstChallengeView(
       this.name,
@@ -57,7 +55,7 @@ class POstChallengeView extends StatefulWidget {
       this.isLikedB,
       this.likeCountA,
       this.likeCountB,
-      this.provider,
+      this.myProvider,
       );
   static const id = 'postview';
   @override
@@ -94,6 +92,7 @@ class _POstViewState extends State<POstChallengeView> {
               widget.isLikedB,
               widget.likeCountA,
               widget.likeCountB,
+              widget.myProvider!,
             ),
           ),
         ),
@@ -123,11 +122,7 @@ class PostCard extends StatefulWidget {
   bool isLikedB;
   int likeCountA;
   int likeCountB;
-  var provider;
-
-
-  ScrollController _scrollController = ScrollController();
-
+  ProfileProvider? myProvider;
 
   PostCard(
       this.name,
@@ -149,7 +144,8 @@ class PostCard extends StatefulWidget {
       this.isLikedA,
       this.isLikedB,
       this.likeCountA,
-      this.likeCountB);
+      this.likeCountB,
+      this.myProvider);
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -326,10 +322,24 @@ class _PostCardState extends State<PostCard> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            final countUpdate = widget.provider;
-                            countUpdate.increaseLikes2(widget.postId, 1);
-                            Service()
-                                .likeAction(widget.postId, "A", widget.userId);
+                            final countUpdate = widget.myProvider;
+                            countUpdate?.increaseLikes2(widget.postId, 1);
+                            Service().likeAction(widget.postId, "A", widget.userId);
+                            setState(() {
+                              if (widget.isLikedA == false) {
+                                widget.likeCountA++;
+                                widget.isLikedA = true;
+                              } else {
+                                widget.likeCountA--;
+                                widget.isLikedA = false;
+                              }
+
+                              // If the user has previously liked type B, un-like it.
+                              if (widget.isLikedB == true) {
+                                widget.likeCountB--;
+                                widget.isLikedB = false;
+                              }
+                            });
                           },
                           child: widget.isLikedA
                               ? Icon(CupertinoIcons.heart_fill,
@@ -374,11 +384,23 @@ class _PostCardState extends State<PostCard> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                final countUpdate =
-                                    widget.provider;
-                                countUpdate.increaseLikes2(widget.postId, 2);
+                                final countUpdate = widget.myProvider;
+                                countUpdate?.increaseLikes2(widget.postId, 2);
                                 Service().likeAction(
                                     widget.postId, "B", widget.userId);
+                                setState(() {
+                                  if (widget.isLikedB == false) {
+                                    widget.likeCountB++;
+                                    widget.isLikedB = true;
+                                  } else {
+                                    widget.likeCountB--;
+                                    widget.isLikedB = false;
+                                  }
+                                  if (widget.isLikedA == true) {
+                                    widget.likeCountA--;
+                                    widget.isLikedA = false;
+                                  }
+                                });
                               },
                               child: widget.isLikedB
                                   ? Icon(CupertinoIcons.heart_fill,
@@ -400,7 +422,7 @@ class _PostCardState extends State<PostCard> {
                   child: Row(
                     children: [
                       Text(
-                        widget.name, // Add your username here
+                        widget.caption, // Add your username here
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -427,7 +449,18 @@ class _PostCardState extends State<PostCard> {
                     ],
                   ),
                 ),
-              Text("${widget.commentCount} comments"),
+              GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      createRoute(
+                        CommentsPage(
+                          postId: widget.postId, userId: widget.userId,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text("${widget.commentCount} comments")),
 
               const SizedBox(height: 10),
             ],

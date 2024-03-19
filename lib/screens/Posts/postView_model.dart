@@ -121,7 +121,6 @@ class PostCard extends StatefulWidget {
   String? aspectRatio;
   int? price;
   ProfileProvider myProvider;
-  ScrollController _scrollController = ScrollController();
   PostCard(
       this.name,
       this.caption,
@@ -298,13 +297,9 @@ class _PostCardState extends State<PostCard> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      final countUpdate =
-                                          Provider.of<ProfileProvider>(context,
-                                              listen: false);
-                                      widget.myProvider
-                                          .increaseLikes(widget.postId);
-                                      Service().likeAction(
-                                          widget.postId, "A", widget.userId);
+                                      final countUpdate = Provider.of<ProfileProvider>(context, listen: false);
+                                      widget.myProvider.increaseLikes(widget.postId);
+                                      Service().likeAction(widget.postId, "A", widget.userId);
                                       setState(() {
                                         if (widget.isLiked) {
                                           widget.likeCount--;

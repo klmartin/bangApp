@@ -76,7 +76,6 @@ class PostItem2 extends StatelessWidget {
       this.price,
       {required this.myProvider});
 
-
   Future<Uint8List> fileToUint8List(File file) async {
     List<int> bytes = await file.readAsBytes();
     return Uint8List.fromList(bytes);
@@ -95,7 +94,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt,"posts") ??
+                    postId, userId, type, createdAt, "posts") ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -104,7 +103,7 @@ class PostItem2 extends StatelessWidget {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                         viewImage(context, image);
+                        viewImage(context, image);
                       },
                       child: Container(
                         height: 250,
@@ -152,7 +151,7 @@ class PostItem2 extends StatelessWidget {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                         viewImage(context, challengeImg);
+                        viewImage(context, challengeImg);
                       },
                       child: Container(
                         height: 250, // Set your desired fixed height here
@@ -325,7 +324,20 @@ class PostItem2 extends StatelessWidget {
                   ],
                 ),
               ),
-            Text("$commentCount comments"),
+            GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    createRoute(
+                      CommentsPage(
+                        postId: postId, userId: userId,
+                        myProvider: myProvider,
+                        // currentUser: 1,
+                      ),
+                    ),
+                  );
+                },
+                child: Text("$commentCount comments")),
 
             const SizedBox(height: 10),
           ],
@@ -342,7 +354,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt,"posts") ??
+                    postId, userId, type, createdAt, "posts") ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -351,7 +363,7 @@ class PostItem2 extends StatelessWidget {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                         viewImage(context, image);
+                        viewImage(context, image);
                       },
                       child: Container(
                         height: 250,
@@ -389,7 +401,7 @@ class PostItem2 extends StatelessWidget {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                         viewImage(context, challengeImg);
+                        viewImage(context, challengeImg);
                       },
                       child: Container(
                         height: 250, // Set your desired fixed height here
@@ -553,7 +565,20 @@ class PostItem2 extends StatelessWidget {
                 ),
               ),
 
-            Text("$commentCount comments"),
+            GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    createRoute(
+                      CommentsPage(
+                        postId: postId, userId: userId,
+                        myProvider: myProvider,
+                        // currentUser: 1,
+                      ),
+                    ),
+                  );
+                },
+                child: Text("$commentCount comments")),
 
             const SizedBox(height: 10),
           ],
@@ -569,16 +594,16 @@ class PostItem2 extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt,"posts") ??
+                    postId, userId, type, createdAt, "posts") ??
                 Container(),
             buildMediaWidget(context, image, type, width, height, isPinned,
-                    cacheUrl, thumbnailUrl, aspectRatio,postId,price) ??
+                    cacheUrl, thumbnailUrl, aspectRatio, postId, price) ??
                 Container(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.only(left: 10),
+                  padding: EdgeInsets.only(left: 8),
                   width: MediaQuery.of(context).size.width * 0.82,
                   child: Row(
                     children: [
@@ -688,7 +713,20 @@ class PostItem2 extends StatelessWidget {
             ),
             Container(
               margin: EdgeInsets.only(left: 15),
-              child: Text("$commentCount comments"),
+              child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      createRoute(
+                        CommentsPage(
+                          postId: postId, userId: userId,
+                          myProvider: myProvider,
+                          // currentUser: 1,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text("$commentCount comments")),
             ),
             const SizedBox(height: 20),
           ],
@@ -703,7 +741,7 @@ class PostItem2 extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               postOptions(context, userId, userImage, name, followerCount,
-                      image, postId, userId, type, createdAt,"posts") ??
+                      image, postId, userId, type, createdAt, "posts") ??
                   Container(),
               SizedBox(
                 height: 400,
@@ -722,7 +760,9 @@ class PostItem2 extends StatelessWidget {
                           isPinned,
                           cacheUrl,
                           thumbnailUrl,
-                          aspectRatio,postId,price),
+                          aspectRatio,
+                          postId,
+                          price),
                     );
                   },
                 ),
@@ -847,7 +887,20 @@ class PostItem2 extends StatelessWidget {
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 15),
-                    child: Text("$commentCount comments"),
+                    child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            createRoute(
+                              CommentsPage(
+                                postId: postId, userId: userId,
+                                myProvider: myProvider,
+                                // currentUser: 1,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text("$commentCount comments")),
                   ),
                 ],
               ),

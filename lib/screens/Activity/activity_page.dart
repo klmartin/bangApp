@@ -98,8 +98,6 @@ class _Activity extends State<Activity> {
         }
       }
     } catch (e) {
-      // Handle other exceptions (e.g., network error)
-      // You may want to set an error flag or log the error
       isLoading = false; // Set isLoading to false when data is loaded
       print('Error fetching notifications: $e');
     }
@@ -183,7 +181,8 @@ class _Activity extends State<Activity> {
                     postDetails[0]['cache_url'],
                     postDetails[0]['thumbnail_url'],
                     postDetails[0]['aspect_ratio'],
-                    Provider.of<ProfileProvider>(context, listen: false)),
+                    Provider.of<ProfileProvider>(context, listen: false)
+                ),
               ),
             );
 

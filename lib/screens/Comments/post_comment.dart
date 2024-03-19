@@ -21,8 +21,11 @@ class CommentsPage extends StatefulWidget {
 class _CommentsPageState extends State<CommentsPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController commentController = TextEditingController();
-
+  String commentWriteText = '';
+  bool isReply = false;
+  int? replyId;
   List filedata = [];
+  List replydata = [];
 
   @override
   void initState() {
@@ -30,9 +33,14 @@ class _CommentsPageState extends State<CommentsPage> {
     CircularProgressIndicator();
     _fetchComments();
     getUserImageFromSharedPreferences();
+    commentWriteText = 'Write a comment...';
   }
 
   Future<void> _fetchComments() async {
+
+    print(widget.postId);
+    print('this is postId');
+
     final response = await Service().getComments(widget.postId.toString());
     final comments = response;
     setState(() {
@@ -40,11 +48,12 @@ class _CommentsPageState extends State<CommentsPage> {
       filedata = comments.map((comment) {
         return {
           'name': comment['user']['name'],
-          'pic': comment['post']['user_image_url'],
+          'pic': comment['user_image_url'],
           'message': comment['body'],
           'date': comment['created_at'],
           'user_id': comment['user_id'],
-          'comment_id': comment['id']
+          'comment_id': comment['id'],
+          'replies_count': comment['replies_count'] ?? "0",
         };
       }).toList();
     });
@@ -56,8 +65,6 @@ class _CommentsPageState extends State<CommentsPage> {
   void getUserImageFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      print('this is user image');
-      print(prefs.getString('user_image'));
       userName = prefs.getString('name') ?? " ";
       userImageURL = prefs.getString('user_image') ?? "";
     });
@@ -66,7 +73,6 @@ class _CommentsPageState extends State<CommentsPage> {
   Future<int?> handleSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? currentUserId = prefs.getInt('user_id');
-    // Use currentUserId as needed
     return currentUserId;
   }
 
@@ -78,105 +84,72 @@ class _CommentsPageState extends State<CommentsPage> {
         builder: (context,snapshot) {
           int? currentUserId = snapshot.data as int?;
 
-          return ListView(
-            children: [
-              for (var i = 0; i < data.length; i++)
-                currentUserId == data[i]['user_id']
-
-                    ? Dismissible(
-                  key: Key(data[i]['id'].toString()),
-                  onDismissed: (direction) async {
-                    final response = await Service().deleteComment(data[i]['comment_id']);
-                    if (response['message'] == 'Comment deleted successfully')
-                    {
-                      Fluttertoast.showToast(msg: response['message']);
-                    }setState(() {
-                      data.removeAt(i);
-                    });
-                  },
-                  background: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
-                    child: ListTile(
-                      leading: GestureDetector(
-                        onTap: () async {
-                          // Display the image in large form.
-                          print("Comment Clicked");
-                        },
-                        child: Container(
-                          height: 50.0,
-                          width: 50.0,
-                          decoration: new BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: new BorderRadius.all(Radius.circular(50)),
+          return CustomScrollView(
+            slivers: [
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int i) {
+                    return Dismissible(
+                      key: Key(data[i]['id'].toString()),
+                      onDismissed: (direction) async {
+                        final response = await Service().deleteComment(data[i]['comment_id']);
+                        if (response['message'] == 'Comment deleted successfully') {
+                          Fluttertoast.showToast(msg: response['message']);
+                        }
+                        setState(() {
+                          data.removeAt(i);
+                        });
+                      },
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
                           ),
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundImage: CommentBox.commentImageParser(
-                              imageURLorPath: data[i]['pic'],
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+                        child: ListTile(
+                          leading: GestureDetector(
+                            onTap: () async {
+                              // Display the image in large form.
+                              print("Comment Clicked");
+                            },
+                            child: Container(
+                              height: 50.0,
+                              width: 50.0,
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundImage: CommentBox.commentImageParser(
+                                  imageURLorPath: data[i]['pic'],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      title: Text(
-                        data[i]['name'],
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(data[i]['message']),
-                      trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
-                    ),
-                  ),
-                )
-                    : Padding(
-                  padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
-                  child: ListTile(
-                    leading: GestureDetector(
-                      onTap: () async {
-
-
-                      },
-                      child: Container(
-                        height: 50.0,
-                        width: 50.0,
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: new BorderRadius.all(Radius.circular(50)),
-                        ),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: CommentBox.commentImageParser(
-                            imageURLorPath: data[i]['pic'],
+                          title: Text(
+                            data[i]['name'],
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
+                          subtitle: Text(data[i]['message']),
+                          trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
                         ),
                       ),
-                    ),
-                    title: Text(
-                      data[i]['name'],
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(data[i]['message']),
-                    trailing: Column(
-                      children:[
-                        Text(data[i]['date'], style: TextStyle(fontSize: 10)),
-                        Text(data[i]['date'], style: TextStyle(fontSize: 10)),
-                      ]
-
-                    ),
-                    // trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
-                  ),
+                    );
+                  },
+                  childCount: data.length,
                 ),
+              ),
             ],
           );
+
         }
     );
 

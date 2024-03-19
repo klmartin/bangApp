@@ -45,6 +45,10 @@ class _NavState extends State<Nav> {
     ];
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     chatProvider.getTotalUnreadMessages();
+
+    
+
+
   }
 
   @override
@@ -139,15 +143,5 @@ class _NavState extends State<Nav> {
     );
   }
 
-  buildFab() {
-    return Container(
-      height: 45.0,
-      width: 45.0,
-      // ignore: missing_required_param
-      child: FabContainer(
-        icon: Ionicons.add_outline,
-        mini: true,
-      ),
-    );
-  }
+
 }

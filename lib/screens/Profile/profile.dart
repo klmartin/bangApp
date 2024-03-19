@@ -54,7 +54,7 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     userProvider = Provider.of<UserProvider>(context, listen: false);
-    paymentProvider = Provider.of<PaymentProvider>(context, listen:false);
+    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
     paymentProvider.addListener(() {
@@ -69,7 +69,6 @@ class _ProfileState extends State<Profile> {
       _pageNumber++;
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +94,7 @@ class _ProfileState extends State<Profile> {
                       borderRadius: BorderRadius.circular(25),
                       image: DecorationImage(
                         image: CachedNetworkImageProvider(
-                            userProvider.userData['user_image_url'] ?? "" ),
+                            userProvider.userData['user_image_url'] ?? ""),
                         fit: BoxFit.cover,
                       )),
                   child: rimage != null
@@ -171,8 +170,10 @@ class _ProfileState extends State<Profile> {
                             nameController: TextEditingController(),
                             userImage: userProvider.userData!['user_image_url'],
                             name: userProvider.userData!['name'],
-                            date_of_birth: DateTime.parse(userProvider.userData!['date_of_birth']),
-                            phoneNumber: int.parse(userProvider.userData!['phone_number']) ,
+                            date_of_birth: DateTime.parse(
+                                userProvider.userData!['date_of_birth']),
+                            phoneNumber: int.parse(
+                                userProvider.userData!['phone_number']),
                             selectedHobbiesText: selectedHobbiesText,
                             occupation: userProvider.userData!['occupation'],
                             bio: userProvider.userData!['bio'],
@@ -377,44 +378,45 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-void updateSelectedHobbiesText() {
-  setState(() {
-    selectedHobbiesText = selectedHobbyList!
-        .map((hobby) => hobby.name!)
-        .toList()
-        .join(", "); // Concatenate hobby names with a comma and space
-    selectedHobbyIds = selectedHobbyList!
-        .map((hobby) => hobby.id!) // Access the ID property of the Hobby
-        .toList();
-  });
+  void updateSelectedHobbiesText() {
+    setState(() {
+      selectedHobbiesText = selectedHobbyList!
+          .map((hobby) => hobby.name!)
+          .toList()
+          .join(", "); // Concatenate hobby names with a comma and space
+      selectedHobbyIds = selectedHobbyList!
+          .map((hobby) => hobby.id!) // Access the ID property of the Hobby
+          .toList();
+    });
+  }
+
+  void openFilterDialog(BuildContext context) async {
+    selectedHobbyList?.clear();
+    await FilterListDialog.display<Hobby>(
+      context,
+      listData:
+          await Service().fetchHobbies(), // Use hobbyList as the data source
+      selectedListData: selectedHobbyList,
+      choiceChipLabel: (hobby) =>
+          hobby!.name, // Access the name property of Hobby
+      validateSelectedItem: (list, val) => list!.contains(val),
+      onItemSearch: (hobby, query) {
+        return hobby.name!.toLowerCase().contains(query.toLowerCase());
+      },
+      onApplyButtonClick: (list) {
+        setState(() {
+          print(selectedHobbyList);
+          selectedHobbyList = List.from(list!);
+          updateSelectedHobbiesText();
+        });
+        Navigator.pop(context);
+        buildFab(context, selectedHobbiesText);
+      },
+    );
+  }
 }
 
-void openFilterDialog(BuildContext context) async {
-  selectedHobbyList?.clear();
-  await FilterListDialog.display<Hobby>(
-    context,
-    listData:  await Service().fetchHobbies(), // Use hobbyList as the data source
-    selectedListData: selectedHobbyList,
-    choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
-    validateSelectedItem: (list, val) => list!.contains(val),
-    onItemSearch: (hobby, query) {
-      return hobby.name!.toLowerCase().contains(query.toLowerCase());
-    },
-    onApplyButtonClick: (list) {
-      setState(() {
-        print(selectedHobbyList);
-        selectedHobbyList = List.from(list!);
-        updateSelectedHobbiesText();
-      });
-      Navigator.pop(context);
-      buildFab(context,selectedHobbiesText);
-    },
-  );
-}
-}
-
-
-buildFab(BuildContext context,selectedHobbiesText) {
+buildFab(BuildContext context, selectedHobbiesText) {
   print(selectedHobbiesText);
   return showModalBottomSheet(
     isScrollControlled: true,
@@ -453,7 +455,7 @@ buildFab(BuildContext context,selectedHobbiesText) {
               subtitle: Text('500 followers'),
               onTap: () {
                 Navigator.pop(context);
-                buildPayments(selectedHobbiesText, context,2500,500);
+                buildPayments(selectedHobbiesText, context, 2500, 500);
               },
             ),
             ListTile(
@@ -467,7 +469,7 @@ buildFab(BuildContext context,selectedHobbiesText) {
               subtitle: Text('1,100 followers'),
               onTap: () async {
                 Navigator.pop(context);
-                buildPayments(selectedHobbiesText, context,5000,1100);
+                buildPayments(selectedHobbiesText, context, 5000, 1100);
               },
             ),
             ListTile(
@@ -482,7 +484,7 @@ buildFab(BuildContext context,selectedHobbiesText) {
               onTap: () {
                 print(selectedHobbiesText);
                 Navigator.pop(context);
-                buildPayments(selectedHobbiesText, context,10000,2300);
+                buildPayments(selectedHobbiesText, context, 10000, 2300);
               },
             ),
           ],
@@ -492,7 +494,7 @@ buildFab(BuildContext context,selectedHobbiesText) {
   );
 }
 
-buildPayments(selectedHobbiesText, BuildContext context, price,count) {
+buildPayments(selectedHobbiesText, BuildContext context, price, count) {
   var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
   return showModalBottomSheet(
     context: context,
@@ -504,7 +506,7 @@ buildPayments(selectedHobbiesText, BuildContext context, price,count) {
         builder: (BuildContext innerContext) {
           final userProvider = Provider.of<UserProvider>(innerContext);
           final TextEditingController phoneNumberController =
-          TextEditingController(
+              TextEditingController(
             text: userProvider.userData['phone_number'].toString(),
           );
 
@@ -547,19 +549,23 @@ buildPayments(selectedHobbiesText, BuildContext context, price,count) {
                 paymentProvider.isPaying
                     ? CircularProgressIndicator()
                     : TextButton(
-                    onPressed: () async {
-                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, count, 'followers');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors
-                          .red, // Set the background color of the button
-                    ),
-                    child: Text(
-                      'Pay',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    )),
+                        onPressed: () async {
+                          paymentProvider.startPaying(
+                              userProvider.userData['phone_number'].toString(),
+                              price,
+                              count,
+                              'followers');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors
+                              .red, // Set the background color of the button
+                        ),
+                        child: Text(
+                          'Pay',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        )),
               ],
             ),
           );
@@ -701,6 +707,7 @@ class _ProfilePostsStreamContentState
   void initState() {
     super.initState();
     final providerPost = Provider.of<ProfileProvider>(context, listen: false);
+
     providerPost.getMyPosts(_pageNumber);
     _scrollController.addListener(_scrollListener);
   }
@@ -712,11 +719,9 @@ class _ProfilePostsStreamContentState
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      // User has reached the end, load more data here
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       _pageNumber++;
-
       final profileProvider =
           Provider.of<ProfileProvider>(context, listen: false);
       profileProvider.getMyPosts(_pageNumber);
@@ -1091,7 +1096,4 @@ class _ProfilePostsStreamContentState
       }
     });
   }
-
-
 }
-

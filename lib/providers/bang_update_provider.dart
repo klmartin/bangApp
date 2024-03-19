@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_cache_helper.dart';
 import '../services/token_storage_helper.dart';
 
-
 class BangUpdate {
   final String filename;
   final String type;
@@ -22,28 +21,28 @@ class BangUpdate {
   int commentCount;
   final int userId;
 
-  BangUpdate({
-    required this.filename,
-    required this.type,
-    required this.caption,
-    required this.postId,
-    required this.userName,
-    required this.userImage,
-    required this.likeCount,
-    required this.isLiked,
-    required this.commentCount,
-    required this.userId
-  });
+  BangUpdate(
+      {required this.filename,
+      required this.type,
+      required this.caption,
+      required this.postId,
+      required this.userName,
+      required this.userImage,
+      required this.likeCount,
+      required this.isLiked,
+      required this.commentCount,
+      required this.userId});
 }
 
 class BangUpdateProvider extends ChangeNotifier {
   List<BangUpdate> _bangUpdates = [];
-
+  bool _loading = true;
+  bool get isLoading => _loading;
   List<BangUpdate> get bangUpdates => _bangUpdates;
 
   Future<void> fetchBangUpdates() async {
     final token = await TokenManager.getToken();
-     // = await apiCacheHelper.fetchBangUpdates(pageNumber: 1);
+    // = await apiCacheHelper.fetchBangUpdates(pageNumber: 1);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id').toString();
     print(token);
@@ -53,42 +52,38 @@ class BangUpdateProvider extends ChangeNotifier {
       ),
       headers: {
         'Authorization': 'Bearer $token',
-        'Content-Type':
-        'application/json', // Include other headers as needed
+        'Content-Type': 'application/json', // Include other headers as needed
       },
     );
-    print('chembea');
-
 
     var data = json.decode(response.body);
-
+    _loading = false;
+    notifyListeners();
     _bangUpdates = List<BangUpdate>.from(data.map((post) {
       return BangUpdate(
         filename: post['filename'],
         type: post['type'],
-        caption:  post['caption'] ?? "" ,
+        caption: post['caption'] ?? "",
         postId: post['id'],
         likeCount: post['bang_update_like_count'] != null &&
-            post['bang_update_like_count'].isNotEmpty
+                post['bang_update_like_count'].isNotEmpty
             ? post['bang_update_like_count'][0]['like_count']
             : 0,
-        userImage: post['user_image_url'] ,
+        userImage: post['user_image_url'],
         userName: post['user']['name'],
         commentCount: post['bang_update_comments'] != null &&
-            post['bang_update_comments'].isNotEmpty
+                post['bang_update_comments'].isNotEmpty
             ? post['bang_update_comments'][0]['comment_count']
             : 0,
         isLiked: post['isLiked'],
         userId: post["user_id"],
       );
     }));
-
-    notifyListeners();
   }
+
   void increaseLikes(int postId) {
-    print("jjjjjjjjjjjjjjjj");
     final bangUpdate =
-    _bangUpdates.firstWhere((update) => update.postId == postId);
+        _bangUpdates.firstWhere((update) => update.postId == postId);
     print(bangUpdate.isLiked);
     if (bangUpdate.isLiked) {
       bangUpdate.likeCount--;
@@ -102,7 +97,7 @@ class BangUpdateProvider extends ChangeNotifier {
 
   void updateCommentCount(int postId, int newCount) {
     final bangUpdate =
-    _bangUpdates.firstWhere((update) => update.postId == postId);
+        _bangUpdates.firstWhere((update) => update.postId == postId);
     bangUpdate.commentCount++;
     notifyListeners();
   }

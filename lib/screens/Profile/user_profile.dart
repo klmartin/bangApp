@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:bangapp/constants/urls.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -54,8 +53,8 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   void _scrollListener() {
-    if (!_isLoading && _scrollController!.position.extentAfter < 200.0) {
-      // Load more posts when the user is close to the end of the list
+    if (_scrollController!.position.pixels >=
+        _scrollController!.position.maxScrollExtent - 200) {
       _pageNumber++;
       _loadMorePosts();
     }
@@ -63,8 +62,7 @@ class _UserProfileState extends State<UserProfile> {
 
   void _getMyInfo() async {
     var myInfo = await Service().getMyInformation(userId: widget.userid);
-    print(myInfo);
-    print('this is my info');
+
     setState(() {
       myName = myInfo['name'] ?? "";
       myBio = myInfo['bio'] ?? "";
@@ -446,9 +444,8 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      // User has reached the end, load more data here
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       final updateProvider =
           Provider.of<BangUpdateProfileProvider>(context, listen: false);
       updateProvider.getMyUpdate(); // Trigger loading of the next page
@@ -558,8 +555,9 @@ class _ProfilePostsStreamContentState
   }
 
   void _scrollListener() {
-    if (_scrollController!.position.extentAfter < 200.0) {
-      // Load more posts when the user is close to the end of the list
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+
       _pageNumber++;
       final profileProvider =
       Provider.of<ProfileProvider>(context, listen: false);
@@ -570,8 +568,6 @@ class _ProfilePostsStreamContentState
 
   @override
   Widget build(BuildContext context) {
-    // Use the ProfileProvider here to build your UI based on the fetched posts
-
     return Consumer<ProfileProvider>(builder: (context, provider, child) {
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));

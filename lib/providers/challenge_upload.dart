@@ -5,13 +5,13 @@ import 'package:http/http.dart' as http;
 import '../constants/urls.dart';
 import '../services/token_storage_helper.dart';
 
-class ImageUploadProvider extends ChangeNotifier {
+class ChallengeUploadProvider extends ChangeNotifier {
   bool _isUploading = false;
   String _uploadText = 'Uploading Image...';
   bool get isUploading => _isUploading;
   String get uploadText => _uploadText;
 
-  Future<bool> startUpload(body, image) async {
+  Future<bool> startUpload(body, filepath,filepath2) async {
 
     _isUploading = true;
     _uploadText = 'Uploading Image...';
@@ -22,11 +22,12 @@ class ImageUploadProvider extends ChangeNotifier {
       'Content-Type': 'multipart/form-data'
     };
     if (body != null) {
-      String addimageUrl = '$baseUrl/imageadd';
+      String addimageUrl = '$baseUrl/imagechallengadd';
       var request = http.MultipartRequest('POST', Uri.parse(addimageUrl))
         ..headers.addAll(headers)
         ..fields.addAll(body)
-        ..files.add(await http.MultipartFile.fromPath('image', image));
+        ..files.add(await http.MultipartFile.fromPath('image', filepath))
+        ..files.add(await http.MultipartFile.fromPath('image2', filepath2));
       try {
         var response = await http.Response.fromStream(await request.send());
 
@@ -48,7 +49,6 @@ class ImageUploadProvider extends ChangeNotifier {
 
   void finishUpload( ) {
     _isUploading = false;
-    // _uploadProgress = 0.0;
     _uploadText = 'Upload Complete';
     notifyListeners();
   }
