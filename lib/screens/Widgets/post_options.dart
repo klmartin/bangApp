@@ -14,7 +14,7 @@ import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 import '../Create/video_editing/video_edit.dart';
 import 'dart:io';
 
-Widget postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type,createdAt,widgetType)  {
+Widget postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type,createdAt,postViews,widgetType)  {
   Future<Uint8List> fileToUint8List(File file) async {
     List<int> bytes = await file.readAsBytes();
     return Uint8List.fromList(bytes);
@@ -123,6 +123,29 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                               const SizedBox(
                                 height: 20,
                               ),
+                              Column(
+                                  children: [
+                                    ListTile(
+                                        leading: Icon(
+                                      CupertinoIcons.eye,
+                                      color: Theme.of(context)
+                                          .primaryColor,
+                                    ),
+                                    title: Text(
+                                      "$postViews Views",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge,
+                                    ),
+                                    ),
+                                    Divider(
+                                      height: .5,
+                                      thickness: .5,
+                                      color:
+                                      Colors.grey.shade800,
+                                    )
+                                  ],
+                                ),
                               if (userId == currentUserId)
                                 Column(
                                   children: [

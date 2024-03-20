@@ -61,8 +61,6 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
       ),
     );
   } else if (type == 'video' && isPinned == 0) {
-    print('type3');
-    print(mediaUrl);
     return CustomVideoPlayer(
         videoUrl: mediaUrl,
         cachingVideoUrl: cacheUrl,

@@ -107,7 +107,9 @@ class _UserProfileState extends State<UserProfile> {
             userImage: post['user_image_url'],
             pinned: post['pinned'],
             isLikedB: post['isLikedA'],
-            likeCountB: post['like_count_B']);
+            likeCountB: post['like_count_B'],
+            postViews: post['post_views_count'],
+            );
       }));
     });
   }
@@ -615,6 +617,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].thumbnailUrl,
                                         provider.posts[i].aspectRatio,
                                         provider.posts[i].price,
+                                        provider.posts[i].postViews,
                                         provider,
                                       )));
                         },
@@ -655,6 +658,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].thumbnailUrl,
                                         provider.posts[i].aspectRatio,
                                     provider.posts[i].price,
+                                    provider.posts[i].postViews,
                                         provider,
                                       )));
                         },
@@ -697,6 +701,7 @@ class _ProfilePostsStreamContentState
                                   provider.posts[i].isLikedB,
                                   provider.posts[i].likeCountA,
                                   provider.posts[i].likeCountB,
+                                  provider.posts[i].postViews,
                                   provider,
                                 ),
                               ),
@@ -748,6 +753,7 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].thumbnailUrl,
                                       provider.posts[i].aspectRatio,
                                       provider.posts[i].price,
+                                      provider.posts[i].postViews,
                                       provider)));
                         },
                         child: VideoRect(message: provider.posts[i].imageUrl),
@@ -780,6 +786,7 @@ class _ProfilePostsStreamContentState
                                           provider.posts[i].createdAt!,
                                           provider.posts[i].userImage!,
                                           provider.posts[i].pinned!,
+                                          provider.posts[i].postViews,
                                         )));
                           },
                           child: Row(

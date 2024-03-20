@@ -45,6 +45,7 @@ class PostItem2 extends StatelessWidget {
   String? thumbnailUrl;
   String? aspectRatio;
   String? price;
+  int postViews;
   final String userImage;
 
   PostsProvider myProvider;
@@ -74,6 +75,7 @@ class PostItem2 extends StatelessWidget {
       this.thumbnailUrl,
       this.aspectRatio,
       this.price,
+      this.postViews,
       {required this.myProvider});
 
   Future<Uint8List> fileToUint8List(File file) async {
@@ -94,7 +96,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt, "posts") ??
+                    postId, userId, type, createdAt,postViews, "posts") ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -354,7 +356,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt, "posts") ??
+                    postId, userId, type, createdAt,postViews, "posts") ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -594,7 +596,7 @@ class PostItem2 extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt, "posts") ??
+                    postId, userId, type, createdAt,postViews, "posts") ??
                 Container(),
             buildMediaWidget(context, image, type, width, height, isPinned,
                     cacheUrl, thumbnailUrl, aspectRatio, postId, price) ??
@@ -741,7 +743,7 @@ class PostItem2 extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               postOptions(context, userId, userImage, name, followerCount,
-                      image, postId, userId, type, createdAt, "posts") ??
+                      image, postId, userId, type, createdAt,postViews, "posts") ??
                   Container(),
               SizedBox(
                 height: 400,

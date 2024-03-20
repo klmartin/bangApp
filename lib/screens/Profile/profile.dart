@@ -780,6 +780,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].thumbnailUrl,
                                         provider.posts[i].aspectRatio,
                                         provider.posts[i].price,
+                                        provider.posts[i].postViews,
                                         provider,
                                       )));
                         },
@@ -820,6 +821,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].thumbnailUrl,
                                         provider.posts[i].aspectRatio,
                                         provider.posts[i].price,
+                                        provider.posts[i].postViews,
                                         provider,
                                       )));
                         },
@@ -862,6 +864,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].isLikedB,
                                         provider.posts[i].likeCountA,
                                         provider.posts[i].likeCountB,
+                                        provider.posts[i].postViews,
                                         provider)));
                           },
                           child: Row(
@@ -910,6 +913,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].thumbnailUrl,
                                         provider.posts[i].aspectRatio,
                                         provider.posts[i].price,
+                                        provider.posts[i].postViews,
                                         provider,
                                       )));
                         },
@@ -950,6 +954,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].thumbnailUrl,
                                         provider.posts[i].aspectRatio,
                                         provider.posts[i].price,
+                                        provider.posts[i].postViews,
                                         provider,
                                       )));
                         },
@@ -992,6 +997,7 @@ class _ProfilePostsStreamContentState
                                           provider.posts[i].isLikedB,
                                           provider.posts[i].likeCountA,
                                           provider.posts[i].likeCountB,
+                                          provider.posts[i].postViews,
                                           provider,
                                         )));
                           },
@@ -1041,6 +1047,7 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].thumbnailUrl,
                                       provider.posts[i].aspectRatio,
                                       provider.posts[i].price,
+                                      provider.posts[i].postViews,
                                       provider)));
                         },
                         child: VideoRect(message: provider.posts[i].imageUrl),
@@ -1073,6 +1080,7 @@ class _ProfilePostsStreamContentState
                                           provider.posts[i].createdAt!,
                                           provider.posts[i].userImage!,
                                           provider.posts[i].pinned!,
+                                          provider.posts[i].postViews,
                                         )));
                           },
                           child: Row(

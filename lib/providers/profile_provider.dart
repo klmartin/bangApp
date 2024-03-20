@@ -32,6 +32,8 @@ class ProfileProvider extends ChangeNotifier {
     var minutes = DateTime.now()
         .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
         .inMinutes;
+    print("$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId");
+
     if (minutes >= 15) {
       final response = await get(
         Uri.parse(

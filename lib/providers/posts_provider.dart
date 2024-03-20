@@ -233,6 +233,7 @@ class PostsProvider with ChangeNotifier {
       thumbnailUrl: data['thumbnail_url'],
       aspectRatio: data['aspect_ratio'],
       price: data["price"] ?? '0',
+      postViews: data["post_views_count"] ?? 0,
     );
   }
 

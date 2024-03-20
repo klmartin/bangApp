@@ -488,14 +488,71 @@ class Service {
     }
   }
 
-  Future postCommentReply(
-      BuildContext context, postId, commentId, commentText) async {
+  Future postCommentReply(BuildContext context, postId, commentId, commentText) async
+  {
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       print([commentId, commentText, prefs.getInt('user_id')]);
       final response = await http.post(
         Uri.parse('$baseUrl/postCommentReply'),
+        body: jsonEncode({
+          'comment_id': commentId.toString(),
+          'user_id': prefs.getInt('user_id').toString(),
+          'body': commentText,
+          'post_id': postId,
+        }),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      print(response.body);
+      print('this is reply comment response');
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future postUpdateCommentReply(BuildContext context, postId, commentId, commentText) async
+  {
+    try {
+      final token = await TokenManager.getToken();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      print([commentId, commentText, prefs.getInt('user_id')]);
+      final response = await http.post(
+        Uri.parse('$baseUrl/postUpdateCommentReply'),
+        body: jsonEncode({
+          'comment_id': commentId.toString(),
+          'user_id': prefs.getInt('user_id').toString(),
+          'body': commentText,
+          'post_id': postId,
+        }),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      print(response.body);
+      print('this is reply comment response');
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+
+  Future postBattleCommentReply(BuildContext context, postId, commentId, commentText) async
+  {
+    try {
+      final token = await TokenManager.getToken();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      print([commentId, commentText, prefs.getInt('user_id')]);
+      final response = await http.post(
+        Uri.parse('$baseUrl/postBattleCommentReply'),
         body: jsonEncode({
           'comment_id': commentId.toString(),
           'user_id': prefs.getInt('user_id').toString(),
@@ -599,7 +656,7 @@ class Service {
         },
       );
       print([response.body]);
-      print('commment Delete');
+
       if (response.body.isNotEmpty) {
         return jsonDecode(response.body);
       } else {
@@ -617,6 +674,30 @@ class Service {
       final token = await TokenManager.getToken();
       final response = await http.delete(
         Uri.parse('$baseUrl/deleteBattleComment/$commentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      print([response.body]);
+      print('commment Delete');
+      if (response.body.isNotEmpty) {
+        return jsonDecode(response.body);
+      } else {
+        // Handle the case where response.body is empty
+        return {'error': 'Empty response body'};
+      }
+    } catch (e) {
+      print(e);
+      return {'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteUpdateComment(commentId) async {
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.delete(
+        Uri.parse('$baseUrl/deleteUpdateComment/$commentId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -1183,6 +1264,38 @@ class Service {
         // Handle API error, if necessary
       }
     } catch (e) {
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> editPost(postId, caption) async
+  {
+    print([postId, caption]);
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/editPost'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body:json.encode({
+          'id':postId,
+          'caption':caption,
+        }),
+      );
+      print('this is edit response');
+      print(response.body);
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else {
+        return {};
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      print(e);
+      print('error');
       return {};
     }
   }

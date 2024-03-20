@@ -212,19 +212,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               final userId = userIdSnapshot.data;
                               final isSender = message.senderId == userId;
 
-                              return widget.privacySwitchValue!
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        buildMessagePayment(context,widget.price,widget.conversationId);
-                                      },
-                                      child: Image.network(
-                                        pinnedUrl,
-                                        width: 200,
-                                        height: 200, // Set the desired height
-                                        fit: BoxFit.cover, // Adjust this based on your needs
-                                      ),
-                                    )
-                                  : MSG.Message(
+                              return  MSG.Message(
                                       message: ChatMessage(
                                           text: messages[index].message,
                                           messageType: messages[index]

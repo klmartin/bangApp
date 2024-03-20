@@ -65,7 +65,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
     });
 
     paymentProvider.addListener(() {
-      if (paymentProvider.isFinishPaying == true) {
+      if (paymentProvider.isFinishPaying == true && paymentProvider.payed==true ) {
         postsProvider.deletePinnedById(paymentProvider.payedPost);
       }
     });
@@ -188,6 +188,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
                   post.thumbnailUrl,
                   post.aspectRatio,
                   post.price,
+                  post.postViews,
                   myProvider: postsProvider,
                 )
               ],
@@ -218,6 +219,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
               post.thumbnailUrl,
               post.aspectRatio,
               post.price,
+              post.postViews,
               myProvider: postsProvider,
             );
           }

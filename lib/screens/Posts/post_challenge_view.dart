@@ -32,31 +32,33 @@ class POstChallengeView extends StatefulWidget {
   bool isLikedB;
   int likeCountA;
   int likeCountB;
+  int postViews;
   ProfileProvider? myProvider;
 
   POstChallengeView(
-      this.name,
-      this.caption,
-      this.imgurl,
-      this.challengeImgUrl,
-      this.imgWidth,
-      this.imgHeight,
-      this.postId,
-      this.commentCount,
-      this.userId,
-      this.isLiked,
-      this.likeCount,
-      this.type,
-      this.followerCount,
-      this.created,
-      this.user_image,
-      this.pinnedImage,
-      this.isLikedA,
-      this.isLikedB,
-      this.likeCountA,
-      this.likeCountB,
-      this.myProvider,
-      );
+    this.name,
+    this.caption,
+    this.imgurl,
+    this.challengeImgUrl,
+    this.imgWidth,
+    this.imgHeight,
+    this.postId,
+    this.commentCount,
+    this.userId,
+    this.isLiked,
+    this.likeCount,
+    this.type,
+    this.followerCount,
+    this.created,
+    this.user_image,
+    this.pinnedImage,
+    this.isLikedA,
+    this.isLikedB,
+    this.likeCountA,
+    this.likeCountB,
+    this.postViews,
+    this.myProvider,
+  );
   static const id = 'postview';
   @override
   _POstViewState createState() => _POstViewState();
@@ -92,6 +94,7 @@ class _POstViewState extends State<POstChallengeView> {
               widget.isLikedB,
               widget.likeCountA,
               widget.likeCountB,
+              widget.postViews,
               widget.myProvider!,
             ),
           ),
@@ -122,6 +125,7 @@ class PostCard extends StatefulWidget {
   bool isLikedB;
   int likeCountA;
   int likeCountB;
+  int postViews;
   ProfileProvider? myProvider;
 
   PostCard(
@@ -145,7 +149,10 @@ class PostCard extends StatefulWidget {
       this.isLikedB,
       this.likeCountA,
       this.likeCountB,
-      this.myProvider);
+      this.postViews,
+      this.myProvider,
+
+      );
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -202,7 +209,9 @@ class _PostCardState extends State<PostCard> {
                       widget.postId,
                       widget.userId,
                       widget.type,
-                      widget.createdAt,"profile") ??
+                      widget.createdAt,
+                      widget.postViews,
+                      "profile") ??
                   Container(),
               AspectRatio(
                 aspectRatio: 190 / 120,
@@ -324,7 +333,8 @@ class _PostCardState extends State<PostCard> {
                           onTap: () {
                             final countUpdate = widget.myProvider;
                             countUpdate?.increaseLikes2(widget.postId, 1);
-                            Service().likeAction(widget.postId, "A", widget.userId);
+                            Service()
+                                .likeAction(widget.postId, "A", widget.userId);
                             setState(() {
                               if (widget.isLikedA == false) {
                                 widget.likeCountA++;
@@ -455,7 +465,8 @@ class _PostCardState extends State<PostCard> {
                       context,
                       createRoute(
                         CommentsPage(
-                          postId: widget.postId, userId: widget.userId,
+                          postId: widget.postId,
+                          userId: widget.userId,
                         ),
                       ),
                     );

@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bangapp/providers/user_provider.dart';
 
 class CommentsPage extends StatefulWidget {
   final int? userId;
@@ -22,6 +24,7 @@ class CommentsPage extends StatefulWidget {
 
 class _CommentsPageState extends State<CommentsPage> {
   final formKey = GlobalKey<FormState>();
+
   final TextEditingController commentController = TextEditingController();
   final FocusNode commentFocusNode = FocusNode();
   String commentWriteText = '';
@@ -35,7 +38,6 @@ class _CommentsPageState extends State<CommentsPage> {
     super.initState();
     CircularProgressIndicator();
     _fetchComments();
-    getUserImageFromSharedPreferences();
     commentWriteText = 'Write a comment...';
   }
 
@@ -57,309 +59,283 @@ class _CommentsPageState extends State<CommentsPage> {
     });
   }
 
-  String userImageURL = "";
-  String userName = "";
-
-  void getUserImageFromSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userImageURL = prefs.getString('user_image') ?? "";
-      userName = prefs.getString('name') ?? " ";
-    });
-  }
-
-  Future<int?> handleSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int? currentUserId = prefs.getInt('user_id');
-    // Use currentUserId as needed
-    return currentUserId;
-  }
-
   Widget commentChild(data) {
-    return FutureBuilder(
-        future: handleSharedPreferences(),
-        builder: (context, snapshot) {
-          int? currentUserId = snapshot.data as int?;
-          return ListView(
-            children: [
-              for (var i = 0; i < data.length; i++)
-                currentUserId == data[i]['user_id']
-                    ? Dismissible(
-                        key: Key(data[i]['id'].toString()),
-                        onDismissed: (direction) async {
-                          final response = await Service()
-                              .deleteComment(data[i]['comment_id']);
-                          if (response['message'] ==
-                              'Comment deleted successfully') {
-                            Fluttertoast.showToast(msg: response['message']);
-                          }
-                          setState(() {
-                            data.removeAt(i);
-                          });
+    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    if (userProvider.userData.isEmpty) {
+      userProvider.fetchUserData();
+    }
+    return ListView(
+      children: [
+        for (var i = 0; i < data.length; i++)
+          userProvider.userData['id'] == data[i]['user_id']
+              ? Dismissible(
+                  key: Key(data[i]['id'].toString()),
+                  onDismissed: (direction) async {
+                    final response =
+                        await Service().deleteComment(data[i]['comment_id']);
+                    if (response['message'] == 'Comment deleted successfully') {
+                      Fluttertoast.showToast(msg: response['message']);
+                    }
+                    setState(() {
+                      data.removeAt(i);
+                    });
+                  },
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+                    child: ExpansionTile(
+                      key: Key('expansion_${data[i]['id']}'),
+                      leading: GestureDetector(
+                        onTap: () async {
+                          // Display the image in large form.
+                          print("Comment Clicked");
                         },
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.delete,
-                              color: Colors.white,
+                        child: Container(
+                          height: 50.0,
+                          width: 50.0,
+                          decoration: new BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius:
+                                new BorderRadius.all(Radius.circular(50)),
+                          ),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: CommentBox.commentImageParser(
+                              imageURLorPath: data[i]['pic'],
                             ),
                           ),
                         ),
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
-                          child: ExpansionTile(
-                            key: Key('expansion_${data[i]['id']}'),
+                      ),
+                      title: Text(
+                        data[i]['name'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(data[i]['message'],
+                              style: TextStyle(fontWeight: FontWeight.w500)),
+                          SizedBox(height: 5),
+                          GestureDetector(
+                            onTap: () {
+                              print(data[i]['comment_id']);
+                              setState(() {
+                                replyId = data[i]['comment_id'];
+                                commentWriteText = 'Reply to';
+                                isReply = true;
+                              });
+                              commentController.text = '@${data[i]['name']} ';
+                              FocusScope.of(context)
+                                  .requestFocus(commentFocusNode);
+                            },
+                            child: Text("Reply"),
+                          ),
+                          Center(
+                            child: data[i]['replies_count'] > 0
+                                ? GestureDetector(
+                                    onTap: () async {
+                                      print('comment pressed');
+                                      final response = await Service()
+                                          .getCommentReplies(
+                                              data[i]['comment_id'].toString());
+                                      print(response);
+                                      setState(() {
+                                        replydata = response.map((comment) {
+                                          return {
+                                            'user_image':
+                                                comment['user_image_url'],
+                                            'body': comment['body'] ?? "",
+                                            'user_name': comment['user']
+                                                ['name'],
+                                            'date': comment['created_at'],
+                                          };
+                                        }).toList();
+                                      });
+                                    },
+                                    child: Text(
+                                        '${data[i]['replies_count']} Replies'),
+                                  )
+                                : Container(),
+                          )
+                        ],
+                      ),
+                      trailing:
+                          Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                      children: [
+                        // List of replies goes here
+                        for (var reply in replydata)
+                          ListTile(
                             leading: GestureDetector(
-                              onTap: () async {
-                                // Display the image in large form.
-                                print("Comment Clicked");
-                              },
+                              onTap: () async {},
                               child: Container(
-                                height: 50.0,
-                                width: 50.0,
+                                height: 30.0,
+                                width: 30.0,
                                 decoration: new BoxDecoration(
                                   color: Colors.blue,
                                   borderRadius:
-                                      new BorderRadius.all(Radius.circular(50)),
+                                      new BorderRadius.all(Radius.circular(30)),
                                 ),
                                 child: CircleAvatar(
-                                  radius: 50,
+                                  radius: 30,
                                   backgroundImage:
                                       CommentBox.commentImageParser(
-                                    imageURLorPath: data[i]['pic'],
+                                    imageURLorPath: reply['user_image'],
                                   ),
                                 ),
                               ),
                             ),
                             title: Text(
-                              data[i]['name'],
+                              reply['user_name'],
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            subtitle: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(data[i]['message'],
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w500)),
-                                SizedBox(height: 5),
-                                GestureDetector(
-                                  onTap: () {
-                                    print(data[i]['comment_id']);
-                                    setState(() {
-                                      replyId = data[i]['comment_id'];
-                                      commentWriteText = 'Reply to';
-                                      isReply = true;
-                                    });
-                                    commentController.text =
-                                        '@${data[i]['name']} ';
-                                    FocusScope.of(context)
-                                        .requestFocus(commentFocusNode);
-                                  },
-                                  child: Text("Reply"),
-                                ),
-                                Center(
-                                  child: data[i]['replies_count'] > 0
-                                      ? GestureDetector(
-                                          onTap: () async {
-                                            print('comment pressed');
-                                            final response = await Service()
-                                                .getCommentReplies(data[i]
-                                                        ['comment_id']
-                                                    .toString());
-                                            print(response);
-                                            setState(() {
-                                              replydata =
-                                                  response.map((comment) {
-                                                return {
-                                                  'user_image': comment['user_image_url'],
-                                                  'body': comment['body'] ?? "",
-                                                  'user_name' : comment['user']['name'],
-                                                  'date' : comment['created_at'],
-
-                                                };
-                                              }).toList();
-                                            });
-                                          },
-                                          child: Text(
-                                              '${data[i]['replies_count']} Replies'),
-                                        )
-                                      : Container(),
-                                )
-                              ],
-                            ),
-                            trailing: Text(data[i]['date'],
-                                style: TextStyle(fontSize: 10)),
-                            children: [
-                              // List of replies goes here
-                              for (var reply in replydata)
-                                ListTile(
-                                  leading: GestureDetector(
-                                    onTap: () async {
-
-                                    },
-                                    child: Container(
-                                      height: 30.0,
-                                      width: 30.0,
-                                      decoration: new BoxDecoration(
-                                        color: Colors.blue,
-                                        borderRadius: new BorderRadius.all(Radius.circular(30)),
-                                      ),
-                                      child: CircleAvatar(
-                                        radius: 30,
-                                        backgroundImage: CommentBox.commentImageParser(
-                                          imageURLorPath: reply['user_image'],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  title: Text(
-                                    reply['user_name'],
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  subtitle: Text(reply['body']),
-                                  trailing: Column(
-                                      children:[
-                                        Text(reply['date'], style: TextStyle(fontSize: 7)),
-                                      ]
-
-                                  ),
-                                ),
-                            ],
+                            subtitle: Text(reply['body']),
+                            trailing: Column(children: [
+                              Text(reply['date'],
+                                  style: TextStyle(fontSize: 7)),
+                            ]),
+                          ),
+                      ],
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+                  child: ExpansionTile(
+                    leading: GestureDetector(
+                      onTap: () async {
+                        // Display the image in large form.
+                        print("Comment Clicked");
+                      },
+                      child: Container(
+                        height: 50.0,
+                        width: 50.0,
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius:
+                              new BorderRadius.all(Radius.circular(50)),
+                        ),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: CommentBox.commentImageParser(
+                            imageURLorPath: data[i]['pic'],
                           ),
                         ),
-                      )
-                    : Padding(
-                        padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
-                        child: ExpansionTile(
+                      ),
+                    ),
+                    title: Text(
+                      data[i]['name'],
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(data[i]['message'],
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                        SizedBox(height: 5),
+                        GestureDetector(
+                          onTap: () {
+                            print(data[i]['comment_id']);
+                            setState(() {
+                              replyId = data[i]['comment_id'];
+                              commentWriteText = 'Reply to';
+                              isReply = true;
+                            });
+                            commentController.text = '@${data[i]['name']} ';
+                            FocusScope.of(context)
+                                .requestFocus(commentFocusNode);
+                          },
+                          child: Text("Reply"),
+                        ),
+                        Center(
+                          child: data[i]['replies_count'] > 0
+                              ? GestureDetector(
+                                  onTap: () async {
+                                    print('comment pressed');
+                                    final response = await Service()
+                                        .getCommentReplies(
+                                            data[i]['comment_id'].toString());
+                                    print(response);
+                                    setState(() {
+                                      replydata = response.map((comment) {
+                                        return {
+                                          'user_image':
+                                              comment['user_image_url'],
+                                          'body': comment['body'] ?? "",
+                                          'user_name': comment['user']['name'],
+                                        };
+                                      }).toList();
+                                      repliesChild(replydata);
+                                    });
+                                  },
+                                  child: Text(
+                                      '${data[i]['replies_count']} Replies'),
+                                )
+                              : Container(),
+                        )
+                      ],
+                    ),
+                    trailing:
+                        Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                    children: [
+                      // List of replies goes here
+                      for (var reply in replydata)
+                        ListTile(
                           leading: GestureDetector(
                             onTap: () async {
                               // Display the image in large form.
                               print("Comment Clicked");
                             },
                             child: Container(
-                              height: 50.0,
-                              width: 50.0,
+                              height: 30.0,
+                              width: 30.0,
                               decoration: new BoxDecoration(
                                 color: Colors.blue,
                                 borderRadius:
-                                    new BorderRadius.all(Radius.circular(50)),
+                                    new BorderRadius.all(Radius.circular(30)),
                               ),
                               child: CircleAvatar(
-                                radius: 50,
+                                radius: 30,
                                 backgroundImage: CommentBox.commentImageParser(
-                                  imageURLorPath: data[i]['pic'],
+                                  imageURLorPath: reply['user_image'],
                                 ),
                               ),
                             ),
                           ),
                           title: Text(
-                            data[i]['name'],
+                            reply['user_name'],
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(data[i]['message'],
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.w500)),
-                              SizedBox(height: 5),
-                              GestureDetector(
-                                onTap: () {
-                                  print(data[i]['comment_id']);
-                                  setState(() {
-                                    replyId = data[i]['comment_id'];
-                                    commentWriteText = 'Reply to';
-                                    isReply = true;
-                                  });
-                                  commentController.text =
-                                      '@${data[i]['name']} ';
-                                  FocusScope.of(context)
-                                      .requestFocus(commentFocusNode);
-                                },
-                                child: Text("Reply"),
-                              ),
-                              Center(
-                                child: data[i]['replies_count'] > 0
-                                    ? GestureDetector(
-                                        onTap: () async {
-                                          print('comment pressed');
-                                          final response = await Service()
-                                              .getCommentReplies(data[i]
-                                                      ['comment_id']
-                                                  .toString());
-                                          print(response);
-                                          setState(() {
-                                            replydata = response.map((comment) {
-                                              return {
-                                                'user_image': comment['user_image_url'],
-                                                'body': comment['body'] ?? "",
-                                                'user_name' : comment['user']['name'],
-                                              };
-                                            }).toList();
-                                            repliesChild(replydata);
-                                          });
-                                        },
-                                        child: Text(
-                                            '${data[i]['replies_count']} Replies'),
-                                      )
-                                    : Container(),
-                              )
-                            ],
-                          ),
-                          trailing: Text(data[i]['date'],
-                              style: TextStyle(fontSize: 10)),
-                          children: [
-                            // List of replies goes here
-                            for (var reply in replydata)
-                              ListTile(
-                                leading: GestureDetector(
-                                  onTap: () async {
-                                    // Display the image in large form.
-                                    print("Comment Clicked");
-                                  },
-                                  child: Container(
-                                    height: 30.0,
-                                    width: 30.0,
-                                    decoration: new BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius: new BorderRadius.all(Radius.circular(30)),
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage: CommentBox.commentImageParser(
-                                        imageURLorPath: reply['user_image'] ,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                title: Text(
-                                  reply['user_name'],
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Text(reply['body']),
-                                trailing: Column(
-                                    children:[
-                                      Text(data[i]['date'], style: TextStyle(fontSize: 7)),
-                                    ]
-
-                                ),
-                                // trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
-                              ),
-                          ],
+                          subtitle: Text(reply['body']),
+                          trailing: Column(children: [
+                            Text(data[i]['date'],
+                                style: TextStyle(fontSize: 7)),
+                          ]),
+                          // trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
                         ),
-                      ),
-            ],
-          );
-        });
+                    ],
+                  ),
+                ),
+      ],
+    );
   }
 
   Widget repliesChild(data) {
+    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    if (userProvider.userData.isEmpty) {
+      userProvider.fetchUserData();
+    }
     return ListView.builder(
       itemCount: data.length,
       itemBuilder: (context, index) {
@@ -372,6 +348,10 @@ class _CommentsPageState extends State<CommentsPage> {
   }
 
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    if (userProvider.userData.isEmpty) {
+      userProvider.fetchUserData();
+    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -391,7 +371,7 @@ class _CommentsPageState extends State<CommentsPage> {
       ),
       body: Container(
         child: CommentBox(
-          userImage: NetworkImage(userImageURL),
+          userImage: NetworkImage(userProvider.userData['user_image_url']),
           child: commentChild(filedata),
           labelText: commentWriteText,
           errorText: 'Comment cannot be blank',
@@ -402,8 +382,8 @@ class _CommentsPageState extends State<CommentsPage> {
               if (isReply == false) {
                 setState(() {
                   var value = {
-                    'name': userName,
-                    'pic': userImageURL,
+                    'name': userProvider.userData['name'],
+                    'pic': userProvider.userData['user_image_url'],
                     'message': commentController.text,
                     'date': '2021-01-01 12:00:00',
                     'replies_count': 0,

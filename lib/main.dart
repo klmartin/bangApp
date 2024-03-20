@@ -277,6 +277,7 @@ class _AuthenticateState extends State<Authenticate> {
                 postData[0]['thumbnail_url'],
                 postData[0]['aspect_ratio'],
                 postData[0]['price'],
+                postData[0]['post_views_count'],
                 Provider.of<ProfileProvider>(context, listen: false)),
           ),
         );

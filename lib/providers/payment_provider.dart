@@ -8,12 +8,14 @@ import '../services/token_storage_helper.dart';
 
 class PaymentProvider extends ChangeNotifier {
   bool _isPaying = false;
+  bool _payed = false;
   bool _isFinishPaying = false;
   bool _paymentCanceled = false;
   int _payedPost = 0;
   String _payingText = 'Processing Payment...';
   bool get isPaying => _isPaying;
   bool get isFinishPaying => _isFinishPaying;
+  bool get payed => _payed;
   String get payingText => _payingText;
   int get payedPost => _payedPost;
   bool get paymentCanceled => _paymentCanceled;
@@ -28,16 +30,14 @@ class PaymentProvider extends ChangeNotifier {
   Future<bool> startPaying(phoneNumber, price, postId,type) async {
     _isPaying = true;
     _payedPost = postId;
-    print(postId);
-    print(postId);
     notifyListeners();
     Map<String, dynamic> pay = await AzamPay().checkoutData(phoneNumber, price, postId,type);
     var transactionId = pay['response']['transactionId'];
     // this line is to comment;
     //await AzamPay().saveDummyAzamPay(pay['response']['transactionId']);
      //if(transactionId){
-      _isPaying = false;
-      _processingStatusTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+
+      _processingStatusTimer = Timer.periodic(Duration(seconds: 2), (timer) {
         _fetchPaymentStatus(transactionId);
         notifyListeners();
       });
@@ -47,9 +47,16 @@ class PaymentProvider extends ChangeNotifier {
   }
 
   Future<bool> _fetchPaymentStatus(transactionId) async {
+    print("fetching");
+
     var status = await AzamPay().getPaymentStatus(transactionId);
+    if(status == true ){
+      _payed = true;
+      notifyListeners();
+    }
     if (status == true || _paymentCanceled== true) {
       _isFinishPaying = true;
+      _isPaying = false;
       _processingStatusTimer?.cancel();
       notifyListeners();
     }

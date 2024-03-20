@@ -135,6 +135,7 @@ class _Activity extends State<Activity> {
                 postDetails[0]['cache_url'],
                 postDetails[0]['thumbnail_url'],
                 postDetails[0]['aspect_ratio'],
+                postDetails[0]['post_views_count'],
                 Provider.of<ProfileProvider>(context, listen: false)),
           ),
         );
@@ -181,6 +182,7 @@ class _Activity extends State<Activity> {
                     postDetails[0]['cache_url'],
                     postDetails[0]['thumbnail_url'],
                     postDetails[0]['aspect_ratio'],
+                    postDetails[0]['post_views_count'],
                     Provider.of<ProfileProvider>(context, listen: false)
                 ),
               ),
@@ -222,6 +224,7 @@ class _Activity extends State<Activity> {
                     postDetails[0]['cache_url'],
                     postDetails[0]['thumbnail_url'],
                     postDetails[0]['aspect_ratio'],
+                    postDetails[0]['post_views_count'],
                     Provider.of<ProfileProvider>(context, listen: false)),
               ),
             );

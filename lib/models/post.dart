@@ -13,18 +13,18 @@ class Post {
   int likeCountB;
   int commentCount;
   final int followerCount;
-  var isLiked ;
+  var isLiked;
   int isPinned;
   final List<Challenge> challenges;
   var createdAt;
   var isLikedA;
-  var  isLikedB;
+  var isLikedB;
   final String userImage;
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
   String? price;
-
+  int postViews;
 
   Post({
     required this.postId,
@@ -51,6 +51,7 @@ class Post {
     required this.thumbnailUrl,
     required this.aspectRatio,
     required this.price,
+    required this.postViews,
   });
 }
 
@@ -63,7 +64,7 @@ class Challenge {
   final String type;
   final int confirmed;
 
-  Challenge( {
+  Challenge({
     required this.id,
     required this.postId,
     required this.userId,
@@ -73,4 +74,3 @@ class Challenge {
     required this.confirmed,
   });
 }
-
