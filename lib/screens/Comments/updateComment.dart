@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/providers/user_provider.dart';
 
 import '../../constants/urls.dart';
@@ -407,6 +406,8 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                   print('Error posting comment: $e');
                   // Handle the error as needed
                 }
+                final up = Provider.of<BangUpdateProvider>(context, listen: false);
+                up.updateCommentCount(widget.postId, 1);
                 // widget.myProvider.incrementCommentCountByPostId(widget.postId);
                 commentController.clear();
                 FocusScope.of(context).unfocus();

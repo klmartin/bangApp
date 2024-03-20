@@ -4,6 +4,7 @@ import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/screens/Profile/profile_upload.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -410,20 +411,24 @@ class _EditPageState extends State<EditPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: TextButton(
                         onPressed: () async {
-                          await Service().setUserProfile(
-                              date_of_birth,
-                              int.parse(phoneNumber!),
-                              selectedHobbiesText,
-                              occupation,
-                              _descr,
-                              rimage,
-                              '');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Nav(initialIndex: 0),
-                            ),
-                          );
+                          if(hobbyList.isEmpty){Fluttertoast.showToast(msg: "Please Select Hobbies");}
+                          else if(hobbyList.length < 5){Fluttertoast.showToast(msg: "Please Select More Than 5 Hobbies");}
+                          else{
+                            await Service().setUserProfile(
+                                date_of_birth,
+                                int.parse(phoneNumber!),
+                                selectedHobbiesText,
+                                occupation,
+                                _descr,
+                                rimage,
+                                '');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Nav(initialIndex: 0),
+                              ),
+                            );
+                          }
                         },
                         child: Text(
                           'Update',

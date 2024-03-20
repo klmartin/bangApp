@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/providers/user_provider.dart';
 
 class BattleComment extends StatefulWidget {
@@ -144,11 +143,11 @@ class _BattleCommentState extends State<BattleComment> {
                       child: data[i]['replies_count'] > 0
                           ? GestureDetector(
                         onTap: () async {
-                          print('comment pressed');
+
                           final response = await Service()
                               .getCommentReplies(
                               data[i]['comment_id'].toString());
-                          print(response);
+
                           setState(() {
                             replydata = response.map((comment) {
                               return {
@@ -399,8 +398,7 @@ class _BattleCommentState extends State<BattleComment> {
                   print('Error posting comment: $e');
                   // Handle the error as needed
                 }
-                final battleComment =
-                Provider.of<BoxDataProvider>(context, listen: false);
+                final battleComment = Provider.of<BoxDataProvider>(context, listen: false);
                 battleComment.updateCommentCount(widget.postId);
                 commentController.clear();
                 FocusScope.of(context).unfocus();

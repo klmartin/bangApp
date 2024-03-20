@@ -36,7 +36,7 @@ class _UserProfileState extends State<UserProfile> {
    String myBio = "";
    String myImage = profileUrl;
    int myPostCount = 0;
-   bool? privacySwitchValue ;
+  bool privacySwitchValue = false;
    int myFollowerCount = 0;
    int myFollowingCount = 0;
    String description = "";
@@ -287,12 +287,17 @@ class _UserProfileState extends State<UserProfile> {
                       child: Container(
                     child: OutlinedButton(
                         onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return MessagesScreen(
-                                  widget.userid!, myName, myImage,privacySwitchValue,widget.userid,"0");
-                            }));
-                        },
+    if (privacySwitchValue) {
+    print('this is it nigga');
+    buildFab(1, context);
+    } else {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) {
+            return MessagesScreen(
+                widget.userid!, myName, myImage, privacySwitchValue,
+                widget.userid, "0");
+          }));
+    } },
                         child: Text(
                           'Message',
                           style: TextStyle(color: Colors.black),
@@ -559,7 +564,6 @@ class _ProfilePostsStreamContentState
   void _scrollListener() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-
       _pageNumber++;
       final profileProvider =
       Provider.of<ProfileProvider>(context, listen: false);

@@ -105,9 +105,9 @@ class _AppSettings extends State<AppSettings> {
                   textColor: Colors.white,
                   fontSize: 16.0,
                 );
-                // setState(() {
-                //    value = ;
-                // });
+                setState(() {
+                   value = !userProvider.userData['public'];
+                });
               },
             ),
           ),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -397,19 +398,24 @@ class _FinaleCreateState extends State<FinalCreate>
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(body, filePath);
                                   } else {
-                                    final imageUploadProvider =
-                                        provider.Provider.of<
-                                                ImageUploadProvider>(context,
-                                            listen: false);
-
-                                    imageUploadProvider.startUpload(
-                                        body, compressedImage.path);
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Nav(initialIndex: 0)),
-                                    );
+                                    if (pinPost == 1 &&
+                                        int.parse(price) < 1000) {
+                                      Fluttertoast.showToast(
+                                          msg: "Price is not Set");
+                                    } else {
+                                      final imageUploadProvider =
+                                          provider.Provider.of<
+                                                  ImageUploadProvider>(context,
+                                              listen: false);
+                                      imageUploadProvider.startUpload(
+                                          body, compressedImage.path);
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Nav(initialIndex: 0)),
+                                      );
+                                    }
                                   }
                                 } else if (widget.editedImage != null &&
                                     widget.editedImage2 == null &&
@@ -458,19 +464,25 @@ class _FinaleCreateState extends State<FinalCreate>
                                     await service.addBangUpdate(
                                         body, mediaInfo?.path ?? '');
                                   } else {
-                                    final videoUploadProvider =
-                                        provider.Provider.of<
-                                                VideoUploadProvider>(context,
-                                            listen: false);
+                                    if (pinPost == 1 &&
+                                        int.parse(price) < 1000) {
+                                      Fluttertoast.showToast(
+                                          msg: 'Price is not Set');
+                                    } else {
+                                      final videoUploadProvider =
+                                          provider.Provider.of<
+                                                  VideoUploadProvider>(context,
+                                              listen: false);
 
-                                    videoUploadProvider.startUpload(
-                                        body, widget.editedVideo);
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Nav(initialIndex: 0)),
-                                    );
+                                      videoUploadProvider.startUpload(
+                                          body, widget.editedVideo);
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Nav(initialIndex: 0)),
+                                      );
+                                    }
                                   }
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 != null &&
@@ -486,21 +498,26 @@ class _FinaleCreateState extends State<FinalCreate>
                                     'pinned': pinPost == 1 ? '1' : '0',
                                     'price': price ?? '0',
                                   };
+                                  if (pinPost == 1 && int.parse(price) < 1000) {
+                                    Fluttertoast.showToast(
+                                        msg: "Price is not Set");
+                                  } else {
+                                    final challengeUploadProvider = provider
+                                            .Provider
+                                        .of<ChallengeUploadProvider>(context,
+                                            listen: false);
 
-                                  final challengeUploadProvider =
-                                  provider.Provider.of<
-                                      ChallengeUploadProvider>(context,
-                                      listen: false);
-
-                                  challengeUploadProvider.startUpload(
-                                      body, widget.editedVideo!,widget.editedVideo2!);
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            Nav(initialIndex: 0)),
-                                  );
-
+                                    challengeUploadProvider.startUpload(
+                                        body,
+                                        widget.editedVideo!,
+                                        widget.editedVideo2!);
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Nav(initialIndex: 0)),
+                                    );
+                                  }
                                 } else {
                                   String filePath1 = await saveUint8ListAsFile(
                                       widget.editedImage!, 'image.jpg');
@@ -514,20 +531,24 @@ class _FinaleCreateState extends State<FinalCreate>
                                     'price': price ?? '0',
                                     'type': widget.type!,
                                   };
+                                  if (pinPost == 1 && int.parse(price) < 1000) {
+                                    Fluttertoast.showToast(
+                                        msg: "Price is not Set");
+                                  } else {
+                                    final challengeUploadProvider = provider
+                                            .Provider
+                                        .of<ChallengeUploadProvider>(context,
+                                            listen: false);
 
-                                  final challengeUploadProvider =
-                                  provider.Provider.of<
-                                      ChallengeUploadProvider>(context,
-                                      listen: false);
-
-                                  challengeUploadProvider.startUpload(
-                                      body, filePath1,filePath2);
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            Nav(initialIndex: 0)),
-                                  );
+                                    challengeUploadProvider.startUpload(
+                                        body, filePath1, filePath2);
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Nav(initialIndex: 0)),
+                                    );
+                                  }
                                 }
                                 if (bangUpdate == 1) {
                                   Navigator.pushReplacement(
