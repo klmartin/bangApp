@@ -12,6 +12,7 @@ import '../../providers/payment_provider.dart';
 import '../../services/payment_service.dart';
 import '../../services/service.dart';
 import '../Comments/battleComment.dart';
+import 'package:bangapp/loaders/battle_skeleton.dart';
 
 class SmallBoxCarousel extends StatefulWidget {
   @override
@@ -130,7 +131,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
           builder: (context, provider, child) {
             final boxes = provider.boxes;
             return boxes.isEmpty
-                ? Center(child: CircularProgressIndicator())
+                ? BattleSkeleton()
                 : CarouselSlider(
                     options: CarouselOptions(
                       height: 280,

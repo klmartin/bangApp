@@ -12,12 +12,10 @@ import '../Widgets/post_item2.dart';
 import '../Widgets/small_box2.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/services/service.dart';
-
+import 'package:bangapp/loaders/home_skeleton.dart';
 import '../Widgets/video_upload.dart';
 
-class Home2 extends StatelessWidget  {
-
-
+class Home2 extends StatelessWidget {
   Home2();
   @override
   Widget build(BuildContext context) {
@@ -27,12 +25,13 @@ class Home2 extends StatelessWidget  {
   }
 }
 
-class Home2Content extends StatefulWidget  {
+class Home2Content extends StatefulWidget {
   @override
   _Home2ContentState createState() => _Home2ContentState();
 }
 
-class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClientMixin {
+class _Home2ContentState extends State<Home2Content>
+    with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
 
   final ScrollController _scrollController = ScrollController();
@@ -45,10 +44,13 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
   @override
   void initState() {
     super.initState();
-    videoUploadProvider =Provider.of<VideoUploadProvider>(context, listen: false);
-    imageUploadProvider =Provider.of<ImageUploadProvider>(context, listen: false);
-    paymentProvider = Provider.of<PaymentProvider>(context, listen:false);
-    challengeUploadProvider = Provider.of<ChallengeUploadProvider>(context, listen: false);
+    videoUploadProvider =
+        Provider.of<VideoUploadProvider>(context, listen: false);
+    imageUploadProvider =
+        Provider.of<ImageUploadProvider>(context, listen: false);
+    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    challengeUploadProvider =
+        Provider.of<ChallengeUploadProvider>(context, listen: false);
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     print(_pageNumber);
     print('this is page number');
@@ -58,32 +60,35 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
       if (videoUploadProvider.uploadText == 'Upload Complete') {
         postsProvider.refreshData();
         _scrollController.jumpTo(0);
-        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+        final profileProvider =
+            Provider.of<ProfileProvider>(context, listen: false);
         profileProvider.getMyPosts(1);
       }
-
     });
 
     paymentProvider.addListener(() {
-      if (paymentProvider.isFinishPaying == true && paymentProvider.payed==true ) {
+      if (paymentProvider.isFinishPaying == true &&
+          paymentProvider.payed == true) {
         postsProvider.deletePinnedById(paymentProvider.payedPost);
       }
     });
 
     imageUploadProvider.addListener(() {
-      if(imageUploadProvider.uploadText == 'Upload Complete'){
+      if (imageUploadProvider.uploadText == 'Upload Complete') {
         postsProvider.refreshData();
         _scrollController.jumpTo(0);
-        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+        final profileProvider =
+            Provider.of<ProfileProvider>(context, listen: false);
         profileProvider.getMyPosts(1);
       }
     });
 
     challengeUploadProvider.addListener(() {
-      if(challengeUploadProvider.uploadText == 'Upload Complete'){
+      if (challengeUploadProvider.uploadText == 'Upload Complete') {
         postsProvider.refreshData();
         _scrollController.jumpTo(0);
-        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+        final profileProvider =
+            Provider.of<ProfileProvider>(context, listen: false);
         profileProvider.getMyPosts(1);
       }
     });
@@ -99,8 +104,8 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       _pageNumber++;
-
-      postsProvider.loadMoreData(_pageNumber); // Trigger loading of the next page
+      postsProvider
+          .loadMoreData(_pageNumber); // Trigger loading of the next page
     }
   }
 
@@ -136,7 +141,7 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
   Widget buildPostsView(PostsProvider postsProvider) {
     if (postsProvider.isLoading) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: HomeSkeleton(),
       );
     } else if (postsProvider.isError) {
       return Center(
@@ -161,7 +166,9 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
               children: [
                 SmallBoxCarousel(),
                 imageUploadProvider.isUploading ? ImageUpload() : Container(),
-                challengeUploadProvider.isUploading ? ImageUpload() : Container(),
+                challengeUploadProvider.isUploading
+                    ? ImageUpload()
+                    : Container(),
                 videoUploadProvider.isUploading ? VideoUpload() : Container(),
                 PostItem2(
                   post.postId,
@@ -275,6 +282,3 @@ class _Home2ContentState extends State<Home2Content> with AutomaticKeepAliveClie
     );
   }
 }
-
-
-

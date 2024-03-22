@@ -59,7 +59,7 @@ class _CommentsPageState extends State<CommentsPage> {
   }
 
   Widget commentChild(data) {
-    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
@@ -145,9 +145,7 @@ class _CommentsPageState extends State<CommentsPage> {
                                 ? GestureDetector(
                                     onTap: () async {
                                       print('comment pressed');
-                                      final response = await Service()
-                                          .getCommentReplies(
-                                              data[i]['comment_id'].toString());
+                                      final response = await Service().getCommentReplies(data[i]['comment_id'].toString());
                                       print(response);
                                       setState(() {
                                         replydata = response.map((comment) {
@@ -252,8 +250,7 @@ class _CommentsPageState extends State<CommentsPage> {
                               isReply = true;
                             });
                             commentController.text = '@${data[i]['name']} ';
-                            FocusScope.of(context)
-                                .requestFocus(commentFocusNode);
+                            FocusScope.of(context).requestFocus(commentFocusNode);
                           },
                           child: Text("Reply"),
                         ),
@@ -331,7 +328,7 @@ class _CommentsPageState extends State<CommentsPage> {
   }
 
   Widget repliesChild(data) {
-    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
@@ -347,7 +344,7 @@ class _CommentsPageState extends State<CommentsPage> {
   }
 
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
@@ -405,12 +402,15 @@ class _CommentsPageState extends State<CommentsPage> {
                 FocusScope.of(context).unfocus();
               } else {
                 try {
-                  await Service().postCommentReply(
+                  var response = await Service().postCommentReply(
                     context,
                     widget.postId,
                     replyId,
                     commentController.text,
                   );
+                  commentController.clear();
+                  Fluttertoast.showToast(msg: response['message']);
+                  FocusScope.of(context).unfocus();
                 } catch (e) {
                   print('Error posting comment: $e');
                 }

@@ -16,8 +16,18 @@ class AppSettings extends StatefulWidget {
 class _AppSettings extends State<AppSettings> {
   @override
   var price;
+  late bool pinPost ;
+  late UserProvider userProvider;
+
+
+  void initState() {
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+    pinPost = userProvider.userData['public'] == 1 ? true : false;
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: true);
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +54,7 @@ class _AppSettings extends State<AppSettings> {
           ListTile(
             leading: FaIcon(FontAwesomeIcons.message),
             title: Text("Pin Messages"),
-            subtitle: userProvider.userData['public'] == 1
+            subtitle: pinPost
                 ? TextFormField(
                     decoration: InputDecoration(
                       hintText:
@@ -92,22 +102,29 @@ class _AppSettings extends State<AppSettings> {
                   )
                 : Container(),
             trailing: Switch(
-              value: userProvider.userData['public'] == 1 ? true : false,
-              onChanged: (value) async {
+              value: pinPost,
+              onChanged: (bool value) async {
+                print(pinPost);
+                print('this is pinpost');
+
                 var valueRes = await Service().pinMessage();
                 userProvider.userData['public'] = valueRes['value'];
+                setState(() {
+                  pinPost = !pinPost;
+                  print(pinPost);
+                  print('this is pinpost after');
+
+                });
                 Fluttertoast.showToast(
                   msg: valueRes['message'],
-                  toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
-                  gravity: ToastGravity.CENTER, // Toast position
-                  timeInSecForIosWeb: 1, // Time duration for iOS and web
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
                   backgroundColor: Colors.grey[600],
                   textColor: Colors.white,
                   fontSize: 16.0,
                 );
-                setState(() {
-                   value = !userProvider.userData['public'];
-                });
+
               },
             ),
           ),

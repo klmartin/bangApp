@@ -398,10 +398,10 @@ class _FinaleCreateState extends State<FinalCreate>
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(body, filePath);
                                   } else {
-                                    if (pinPost == 1 &&
-                                        int.parse(price) < 1000) {
-                                      Fluttertoast.showToast(
-                                          msg: "Price is not Set");
+                                    if (pinPost == 1 && price == null) {
+                                      Fluttertoast.showToast(msg: "Price is not set");
+                                    } else if (pinPost == 1 && (price.isEmpty || int.parse(price) < 1000)) {
+                                      Fluttertoast.showToast(msg: "Price is not set or less than 1000");
                                     } else {
                                       final imageUploadProvider =
                                           provider.Provider.of<
@@ -464,10 +464,10 @@ class _FinaleCreateState extends State<FinalCreate>
                                     await service.addBangUpdate(
                                         body, mediaInfo?.path ?? '');
                                   } else {
-                                    if (pinPost == 1 &&
-                                        int.parse(price) < 1000) {
-                                      Fluttertoast.showToast(
-                                          msg: 'Price is not Set');
+                                    if (pinPost == 1 && price == null) {
+                                      Fluttertoast.showToast(msg: "Price is not set");
+                                    } else if (pinPost == 1 && (price.isEmpty || int.parse(price) < 1000)) {
+                                      Fluttertoast.showToast(msg: "Price is not set or less than 1000");
                                     } else {
                                       final videoUploadProvider =
                                           provider.Provider.of<
@@ -531,9 +531,10 @@ class _FinaleCreateState extends State<FinalCreate>
                                     'price': price ?? '0',
                                     'type': widget.type!,
                                   };
-                                  if (pinPost == 1 && int.parse(price) < 1000) {
-                                    Fluttertoast.showToast(
-                                        msg: "Price is not Set");
+                                  if (pinPost == 1 && price == null) {
+                                    Fluttertoast.showToast(msg: "Price is not set");
+                                  } else if (pinPost == 1 && (price.isEmpty || int.parse(price) < 1000)) {
+                                    Fluttertoast.showToast(msg: "Price is not set or less than 1000");
                                   } else {
                                     final challengeUploadProvider = provider
                                             .Provider
@@ -549,19 +550,6 @@ class _FinaleCreateState extends State<FinalCreate>
                                               Nav(initialIndex: 0)),
                                     );
                                   }
-                                }
-                                if (bangUpdate == 1) {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Nav(initialIndex: 1)));
-                                } else {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Nav(initialIndex: 0)));
                                 }
                               } finally {
                                 setState(() {

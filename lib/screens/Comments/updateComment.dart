@@ -63,7 +63,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
 
   Widget commentChild(data) {
 
-    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
@@ -149,9 +149,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                           ? GestureDetector(
                         onTap: () async {
                           print('comment pressed');
-                          final response = await Service()
-                              .getCommentReplies(
-                              data[i]['comment_id'].toString());
+                          final response = await Service().getUpdateCommentReplies(data[i]['comment_id'].toString());
                           print(response);
                           setState(() {
                             replydata = response.map((comment) {
@@ -159,8 +157,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                                 'user_image':
                                 comment['user_image_url'],
                                 'body': comment['body'] ?? "",
-                                'user_name': comment['user']
-                                ['name'],
+                                'user_name': comment['user']['name'],
                                 'date': comment['created_at'],
                               };
                             }).toList();
@@ -277,6 +274,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                               comment['user_image_url'],
                               'body': comment['body'] ?? "",
                               'user_name': comment['user']['name'],
+                              'date': comment['created_at'],
                             };
                           }).toList();
                           repliesChild(replydata);
@@ -337,7 +335,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
 
 
   Widget repliesChild(data) {
-    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
@@ -354,7 +352,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: true);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
@@ -406,19 +404,30 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                   print('Error posting comment: $e');
                   // Handle the error as needed
                 }
+                commentController.clear();
+                FocusScope.of(context).unfocus();
                 final up = Provider.of<BangUpdateProvider>(context, listen: false);
                 up.updateCommentCount(widget.postId, 1);
                 // widget.myProvider.incrementCommentCountByPostId(widget.postId);
-                commentController.clear();
-                FocusScope.of(context).unfocus();
               } else {
                 try {
-                  await Service().postUpdateCommentReply(
+                  var value = {
+                    'name': userProvider.userData['name'],
+                    'pic': userProvider.userData['user_image_url'],
+                    'message': commentController.text,
+                    'date': '2021-01-01 12:00:00',
+                    'replies_count': 0,
+                  };
+                  //replydata.insert(0, value);
+                  var response = await Service().postUpdateCommentReply(
                     context,
                     widget.postId,
                     replyId,
                     commentController.text,
                   );
+                  commentController.clear();
+                  Fluttertoast.showToast(msg: response['message']);
+                  FocusScope.of(context).unfocus();
                 } catch (e) {
                   print('Error posting comment: $e');
                 }

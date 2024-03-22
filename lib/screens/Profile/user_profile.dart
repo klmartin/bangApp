@@ -12,10 +12,12 @@ import 'package:provider/provider.dart';
 import '../../message/screens/messages/message_screen.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
+import '../../providers/payment_provider.dart';
 import '../../widgets/build_media.dart';
 import '../../widgets/video_rect.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
+import 'package:bangapp/providers/user_provider.dart';
 
 List<dynamic> followinglist = [];
 bool _persposts = true;
@@ -289,7 +291,7 @@ class _UserProfileState extends State<UserProfile> {
                         onPressed: () {
     if (privacySwitchValue) {
     print('this is it nigga');
-    buildFab(1, context);
+    buildMessagePayment(context,1000,10);
     } else {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) {
@@ -816,120 +818,85 @@ class _ProfilePostsStreamContentState
   }
 }
 
-buildFab(value, BuildContext context) {
+buildMessagePayment(BuildContext context, price, postId) {
+  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
   return showModalBottomSheet(
-    isScrollControlled: true,
     context: context,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10.0),
     ),
     builder: (BuildContext context) {
-      return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Center(
-                child: Text(
-                  'This User has Pinned Messaging',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
+      return Builder(
+        builder: (BuildContext innerContext) {
+          final userProvider = Provider.of<UserProvider>(innerContext);
+          final TextEditingController phoneNumberController =
+          TextEditingController(
+            text: userProvider.userData['phone_number'].toString(),
+          );
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Center(
+                    child: Text(
+                      'Pay to Chat $price Tshs',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                TextField(
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  controller: phoneNumberController,
+                  decoration: InputDecoration(
+                    labelText: 'Phone number',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(Icons.phone),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                ),
+                paymentProvider.isPaying
+                    ? CircularProgressIndicator()
+                    : TextButton(
+                    onPressed: () async {
+                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, postId, 'message');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors
+                          .red, // Set the background color of the button
+                    ),
+                    child: Text(
+                      'Pay',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    )),
+              ],
             ),
-            Divider(),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.circle_fill,
-                color: Colors.green,
-                size: 25.0,
-              ),
-              title: Text('Pay'),
-              trailing: Text('500 tshs'),
-              subtitle: Text('to Message this User'),
-              onTap: () {
-                Navigator.pop(context);
-                buildPayments('value', context);
-              },
-            ),
-          ],
-        ),
+          );
+        },
       );
     },
-  );
+  ).then((result) {
+    var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    paymentProvider.paymentCanceled = true;
+    print( paymentProvider.isPaying);
+    print('Modal bottom sheet closed: $result');
+  });
 }
 
-buildPayments(value, BuildContext context) {
-  return showModalBottomSheet(
-    isScrollControlled: true,
-    context: context,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10.0),
-    ),
-    builder: (BuildContext context) {
-      return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Center(
-                child: Text(
-                  'Packages',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ),
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.circle_fill,
-                color: Colors.blue.shade600,
-                size: 25.0,
-              ),
-              title: Text('Tigo Pesa'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.circle_fill,
-                color: Colors.red.shade600,
-                size: 25.0,
-              ),
-              title: Text('Airtel Money'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.circle_fill,
-                color: Colors.red,
-                size: 25.0,
-              ),
-              title: Text('M-pesa'),
-              onTap: () async {},
-            ),
-            ListTile(
-              leading: Icon(
-                CupertinoIcons.circle_fill,
-                color: Colors.yellowAccent,
-                size: 25.0,
-              ),
-              title: Text('Halo-pesa'),
-              onTap: () {},
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}

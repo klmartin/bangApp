@@ -358,6 +358,60 @@ class Service {
     }
   }
 
+  Future<List<dynamic>> getBattleCommentReplies(String commentId) async {
+    try {
+      print(commentId);
+      print('the postId');
+      print('$baseUrl/getBattleCommentsReplies/$commentId');
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse('$baseUrl/getBattleCommentsReplies/$commentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+        return responseData['commentsReplies'];
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e);
+      return ['err'];
+      // Handle exceptions, if any
+    }
+  }
+
+  Future<List<dynamic>> getUpdateCommentReplies(String commentId) async {
+    try {
+      print(commentId);
+      print('the postId');
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse('$baseUrl/getUpdateCommentsReplies/$commentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+        return responseData['commentsReplies'];
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e);
+      return ['err'];
+      // Handle exceptions, if any
+    }
+  }
+
+
   Future<List<Hobby>> fetchHobbies() async {
     final token = await TokenManager.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -446,7 +500,8 @@ class Service {
           'Content-Type': 'application/json', // Include other headers as needed
         },
       );
-
+  print(json.decode(response.body));
+  print('battle response');
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['comments'];
