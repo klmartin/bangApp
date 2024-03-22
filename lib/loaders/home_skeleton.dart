@@ -165,7 +165,6 @@ List<Challenge> parseChallenges(List<dynamic> challengesData) {
     return Skeletonizer(
       enabled: _enabled,
       child: ListView.builder(
-        key: const PageStorageKey<String>('page'),
         itemCount: postData.length + 1,
         itemBuilder: (context, index) {
           final post = postData[index];

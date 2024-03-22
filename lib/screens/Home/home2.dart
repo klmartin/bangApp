@@ -270,7 +270,7 @@ class _Home2ContentState extends State<Home2Content>
             onPressed: () {
               final postsProvider =
                   Provider.of<PostsProvider>(context, listen: false);
-              postsProvider.fetchData(_pageNumber);
+              postsProvider.refreshData();
             },
             child: const Text(
               "Retry",

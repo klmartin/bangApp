@@ -22,6 +22,9 @@ import 'package:bangapp/models/image_post.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:bangapp/providers/user_provider.dart';
+import 'package:bangapp/loaders/profile_header_skeleton.dart';
+import 'package:bangapp/loaders/profile_posts_skeleton.dart';
+import 'package:bangapp/loaders/profile_updates_skeleton.dart';
 
 class Profile extends StatefulWidget {
   final int? id;
@@ -77,305 +80,320 @@ class _ProfileState extends State<Profile> {
       userProvider.fetchUserData();
     }
     // Build your UI using the imagePosts list
-    return ListView(
-      key: const PageStorageKey<String>('profile'),
-      controller: _scrollController,
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
-              child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                      color: Colors.red.shade100,
-                      borderRadius: BorderRadius.circular(25),
-                      image: DecorationImage(
-                        image: CachedNetworkImageProvider(
-                            userProvider.userData['user_image_url'] ?? ""),
-                        fit: BoxFit.cover,
-                      )),
-                  child: rimage != null
-                      ? Image.file(
-                          File(rimage),
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        )
-                      : Container()),
-            ),
-            SizedBox(width: 150),
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
-              child: InkWell(
-                onTap: () {
-                  print('no fat');
-                  openFilterDialog(context);
-                },
-                child: Container(
-                  margin: EdgeInsets.only(right: 10),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Ionicons.person_add_outline,
-                        color: Theme.of(context).colorScheme.secondary,
-                        size: 30,
-                      ),
-                      Text(
-                        'Buy Followers',
-                        style: TextStyle(
-                          fontSize: 14.5,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            userProvider.userData['name'],
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Metropolis',
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: RichText(
-            overflow: TextOverflow.clip,
-            strutStyle: StrutStyle(fontSize: 12.0),
-            text: TextSpan(
-                style: TextStyle(color: Colors.black, fontFamily: 'Metropolis'),
-                text: userProvider.userData!['bio']),
-          ),
-        ),
-        Row(
-          children: <Widget>[
-            Expanded(
-                child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditPage(
-                            nameController: TextEditingController(),
-                            userImage: userProvider.userData!['user_image_url'],
-                            name: userProvider.userData!['name'],
-                            date_of_birth: DateTime.parse(
-                                userProvider.userData!['date_of_birth']),
-                            phoneNumber: int.parse(
-                                userProvider.userData!['phone_number']),
-                            selectedHobbiesText: selectedHobbiesText,
-                            occupation: userProvider.userData!['occupation'],
-                            bio: userProvider.userData!['bio'],
-                            occupationController: TextEditingController(),
-                            dateOfBirthController: TextEditingController(),
-                            phoneNumberController: TextEditingController(),
-                            bioController: TextEditingController(),
-                          ),
-                        ));
-                  },
-                  child: Text(
-                    'Edit profile',
-                    style: TextStyle(color: Colors.black),
-                  )),
-            )),
-            SizedBox(width: 10),
-            Expanded(
-                child: Container(
-              child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AppSettings(),
-                        ));
-                  },
-                  child: Text(
-                    'Settings',
-                    style: TextStyle(color: Colors.black),
-                  )),
-            )),
-          ],
-        ),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return userProvider.userData.isEmpty
+        ? ProfileHeaderSkeleton()
+        : ListView(
+            key: const PageStorageKey<String>('profile'),
+            controller: _scrollController,
             children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5.0),
-                    child: Text(
-                      // '$posts',
-                      userProvider.userData!['postCount'].toString(),
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          fontFamily: 'Metropolis'),
-                    ),
-                  ),
-                  Text(
-                    'Posts',
-                    style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: FaIcon(
-                  FontAwesomeIcons.ellipsisV,
-                  size: 10,
-                  color: Colors.grey,
-                ),
-              ),
-              Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5.0),
-                    child: Text(
-                      // '$followers',
-                      userProvider.userData!['followerCount'].toString(),
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          fontFamily: 'Metropolis'),
-                    ),
-                  ),
-                  Text(
-                    'Followers',
-                    style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: FaIcon(
-                  FontAwesomeIcons.ellipsisV,
-                  size: 10,
-                  color: Colors.grey,
-                ),
-              ),
-              Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
-                    child: Text(
-                      // '$following',
-                      userProvider.userData!['followingCount'].toString(),
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          fontFamily: 'Metropolis'),
-                    ),
-                  ),
-                  Text(
-                    'Friends',
-                    style: TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                  )
-                ],
-              ),
-            ]),
-        Container(
-          width: 500,
-          height: 500,
-          child: Column(
-            children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Expanded(
-                    child: Material(
-                        type: MaterialType
-                            .transparency, //Makes it usable on any background color, thanks @IanSmith
-                        child: Ink(
-                          decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color:
-                                        _persposts ? Colors.black : Colors.grey,
-                                    width: 0.5)),
-                            color: Colors.white,
-                            shape: BoxShape.rectangle,
-                          ),
-                          child: InkWell(
-                            //This keeps the splash effect within the circle
-                            borderRadius: BorderRadius.circular(
-                                1000), //Something large to ensure a circle
-                            onTap: () {
-                              setState(() {
-                                _persposts = true;
-                              });
-                            },
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(20.0),
-                                child: FaIcon(
-                                  FontAwesomeIcons.thLarge,
-                                  color:
-                                      _persposts ? Colors.black : Colors.grey,
-                                  size: 15,
-                                ),
-                              ),
-                            ),
-                          ),
-                        )),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
+                    child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                            color: Colors.red.shade100,
+                            borderRadius: BorderRadius.circular(25),
+                            image: DecorationImage(
+                              image: CachedNetworkImageProvider(
+                                  userProvider.userData['user_image_url'] ??
+                                      ""),
+                              fit: BoxFit.cover,
+                            )),
+                        child: rimage != null
+                            ? Image.file(
+                                File(rimage),
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              )
+                            : Container()),
                   ),
-                  Expanded(
-                    child: Material(
-                      type: MaterialType
-                          .transparency, //Makes it usable on any background color, thanks @IanSmith
-                      child: Ink(
-                          decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color:
-                                        _persposts ? Colors.grey : Colors.black,
-                                    width: 0.5)),
-                            color: Colors.white,
-                            shape: BoxShape.rectangle,
-                          ),
-                          child: InkWell(
-                            //This keeps the splash effect within the circle
-                            borderRadius: BorderRadius.circular(
-                                1000.0), //Something large to ensure a circle
-                            onTap: () {
-                              setState(() {
-                                _persposts = false;
-                              });
-                            },
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(20.0),
-                                child: FaIcon(
-                                  FontAwesomeIcons.userTag,
-                                  size: 15,
-                                  color:
-                                      _persposts ? Colors.grey : Colors.black,
-                                ),
-                              ),
+                  SizedBox(width: 150),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
+                    child: InkWell(
+                      onTap: () {
+                        print('no fat');
+                        openFilterDialog(context);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(right: 10),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Ionicons.person_add_outline,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 30,
                             ),
-                          )),
+                            Text(
+                              'Buy Followers',
+                              style: TextStyle(
+                                fontSize: 14.5,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-              _persposts
-                  ? Expanded(child: ProfilePostsStream())
-                  : Expanded(child: Update()),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  userProvider.userData['name'],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Metropolis',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: RichText(
+                  overflow: TextOverflow.clip,
+                  strutStyle: StrutStyle(fontSize: 12.0),
+                  text: TextSpan(
+                      style: TextStyle(
+                          color: Colors.black, fontFamily: 'Metropolis'),
+                      text: userProvider.userData!['bio']),
+                ),
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditPage(
+                                  nameController: TextEditingController(),
+                                  userImage:
+                                      userProvider.userData!['user_image_url'],
+                                  name: userProvider.userData!['name'],
+                                  date_of_birth: DateTime.parse(
+                                      userProvider.userData!['date_of_birth']),
+                                  phoneNumber: int.parse(
+                                      userProvider.userData!['phone_number']),
+                                  selectedHobbiesText: selectedHobbiesText,
+                                  occupation:
+                                      userProvider.userData!['occupation'],
+                                  bio: userProvider.userData!['bio'],
+                                  occupationController: TextEditingController(),
+                                  dateOfBirthController:
+                                      TextEditingController(),
+                                  phoneNumberController:
+                                      TextEditingController(),
+                                  bioController: TextEditingController(),
+                                ),
+                              ));
+                        },
+                        child: Text(
+                          'Edit profile',
+                          style: TextStyle(color: Colors.black),
+                        )),
+                  )),
+                  SizedBox(width: 10),
+                  Expanded(
+                      child: Container(
+                    child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AppSettings(),
+                              ));
+                        },
+                        child: Text(
+                          'Settings',
+                          style: TextStyle(color: Colors.black),
+                        )),
+                  )),
+                ],
+              ),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 5.0),
+                          child: Text(
+                            // '$posts',
+                            userProvider.userData!['postCount'].toString(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontFamily: 'Metropolis'),
+                          ),
+                        ),
+                        Text(
+                          'Posts',
+                          style:
+                              TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: FaIcon(
+                        FontAwesomeIcons.ellipsisV,
+                        size: 10,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 5.0),
+                          child: Text(
+                            // '$followers',
+                            userProvider.userData!['followerCount'].toString(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontFamily: 'Metropolis'),
+                          ),
+                        ),
+                        Text(
+                          'Followers',
+                          style:
+                              TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: FaIcon(
+                        FontAwesomeIcons.ellipsisV,
+                        size: 10,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: Text(
+                            // '$following',
+                            userProvider.userData!['followingCount'].toString(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontFamily: 'Metropolis'),
+                          ),
+                        ),
+                        Text(
+                          'Friends',
+                          style:
+                              TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                        )
+                      ],
+                    ),
+                  ]),
+              Container(
+                width: 500,
+                height: 500,
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Material(
+                              type: MaterialType
+                                  .transparency, //Makes it usable on any background color, thanks @IanSmith
+                              child: Ink(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                      bottom: BorderSide(
+                                          color: _persposts
+                                              ? Colors.black
+                                              : Colors.grey,
+                                          width: 0.5)),
+                                  color: Colors.white,
+                                  shape: BoxShape.rectangle,
+                                ),
+                                child: InkWell(
+                                  //This keeps the splash effect within the circle
+                                  borderRadius: BorderRadius.circular(
+                                      1000), //Something large to ensure a circle
+                                  onTap: () {
+                                    setState(() {
+                                      _persposts = true;
+                                    });
+                                  },
+                                  child: Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(20.0),
+                                      child: FaIcon(
+                                        FontAwesomeIcons.thLarge,
+                                        color: _persposts
+                                            ? Colors.black
+                                            : Colors.grey,
+                                        size: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )),
+                        ),
+                        Expanded(
+                          child: Material(
+                            type: MaterialType
+                                .transparency, //Makes it usable on any background color, thanks @IanSmith
+                            child: Ink(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                      bottom: BorderSide(
+                                          color: _persposts
+                                              ? Colors.grey
+                                              : Colors.black,
+                                          width: 0.5)),
+                                  color: Colors.white,
+                                  shape: BoxShape.rectangle,
+                                ),
+                                child: InkWell(
+                                  //This keeps the splash effect within the circle
+                                  borderRadius: BorderRadius.circular(
+                                      1000.0), //Something large to ensure a circle
+                                  onTap: () {
+                                    setState(() {
+                                      _persposts = false;
+                                    });
+                                  },
+                                  child: Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(20.0),
+                                      child: FaIcon(
+                                        FontAwesomeIcons.userTag,
+                                        size: 15,
+                                        color: _persposts
+                                            ? Colors.grey
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                          ),
+                        ),
+                      ],
+                    ),
+                    _persposts
+                        ? Expanded(child: ProfilePostsStream())
+                        : Expanded(child: Update()),
+                  ],
+                ),
+              )
             ],
-          ),
-        )
-      ],
-    );
+          );
   }
 
   void updateSelectedHobbiesText() {
@@ -676,7 +694,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
               ]),
         );
       } else {
-        return Center(child: CircularProgressIndicator());
+        return ProfileUpdateSkeleton();
       }
     });
   }
@@ -731,7 +749,6 @@ class _ProfilePostsStreamContentState
   @override
   Widget build(BuildContext context) {
     // Use the ProfileProvider here to build your UI based on the fetched posts
-
     return Consumer<ProfileProvider>(builder: (context, provider, child) {
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));
@@ -1100,7 +1117,7 @@ class _ProfilePostsStreamContentState
               ]),
         );
       } else {
-        return Center(child: CircularProgressIndicator());
+        return ProfilePostSkeleton();
       }
     });
   }

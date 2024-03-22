@@ -12,6 +12,7 @@ import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/screens/Posts/notificationView_model.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../services/token_storage_helper.dart';
+import 'package:bangapp/loaders/notification_skeleton.dart';
 
 class Activity extends StatefulWidget {
   @override
@@ -262,10 +263,7 @@ class _Activity extends State<Activity> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: isLoading
-            ? Center(
-                child:
-                    CircularProgressIndicator(), // Display a loading indicator
-              )
+            ? NotificationSkeleton()
             : ListView.builder(
                 key: const PageStorageKey<String>('notification'),
                 controller: _scrollController, // Attach the ScrollController

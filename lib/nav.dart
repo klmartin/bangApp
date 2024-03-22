@@ -46,8 +46,6 @@ class _NavState extends State<Nav> {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     chatProvider.getTotalUnreadMessages();
 
-    
-
 
   }
 
@@ -60,7 +58,6 @@ class _NavState extends State<Nav> {
   }
 
   Widget build(BuildContext context) {
-
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,

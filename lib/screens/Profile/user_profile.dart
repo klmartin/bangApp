@@ -18,6 +18,9 @@ import '../../widgets/video_rect.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
 import 'package:bangapp/providers/user_provider.dart';
+import 'package:bangapp/loaders/profile_header_skeleton.dart';
+import 'package:bangapp/loaders/profile_posts_skeleton.dart';
+import 'package:bangapp/loaders/profile_updates_skeleton.dart';
 
 List<dynamic> followinglist = [];
 bool _persposts = true;
@@ -290,7 +293,6 @@ class _UserProfileState extends State<UserProfile> {
                     child: OutlinedButton(
                         onPressed: () {
     if (privacySwitchValue) {
-    print('this is it nigga');
     buildMessagePayment(context,1000,10);
     } else {
       Navigator.push(context,
@@ -513,7 +515,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
               ]),
         );
       } else {
-        return Center(child: CircularProgressIndicator());
+        return ProfileUpdateSkeleton();
       }
     });
   }
@@ -812,7 +814,7 @@ class _ProfilePostsStreamContentState
               ]),
         );
       } else {
-        return Center(child: CircularProgressIndicator());
+        return ProfilePostSkeleton();
       }
     });
   }
