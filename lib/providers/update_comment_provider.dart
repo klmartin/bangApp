@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-
 import 'package:bangapp/services/service.dart';
-import '../models/comment.dart';
+import 'package:bangapp/models/UpdateComment.dart';
 
-class CommentProvider extends ChangeNotifier {
-  List<Comment> _comments = [];
-  List<Comment>? get comments => _comments;
+class UpdateCommentProvider extends ChangeNotifier {
+  List<UpdateComment> _comments = [];
+
+  List<UpdateComment>? get comments => _comments;
   bool _loading = false;
   bool _postingLoading = false;
   bool get loading => _loading;
   bool get postingLoading => _postingLoading;
 
   Future<void> fetchCommentsForPost(int postId) async {
-    print('fetching comments');
+    _comments.clear();
     _loading = true;
     notifyListeners();
-    final Map<String, dynamic> response = await Service().getComments(postId.toString());
+    final Map<String, dynamic> response =
+        await Service().getUpdateComments(postId.toString());
     if (response != null && response.containsKey('comments')) {
       final List<dynamic> commentsData = response['comments'];
-      print(commentsData);
-      print('comments data');
-      _comments = commentsData.map((commentData) => Comment.fromJson(commentData)).toList();
+      _comments = commentsData
+          .map((commentData) => UpdateComment.fromJson(commentData))
+          .toList();
       _loading = false;
-      print('new comment data');
       notifyListeners();
     } else {
       _loading = false;
@@ -31,16 +31,37 @@ class CommentProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addComment(context,postId,commentText, userId) async {
+  Future<void> addComment(context, postId, commentText) async {
     _postingLoading = true;
     notifyListeners();
-    var response = await Service().postComment(context, postId, commentText, userId);
-    if(response != null && response.containsKey('data')){
+    var response = await Service().postUpdateComment(postId, commentText);
+    if (response != null && response.containsKey('data')) {
       var newCommentData = response['data'];
-      Comment newComment = Comment.fromJson(newCommentData);
+      UpdateComment newComment = UpdateComment.fromJson(newCommentData);
       _comments.insert(0, newComment);
       _postingLoading = false;
       notifyListeners();
+    } else {
+      _postingLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> addCommentReply(context, commentId, postId, commentText) async {
+    _postingLoading = true;
+    var response = await Service().postUpdateCommentReply(context, postId, commentId, commentText);
+    if(response != null && response.containsKey('data')){
+      var newReplyData = response['data'];
+      CommentReplies newReply = CommentReplies.fromJson(newReplyData);
+      int commentIndex =
+      _comments.indexWhere((comment) => comment.id == commentId);
+      if (commentIndex != -1) {
+        _comments[commentIndex].commentReplies!.insert(0, newReply);
+        _comments[commentIndex].repliesCount =
+            _comments[commentIndex].repliesCount! + 1;
+        _postingLoading = false;
+        notifyListeners();
+      }
     }
     else{
       _postingLoading = false;
@@ -49,32 +70,10 @@ class CommentProvider extends ChangeNotifier {
 
   }
 
-  Future<void> addCommentReply(context, commentId, postId, commentText) async {
-    _postingLoading = true;
-    notifyListeners();
-    var response = await Service().postCommentReply(context, postId, commentId, commentText);
-    if (response != null && response.containsKey('data')) {
-      var newReplyData = response['data'];
-      CommentReplies newReply = CommentReplies.fromJson(newReplyData);
-      int commentIndex = _comments.indexWhere((comment) => comment.id == commentId);
-      if (commentIndex != -1) {
-        _comments[commentIndex].commentReplies!.insert(0, newReply);
-        _comments[commentIndex].repliesCount = _comments[commentIndex].repliesCount! + 1;
-        _postingLoading = false;
-        notifyListeners();
-      }
-    } else {
-      _postingLoading = false;
-      notifyListeners();
-      print('Error: Invalid response or missing data field.');
-      // Handle the error case here, such as showing a message to the user.
-    }
-  }
-
   Future<void> deleteComment(int commentId) async {
     _postingLoading = true;
     notifyListeners();
-    final response = await Service().deleteComment(commentId);
+    final response = await Service().deleteUpdateComment(commentId);
     if (response['message'] == "Comment deleted") {
       _comments.removeWhere((comment) => comment.id == commentId);
       _postingLoading = false;
@@ -85,5 +84,4 @@ class CommentProvider extends ChangeNotifier {
       throw Exception('Failed to delete comment');
     }
   }
-
 }

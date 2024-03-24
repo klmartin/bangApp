@@ -6,7 +6,7 @@ class ImagePost {
   int? imgWidth;
   int? imgHeight;
   int? postId;
-  int? commentCount;
+  int commentCount;
   int? userId;
   bool isLikedA;
   bool isLikedB;
@@ -31,7 +31,7 @@ class ImagePost {
     this.imgWidth,
     this.imgHeight,
     this.postId,
-    this.commentCount,
+    required this.commentCount,
     this.userId,
     required this.isLikedA,
     required this.isLikedB,

@@ -169,6 +169,22 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+  void incrementCommentCountByPostId(int postId) {
+    try {
+      // ignore: unrelated_type_equality_checks
+      final post = _posts.firstWhere((update) => update.postId == postId);
+
+      if (post != null) {
+        post.commentCount++;
+        notifyListeners();
+      } else {
+        // Iterate through _posts and print all postIds
+        posts?.forEach((post) {});
+      }
+    } catch (e) {}
+  }
+
+
   void deletePostById(int postId) {
     _posts.removeWhere((post) => post.postId == postId);
     _isLoading = true;
@@ -226,4 +242,5 @@ class ProfileProvider extends ChangeNotifier {
       notifyListeners();
     } else {}
   }
+
 }

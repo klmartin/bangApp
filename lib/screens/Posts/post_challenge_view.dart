@@ -33,7 +33,7 @@ class POstChallengeView extends StatefulWidget {
   int likeCountA;
   int likeCountB;
   int postViews;
-  ProfileProvider? myProvider;
+  ProfileProvider myProvider;
 
   POstChallengeView(
     this.name,
@@ -57,7 +57,7 @@ class POstChallengeView extends StatefulWidget {
     this.likeCountA,
     this.likeCountB,
     this.postViews,
-    this.myProvider,
+   this.myProvider,
   );
   static const id = 'postview';
   @override
@@ -95,7 +95,7 @@ class _POstViewState extends State<POstChallengeView> {
               widget.likeCountA,
               widget.likeCountB,
               widget.postViews,
-              widget.myProvider!,
+              widget.myProvider,
             ),
           ),
         ),

@@ -152,7 +152,6 @@ class NotifyCard extends StatefulWidget {
 class _NotifyCardState extends State<NotifyCard> {
   bool _isEditing = false;
 
-  var myProvider;
   void toggleEditing() {
     setState(() {
       _isEditing = !_isEditing;
@@ -286,6 +285,8 @@ class _NotifyCardState extends State<NotifyCard> {
                                       return CommentsPage(
                                         userId: widget.userId,
                                         postId: widget.postId,
+                                        myProvider: widget.myProvider,
+
                                       );
                                     },
                                   ));

@@ -305,10 +305,8 @@ class Service {
     }
   }
 
-  Future<List<dynamic>> getComments(String postId) async {
+  Future<Map<String, dynamic>> getComments(String postId) async {
     try {
-      print(postId);
-      print('the postId');
       final token = await TokenManager.getToken();
       final response = await http.get(
         Uri.parse('$baseUrl/getComments/$postId'),
@@ -317,17 +315,13 @@ class Service {
           'Content-Type': 'application/json', // Include other headers as needed
         },
       );
-
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        print(responseData);
-        return responseData['comments'];
+        return  json.decode(response.body);
       } else {
-        return [];
+        return {};
       }
     } catch (e) {
-      print(e);
-      return ['err'];
+      return {};
       // Handle exceptions, if any
     }
   }
@@ -465,7 +459,7 @@ class Service {
     }
   }
 
-  Future<List<dynamic>> getUpdateComments(String postId) async {
+  Future<Map<String, dynamic>> getUpdateComments(String postId) async {
     try {
       final token = await TokenManager.getToken();
       final response = await http.get(
@@ -475,22 +469,18 @@ class Service {
           'Content-Type': 'application/json',
         },
       );
-
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        return responseData['comments'];
+        return json.decode(response.body);
       } else {
-        // Handle other status codes if needed
-        return [];
+        return {};
       }
     } catch (e) {
       print(e);
-      // Handle exceptions, if any
-      return ['err'];
+      return {};
     }
   }
 
-  Future<List<dynamic>> getBattleComments(String postId) async {
+  Future<Map<String, dynamic>> getBattleComments(String postId) async {
     try {
       final token = await TokenManager.getToken();
       final response = await http.get(
@@ -500,25 +490,21 @@ class Service {
           'Content-Type': 'application/json', // Include other headers as needed
         },
       );
-  print(json.decode(response.body));
-  print('battle response');
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        return responseData['comments'];
+        return json.decode(response.body);
       } else {
-        return [];
+        return {};
       }
     } catch (e) {
       print(e);
-      return ['err'];
+      return {};
       // Handle exceptions, if any
     }
   }
 
-  Future postComment(BuildContext context, postId, commentText, userId) async {
+  Future<Map<String, dynamic>> postComment(BuildContext context, postId, commentText, userId) async {
     try {
       final token = await TokenManager.getToken();
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
       print([postId, commentText, prefs.getInt('user_id')]);
       print('this is token');
@@ -534,8 +520,6 @@ class Service {
           'Content-Type': 'application/json',
         },
       );
-      print(response.body);
-      print('this is app');
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -562,8 +546,7 @@ class Service {
           'Content-Type': 'application/json',
         },
       );
-      print(response.body);
-      print('this is reply comment response');
+
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -603,6 +586,8 @@ class Service {
   Future postBattleCommentReply(BuildContext context, postId, commentId, commentText) async
   {
     try {
+      print([postId,commentId,commentText]);
+      print('this is commentreply data');
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       print([commentId, commentText, prefs.getInt('user_id')]);
@@ -710,8 +695,6 @@ class Service {
           'Content-Type': 'application/json',
         },
       );
-      print([response.body]);
-
       if (response.body.isNotEmpty) {
         return jsonDecode(response.body);
       } else {
@@ -763,7 +746,6 @@ class Service {
       if (response.body.isNotEmpty) {
         return jsonDecode(response.body);
       } else {
-        // Handle the case where response.body is empty
         return {'error': 'Empty response body'};
       }
     } catch (e) {

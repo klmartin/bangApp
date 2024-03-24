@@ -20,7 +20,6 @@ class AzamPay {
       'user_id': prefs.getInt('user_id').toString(), // Replace with your actual values
       'type': type,
     };
-
     final http.Response response = await http.post(
       Uri.parse(apiUrl),
       headers: {

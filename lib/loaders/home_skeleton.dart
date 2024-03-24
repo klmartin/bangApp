@@ -1,6 +1,6 @@
+import 'package:bangapp/loaders/post_item_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:bangapp/screens/Widgets/post_item2.dart';
 import 'package:bangapp/providers/posts_provider.dart'; // Import your PostsProvider class
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/post.dart';
@@ -168,7 +168,7 @@ List<Challenge> parseChallenges(List<dynamic> challengesData) {
         itemCount: postData.length + 1,
         itemBuilder: (context, index) {
           final post = postData[index];
-          return PostItem2(
+          return PostItemSkeleton(
             post['id'],
             post['user_id'],
             post['user']['name'],

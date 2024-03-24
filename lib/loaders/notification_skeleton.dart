@@ -34,10 +34,7 @@ class _NotificationSkeletonPageState extends State<NotificationSkeleton> {
         "id": 41,
         "name": "bachulotrainer",
         "image": null,
-        "followerCount": 0,
-        "followingCount": 0,
-        "followingMe": false,
-        "followed": false,
+
         "user_image_url": "https://bangapp.pro/BangAppBackend/storage/app/",
         "postCount": 4
       },
@@ -62,10 +59,6 @@ class _NotificationSkeletonPageState extends State<NotificationSkeleton> {
         "id": 41,
         "name": "bachulotrainer",
         "image": null,
-        "followerCount": 0,
-        "followingCount": 0,
-        "followingMe": false,
-        "followed": false,
         "user_image_url": "https://bangapp.pro/BangAppBackend/storage/app/",
         "postCount": 4
       },
@@ -92,10 +85,7 @@ class _NotificationSkeletonPageState extends State<NotificationSkeleton> {
         "name": "Ghost",
         "image":
             "profile_pictures/ZnFXIuJj96hKdQe8Y6RTo2t6OJDTyhd1LznhgICH.jpg",
-        "followerCount": 0,
-        "followingCount": 0,
-        "followingMe": false,
-        "followed": false,
+
         "user_image_url":
             "https://bangapp.pro/BangAppBackend/storage/app/profile_pictures/ZnFXIuJj96hKdQe8Y6RTo2t6OJDTyhd1LznhgICH.jpg",
         "postCount": 637
@@ -164,7 +154,7 @@ class _NotificationSkeletonPageState extends State<NotificationSkeleton> {
           child: Container(
             height: 50.0,
             width: 40.0,
-            color: Color(0xffFF0E58),
+            color: Colors.white24,
             child: CachedNetworkImage(
               imageUrl:notification['post_image_url'],
               placeholder: (context, url) => Center(

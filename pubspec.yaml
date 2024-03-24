@@ -95,6 +95,7 @@ dependencies:
   flutter_hooks: ^0.20.5
   light_compressor: ^2.2.0
   skeletonizer: ^1.0.1
+  loading_animation_widget: ^1.2.1
 
 
 dev_dependencies:

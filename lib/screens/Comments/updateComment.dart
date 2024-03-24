@@ -3,11 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/providers/user_provider.dart';
 
-import '../../constants/urls.dart';
 import '../../providers/bang_update_provider.dart';
+import '../../providers/update_comment_provider.dart';
 
 class UpdateCommentsPage extends StatefulWidget {
   final int? userId;
@@ -35,53 +36,41 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
   @override
   void initState() {
     super.initState();
-    CircularProgressIndicator();
-    _fetchComments();
-  }
-
-
-
-  Future<void> _fetchComments() async {
-    final response = await Service().getUpdateComments(widget.postId.toString());
-    final comments = response;
-
-    setState(() {
-      filedata = comments.map((comment) {
-        return {
-          'name': comment['user']['name'],
-          'pic': comment['user']['user_image_url'],
-          'message': comment['body'],
-          'date': comment['created_at'],
-          'user_id': comment['user_id'],
-          'comment_id': comment['id']
-        };
-      }).toList();
-    });
-  }
-
-
-
-  Widget commentChild(data) {
-
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final updateCommentProvider = Provider.of<UpdateCommentProvider>(context, listen: false);
+    updateCommentProvider.comments!.clear();
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
-    return ListView(
-      children: [
-        for (var i = 0; i < data.length; i++)
-          userProvider.userData['id'] == data[i]['user_id']
+    updateCommentProvider.fetchCommentsForPost(widget.postId);
+
+  }
+
+
+
+  Widget commentChild() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final updateCommentProvider = Provider.of<UpdateCommentProvider>(context, listen: true); // S
+    return updateCommentProvider.loading ? Center(
+      child: LoadingAnimationWidget.fallingDot(color: Colors.black, size: 50
+      ),
+    ) : ListView.builder(
+        itemCount: updateCommentProvider.comments!.length,
+        itemBuilder: (context, index) {
+          final comments = updateCommentProvider.comments;
+          final comment = comments?[index];
+          return userProvider.userData['id'] == comment?.userId
               ? Dismissible(
-            key: Key(data[i]['id'].toString()),
+            key: Key(comment!.id.toString()),
             onDismissed: (direction) async {
               final response =
-              await Service().deleteUpdateComment(data[i]['comment_id']);
+              await Service().deleteUpdateComment(comment.id);
               if (response['message'] == 'Comment deleted successfully') {
                 Fluttertoast.showToast(msg: response['message']);
               }
-              setState(() {
-                data.removeAt(i);
-              });
+              // setState(() {
+              //   data.removeAt(i);
+              // });
             },
             background: Container(
               color: Colors.red,
@@ -97,7 +86,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
               child: ExpansionTile(
-                key: Key('expansion_${data[i]['id']}'),
+                key: Key('expansion_${comment.id}'),
                 leading: GestureDetector(
                   onTap: () async {
                     // Display the image in large form.
@@ -114,67 +103,48 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                     child: CircleAvatar(
                       radius: 50,
                       backgroundImage: CommentBox.commentImageParser(
-                        imageURLorPath: data[i]['pic'],
+                        imageURLorPath: comment.userImageUrl,
                       ),
                     ),
                   ),
                 ),
                 title: Text(
-                  data[i]['name'],
+                  comment.updatecommentuser!.name ?? "",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(data[i]['message'],
+                    Text(comment?.body ?? "",
                         style: TextStyle(fontWeight: FontWeight.w500)),
                     SizedBox(height: 5),
                     GestureDetector(
                       onTap: () {
-                        print(data[i]['comment_id']);
                         setState(() {
-                          replyId = data[i]['comment_id'];
+                          replyId = comment.id;
                           commentWriteText = 'Reply to';
                           isReply = true;
                         });
-                        commentController.text = '@${data[i]['name']} ';
+                        commentController.text = '@${comment.updatecommentuser?.name} ';
                         FocusScope.of(context)
                             .requestFocus(commentFocusNode);
                       },
                       child: Text("Reply"),
                     ),
                     Center(
-                      child: data[i]['replies_count'] > 0
-                          ? GestureDetector(
-                        onTap: () async {
-                          print('comment pressed');
-                          final response = await Service().getUpdateCommentReplies(data[i]['comment_id'].toString());
-                          print(response);
-                          setState(() {
-                            replydata = response.map((comment) {
-                              return {
-                                'user_image':
-                                comment['user_image_url'],
-                                'body': comment['body'] ?? "",
-                                'user_name': comment['user']['name'],
-                                'date': comment['created_at'],
-                              };
-                            }).toList();
-                          });
-                        },
-                        child: Text(
-                            '${data[i]['replies_count']} Replies'),
-                      )
+                      child:  comment.repliesCount! > 0
+                          ? Text(
+                              '${comment.repliesCount!} Replies')
                           : Container(),
                     )
                   ],
                 ),
                 trailing:
-                Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                Text(comment.createdAt ?? "", style: TextStyle(fontSize: 10)),
                 children: [
                   // List of replies goes here
-                  for (var reply in replydata)
+                  for (var reply in comment.commentReplies!)
                     ListTile(
                       leading: GestureDetector(
                         onTap: () async {},
@@ -190,18 +160,18 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                             radius: 30,
                             backgroundImage:
                             CommentBox.commentImageParser(
-                              imageURLorPath: reply['user_image'],
+                              imageURLorPath: reply.userImageUrl,
                             ),
                           ),
                         ),
                       ),
                       title: Text(
-                        reply['user_name'],
+                        reply.updatecommentrepliesuser!.name ?? "",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(reply['body']),
+                      subtitle: Text(reply.body ?? ""),
                       trailing: Column(children: [
-                        Text(reply['date'],
+                        Text(reply.createdAt!,
                             style: TextStyle(fontSize: 7)),
                       ]),
                     ),
@@ -209,7 +179,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
               ),
             ),
           )
-              : Padding(
+              :Padding(
             padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
             child: ExpansionTile(
               leading: GestureDetector(
@@ -228,70 +198,49 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                   child: CircleAvatar(
                     radius: 50,
                     backgroundImage: CommentBox.commentImageParser(
-                      imageURLorPath: data[i]['pic'],
+                      imageURLorPath: comment!.userImageUrl ?? "",
                     ),
                   ),
                 ),
               ),
               title: Text(
-                data[i]['name'],
+                comment!.updatecommentuser?.name ?? "",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(data[i]['message'],
+                  Text(comment.body ?? "",
                       style: TextStyle(fontWeight: FontWeight.w500)),
                   SizedBox(height: 5),
                   GestureDetector(
                     onTap: () {
-                      print(data[i]['comment_id']);
+                      print(comment.id);
                       setState(() {
-                        replyId = data[i]['comment_id'];
+                        replyId = comment.id;
                         commentWriteText = 'Reply to';
                         isReply = true;
                       });
-                      commentController.text = '@${data[i]['name']} ';
+                      commentController.text =
+                      '@${comment.updatecommentuser?.name} ';
                       FocusScope.of(context)
                           .requestFocus(commentFocusNode);
                     },
                     child: Text("Reply"),
                   ),
                   Center(
-                    child: data[i]['replies_count'] > 0
-                        ? GestureDetector(
-                      onTap: () async {
-                        print('comment pressed');
-                        final response = await Service()
-                            .getCommentReplies(
-                            data[i]['comment_id'].toString());
-                        print(response);
-                        setState(() {
-                          replydata = response.map((comment) {
-                            return {
-                              'user_image':
-                              comment['user_image_url'],
-                              'body': comment['body'] ?? "",
-                              'user_name': comment['user']['name'],
-                              'date': comment['created_at'],
-                            };
-                          }).toList();
-                          repliesChild(replydata);
-                        });
-                      },
-                      child: Text(
-                          '${data[i]['replies_count']} Replies'),
-                    )
+                    child: comment.repliesCount! > 0
+                        ? Text('${comment.repliesCount} Replies')
                         : Container(),
                   )
                 ],
               ),
-              trailing:
-              Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+              trailing: Text(comment.createdAt ?? "",
+                  style: TextStyle(fontSize: 10)),
               children: [
                 // List of replies goes here
-                for (var reply in replydata)
+                for (var reply in comment.commentReplies!)
                   ListTile(
                     leading: GestureDetector(
                       onTap: () async {
@@ -309,27 +258,26 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                         child: CircleAvatar(
                           radius: 30,
                           backgroundImage: CommentBox.commentImageParser(
-                            imageURLorPath: reply['user_image'],
+                            imageURLorPath: reply.userImageUrl,
                           ),
                         ),
                       ),
                     ),
                     title: Text(
-                      reply['user_name'],
+                      reply.updatecommentrepliesuser!.name ?? "",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(reply['body']),
+                    subtitle: Text(reply.body ?? ""),
                     trailing: Column(children: [
-                      Text(data[i]['date'],
+                      Text(reply.createdAt! ,
                           style: TextStyle(fontSize: 7)),
                     ]),
                     // trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
                   ),
               ],
             ),
-          ),
-      ],
-    );
+          );
+        });
         }
 
 
@@ -342,7 +290,6 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
     return ListView.builder(
       itemCount: data.length,
       itemBuilder: (context, index) {
-        print('called');
         return ListTile(
           title: Text(data[index]['body']),
         );
@@ -356,6 +303,8 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
+    final updateCommentProvider = Provider.of<UpdateCommentProvider>(context, listen: true); // S
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -377,7 +326,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
         child: CommentBox(
           userImage: CommentBox.commentImageParser(
               imageURLorPath: userProvider.userData['user_image_url']),
-          child: commentChild(filedata),
+          child: commentChild(),
           labelText: 'Write a comment...',
           errorText: 'Comment cannot be blank',
           backgroundColor: Colors.white,
@@ -385,21 +334,9 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
           sendButtonMethod: () async {
             if (formKey.currentState!.validate()) {
               if (isReply == false) {
-                setState(() {
-                  var value = {
-                    'name': userProvider.userData['name'],
-                    'pic': userProvider.userData['user_image_url'],
-                    'message': commentController.text,
-                    'date': '2021-01-01 12:00:00',
-                    'replies_count': 0,
-                  };
-                  filedata.insert(0, value);
-                });
                 try {
-                  await Service().postUpdateComment(
-                    widget.postId,
-                    commentController.text,
-                  );
+                  updateCommentProvider.addComment(context,  widget.postId, commentController.text);
+
                 } catch (e) {
                   print('Error posting comment: $e');
                   // Handle the error as needed
@@ -411,22 +348,14 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                 // widget.myProvider.incrementCommentCountByPostId(widget.postId);
               } else {
                 try {
-                  var value = {
-                    'name': userProvider.userData['name'],
-                    'pic': userProvider.userData['user_image_url'],
-                    'message': commentController.text,
-                    'date': '2021-01-01 12:00:00',
-                    'replies_count': 0,
-                  };
-                  //replydata.insert(0, value);
-                  var response = await Service().postUpdateCommentReply(
-                    context,
-                    widget.postId,
-                    replyId,
-                    commentController.text,
-                  );
-                  commentController.clear();
-                  Fluttertoast.showToast(msg: response['message']);
+
+                 updateCommentProvider.addCommentReply(context, replyId, widget.postId, commentController.text);
+                 commentController.clear();
+                 setState(() {
+                   isReply = false;
+                   commentWriteText = 'Write a comment...';
+                 });
+                  //Fluttertoast.showToast(msg: response['message']);
                   FocusScope.of(context).unfocus();
                 } catch (e) {
                   print('Error posting comment: $e');
@@ -439,7 +368,10 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
           formKey: formKey,
           commentController: commentController,
           textColor: Colors.black,
-          sendWidget: Icon(Icons.send_sharp, size: 30, color: Colors.black),
+          sendWidget: updateCommentProvider.postingLoading
+              ? LoadingAnimationWidget.fallingDot(color: Colors.black, size: 30
+          )
+              : Icon(Icons.send_sharp, size: 30, color: Colors.black),
         ),
       ),
     );

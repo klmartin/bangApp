@@ -43,16 +43,16 @@ class _BattleSkeletonPageState extends State<BattleSkeleton> {
 
 
         children: [
-             Text(
-          '     Bang Battle',
-          style: TextStyle(
-            fontFamily: 'Metropolis',
-            color: Colors.black,
-            fontSize: 20.0,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -1,
-          ),
-        ),
+        //      Text(
+        //   '     Bang Battle',
+        //   style: TextStyle(
+        //     fontFamily: 'Metropolis',
+        //     color: Colors.black,
+        //     fontSize: 20.0,
+        //     fontWeight: FontWeight.w700,
+        //     letterSpacing: -1,
+        //   ),
+        // ),
             Container(
           margin: EdgeInsets.symmetric(horizontal: 1.0),
           child: Column(

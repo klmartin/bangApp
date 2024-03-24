@@ -9,9 +9,11 @@ import 'package:http/http.dart' as http;
 import 'package:bangapp/models/image_post.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../message/screens/messages/message_screen.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
+import '../../providers/message_payment_provider.dart';
 import '../../providers/payment_provider.dart';
 import '../../widgets/build_media.dart';
 import '../../widgets/video_rect.dart';
@@ -21,6 +23,8 @@ import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/loaders/profile_header_skeleton.dart';
 import 'package:bangapp/loaders/profile_posts_skeleton.dart';
 import 'package:bangapp/loaders/profile_updates_skeleton.dart';
+
+import '../Widgets/message_payment.dart';
 
 List<dynamic> followinglist = [];
 bool _persposts = true;
@@ -37,25 +41,38 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   ScrollController? _scrollController;
   bool _isLoading = false;
-   String myName = "";
-   String myBio = "";
-   String myImage = profileUrl;
-   int myPostCount = 0;
+  String myName = "";
+  String myBio = "";
+  String myPrice = "";
+  int myId = 0;
+  String myImage = profileUrl;
+  int myPostCount = 0;
   bool privacySwitchValue = false;
-   int myFollowerCount = 0;
-   int myFollowingCount = 0;
-   String description = "";
+  int myFollowerCount = 0;
+  int myFollowingCount = 0;
+  String description = "";
   final int _numberOfPostsPerRequest = 20;
   int _pageNumber = 1;
   List<ImagePost> allImagePosts = [];
+  late MessagePaymentProvider messagePaymentProvider;
 
   @override
   void initState() {
+    messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
     super.initState();
     _getMyInfo();
+
+    messagePaymentProvider.addListener(() {
+      if (messagePaymentProvider.isFinishPaying == true &&
+          messagePaymentProvider.payed == true) {
+          privacySwitchValue = false;
+      }
+    });
   }
+
+
 
   void _scrollListener() {
     if (_scrollController!.position.pixels >=
@@ -65,9 +82,10 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
+
+
   void _getMyInfo() async {
     var myInfo = await Service().getMyInformation(userId: widget.userid);
-
     setState(() {
       myName = myInfo['name'] ?? "";
       myBio = myInfo['bio'] ?? "";
@@ -76,8 +94,12 @@ class _UserProfileState extends State<UserProfile> {
       myFollowerCount = myInfo['followerCount'] ?? 0;
       myFollowingCount = myInfo['followingCount'] ?? 0;
       privacySwitchValue = myInfo['public'] == 1 ? true : false;
+      myPrice = myInfo['price'];
+      myId = myInfo['id'];
     });
   }
+
+
 
   void _loadMorePosts() async {
     if (_isLoading) {
@@ -87,7 +109,6 @@ class _UserProfileState extends State<UserProfile> {
     setState(() {
       _isLoading = true;
     });
-
     final List<dynamic> newPosts = await getMyPosts(_pageNumber);
 
     setState(() {
@@ -95,36 +116,36 @@ class _UserProfileState extends State<UserProfile> {
       // Append the newly loaded posts to the existing list
       allImagePosts.addAll(newPosts.map((post) {
         return ImagePost(
-            name: post['user']['name'],
-            caption: post['body'] ?? "",
-            imageUrl: post['image'],
-            challengeImgUrl: post['challenge_img'] ?? "",
-            imgWidth: post['width'],
-            imgHeight: post['height'],
-            postId: post['id'],
-            commentCount: post['commentCount'],
-            userId: post['user']['id'],
-            isLikedA: post['isLikedA'],
-            likeCountA: post['like_count_A'],
-            type: post['type'],
-            followerCount: post['followerCount'],
-            createdAt: post['created_at'],
-            userImage: post['user_image_url'],
-            pinned: post['pinned'],
-            isLikedB: post['isLikedA'],
-            likeCountB: post['like_count_B'],
-            postViews: post['post_views_count'],
-            );
+          name: post['user']['name'],
+          caption: post['body'] ?? "",
+          imageUrl: post['image'],
+          challengeImgUrl: post['challenge_img'] ?? "",
+          imgWidth: post['width'],
+          imgHeight: post['height'],
+          postId: post['id'],
+          commentCount: post['commentCount'],
+          userId: post['user']['id'],
+          isLikedA: post['isLikedA'],
+          likeCountA: post['like_count_A'],
+          type: post['type'],
+          followerCount: post['followerCount'],
+          createdAt: post['created_at'],
+          userImage: post['user_image_url'],
+          pinned: post['pinned'],
+          isLikedB: post['isLikedA'],
+          likeCountB: post['like_count_B'],
+          postViews: post['post_views_count'],
+        );
       }));
     });
   }
 
   Future<List<dynamic>> getMyPosts(int pageNumber) async {
-    var response = await http.get(Uri.parse(
-        "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=${widget.userid}"));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final viewerId = prefs.getInt('user_id').toString();
+    var response = await http.get(Uri.parse("$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=${widget.userid}&viewer_id=$viewerId"));
     print(response.body);
     var data = json.decode(response.body);
-
     return data['data']['data'];
   }
 
@@ -292,16 +313,25 @@ class _UserProfileState extends State<UserProfile> {
                       child: Container(
                     child: OutlinedButton(
                         onPressed: () {
-    if (privacySwitchValue) {
-    buildMessagePayment(context,1000,10);
-    } else {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) {
-            return MessagesScreen(
-                widget.userid!, myName, myImage, privacySwitchValue,
-                widget.userid, "0");
-          }));
-    } },
+                          if (privacySwitchValue) {
+                            MessagePayment(
+                              userId: myId,
+                              price: myPrice,
+                            );
+                            buildMessagePayment(context, 1000, 10);
+                          } else {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return MessagesScreen(
+                                  widget.userid!,
+                                  myName,
+                                  myImage,
+                                  privacySwitchValue,
+                                  widget.userid,
+                                  "0");
+                            }));
+                          }
+                        },
                         child: Text(
                           'Message',
                           style: TextStyle(color: Colors.black),
@@ -413,7 +443,7 @@ class _UserProfileState extends State<UserProfile> {
 }
 
 class Update extends StatelessWidget {
-   String userid;
+  String userid;
   Update({required this.userid});
 
   @override
@@ -428,7 +458,7 @@ class Update extends StatelessWidget {
 }
 
 class _UpdatePostsStreamContent extends StatefulWidget {
-   String userid;
+  String userid;
   _UpdatePostsStreamContent({required this.userid});
 
   @override
@@ -521,15 +551,12 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
   }
 }
 
-
-
 class ProfilePostsStream extends StatelessWidget {
   @override
   String userid;
 
   ProfilePostsStream({required this.userid});
   Widget build(BuildContext context) {
-
     return ChangeNotifierProvider(
       create: (context) => ProfileProvider(),
       child: _ProfilePostsStreamContent(userid: userid),
@@ -537,10 +564,8 @@ class ProfilePostsStream extends StatelessWidget {
   }
 }
 
-
-
 class _ProfilePostsStreamContent extends StatefulWidget {
-   String userid;
+  String userid;
   _ProfilePostsStreamContent({required this.userid});
   @override
   _ProfilePostsStreamContentState createState() =>
@@ -555,7 +580,7 @@ class _ProfilePostsStreamContentState
   void initState() {
     super.initState();
     final providerPost = Provider.of<ProfileProvider>(context, listen: false);
-    providerPost.getUserPost(widget.userid,_pageNumber);
+    providerPost.getUserPost(widget.userid, _pageNumber);
     _scrollController.addListener(_scrollListener);
   }
 
@@ -570,11 +595,10 @@ class _ProfilePostsStreamContentState
         _scrollController.position.maxScrollExtent - 200) {
       _pageNumber++;
       final profileProvider =
-      Provider.of<ProfileProvider>(context, listen: false);
-      profileProvider.getUserPost(widget.userid,_pageNumber);
+          Provider.of<ProfileProvider>(context, listen: false);
+      profileProvider.getUserPost(widget.userid, _pageNumber);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -665,8 +689,8 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].cacheUrl,
                                         provider.posts[i].thumbnailUrl,
                                         provider.posts[i].aspectRatio,
-                                    provider.posts[i].price,
-                                    provider.posts[i].postViews,
+                                        provider.posts[i].price,
+                                        provider.posts[i].postViews,
                                         provider,
                                       )));
                         },
@@ -819,86 +843,3 @@ class _ProfilePostsStreamContentState
     });
   }
 }
-
-buildMessagePayment(BuildContext context, price, postId) {
-  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
-  return showModalBottomSheet(
-    context: context,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10.0),
-    ),
-    builder: (BuildContext context) {
-      return Builder(
-        builder: (BuildContext innerContext) {
-          final userProvider = Provider.of<UserProvider>(innerContext);
-          final TextEditingController phoneNumberController =
-          TextEditingController(
-            text: userProvider.userData['phone_number'].toString(),
-          );
-
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Center(
-                    child: Text(
-                      'Pay to Chat $price Tshs',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  ),
-                ),
-                TextField(
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  controller: phoneNumberController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone number',
-                    labelStyle: TextStyle(color: Colors.black),
-                    prefixIcon: Icon(Icons.phone),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                  ),
-                  style: TextStyle(color: Colors.black),
-                  cursorColor: Colors.black,
-                ),
-                paymentProvider.isPaying
-                    ? CircularProgressIndicator()
-                    : TextButton(
-                    onPressed: () async {
-                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, postId, 'message');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors
-                          .red, // Set the background color of the button
-                    ),
-                    child: Text(
-                      'Pay',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    )),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  ).then((result) {
-    var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
-    paymentProvider.paymentCanceled = true;
-    print( paymentProvider.isPaying);
-    print('Modal bottom sheet closed: $result');
-  });
-}
-

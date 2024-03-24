@@ -286,9 +286,7 @@ class _PostCardState extends State<PostCard> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      final countUpdate =
-                                          Provider.of<ProfileProvider>(context,
-                                              listen: false);
+
                                       widget.myProvider
                                           .increaseLikes(widget.postId);
                                       Service().likeAction(

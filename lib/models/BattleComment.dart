@@ -1,73 +1,67 @@
-class Comment {
+class BattleComment {
   int? id;
   int? userId;
-  int? postId;
+  int? battlesId;
   String? body;
   String? createdAt;
   String? updatedAt;
-  int? favoriteCount;
-  int? isFavorited;
   String? userImageUrl;
   int? repliesCount;
-  List<CommentReplies>? commentReplies;
-  CommentUser? commentUser;
+  List<BattleCommentReplies>? battlecommentReplies;
+  BattleCommentUser? battlecommentuser;
 
-
-  Comment(
+  BattleComment(
       {this.id,
         this.userId,
-        this.postId,
+        this.battlesId,
         this.body,
         this.createdAt,
         this.updatedAt,
-        this.favoriteCount,
-        this.isFavorited,
         this.userImageUrl,
         this.repliesCount,
-        this.commentReplies,
-        this.commentUser});
+        this.battlecommentReplies,
+        this.battlecommentuser});
 
-  Comment.fromJson(Map<String, dynamic> json) {
+  BattleComment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
-    postId = json['post_id'];
+    battlesId = json['battles_id'];
     body = json['body'];
     createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
     userImageUrl = json['user_image_url'];
     repliesCount = json['replies_count'];
     if (json['comment_replies'] != null) {
-      commentReplies = <CommentReplies>[];
+      battlecommentReplies = <BattleCommentReplies>[];
       json['comment_replies'].forEach((v) {
-        commentReplies!.add(new CommentReplies.fromJson(v));
+        battlecommentReplies!.add(new BattleCommentReplies.fromJson(v));
       });
     }
-    commentUser = json['user'] != null ? new CommentUser.fromJson(json['user']) : null;
+    battlecommentuser = json['user'] != null ? new BattleCommentUser.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['user_id'] = this.userId;
-    data['post_id'] = this.postId;
+    data['battles_id'] = this.battlesId;
     data['body'] = this.body;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
-    data['favoriteCount'] = this.favoriteCount;
-    data['isFavorited'] = this.isFavorited;
     data['user_image_url'] = this.userImageUrl;
     data['replies_count'] = this.repliesCount;
-    if (this.commentReplies != null) {
+    if (this.battlecommentReplies != null) {
       data['comment_replies'] =
-          this.commentReplies!.map((v) => v.toJson()).toList();
+          this.battlecommentReplies!.map((v) => v.toJson()).toList();
     }
-    if (this.commentUser != null) {
-      data['user'] = this.commentUser!.toJson();
+    if (this.battlecommentuser != null) {
+      data['user'] = this.battlecommentuser!.toJson();
     }
     return data;
   }
 }
 
-class CommentReplies {
+class BattleCommentReplies {
   int? id;
   String? body;
   int? userId;
@@ -75,9 +69,9 @@ class CommentReplies {
   String? createdAt;
   String? updatedAt;
   String? userImageUrl;
-  ReplyUser? replyUser;
+  BattleReplyUser? replyUser;
 
-  CommentReplies(
+  BattleCommentReplies(
       {this.id,
         this.body,
         this.userId,
@@ -87,7 +81,7 @@ class CommentReplies {
         this.userImageUrl,
         this.replyUser});
 
-  CommentReplies.fromJson(Map<String, dynamic> json) {
+  BattleCommentReplies.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     body = json['body'];
     userId = json['user_id'];
@@ -95,7 +89,7 @@ class CommentReplies {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     userImageUrl = json['user_image_url'];
-    replyUser = json['user'] != null ? new ReplyUser.fromJson(json['user']) : null;
+    replyUser = json['user'] != null ? new BattleReplyUser.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -114,7 +108,7 @@ class CommentReplies {
   }
 }
 
-class ReplyUser {
+class BattleReplyUser {
   int? id;
   String? name;
   String? username;
@@ -139,7 +133,7 @@ class ReplyUser {
   String? userImageUrl;
   int? postCount;
 
-  ReplyUser(
+  BattleReplyUser(
       {this.id,
         this.name,
         this.username,
@@ -164,7 +158,7 @@ class ReplyUser {
         this.userImageUrl,
         this.postCount});
 
-  ReplyUser.fromJson(Map<String, dynamic> json) {
+  BattleReplyUser.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     username = json['username'];
@@ -219,7 +213,7 @@ class ReplyUser {
   }
 }
 
-class CommentUser {
+class BattleCommentUser {
   int? id;
   String? name;
   String? image;
@@ -230,7 +224,7 @@ class CommentUser {
   String? userImageUrl;
   int? postCount;
 
-  CommentUser(
+  BattleCommentUser(
       {this.id,
         this.name,
         this.image,
@@ -241,7 +235,7 @@ class CommentUser {
         this.userImageUrl,
         this.postCount});
 
-  CommentUser.fromJson(Map<String, dynamic> json) {
+  BattleCommentUser.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     image = json['image'];
