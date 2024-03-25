@@ -67,8 +67,7 @@ class _Home2ContentState extends State<Home2Content>
     });
 
     paymentProvider.addListener(() {
-      if (paymentProvider.isFinishPaying == true &&
-          paymentProvider.payed == true) {
+      if (paymentProvider.payed == true) {
         postsProvider.deletePinnedById(paymentProvider.payedPost);
       }
     });
@@ -119,14 +118,12 @@ class _Home2ContentState extends State<Home2Content>
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
     return RefreshIndicator(
       onRefresh: () async {
-        final postsProvider =
-            Provider.of<PostsProvider>(context, listen: false);
+        final postsProvider = Provider.of<PostsProvider>(context, listen: false);
         postsProvider.refreshData();
         _scrollController.jumpTo(0);
       },
@@ -160,7 +157,7 @@ class _Home2ContentState extends State<Home2Content>
       itemBuilder: (context, index) {
         if (index < postsProvider.posts!.length) {
           final Post post = postsProvider.posts![index];
-          //Service().updateIsSeen(post.postId);
+         // Service().updateIsSeen(post.postId);
           if (index == 0) {
             return Column(
               children: [

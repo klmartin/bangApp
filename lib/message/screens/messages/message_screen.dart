@@ -2,17 +2,20 @@ import 'dart:io';
 
 import 'package:bangapp/message/constants.dart';
 import 'package:bangapp/message/models/ChatMessage.dart';
-import 'package:bangapp/message/screens/messages/components/message.dart' as MSG;
+import 'package:bangapp/message/screens/messages/components/message.dart'
+    as MSG;
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:video_player/video_player.dart';
 import '../../../constants/urls.dart';
+import '../../../providers/message_payment_provider.dart';
 import '../../../providers/payment_provider.dart';
 
 class MessagesScreen extends StatefulWidget {
@@ -24,7 +27,7 @@ class MessagesScreen extends StatefulWidget {
   String? price;
 
   MessagesScreen(this.receiverId, this.receiverUsername, this.userImage,
-      this.privacySwitchValue,this.conversationId,this.price);
+      this.privacySwitchValue, this.conversationId, this.price);
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -56,7 +59,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     super.initState();
     _getThisUsersMessages();
     connect();
-    paymentProvider = Provider.of<PaymentProvider>(context, listen:false);
+    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
     _scrollController.addListener(_scrollListener);
     paymentProvider.addListener(() {
@@ -92,7 +95,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     });
 
     socket.on('message', (message) async {
-
       final participant1ID = message['participant1_id'];
       final participant2ID = message['participant2_id'];
 
@@ -102,11 +104,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
       // Check if the message is intended for the current user
       if ((participant1ID == userId && participant2ID == receiverId) ||
           (participant2ID == userId && participant1ID == receiverId)) {
-
         final newMessage = Message.fromJson(message);
 
         chatProvider.addMessage(newMessage);
-
       } else {
         print("Discarding message as it is not intended for the current user.");
       }
@@ -120,7 +120,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
         rawMessage['participant2_id'] = widget.receiverId;
         rawMessage['is_read'] = 0;
         socket.emit('chat_message', rawMessage);
-
       } catch (e) {
         print("Error sending message via WebSocket: $e");
       }
@@ -180,7 +179,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: buildAppBar(),
       body: Column(
@@ -212,25 +210,23 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               final userId = userIdSnapshot.data;
                               final isSender = message.senderId == userId;
 
-                              return  MSG.Message(
-                                      message: ChatMessage(
-                                          text: messages[index].message,
-                                          messageType: messages[index]
-                                                      .messageType ==
-                                                  "image"
-                                              ? ChatMessageType.image
-                                              : messages[index].messageType ==
-                                                      "video"
-                                                  ? ChatMessageType.video
-                                                  : ChatMessageType.text,
-                                          messageStatus: message.isReady == 0
-                                              ? MessageStatus.not_view
-                                              : MessageStatus.viewed,
-                                          isSender: isSender,
-                                          id: messages[index].id,
-                                          isReady: messages[index].isReady,
-                                          userImage: widget.userImage),
-                                    );
+                              return MSG.Message(
+                                message: ChatMessage(
+                                    text: messages[index].message,
+                                    messageType: messages[index].messageType ==
+                                            "image"
+                                        ? ChatMessageType.image
+                                        : messages[index].messageType == "video"
+                                            ? ChatMessageType.video
+                                            : ChatMessageType.text,
+                                    messageStatus: message.isReady == 0
+                                        ? MessageStatus.not_view
+                                        : MessageStatus.viewed,
+                                    isSender: isSender,
+                                    id: messages[index].id,
+                                    isReady: messages[index].isReady,
+                                    userImage: widget.userImage),
+                              );
                             }
                           },
                         );
@@ -535,8 +531,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 }
-buildMessagePayment(BuildContext context, price, postId) {
-  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+
+Future<Null> buildMessagePayment(BuildContext context, price, postId) {
   return showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -545,74 +541,85 @@ buildMessagePayment(BuildContext context, price, postId) {
     builder: (BuildContext context) {
       return Builder(
         builder: (BuildContext innerContext) {
-          final userProvider = Provider.of<UserProvider>(innerContext);
-          final TextEditingController phoneNumberController =
-          TextEditingController(
-            text: userProvider.userData['phone_number'].toString(),
-          );
-
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Center(
-                    child: Text(
-                      'Pay to Chat $price Tshs',
+          return Consumer<MessagePaymentProvider>(
+            builder: (context, messagePaymentProvider, _) {
+              final userProvider = Provider.of<UserProvider>(innerContext);
+              final TextEditingController phoneNumberController =
+                  TextEditingController(
+                text: userProvider.userData['phone_number'].toString(),
+              );
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Center(
+                        child: Text(
+                          'Pay to Chat $price Tshs',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextField(
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.secondary,
+                      keyboardType: TextInputType.number,
+                      controller: phoneNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'Phone number',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.phone),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
                       ),
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
                     ),
-                  ),
+                    Center(
+                      child: messagePaymentProvider.isPaying
+                          ? LoadingAnimationWidget.staggeredDotsWave(
+                              color: Colors.red, size: 30)
+                          : TextButton(
+                              onPressed: () async {
+                                messagePaymentProvider.startPaying(
+                                    userProvider.userData['phone_number']
+                                        .toString(),
+                                    price,
+                                    postId,
+                                    'message');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                              child: Text(
+                                'Pay',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
                 ),
-                TextField(
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  controller: phoneNumberController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone number',
-                    labelStyle: TextStyle(color: Colors.black),
-                    prefixIcon: Icon(Icons.phone),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                  ),
-                  style: TextStyle(color: Colors.black),
-                  cursorColor: Colors.black,
-                ),
-                paymentProvider.isPaying
-                    ? CircularProgressIndicator()
-                    : TextButton(
-                    onPressed: () async {
-                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, postId, 'message');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors
-                          .red, // Set the background color of the button
-                    ),
-                    child: Text(
-                      'Pay',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    )),
-              ],
-            ),
+              );
+            },
           );
         },
       );
     },
   ).then((result) {
-    var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
-    paymentProvider.paymentCanceled = true;
-    print( paymentProvider.isPaying);
+    var messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: false);
+    messagePaymentProvider.paymentCanceled = true;
+    print(messagePaymentProvider.isPaying);
     print('Modal bottom sheet closed: $result');
   });
 }

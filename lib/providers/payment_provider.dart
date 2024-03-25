@@ -27,34 +27,39 @@ class PaymentProvider extends ChangeNotifier {
   }
 
 
-  Future<bool> startPaying(phoneNumber, price, postId,type) async {
+  Future<void> startPaying(phoneNumber, price, postId, type) async {
     _isPaying = true;
     _payedPost = postId;
     notifyListeners();
-    Map<String, dynamic> pay = await AzamPay().checkoutData(phoneNumber, price, postId,type);
-    var transactionId = pay['response']['transactionId'];
-    // this line is to comment;
-    //await AzamPay().saveDummyAzamPay(pay['response']['transactionId']);
-     //if(transactionId){
 
+    Map<String, dynamic> pay = await AzamPay().checkoutData(phoneNumber, price, postId, type);
+    var transactionId = pay['response']['transactionId'];
+    //await AzamPay().saveDummyAzamPay(pay['response']['transactionId'],type);
+
+    if (transactionId != null) {
+      _isPaying = false;
+      notifyListeners();
       _processingStatusTimer = Timer.periodic(Duration(seconds: 2), (timer) {
         _fetchPaymentStatus(transactionId);
         notifyListeners();
       });
-    //}
+    }
+    else{
+      _isPaying = false;
+      notifyListeners();
+    }
 
-    return true;
   }
 
-  Future<bool> _fetchPaymentStatus(transactionId) async {
-    print("fetching");
 
+  Future<bool> _fetchPaymentStatus(transactionId) async {
     var status = await AzamPay().getPaymentStatus(transactionId);
     if(status == true ){
       _payed = true;
+      _processingStatusTimer?.cancel();
       notifyListeners();
     }
-    if (status == true || _paymentCanceled== true) {
+    if ( _paymentCanceled== true) {
       _isFinishPaying = true;
       _isPaying = false;
       _processingStatusTimer?.cancel();

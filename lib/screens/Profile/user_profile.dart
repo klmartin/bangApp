@@ -58,21 +58,31 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   void initState() {
+    print('my information212312');
+    _getMyInfo();
     messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
     super.initState();
-    _getMyInfo();
+
 
     messagePaymentProvider.addListener(() {
-      if (messagePaymentProvider.isFinishPaying == true &&
-          messagePaymentProvider.payed == true) {
+      if (messagePaymentProvider.payed == true) {
+        print('nimeshalipa');
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) {
+              return MessagesScreen(
+                  widget.userid!,
+                  myName,
+                  myImage,
+                  privacySwitchValue,
+                  widget.userid,
+                  "0");
+            }));
           privacySwitchValue = false;
       }
     });
   }
-
-
 
   void _scrollListener() {
     if (_scrollController!.position.pixels >=
@@ -82,10 +92,11 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-
-
   void _getMyInfo() async {
     var myInfo = await Service().getMyInformation(userId: widget.userid);
+    print(myInfo['postCount']);
+    print(myInfo['name'] );
+    print('my information');
     setState(() {
       myName = myInfo['name'] ?? "";
       myBio = myInfo['bio'] ?? "";
@@ -95,7 +106,7 @@ class _UserProfileState extends State<UserProfile> {
       myFollowingCount = myInfo['followingCount'] ?? 0;
       privacySwitchValue = myInfo['public'] == 1 ? true : false;
       myPrice = myInfo['price'];
-      myId = myInfo['id'];
+      myId = widget.userid;
     });
   }
 
@@ -314,11 +325,7 @@ class _UserProfileState extends State<UserProfile> {
                     child: OutlinedButton(
                         onPressed: () {
                           if (privacySwitchValue) {
-                            MessagePayment(
-                              userId: myId,
-                              price: myPrice,
-                            );
-                            buildMessagePayment(context, 1000, 10);
+                            buildMessagePayment(context, myPrice, myId);
                           } else {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {

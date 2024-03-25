@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Profile/edit_my_profile.dart';
 import 'package:bangapp/screens/settings/settings.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import '../../models/hobby.dart';
 import '../../providers/Profile_Provider.dart';
@@ -183,9 +184,8 @@ class _ProfileState extends State<Profile> {
                                   phoneNumber: int.parse(
                                       userProvider.userData!['phone_number']),
                                   selectedHobbiesText: selectedHobbiesText,
-                                  occupation:
-                                      userProvider.userData!['occupation'],
-                                  bio: userProvider.userData!['bio'],
+                                  occupation: userProvider.userData!['occupation'] ?? "",
+                                  bio: userProvider.userData!['bio'] ?? "",
                                   occupationController: TextEditingController(),
                                   dateOfBirthController:
                                       TextEditingController(),
@@ -564,26 +564,24 @@ buildPayments(selectedHobbiesText, BuildContext context, price, count) {
                   style: TextStyle(color: Colors.black),
                   cursorColor: Colors.black,
                 ),
-                paymentProvider.isPaying
-                    ? CircularProgressIndicator()
-                    : TextButton(
-                        onPressed: () async {
-                          paymentProvider.startPaying(
-                              userProvider.userData['phone_number'].toString(),
-                              price,
-                              count,
-                              'followers');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors
-                              .red, // Set the background color of the button
-                        ),
-                        child: Text(
-                          'Pay',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        )),
+                Center(
+                  child: paymentProvider.isPaying
+                      ? LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30)
+                      : TextButton(
+                    onPressed: () async {
+
+                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, count, 'followers');                        },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: Text(
+                      'Pay',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           );
@@ -1122,3 +1120,6 @@ class _ProfilePostsStreamContentState
     });
   }
 }
+
+
+

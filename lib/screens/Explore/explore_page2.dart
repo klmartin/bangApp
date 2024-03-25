@@ -2,6 +2,7 @@ import 'package:bangapp/widgets/buildBangUpdate2.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:provider/provider.dart';
+import '../../loaders/bang_update_skeleton.dart';
 import '../../providers/bang_update_provider.dart';
 import '../../widgets/SearchBox.dart';
 import 'package:preload_page_view/preload_page_view.dart';
@@ -65,9 +66,7 @@ class _BangUpdates3State extends State<BangUpdates3> {
           },
         ),
         if (bangUpdateProvider.isLoading)
-          Center(
-            child: CircularProgressIndicator(),
-          ),
+          BangUpdateSkeleton(),
       ],
     );
   }

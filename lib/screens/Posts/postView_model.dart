@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../providers/Profile_Provider.dart';
 import 'package:bangapp/services/service.dart';
+import '../../services/animation.dart';
 import '../../widgets/build_media.dart';
 import '../Comments/post_comment.dart';
 import '../Widgets/readmore.dart';
@@ -309,6 +310,7 @@ class _PostCardState extends State<PostCard> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
+
                                       Provider.of<UserLikesProvider>(context,
                                               listen: false)
                                           .getUserLikedPost(widget.postId);
@@ -336,7 +338,16 @@ class _PostCardState extends State<PostCard> {
                 ),
                 Container(
                   margin: EdgeInsets.only(left: 15),
-                  child: Text('${widget.commentCount} comments'),
+                  child: GestureDetector(onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return CommentsPage(
+                          userId: widget.userId,
+                          postId: widget.postId,
+                        );
+                      },
+                    ));
+                  },child: Text('${widget.commentCount} comments')),
                 ),
               ],
             )));

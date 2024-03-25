@@ -60,6 +60,12 @@ class _FinaleCreateState extends State<FinalCreate>
     super.initState();
   }
 
+  void dispose() {
+    print('running dispose');
+    videoController?.dispose();
+    super.dispose();
+  }
+
   Future<double> _initializeVideoPlayer(String mediaUrl) async {
     late VideoPlayerController _videoPlayerController;
     _videoPlayerController = VideoPlayerController.network(mediaUrl);
@@ -397,6 +403,11 @@ class _FinaleCreateState extends State<FinalCreate>
                                   };
                                   if (bangUpdate == 1) {
                                     await service.addBangUpdate(body, filePath);
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Nav(initialIndex: 1)));
                                   } else {
                                     if (pinPost == 1 && price == null) {
                                       Fluttertoast.showToast(msg: "Price is not set");
@@ -463,6 +474,11 @@ class _FinaleCreateState extends State<FinalCreate>
                                     );
                                     await service.addBangUpdate(
                                         body, mediaInfo?.path ?? '');
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Nav(initialIndex: 1)));
                                   } else {
                                     if (pinPost == 1 && price == null) {
                                       Fluttertoast.showToast(msg: "Price is not set");
@@ -476,6 +492,9 @@ class _FinaleCreateState extends State<FinalCreate>
 
                                       videoUploadProvider.startUpload(
                                           body, widget.editedVideo);
+                                      print("this video is not stopped");
+                                      videoController?.pause();
+                                      videoController?.dispose();
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(

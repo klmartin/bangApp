@@ -285,8 +285,6 @@ class _NotifyCardState extends State<NotifyCard> {
                                       return CommentsPage(
                                         userId: widget.userId,
                                         postId: widget.postId,
-                                        myProvider: widget.myProvider,
-
                                       );
                                     },
                                   ));
@@ -350,7 +348,19 @@ class _NotifyCardState extends State<NotifyCard> {
                 ),
                 Container(
                   margin: EdgeInsets.only(left: 15),
-                  child: Text('${widget.commentCount} comments'),
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return CommentsPage(
+                              userId: widget.userId,
+                              postId: widget.postId,
+                            );
+                          },
+                        ));
+                      },
+                      child: Text('${widget.commentCount} comments')
+                  ),
                 ),
               ],
             )));

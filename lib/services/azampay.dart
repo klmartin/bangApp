@@ -37,15 +37,14 @@ class AzamPay {
     }
   }
 
-  Future<Map<String, dynamic>> saveDummyAzamPay(transactionId) async {
+  Future<Map<String, dynamic>> saveDummyAzamPay(transactionId,type) async {
     print(transactionId);
     print('this is transactionId data');
     final String apiUrl = '$baseUrl/saveDummyAzampPay';
-
     Map<String, String> data = {
       'transactionId': transactionId,
+      'type': type,
     };
-
     final http.Response response = await http.post(
       Uri.parse(apiUrl),
       headers: {
@@ -53,7 +52,8 @@ class AzamPay {
       },
       body: jsonEncode(data),
     );
-
+    print(response.body);
+    print('response saveDummyAzamPay body');
     if (response.statusCode == 200) {
       print(response.body);
       print('response saveDummyAzamPay body');
@@ -64,6 +64,7 @@ class AzamPay {
   }
 
   Future<bool>getPaymentStatus(transactionId) async {
+    print('naingia kwenye status');
     final http.Response response = await http.get(
       Uri.parse('$baseUrl/getPaymentStatus/$transactionId'),
       headers: {
@@ -72,7 +73,6 @@ class AzamPay {
     );
     if(response.statusCode == 200){
       final status = jsonDecode(response.body);
-
       return status['status'];
     }
     else{

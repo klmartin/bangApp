@@ -16,7 +16,6 @@ class CommentsPage extends StatefulWidget {
   final int? userId;
   final postId;
 
-
   CommentsPage({
     required this.userId,
     this.postId,

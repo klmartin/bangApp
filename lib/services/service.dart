@@ -573,8 +573,6 @@ class Service {
           'Content-Type': 'application/json',
         },
       );
-      print(response.body);
-      print('this is reply comment response');
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -604,8 +602,6 @@ class Service {
           'Content-Type': 'application/json',
         },
       );
-      print(response.body);
-      print('this is reply comment response');
       return jsonDecode(response.body);
     } catch (e) {
       print(e);
@@ -670,9 +666,6 @@ class Service {
           'Content-Type': 'application/json',
         },
       );
-      print([response.body, postId]);
-      print('Post Delete');
-
       if (response.body.isNotEmpty) {
         return jsonDecode(response.body);
       } else {
@@ -687,8 +680,9 @@ class Service {
 
   Future<Map<String, dynamic>> deleteComment(commentId) async {
     try {
+
       final token = await TokenManager.getToken();
-      final response = await http.delete(
+      final response = await http.get(
         Uri.parse('$baseUrl/deleteComment/$commentId'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -710,15 +704,13 @@ class Service {
   Future<Map<String, dynamic>> deleteBattleComment(commentId) async {
     try {
       final token = await TokenManager.getToken();
-      final response = await http.delete(
+      final response = await http.get(
         Uri.parse('$baseUrl/deleteBattleComment/$commentId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
-      print([response.body]);
-      print('commment Delete');
       if (response.body.isNotEmpty) {
         return jsonDecode(response.body);
       } else {
@@ -734,15 +726,13 @@ class Service {
   Future<Map<String, dynamic>> deleteUpdateComment(commentId) async {
     try {
       final token = await TokenManager.getToken();
-      final response = await http.delete(
+      final response = await http.get(
         Uri.parse('$baseUrl/deleteUpdateComment/$commentId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
-      print([response.body]);
-      print('commment Delete');
       if (response.body.isNotEmpty) {
         return jsonDecode(response.body);
       } else {
@@ -1057,22 +1047,25 @@ class Service {
   }
 
   Future<Map<String, dynamic>> getMyInformation({int? userId}) async {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    final viewerId = prefs.getInt('user_id');
     final token = await TokenManager.getToken();
     if (userId != null) {
       var response = await http.get(
-        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId"),
+        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId?viewer_id=$viewerId"),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
         },
       );
+      print(response.body);
       var data = json.decode(response.body);
       return data;
     } else {
       var userId = prefs.getInt('user_id').toString();
       var response = await http.get(
-        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId"),
+        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId?viewer_id=$userId"),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed

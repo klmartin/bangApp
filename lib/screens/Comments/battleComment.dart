@@ -62,14 +62,11 @@ class _BattleCommentState extends State<BattleComment> {
               ? Dismissible(
             key: Key(comment!.id.toString()),
             onDismissed: (direction) async {
-              final response =
-              await Service().deleteUpdateComment(comment.id);
-              if (response['message'] == 'Comment deleted successfully') {
-                Fluttertoast.showToast(msg: response['message']);
-              }
-              // setState(() {
-              //   data.removeAt(i);
-              // });
+              final response = await Service().deleteBattleComment(comment.id);
+              battleCommentProvider.deleteComment(comment.id!);
+              Fluttertoast.showToast(msg: response['message']);
+              final battleComment = Provider.of<BoxDataProvider>(context, listen: false);
+              battleComment.decrementCommentCount(widget.postId);
             },
             background: Container(
               color: Colors.red,

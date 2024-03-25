@@ -68,6 +68,14 @@ class BoxDataProvider with ChangeNotifier {
     post.commentCount++;
     notifyListeners();
   }
+
+  void decrementCommentCount(
+      postId,
+      ) {
+    final post = _boxes.firstWhere((element) => element.postId == postId);
+    post.commentCount--;
+    notifyListeners();
+  }
 }
 
 class BoxData2 {

@@ -71,17 +71,7 @@ class UpdateCommentProvider extends ChangeNotifier {
   }
 
   Future<void> deleteComment(int commentId) async {
-    _postingLoading = true;
-    notifyListeners();
-    final response = await Service().deleteUpdateComment(commentId);
-    if (response['message'] == "Comment deleted") {
       _comments.removeWhere((comment) => comment.id == commentId);
-      _postingLoading = false;
       notifyListeners();
-    } else {
-      _postingLoading = false;
-      notifyListeners();
-      throw Exception('Failed to delete comment');
-    }
   }
 }

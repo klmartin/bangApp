@@ -63,14 +63,11 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
               ? Dismissible(
             key: Key(comment!.id.toString()),
             onDismissed: (direction) async {
-              final response =
-              await Service().deleteUpdateComment(comment.id);
-              if (response['message'] == 'Comment deleted successfully') {
-                Fluttertoast.showToast(msg: response['message']);
-              }
-              // setState(() {
-              //   data.removeAt(i);
-              // });
+              final response = await Service().deleteUpdateComment(comment.id);
+              updateCommentProvider.deleteComment(comment.id!);
+              final up = Provider.of<BangUpdateProvider>(context, listen: false);
+              up.decrementCommentCount(widget.postId, 1);
+              Fluttertoast.showToast(msg: response['message']);
             },
             background: Container(
               color: Colors.red,

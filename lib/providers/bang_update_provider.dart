@@ -101,4 +101,11 @@ class BangUpdateProvider extends ChangeNotifier {
     bangUpdate.commentCount++;
     notifyListeners();
   }
+
+  void decrementCommentCount(int postId, int newCount) {
+    final bangUpdate =
+    _bangUpdates.firstWhere((update) => update.postId == postId);
+    bangUpdate.commentCount--;
+    notifyListeners();
+  }
 }

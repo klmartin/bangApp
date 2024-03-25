@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,8 +15,7 @@ import '../services/azampay.dart';
 Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
     imgHeight, isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
   if (type == 'image' && isPinned == 0) {
-    print('type1');
-    print(type);
+
     return AspectRatio(
       aspectRatio: imgWidth / imgHeight,
       child: GestureDetector(
@@ -40,8 +40,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
       ),
     );
   } else if (type == 'image' || type == 'video' && isPinned == 1) {
-    print('type2');
-    print(type);
+
     return GestureDetector(
       onTap: () {
         buildFab(context, price, postId);
@@ -142,8 +141,7 @@ void viewImage(BuildContext context, String imageUrl) {
   );
 }
 
-buildFab(BuildContext context, price, postId) {
-  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+Future<Null> buildFab(BuildContext context, price, postId) {
   return showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -152,66 +150,70 @@ buildFab(BuildContext context, price, postId) {
     builder: (BuildContext context) {
       return Builder(
         builder: (BuildContext innerContext) {
-          final userProvider = Provider.of<UserProvider>(innerContext);
-          final TextEditingController phoneNumberController =
-              TextEditingController(
-            text: userProvider.userData['phone_number'].toString(),
-          );
+          return Consumer<PaymentProvider>(
+            builder: (context, paymentProvider, _) {
+              final userProvider = Provider.of<UserProvider>(innerContext);
+              final TextEditingController phoneNumberController = TextEditingController(
+                text: userProvider.userData['phone_number'].toString(),
+              );
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Center(
-                    child: Text(
-                      'Pay to View $price Tshs',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.secondary,
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Center(
+                        child: Text(
+                          'Pay to View $price Tshs',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                TextField(
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  controller: phoneNumberController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone number',
-                    labelStyle: TextStyle(color: Colors.black),
-                    prefixIcon: Icon(Icons.phone),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                    TextField(
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      controller: phoneNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'Phone number',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.phone),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
                     ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                  ),
-                  style: TextStyle(color: Colors.black),
-                  cursorColor: Colors.black,
-                ),
-                paymentProvider.isPaying
-                    ? CircularProgressIndicator()
-                    : TextButton(
+                    Center(
+                      child: paymentProvider.isPaying
+                          ? LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30)
+                          : TextButton(
                         onPressed: () async {
-                          paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, postId, 'post');
-                        },
+                          paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, postId, 'post');                        },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors
-                              .red, // Set the background color of the button
+                          backgroundColor: Colors.red,
                         ),
                         child: Text(
                           'Pay',
                           style: TextStyle(
                             color: Colors.white,
                           ),
-                        )),
-              ],
-            ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           );
         },
       );
@@ -219,7 +221,11 @@ buildFab(BuildContext context, price, postId) {
   ).then((result) {
     var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
     paymentProvider.paymentCanceled = true;
-    print( paymentProvider.isPaying);
+    print(paymentProvider.isPaying);
     print('Modal bottom sheet closed: $result');
   });
 }
+
+
+
+

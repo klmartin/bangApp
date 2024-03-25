@@ -202,7 +202,6 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
       ],
     );
   } else if (bangUpdate.type == 'video') {
-
     return Stack(
       children: [
         Container(

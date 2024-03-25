@@ -80,9 +80,9 @@ class _CreateState extends State<Create> {
 
   @override
   void dispose() {
+    super.dispose();
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
-    super.dispose();
     _pageViewController.dispose();
   }
 
@@ -123,6 +123,7 @@ class _CreateState extends State<Create> {
                     );
                   }
                   else{
+
                     await Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(

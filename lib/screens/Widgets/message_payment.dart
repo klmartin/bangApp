@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import '../../providers/message_payment_provider.dart';
 import '../../providers/payment_provider.dart';
@@ -17,11 +18,12 @@ class MessagePayment extends StatefulWidget {
 class _MessagePaymentState extends State<MessagePayment> {
   @override
   void initState() {
+    print('callse');
     super.initState();
   }
 
   Widget build(BuildContext context) {
-    var messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: false);
+    final messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: true);
     return FutureBuilder(
       future: showModalBottomSheet(
         context: context,
@@ -74,7 +76,7 @@ class _MessagePaymentState extends State<MessagePayment> {
                       cursorColor: Colors.black,
                     ),
                     messagePaymentProvider.isPaying
-                        ? CircularProgressIndicator()
+                        ? LoadingAnimationWidget.fallingDot(color: Colors.black, size: 30)
                         : TextButton(
                       onPressed: () async {
                         messagePaymentProvider.startPaying(

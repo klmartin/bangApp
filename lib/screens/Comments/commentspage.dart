@@ -54,236 +54,237 @@ class _CommentsPageState extends State<CommentsPage> {
 
   Widget commentChild() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final commentProvider = Provider.of<CommentProvider>(context, listen: true); // Set listen to true
-    return  commentProvider.loading ? Center(
-      child: LoadingAnimationWidget.fallingDot(color: Colors.black, size: 50
-      ),
-    ) :ListView.builder(
-        itemCount: commentProvider.comments!.length,
-        itemBuilder: (context, index) {
-          final comments = commentProvider.comments;
-          final comment = comments?[index];
-          return userProvider.userData['id'] == comment?.userId
-              ? Dismissible(
-                  key: Key(comment!.id.toString()),
-                  onDismissed: (direction) async {
-
-                    final response = await Service().deleteComment(comment.id);
-                    if (response['message'] == 'Comment deleted successfully') {
-                      Fluttertoast.showToast(msg: response['message']);
-                    }
-                    // setState(() {
-                    //   comments?.removeAt(index);
-                    // });
-                  },
-                  background: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
-                    child: ExpansionTile(
-                      key: Key('expansion_${comment.id}'),
-                      leading: GestureDetector(
-                        onTap: () async {
-                          // Display the image in large form.
-                          print("Comment Clicked");
-                        },
-                        child: Container(
-                          height: 50.0,
-                          width: 50.0,
-                          decoration: new BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius:
-                                new BorderRadius.all(Radius.circular(50)),
-                          ),
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundImage: CommentBox.commentImageParser(
-                              imageURLorPath: comment.userImageUrl,
-                            ),
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        comment.commentUser!.name ?? "",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(comment?.body ?? "",
-                              style: TextStyle(fontWeight: FontWeight.w500)),
-                          SizedBox(height: 5),
-                          GestureDetector(
-                            onTap: () {
-                              print(comment.id);
-                              setState(() {
-                                replyId = comment.id;
-                                commentWriteText = 'Reply to';
-                                isReply = true;
-                              });
-                              commentController.text =
-                                  '@${comment.commentUser?.name} ';
-                              FocusScope.of(context)
-                                  .requestFocus(commentFocusNode);
-                            },
-                            child: Text("Reply"),
-                          ),
-                          Center(
-                            child: comment.repliesCount! > 0
-                                ? Text('${comment.repliesCount} Replies')
-                                : Container(),
-                          )
-                        ],
-                      ),
-                      trailing: Text(comment.createdAt ?? "",
-                          style: TextStyle(fontSize: 10)),
-                      children: [
-                        // List of replies goes here
-
-                        for (var reply in comment.commentReplies!)
-                          ListTile(
-                            leading: GestureDetector(
-                              onTap: () async {},
-                              child: Container(
-                                height: 30.0,
-                                width: 30.0,
-                                decoration: new BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius:
-                                      new BorderRadius.all(Radius.circular(30)),
-                                ),
-                                child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundImage:
-                                      CommentBox.commentImageParser(
-                                    imageURLorPath: reply.userImageUrl,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            title: Text(
-                              reply.replyUser!.name ?? "",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(reply.body ?? ""),
-                            trailing: Column(children: [
-                              Text(reply.createdAt!,
-                                  style: TextStyle(fontSize: 7)),
-                            ]),
-                          ),
-                      ],
-                    ),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
-                  child: ExpansionTile(
-                    leading: GestureDetector(
-                      onTap: () async {
-                        // Display the image in large form.
-                        print("Comment Clicked");
+    final commentProvider = Provider.of<CommentProvider>(context,
+        listen: true); // Set listen to true
+    return commentProvider.loading
+        ? Center(
+            child: LoadingAnimationWidget.fallingDot(
+                color: Colors.black, size: 50),
+          )
+        : ListView.builder(
+            itemCount: commentProvider.comments!.length,
+            itemBuilder: (context, index) {
+              final comments = commentProvider.comments;
+              final comment = comments?[index];
+              return userProvider.userData['id'] == comment?.userId
+                  ? Dismissible(
+                      key: Key(comment!.id.toString()),
+                      onDismissed: (direction) async {
+                        final response = await Service().deleteComment(comment.id);
+                        commentProvider.deleteComment(comment.id!);
+                        Fluttertoast.showToast(msg: response['message']);
+                        widget.myProvider.decrementCommentCountByPostId(widget.postId);
                       },
-                      child: Container(
-                        height: 50.0,
-                        width: 50.0,
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius:
-                              new BorderRadius.all(Radius.circular(50)),
-                        ),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: CommentBox.commentImageParser(
-                            imageURLorPath: comment!.userImageUrl ?? "",
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                    ),
-                    title: Text(
-                      comment!.commentUser?.name ?? "",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(comment.body ?? "",
-                            style: TextStyle(fontWeight: FontWeight.w500)),
-                        SizedBox(height: 5),
-                        GestureDetector(
-                          onTap: () {
-                            print(comment.id);
-                            setState(() {
-                              replyId = comment.id;
-                              commentWriteText = 'Reply to';
-                              isReply = true;
-                            });
-                            commentController.text =
-                                '@${comment.commentUser?.name} ';
-                            FocusScope.of(context)
-                                .requestFocus(commentFocusNode);
-                          },
-                          child: Text("Reply"),
-                        ),
-                        Center(
-                          child: comment.repliesCount! > 0
-                              ? Text('${comment.repliesCount} Replies')
-                              : Container(),
-                        )
-                      ],
-                    ),
-                    trailing: Text(comment.createdAt ?? "",
-                        style: TextStyle(fontSize: 10)),
-                    children: [
-                      // List of replies goes here
-                      for (var reply in comment.commentReplies!)
-                        ListTile(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+                        child: ExpansionTile(
+                          key: Key('expansion_${comment.id}'),
                           leading: GestureDetector(
                             onTap: () async {
                               // Display the image in large form.
                               print("Comment Clicked");
                             },
                             child: Container(
-                              height: 30.0,
-                              width: 30.0,
+                              height: 50.0,
+                              width: 50.0,
                               decoration: new BoxDecoration(
                                 color: Colors.blue,
                                 borderRadius:
-                                    new BorderRadius.all(Radius.circular(30)),
+                                    new BorderRadius.all(Radius.circular(50)),
                               ),
                               child: CircleAvatar(
-                                radius: 30,
+                                radius: 50,
                                 backgroundImage: CommentBox.commentImageParser(
-                                  imageURLorPath: reply.userImageUrl,
+                                  imageURLorPath: comment.userImageUrl,
                                 ),
                               ),
                             ),
                           ),
                           title: Text(
-                            reply.replyUser!.name ?? "",
+                            comment.commentUser!.name ?? "",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text(reply.body ?? ""),
-                          trailing: Column(children: [
-                            Text(reply.createdAt!,
-                                style: TextStyle(fontSize: 7)),
-                          ]),
-                          // trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                          subtitle: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(comment?.body ?? "",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.w500)),
+                              SizedBox(height: 5),
+                              GestureDetector(
+                                onTap: () {
+                                  print(comment.id);
+                                  setState(() {
+                                    replyId = comment.id;
+                                    commentWriteText = 'Reply to';
+                                    isReply = true;
+                                  });
+                                  commentController.text =
+                                      '@${comment.commentUser?.name} ';
+                                  FocusScope.of(context)
+                                      .requestFocus(commentFocusNode);
+                                },
+                                child: Text("Reply"),
+                              ),
+                              Center(
+                                child: comment.repliesCount! > 0
+                                    ? Text('${comment.repliesCount} Replies')
+                                    : Container(),
+                              )
+                            ],
+                          ),
+                          trailing: Text(comment.createdAt ?? "",
+                              style: TextStyle(fontSize: 10)),
+                          children: [
+                            // List of replies goes here
+
+                            for (var reply in comment.commentReplies!)
+                              ListTile(
+                                leading: GestureDetector(
+                                  onTap: () async {},
+                                  child: Container(
+                                    height: 30.0,
+                                    width: 30.0,
+                                    decoration: new BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: new BorderRadius.all(
+                                          Radius.circular(30)),
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 30,
+                                      backgroundImage:
+                                          CommentBox.commentImageParser(
+                                        imageURLorPath: reply.userImageUrl,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                title: Text(
+                                  reply.replyUser!.name ?? "",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Text(reply.body ?? ""),
+                                trailing: Column(children: [
+                                  Text(reply.createdAt!,
+                                      style: TextStyle(fontSize: 7)),
+                                ]),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-                );
-        });
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+                      child: ExpansionTile(
+                        leading: GestureDetector(
+                          onTap: () async {
+                            // Display the image in large form.
+                            print("Comment Clicked");
+                          },
+                          child: Container(
+                            height: 50.0,
+                            width: 50.0,
+                            decoration: new BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius:
+                                  new BorderRadius.all(Radius.circular(50)),
+                            ),
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: CommentBox.commentImageParser(
+                                imageURLorPath: comment!.userImageUrl ?? "",
+                              ),
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          comment!.commentUser?.name ?? "",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(comment.body ?? "",
+                                style: TextStyle(fontWeight: FontWeight.w500)),
+                            SizedBox(height: 5),
+                            GestureDetector(
+                              onTap: () {
+                                print(comment.id);
+                                setState(() {
+                                  replyId = comment.id;
+                                  commentWriteText = 'Reply to';
+                                  isReply = true;
+                                });
+                                commentController.text =
+                                    '@${comment.commentUser?.name} ';
+                                FocusScope.of(context)
+                                    .requestFocus(commentFocusNode);
+                              },
+                              child: Text("Reply"),
+                            ),
+                            Center(
+                              child: comment.repliesCount! > 0
+                                  ? Text('${comment.repliesCount} Replies')
+                                  : Container(),
+                            )
+                          ],
+                        ),
+                        trailing: Text(comment.createdAt ?? "",
+                            style: TextStyle(fontSize: 10)),
+                        children: [
+                          // List of replies goes here
+                          for (var reply in comment.commentReplies!)
+                            ListTile(
+                              leading: GestureDetector(
+                                onTap: () async {
+                                  // Display the image in large form.
+                                  print("Comment Clicked");
+                                },
+                                child: Container(
+                                  height: 30.0,
+                                  width: 30.0,
+                                  decoration: new BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: new BorderRadius.all(
+                                        Radius.circular(30)),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage:
+                                        CommentBox.commentImageParser(
+                                      imageURLorPath: reply.userImageUrl,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                reply.replyUser!.name ?? "",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(reply.body ?? ""),
+                              trailing: Column(children: [
+                                Text(reply.createdAt!,
+                                    style: TextStyle(fontSize: 7)),
+                              ]),
+                              // trailing: Text(data[i]['date'], style: TextStyle(fontSize: 10)),
+                            ),
+                        ],
+                      ),
+                    );
+            });
   }
 
   Widget repliesChild(data) {
@@ -306,8 +307,7 @@ class _CommentsPageState extends State<CommentsPage> {
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
-    final commentProvider =
-        Provider.of<CommentProvider>(context, listen: true);
+    final commentProvider = Provider.of<CommentProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -325,7 +325,7 @@ class _CommentsPageState extends State<CommentsPage> {
         ),
         backgroundColor: Colors.white,
       ),
-      body:  Container(
+      body: Container(
         child: CommentBox(
           userImage: NetworkImage(userProvider.userData['user_image_url']),
           child: commentChild(),
@@ -350,7 +350,6 @@ class _CommentsPageState extends State<CommentsPage> {
                 try {
                   commentProvider.addCommentReply(
                       context, replyId, widget.postId, commentController.text);
-
                   commentController.clear();
                   setState(() {
                     isReply = false;
@@ -371,8 +370,7 @@ class _CommentsPageState extends State<CommentsPage> {
           commentController: commentController,
           textColor: Colors.black,
           sendWidget: commentProvider.postingLoading
-              ? LoadingAnimationWidget.fallingDot(color: Colors.black, size: 30
-                )
+              ? LoadingAnimationWidget.fallingDot(color: Colors.black, size: 30)
               : Icon(Icons.send_sharp, size: 30, color: Colors.black),
         ),
       ),

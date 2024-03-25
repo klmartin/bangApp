@@ -258,15 +258,24 @@ class PostsProvider with ChangeNotifier {
 
   void incrementCommentCountByPostId(int postId) {
     try {
-
-      // ignore: unrelated_type_equality_checks
       final post = _posts.firstWhere((update) => update.postId == postId);
-
       if (post != null) {
         post.commentCount++;
         notifyListeners();
       } else {
         // Iterate through _posts and print all postIds
+        posts?.forEach((post) {});
+      }
+    } catch (e) {}
+  }
+
+  void decrementCommentCountByPostId(int postId) {
+    try {
+      final post = _posts.firstWhere((update) => update.postId == postId);
+      if (post != null) {
+        post.commentCount--;
+        notifyListeners();
+      } else {
         posts?.forEach((post) {});
       }
     } catch (e) {}
