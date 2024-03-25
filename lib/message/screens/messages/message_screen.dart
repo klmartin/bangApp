@@ -14,9 +14,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:video_player/video_player.dart';
-import '../../../constants/urls.dart';
 import '../../../providers/message_payment_provider.dart';
 import '../../../providers/payment_provider.dart';
+import '../../../providers/subscription_payment_provider.dart';
 
 class MessagesScreen extends StatefulWidget {
   int receiverId;
@@ -617,7 +617,101 @@ Future<Null> buildMessagePayment(BuildContext context, price, postId) {
       );
     },
   ).then((result) {
-    var messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: false);
+    var messagePaymentProvider =
+        Provider.of<MessagePaymentProvider>(context, listen: false);
+    messagePaymentProvider.paymentCanceled = true;
+    print(messagePaymentProvider.isPaying);
+    print('Modal bottom sheet closed: $result');
+  });
+}
+
+Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
+  return showModalBottomSheet(
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+    builder: (BuildContext context) {
+      return Builder(
+        builder: (BuildContext innerContext) {
+          return Consumer<SubscriptionPaymentProvider>(
+            builder: (context, subscriptionPaymentProvider, _) {
+              final userProvider = Provider.of<UserProvider>(innerContext);
+              final TextEditingController phoneNumberController =
+                  TextEditingController(
+                text: userProvider.userData['phone_number'].toString(),
+              );
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Center(
+                        child: Text(
+                          'Pay $price Tshs to Subscribe',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextField(
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      controller: phoneNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'Phone number',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.phone),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                    ),
+                    Center(
+                      child: subscriptionPaymentProvider.isPaying
+                          ? LoadingAnimationWidget.staggeredDotsWave(
+                              color: Colors.red, size: 30)
+                          : TextButton(
+                              onPressed: () async {
+                                subscriptionPaymentProvider.startPaying(
+                                    userProvider.userData['phone_number']
+                                        .toString(),
+                                    price,
+                                    userId,
+                                    'subscription');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                              child: Text(
+                                'Pay',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      );
+    },
+  ).then((result) {
+    var messagePaymentProvider =
+        Provider.of<MessagePaymentProvider>(context, listen: false);
     messagePaymentProvider.paymentCanceled = true;
     print(messagePaymentProvider.isPaying);
     print('Modal bottom sheet closed: $result');

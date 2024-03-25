@@ -1279,7 +1279,7 @@ class Service {
   Future<Map<String, dynamic>> getResetLink(email) async {
     try {
       final token = await TokenManager.getToken();
-      final response = await http.get(
+      final response = await http.post(
         Uri.parse('$baseUrl/resetPassword/$email'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1328,5 +1328,71 @@ class Service {
       print('error');
       return {};
     }
+  }
+
+  Future<Map<String, dynamic>> reportPost(postId) async
+  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('user_id').toString();
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/reportPost'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body:json.encode({
+          'id':postId,
+          'user_id':userId,
+        }),
+      );
+      print('this is report response');
+      print(response.body);
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else {
+        return {};
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      print(e);
+      print('error');
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> subscribeUser(userId) async
+  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/reportPost'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body:json.encode({
+          'subscriber_id': prefs.getInt('user_id').toString(),
+          'user_id':userId,
+        }),
+      );
+      print('this is report response');
+      print(response.body);
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else {
+        return {};
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      print(e);
+      print('error');
+      return {};
+    }
+
   }
 }

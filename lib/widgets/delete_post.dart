@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../nav.dart';
@@ -32,15 +33,12 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
       if (responseBody != null &&
           responseBody['message'] == 'Post deleted successfully') {
         Fluttertoast.showToast(msg: responseBody['message']);
-
         if (widget.type == 'posts') {
           final postsProvider =
               Provider.of<PostsProvider>(context, listen: false);
           postsProvider.deletePostById(widget.imagePostId);
           Navigator.pop(context);
         } else if (widget.type == 'profile') {
-          print(widget.type);
-          print('this is the widget type');
           final providerPost =
               Provider.of<ProfileProvider>(context, listen: false);
           providerPost.deletePostById(widget.imagePostId);
@@ -75,7 +73,8 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
         ),
         if (_isLoading)
           Center(
-            child: CircularProgressIndicator(),
+            child: LoadingAnimationWidget.staggeredDotsWave(
+                color: Colors.red, size: 35),
           ),
       ],
     );

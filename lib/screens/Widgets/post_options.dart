@@ -13,6 +13,8 @@ import '../../widgets/user_profile.dart';
 import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 import '../Create/video_editing/video_edit.dart';
 import 'dart:io';
+import 'package:bangapp/services/service.dart';
+
 
 Widget postOptions (BuildContext context,userId,userImage,userName,followerCount,imagePost,imagePostId,imageUserId,type,createdAt,postViews,widgetType)  {
   Future<Uint8List> fileToUint8List(File file) async {
@@ -244,6 +246,33 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                     ),
                                     title: Text(
                                       "Challenge $type",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge,
+                                    ),
+                                  ),
+                                  Divider(
+                                    height: .5,
+                                    thickness: .5,
+                                    color: Colors.grey.shade800,
+                                  )
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  ListTile(
+                                    onTap: () async {
+                                      Service().reportPost(imagePostId);
+                                      print('reporting post');
+                                    },
+                                    minLeadingWidth: 20,
+                                    leading: Icon(
+                                      CupertinoIcons.arrow_2_circlepath_circle,
+                                      color: Theme.of(context)
+                                          .primaryColor,
+                                    ),
+                                    title: Text(
+                                      "Report this Post",
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyLarge,

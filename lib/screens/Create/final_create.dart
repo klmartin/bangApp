@@ -61,7 +61,6 @@ class _FinaleCreateState extends State<FinalCreate>
   }
 
   void dispose() {
-    print('running dispose');
     videoController?.dispose();
     super.dispose();
   }

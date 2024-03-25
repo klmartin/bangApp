@@ -52,6 +52,10 @@ class _AppSettings extends State<AppSettings> {
             title: Text("Privacy"),
           ),
           ListTile(
+            leading: FaIcon(FontAwesomeIcons.lock),
+            title: Text("Pin Profile"),
+          ),
+          ListTile(
             leading: FaIcon(FontAwesomeIcons.message),
             title: Text("Pin Messages"),
             subtitle: pinPost

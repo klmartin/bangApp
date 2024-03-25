@@ -47,6 +47,8 @@ class _UserProfileState extends State<UserProfile> {
   int myId = 0;
   String myImage = profileUrl;
   int myPostCount = 0;
+  bool mySubscribe = false;
+  String mySubscribePrice = "";
   bool privacySwitchValue = false;
   int myFollowerCount = 0;
   int myFollowingCount = 0;
@@ -105,7 +107,9 @@ class _UserProfileState extends State<UserProfile> {
       myFollowerCount = myInfo['followerCount'] ?? 0;
       myFollowingCount = myInfo['followingCount'] ?? 0;
       privacySwitchValue = myInfo['public'] == 1 ? true : false;
+      mySubscribe = myInfo['subscribe'] == 1 ? true : false;
       myPrice = myInfo['price'];
+      mySubscribePrice = myInfo['subscriptionPrice'];
       myId = widget.userid;
     });
   }
@@ -313,10 +317,11 @@ class _UserProfileState extends State<UserProfile> {
                         ),
                         onPressed: () async {
                           //follow or unfollow
+                          buildSubscriptionPayment(context, mySubscribePrice, widget.userid);
                         },
                         child: Text(
-                          'Unfollow Follow',
-                          style: TextStyle(color: Colors.white),
+                          'Subscribe',
+                          style: TextStyle(color: Colors.black),
                         )),
                   )),
                   SizedBox(width: 10),
