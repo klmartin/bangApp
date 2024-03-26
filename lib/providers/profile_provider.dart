@@ -89,6 +89,7 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+
   void processResponseData(Map<String, dynamic> responseData) {
     if (responseData.containsKey('data')) {
       List<dynamic> responseList = responseData['data']['data'];
@@ -107,6 +108,7 @@ class ProfileProvider extends ChangeNotifier {
     print(_pageNumber);
     final token = await TokenManager.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    final viewerId = prefs.getInt('user_id').toString();
     final String cacheKey = 'cached_my_posts_$userId';
 
     final String cachedData = prefs.getString(cacheKey) ?? '';
@@ -117,7 +119,7 @@ class ProfileProvider extends ChangeNotifier {
     if (minutes >= 3) {
       final response = await get(
         Uri.parse(
-          "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId",
+          "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$viewerId",
         ),
         headers: {
           'Authorization': 'Bearer $token',
@@ -168,6 +170,84 @@ class ProfileProvider extends ChangeNotifier {
       }
     }
   }
+
+  Future<void> loadMoreUserData(userId, int _pageNumber) async {
+    try {
+      print('get more data');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final viewerId = prefs.getInt('user_id').toString();
+      final String cacheKey = 'cached_posts';
+      final token = await TokenManager.getToken();
+
+      notifyListeners();
+      final response = await get(
+        Uri.parse(
+          "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$viewerId",
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        prefs.setString(cacheKey, json.encode(responseData));
+        prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+        processResponseData(responseData);
+      } else {
+        handleServerError();
+      }
+
+      _currentPageNumber = _pageNumber;
+    } catch (e) {
+      print(e);
+      // Handle the error here...
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadMoreData(int _pageNumber) async {
+    try {
+      print('get more data');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('user_id').toString();
+      final String cacheKey = 'cached_posts';
+      final token = await TokenManager.getToken();
+
+      notifyListeners();
+
+      final response = await get(
+        Uri.parse(
+          "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId",
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        prefs.setString(cacheKey, json.encode(responseData));
+        prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+        processResponseData(responseData);
+      } else {
+        handleServerError();
+      }
+
+      _currentPageNumber = _pageNumber;
+    } catch (e) {
+      print(e);
+      // Handle the error here...
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
 
   void incrementCommentCountByPostId(int postId) {
     try {
@@ -241,6 +321,11 @@ class ProfileProvider extends ChangeNotifier {
 
       notifyListeners();
     } else {}
+  }
+
+  void handleServerError() {
+    // Handle server error (e.g., response.statusCode is not 200)
+    // You may want to set an error flag or log the error
   }
 
 }

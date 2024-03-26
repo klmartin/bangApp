@@ -262,22 +262,114 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                 children: [
                                   ListTile(
                                     onTap: () async {
-                                      Service().reportPost(imagePostId);
-                                      print('reporting post');
+                                      // Show modal dialog with reporting reasons
+                                      String reason = await showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text("Report Post"),
+                                            content: SingleChildScrollView(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  ListTile(
+                                                    title: Text("Hate"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Hate");
+                                                    },
+                                                    subtitle: Text('Slurs, Racist or sexist stereotypes, Dehumanization, Incitement of fear or discrimination, Hateful references, Hateful symbols & logos'),
+                                                  ),
+                                                  ListTile(
+                                                    title: Text("Abuse & Harassment"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Abuse & Harassment");
+                                                    },
+                                                    subtitle: Text('Insults, Unwanted Sexual Content & Graphic Objectification, Unwanted NSFW & Graphic Content, Violent Event Denial, Targeted Harassment and Inciting Harassment'),
+                                                  ),
+                                                  ListTile(
+                                                    title: Text("Violent Speech"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Violent Speech");
+                                                    },
+                                                    subtitle: Text('Violent Threats, Wish of Harm, Glorification of Violence, Incitement of Violence, Coded Incitement of Violence'),
+                                                  ),
+                                                  ListTile(
+                                                    title: Text("Child Safety"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Child Safety");
+                                                    },
+                                                    subtitle: Text('Child sexual exploitation, grooming, physical child abuse, underage user'),
+                                                  ),
+                                                  ListTile(
+                                                    title: Text("Privacy"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Child Safety");
+                                                    },
+                                                    subtitle: Text('Sharing private information, threatening to share/expose private information, sharing non-consensual intimate images, sharing images of me that I don’t want on the platform'),
+                                                  ),
+                                                  ListTile(
+                                                    title: Text("Spam"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Child Safety");
+                                                    },
+                                                    subtitle: Text('Fake accounts, financial scams, posting malicious links, misusing hashtags, fake engagement, repetitive replies, Reposts, or Direct Messages'),
+                                                  ),
+                                                  ListTile(
+                                                    title: Text("Suicide or self-harm"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Suicide or self-harm");
+                                                    },
+                                                    subtitle: Text('Encouraging, promoting, providing instructions or sharing strategies for self-harm.'),
+                                                  ),
+                                                  ListTile(
+                                                    title: Text("Sensitive or disturbing media"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Sensitive or disturbing media");
+                                                    },
+                                                    subtitle: Text('Graphic Content, Gratutitous Gore, Adult Nudity & Sexual Behavior, Violent Sexual Conduct, Bestiality & Necrophilia, Media depicting a deceased individual'),
+                                                  ),
+                                                  ListTile(
+                                                    title: Text("Deceptive identities"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Deceptive identities");
+                                                    },
+                                                    subtitle: Text('Impersonation, non-compliant parody/fan accounts'),
+                                                  ),
+                                                  ListTile(
+                                                    title: Text("Violent & hateful entities"),
+                                                    onTap: () {
+                                                      Navigator.of(context).pop("Violent & hateful entities");
+                                                    },
+                                                    subtitle: Text('Violent extremism and terrorism, hate groups & networks'),
+                                                  ),
+                                                  // Add more reasons as needed
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+
+                                      // If user selects a reason, report the post
+                                      if (reason != null) {
+                                        final response = await Service().reportPost(imagePostId, reason);
+                                        print('reporting post');
+                                        if(response != null && response.containsKey('message')){
+                                          Fluttertoast.showToast(msg: response['message']);
+                                        }
+                                      }
                                     },
                                     minLeadingWidth: 20,
                                     leading: Icon(
                                       CupertinoIcons.arrow_2_circlepath_circle,
-                                      color: Theme.of(context)
-                                          .primaryColor,
+                                      color: Theme.of(context).primaryColor,
                                     ),
                                     title: Text(
                                       "Report this Post",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge,
+                                      style: Theme.of(context).textTheme.bodyLarge,
                                     ),
                                   ),
+
                                   Divider(
                                     height: .5,
                                     thickness: .5,

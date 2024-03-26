@@ -740,7 +740,7 @@ class _ProfilePostsStreamContentState
       _pageNumber++;
       final profileProvider =
           Provider.of<ProfileProvider>(context, listen: false);
-      profileProvider.getMyPosts(_pageNumber);
+      profileProvider.loadMoreData(_pageNumber);
     }
   }
 

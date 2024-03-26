@@ -650,11 +650,24 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Center(
                         child: Text(
-                          'Pay $price Tshs to Subscribe',
+                          'Pay $price Tshs to Subscribe ',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    //SizedBox(height: 10.0), // Add some space between price and text
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Center(
+                        child: Text(
+                          '(One Month Period)', // Text indicating the duration
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black,
                           ),
                         ),
                       ),

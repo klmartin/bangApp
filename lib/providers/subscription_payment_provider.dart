@@ -30,7 +30,6 @@ class SubscriptionPaymentProvider extends ChangeNotifier {
     notifyListeners();
     Map<String, dynamic> pay = await AzamPay().checkoutData(phoneNumber, price, userId,type);
     var transactionId = pay['response']['transactionId'];
-    // this line is to comment;
     //await AzamPay().saveDummyAzamPay(transactionId,type);
     if( transactionId != null ){
       _processingStatusTimer = Timer.periodic(Duration(seconds: 2), (timer) {

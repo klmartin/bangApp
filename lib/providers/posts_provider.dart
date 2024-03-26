@@ -121,8 +121,6 @@ class PostsProvider with ChangeNotifier {
   void processResponseData(Map<String, dynamic> responseData) {
     if (responseData.containsKey('data')) {
       List<dynamic> responseList = responseData['data']['data'];
-      // Ensure that only new posts are added when fetching additional pages
-
       final newPosts = responseList.map((data) {
         List<dynamic>? challengesList = data['challenges'];
         List<Challenge> challenges = (challengesList ?? []).map((challengeData) => Challenge(
@@ -162,8 +160,7 @@ class PostsProvider with ChangeNotifier {
     final token = await TokenManager.getToken();
     var responseData = {};
     try {
-      print(
-          "$baseUrl/getPost?_page=1&_limit=$_numberOfPostsPerRequest&user_id=$userId");
+
       final response = await get(
         Uri.parse(
             "$baseUrl/getPost?_page=1&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
@@ -263,7 +260,6 @@ class PostsProvider with ChangeNotifier {
         post.commentCount++;
         notifyListeners();
       } else {
-        // Iterate through _posts and print all postIds
         posts?.forEach((post) {});
       }
     } catch (e) {}

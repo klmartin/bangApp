@@ -17,12 +17,14 @@ class _AppSettings extends State<AppSettings> {
   @override
   var price;
   late bool pinPost ;
+  late bool subscribe;
   late UserProvider userProvider;
 
 
   void initState() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     pinPost = userProvider.userData['public'] == 1 ? true : false;
+    subscribe = userProvider.userData['subscribe'] == 1 ? true :false;
     super.initState();
   }
 
@@ -52,8 +54,77 @@ class _AppSettings extends State<AppSettings> {
             title: Text("Privacy"),
           ),
           ListTile(
-            leading: FaIcon(FontAwesomeIcons.lock),
+            leading: FaIcon(FontAwesomeIcons.person),
             title: Text("Pin Profile"),
+            subtitle: subscribe ? TextFormField(
+              decoration: InputDecoration(
+                hintText:
+                (userProvider.userData['subscriptionPrice'] ?? 0).toString() +
+                    ' Tshs',
+                focusedBorder: UnderlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number, // Allow only numbers
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Price is required';
+                }
+                // Additional validation for numbers
+                if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                  return 'Enter a valid number';
+                }
+                int price = int.parse(value);
+                if (price < 1000) {
+                  return 'Price must be at least 1000';
+                }
+                return null; // Validation passed
+              },
+              onChanged: (val) async {
+                print('changed');
+                var newPrice = await Service().setUserPinProfilePrice(val);
+                print(newPrice);
+                if (newPrice['message'] == 'Price set successfully') {
+                  userProvider.userData['subscriptionPrice'] = newPrice['subscriptionPrice'];
+                }
+                print('this is new Price');
+                print(val);
+                Fluttertoast.showToast(
+                  msg: newPrice['message'],
+                  toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
+                  gravity: ToastGravity.CENTER, // Toast position
+                  timeInSecForIosWeb: 1, // Time duration for iOS and web
+                  backgroundColor: Colors.grey[600],
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                );
+                setState(() {
+                  price = val;
+                });
+              },
+            )
+                : Container(),
+            trailing: Switch(
+              value: subscribe,
+              onChanged: (bool value) async {
+                print(subscribe);
+                var valueRes = await Service().pinProfile();
+                userProvider.userData['subscribe'] = valueRes['value'];
+                setState(() {
+                  subscribe = !subscribe;
+                  print(subscribe);
+
+                });
+                Fluttertoast.showToast(
+                  msg: valueRes['message'],
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.grey[600],
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                );
+
+              },
+            ),
           ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.message),

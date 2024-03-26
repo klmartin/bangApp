@@ -28,11 +28,6 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
   }
 
   buildFab(BuildContext context, price, subtitle, battleId) {
-    var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final TextEditingController phoneNumberController = TextEditingController(
-      text: userProvider.userData['phone_number'].toString(),
-    );
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -40,74 +35,97 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Center(
-                  child: Text(
-                    'Pay to Vote $price Tshs',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
-                ),
-              ),
-              Divider(),
-              ListTile(
-                title: Text(subtitle),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                controller: phoneNumberController,
-                decoration: InputDecoration(
-                  labelText: 'Phone number',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.phone),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              paymentProvider.isPaying
-                  ? CircularProgressIndicator()
-                  : TextButton(
-                      onPressed: () async {
-                        paymentProvider.startPaying(
-                            userProvider.userData['phone_number'].toString(),
-                            price,
-                            battleId,
-                            'battle');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors
-                            .red, // Set the background color of the button
-                      ),
-                      child: Text(
-                        'Pay',
-                        style: TextStyle(
-                          color: Colors.white,
+        return Builder(
+          builder: (BuildContext innerContext) {
+            return Consumer<PaymentProvider>(
+              builder: (context, paymentProvider, _) {
+                final userProvider = Provider.of<UserProvider>(innerContext);
+                final TextEditingController phoneNumberController =
+                    TextEditingController(
+                  text: userProvider.userData['phone_number'].toString(),
+                );
+
+                return SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Center(
+                          child: Text(
+                            'Pay to Vote $price Tshs',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
                         ),
-                      ))
-            ],
-          ),
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text(subtitle),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      TextField(
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        controller: phoneNumberController,
+                        decoration: InputDecoration(
+                          labelText: 'Phone number',
+                          labelStyle: TextStyle(color: Colors.black),
+                          prefixIcon: Icon(Icons.phone),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                          ),
+                        ),
+                        style: TextStyle(color: Colors.black),
+                        cursorColor: Colors.black,
+                      ),
+                      paymentProvider.isPaying
+                          ? CircularProgressIndicator()
+                          : TextButton(
+                              onPressed: () async {
+                                paymentProvider.startPaying(
+                                    userProvider.userData['phone_number']
+                                        .toString(),
+                                    price,
+                                    battleId,
+                                    'battle');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors
+                                    .red, // Set the background color of the button
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Pay',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ))
+                    ],
+                  ),
+                );
+              },
+            );
+          },
         );
       },
-    );
+    ).then((result) {
+      var paymentProvider =
+          Provider.of<PaymentProvider>(context, listen: false);
+      paymentProvider.paymentCanceled = true;
+      print(paymentProvider.isPaying);
+      print('Modal bottom sheet closed: $result');
+    });
   }
 
   @override

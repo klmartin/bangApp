@@ -16,6 +16,7 @@ import 'package:bangapp/providers/message_payment_provider.dart';
 import 'package:bangapp/providers/payment_provider.dart';
 import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/providers/posts_provider.dart';
+import 'package:bangapp/providers/subscription_payment_provider.dart';
 import 'package:bangapp/providers/update_comment_provider.dart';
 import 'package:bangapp/providers/video_upload.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
@@ -75,6 +76,8 @@ void main() async {
     ChangeNotifierProvider(create: (context) => UpdateCommentProvider()),
     ChangeNotifierProvider(create: (context) => BattleCommentProvider()),
     ChangeNotifierProvider(create: (context) => MessagePaymentProvider()),
+    ChangeNotifierProvider(create: (context) => SubscriptionPaymentProvider()),
+
 
   ], child: MyApp()));
 }

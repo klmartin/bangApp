@@ -1053,7 +1053,7 @@ class Service {
     final token = await TokenManager.getToken();
     if (userId != null) {
       var response = await http.get(
-        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId?viewer_id=$viewerId"),
+        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId?&viewer_id=$viewerId"),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
@@ -1065,7 +1065,7 @@ class Service {
     } else {
       var userId = prefs.getInt('user_id').toString();
       var response = await http.get(
-        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId?viewer_id=$userId"),
+        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId?&viewer_id=$userId"),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
@@ -1223,12 +1223,69 @@ class Service {
     }
   }
 
+  Future<Map<String, dynamic>> pinProfile() async {
+    try {
+      final token = await TokenManager.getToken();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(
+        Uri.parse('$baseUrl/pinProfile'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body: jsonEncode({
+          'user_id': prefs.getInt('user_id').toString(), // Convert to string
+        }),
+      );
+        print(response.body);
+        print('pin profile response');
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else {
+        return {};
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      return {};
+    }
+  }
+
+
   Future<Map<String, dynamic>> setUserPinPrice(price) async {
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await http.post(
         Uri.parse('$baseUrl/setUserPinPrice'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body: jsonEncode({
+          'user_id': prefs.getInt('user_id').toString(), // Convert to string
+          'price': price
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else {
+        return {};
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> setUserPinProfilePrice(price) async {
+    try {
+      final token = await TokenManager.getToken();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final response = await http.post(
+        Uri.parse('$baseUrl/setUserPinProfilePrice'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
@@ -1330,7 +1387,7 @@ class Service {
     }
   }
 
-  Future<Map<String, dynamic>> reportPost(postId) async
+  Future<Map<String, dynamic>> reportPost(postId,reason) async
   {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('user_id').toString();
@@ -1343,8 +1400,9 @@ class Service {
           'Content-Type': 'application/json', // Include other headers as needed
         },
         body:json.encode({
-          'id':postId,
+          'post_id':postId,
           'user_id':userId,
+          'reason':reason
         }),
       );
       print('this is report response');
@@ -1369,7 +1427,7 @@ class Service {
     try {
       final token = await TokenManager.getToken();
       final response = await http.post(
-        Uri.parse('$baseUrl/reportPost'),
+        Uri.parse('$baseUrl/subscribe'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
@@ -1379,8 +1437,6 @@ class Service {
           'user_id':userId,
         }),
       );
-      print('this is report response');
-      print(response.body);
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData;

@@ -15,6 +15,7 @@ import '../../providers/Profile_Provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
 import '../../providers/message_payment_provider.dart';
 import '../../providers/payment_provider.dart';
+import '../../providers/subscription_payment_provider.dart';
 import '../../widgets/build_media.dart';
 import '../../widgets/video_rect.dart';
 import '../Posts/post_challenge_view.dart';
@@ -60,7 +61,6 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   void initState() {
-    print('my information212312');
     _getMyInfo();
     messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: false);
     _scrollController = ScrollController();
@@ -70,7 +70,6 @@ class _UserProfileState extends State<UserProfile> {
 
     messagePaymentProvider.addListener(() {
       if (messagePaymentProvider.payed == true) {
-        print('nimeshalipa');
         Navigator.push(context,
             MaterialPageRoute(builder: (context) {
               return MessagesScreen(
@@ -96,9 +95,6 @@ class _UserProfileState extends State<UserProfile> {
 
   void _getMyInfo() async {
     var myInfo = await Service().getMyInformation(userId: widget.userid);
-    print(myInfo['postCount']);
-    print(myInfo['name'] );
-    print('my information');
     setState(() {
       myName = myInfo['name'] ?? "";
       myBio = myInfo['bio'] ?? "";
@@ -108,13 +104,11 @@ class _UserProfileState extends State<UserProfile> {
       myFollowingCount = myInfo['followingCount'] ?? 0;
       privacySwitchValue = myInfo['public'] == 1 ? true : false;
       mySubscribe = myInfo['subscribe'] == 1 ? true : false;
-      myPrice = myInfo['price'];
-      mySubscribePrice = myInfo['subscriptionPrice'];
-      myId = widget.userid;
+      myPrice = myInfo['price'] ?? "";
+      mySubscribePrice = myInfo['subscriptionPrice'] ?? "";
+      myId = myInfo['id'];
     });
   }
-
-
 
   void _loadMorePosts() async {
     if (_isLoading) {
@@ -125,10 +119,8 @@ class _UserProfileState extends State<UserProfile> {
       _isLoading = true;
     });
     final List<dynamic> newPosts = await getMyPosts(_pageNumber);
-
     setState(() {
       _isLoading = false;
-      // Append the newly loaded posts to the existing list
       allImagePosts.addAll(newPosts.map((post) {
         return ImagePost(
           name: post['user']['name'],
@@ -309,7 +301,7 @@ class _UserProfileState extends State<UserProfile> {
                   Expanded(
                       child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: OutlinedButton(
+                    child: mySubscribe ? OutlinedButton(
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                             Colors.white,
@@ -322,7 +314,19 @@ class _UserProfileState extends State<UserProfile> {
                         child: Text(
                           'Subscribe',
                           style: TextStyle(color: Colors.black),
-                        )),
+                        )) :OutlinedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                        onPressed: () async {
+                          //follow or unfollow
+                        },
+                        child: Text(
+                          'Subscribe',
+                          style: TextStyle(color: Colors.white),
+                        )) ,
                   )),
                   SizedBox(width: 10),
                   Expanded(
@@ -442,7 +446,9 @@ class _UserProfileState extends State<UserProfile> {
                     _persposts
                         ? Expanded(
                             child: ProfilePostsStream(
-                                userid: widget.userid.toString()))
+                                userid: widget.userid.toString(),
+                              subscribe: mySubscribe,
+                            ))
                         : Expanded(
                             child: Update(userid: widget.userid.toString())),
                   ],
@@ -566,19 +572,21 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
 class ProfilePostsStream extends StatelessWidget {
   @override
   String userid;
+  bool subscribe;
 
-  ProfilePostsStream({required this.userid});
+  ProfilePostsStream({required this.userid, required this.subscribe});
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ProfileProvider(),
-      child: _ProfilePostsStreamContent(userid: userid),
+      child: _ProfilePostsStreamContent(userid: userid,subscribe: subscribe),
     );
   }
 }
 
 class _ProfilePostsStreamContent extends StatefulWidget {
   String userid;
-  _ProfilePostsStreamContent({required this.userid});
+  bool subscribe;
+  _ProfilePostsStreamContent({required this.userid, required this.subscribe});
   @override
   _ProfilePostsStreamContentState createState() =>
       _ProfilePostsStreamContentState();
@@ -588,12 +596,24 @@ class _ProfilePostsStreamContentState
     extends State<_ProfilePostsStreamContent> {
   ScrollController _scrollController = ScrollController();
   int _pageNumber = 1;
+  late SubscriptionPaymentProvider subscriptionPaymentProvider;
+
   @override
   void initState() {
     super.initState();
     final providerPost = Provider.of<ProfileProvider>(context, listen: false);
     providerPost.getUserPost(widget.userid, _pageNumber);
     _scrollController.addListener(_scrollListener);
+    subscriptionPaymentProvider = Provider.of<SubscriptionPaymentProvider>(context, listen: false);
+
+    subscriptionPaymentProvider.addListener(() {
+      if (subscriptionPaymentProvider.payed == true) {
+        setState(() {
+          widget.subscribe = false;
+        });
+        // subscriptionPaymentProvider.deletePinnedById(paymentProvider.payedPost);
+      }
+    });
   }
 
   @override
@@ -608,7 +628,7 @@ class _ProfilePostsStreamContentState
       _pageNumber++;
       final profileProvider =
           Provider.of<ProfileProvider>(context, listen: false);
-      profileProvider.getUserPost(widget.userid, _pageNumber);
+      profileProvider.loadMoreUserData(widget.userid, _pageNumber);
     }
   }
 
@@ -617,7 +637,14 @@ class _ProfilePostsStreamContentState
     return Consumer<ProfileProvider>(builder: (context, provider, child) {
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));
-      } else if (provider.isLoading == false && provider.posts.isNotEmpty) {
+      }
+      else if(widget.subscribe == true){
+        return Center(child: Text('Subscribe to View Users Posts', style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 15
+        )));
+      }
+      else if (provider.isLoading == false && provider.posts.isNotEmpty) {
         return SingleChildScrollView(
           controller: _scrollController,
           child: GridView(

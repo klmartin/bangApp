@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-
 VideoPlayerController? activeController;
 
 class CustomVideoPlayer extends StatefulWidget {
@@ -14,7 +13,6 @@ class CustomVideoPlayer extends StatefulWidget {
   final String thumbnailUrl;
   final String aspectRatio;
   final String cachingVideoUrl;
-
   const CustomVideoPlayer({
     Key? key,
     required this.videoUrl,
@@ -26,43 +24,46 @@ class CustomVideoPlayer extends StatefulWidget {
   @override
   CustomVideoPlayerState createState() => CustomVideoPlayerState();
 }
-
 class CustomVideoPlayerState extends State<CustomVideoPlayer> {
   VideoPlayerController? videoController;
   ChewieController? chewieController;
   final UniqueKey stickyKey = UniqueKey();
   bool isControllerReady = false;
   bool isPlaying = false;
+  bool _isAnyVideoMuted = false;
 
+  void _handleVideoMuted(bool isMuted) {
+    setState(() {
+      _isAnyVideoMuted = isMuted;
+    });
+    // Mute or unmute the video
+    if (videoController != null) {
+      videoController!.setVolume(isMuted ? 0.0 : 1.0);
+    }
+  }
   Completer videoPlayerInitializedCompleter = Completer();
-
   //: check for cache
   Future<FileInfo?> checkCacheFor(String url) async {
     final FileInfo? value = await DefaultCacheManager().getFileFromCache(url);
     return value;
   }
-
 //:cached Url Data
   void cachedForUrl(String url) async {
     await DefaultCacheManager().getSingleFile(url).then((value) {
       ///to do
     });
   }
-
   @override
   void initState() {
     super.initState();
   }
-
   @override
   void dispose() async {
     super.dispose();
     if (videoController != null) {
       await videoController?.dispose().then((_) {
         isControllerReady = false;
-
         videoController = null;
-
         videoPlayerInitializedCompleter = Completer(); // resets the Completer
       });
       if (chewieController != null) {
@@ -92,9 +93,6 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
                       isControllerReady = true;
                     });
                   }
-
-
-
                   chewieController = ChewieController(
                     videoPlayerController: videoController!,
                     showControlsOnInitialize: true,
@@ -105,6 +103,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
                     autoPlay:  true,
                     aspectRatio: double.parse(widget.aspectRatio),
                     showControls: true,
+
                   );
                 });
               }
@@ -119,7 +118,6 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
                       isControllerReady = true;
                     });
                   }
-
                   chewieController = ChewieController(
                     videoPlayerController: videoController!,
                     showControlsOnInitialize: true,
