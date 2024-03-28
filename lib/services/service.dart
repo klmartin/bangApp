@@ -1451,4 +1451,32 @@ class Service {
     }
 
   }
+
+  Future<Map<String, dynamic>> fetchUserInsight() async
+  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse('$baseUrl/insights/${prefs.getInt('user_id').toString()}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else {
+        return {};
+        // Handle API error, if necessary
+      }
+    } catch (e) {
+      print(e);
+      print('error');
+      return {};
+    }
+
+
+  }
 }

@@ -17,7 +17,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-
     return AppBar(
       title: Text(
         title,
@@ -77,26 +76,26 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
         ),
-        Container(
-          padding: EdgeInsets.all(2),
-          margin: EdgeInsets.only(right: 10, left: 5),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [Colors.pink, Colors.redAccent, Colors.orange],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: InkWell(
-            child: Icon(Icons.notes_rounded),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return BangInspiration();
-              }));
-            },
-          ),
-        ),
+        // Container(
+        //   padding: EdgeInsets.all(2),
+        //   margin: EdgeInsets.only(right: 10, left: 5),
+        //   decoration: BoxDecoration(
+        //     shape: BoxShape.circle,
+        //     gradient: LinearGradient(
+        //       colors: [Colors.pink, Colors.redAccent, Colors.orange],
+        //       begin: Alignment.topLeft,
+        //       end: Alignment.bottomRight,
+        //     ),
+        //   ),
+        //   child: InkWell(
+        //     child: Icon(Icons.notes_rounded),
+        //     onTap: () {
+        //       Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //         return BangInspiration();
+        //       }));
+        //     },
+        //   ),
+        // ),
       ],
       automaticallyImplyLeading: false,
       elevation: 0.0,

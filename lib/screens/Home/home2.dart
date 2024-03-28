@@ -145,8 +145,19 @@ class _Home2ContentState extends State<Home2Content>
         child: errorDialog(size: 10),
       );
     } else if (postsProvider.posts == null || postsProvider.posts!.isEmpty) {
-      return Center(
-        child: Text("No posts available."),
+      Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("No posts available."),
+            ElevatedButton(
+              onPressed: () {
+                postsProvider.refreshData();
+              },
+              child: Text('Refresh Posts'),
+            ),
+          ],
+        ),
       );
     }
 

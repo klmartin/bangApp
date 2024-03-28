@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:sizer/sizer.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,7 +80,7 @@ class _FinaleCreateState extends State<FinalCreate>
       return 0.0; // Return 0.0 or another default value in case of an error
     }
   }
-
+  final captionController = TextEditingController();
   var image;
   bool light = true;
   var caption;
@@ -131,7 +133,8 @@ class _FinaleCreateState extends State<FinalCreate>
       videos.add(widget.editedVideo!);
       videos.add(widget.editedVideo2!);
     }
-    Size size = MediaQuery.of(context).size;
+    return Sizer(
+        builder: (context, orientation, deviceType) {
     return Scaffold(
         appBar: AppBar(
           title: Row(
@@ -177,8 +180,7 @@ class _FinaleCreateState extends State<FinalCreate>
             SizedBox(width: 10),
           ],
         ),
-        body: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 1.0),
+        body: Column(
           children: [
             Container(
                 child: Column(children: [
@@ -189,11 +191,11 @@ class _FinaleCreateState extends State<FinalCreate>
                     Expanded(
                       child: InkWell(
                         child: Container(
-                          width: size.width,
-                          height: size.height / 2,
+                          width: 100.w,
+                          height: 50.h,
                           child: Image.memory(
                             widget.editedImage!,
-                            width: size.width,
+                            width: 100.w,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -203,7 +205,7 @@ class _FinaleCreateState extends State<FinalCreate>
                       widget.editedImage != null)
                     Expanded(
                       child: SizedBox(
-                        height: size.height / 2, // Specify the desired height
+                        height:50.h,
                         child: PageView.builder(
                           itemCount: images.length,
                           itemBuilder: (context, index) {
@@ -228,32 +230,22 @@ class _FinaleCreateState extends State<FinalCreate>
                   else if (widget.editedVideo != null &&
                       widget.editedVideo2 == null &&
                       widget.editedImage2 == null)
-                    InkWell(
-                      child: Container(
-                        width: size.width - 4,
-                        height: size.height / 2,
-                        child: Chewie(
-                          controller: ChewieController(
-                            videoPlayerController:
-                                VideoPlayerController.network(
-                                    widget.editedVideo!),
-                            autoPlay: true,
-                            looping: false,
-                          ),
-                        ),
-                      ),
+                    Container(
+                      width: 100.w - 4,
+                      height: 50.h,
+                      child:  SingleVideoPlayerPage(key: UniqueKey(), videoUrl:widget.editedVideo!),
                     )
                   else if (widget.editedVideo != null &&
                       widget.editedVideo2 != null)
                     Expanded(
                       child: SizedBox(
-                        height: size.height / 2, // Specify the desired height
+                        height: 50.h, // Specify the desired height
                         child: PageView.builder(
                           itemCount: videos.length,
                           itemBuilder: (context, index) {
                             return Container(
-                              width: size.width - 4,
-                              height: size.height / 2,
+                              width: 100.w - 4,
+                              height: 50.h ,
                               child: Chewie(
                                 controller: ChewieController(
                                   videoPlayerController:
@@ -280,17 +272,17 @@ class _FinaleCreateState extends State<FinalCreate>
                 ),
               ),
               TextFormField(
-                initialValue: "",
+                controller: captionController,
                 decoration: InputDecoration(
                   hintText: 'Write a Caption!',
                   focusedBorder: UnderlineInputBorder(),
                 ),
                 maxLines: null,
-                onChanged: (val) {
-                  setState(() {
-                    caption = val;
-                  });
-                },
+                // onChanged: (val) {
+                //   setState(() {
+                //     caption = val;
+                //   });
+                // },
               ),
               SizedBox(height: 15),
               Row(
@@ -395,7 +387,7 @@ class _FinaleCreateState extends State<FinalCreate>
                                   Map<String, String> body = {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
-                                    'body': caption ?? " ",
+                                    'body': captionController.text ?? " ",
                                     'pinned': pinPost == 1 ? '1' : '0',
                                     'type': widget.type!,
                                     'price': price ?? '0',
@@ -435,7 +427,7 @@ class _FinaleCreateState extends State<FinalCreate>
                                   Map<String, String> body = {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
-                                    'body': caption ?? "",
+                                    'body': captionController.text ?? "",
                                     'post_id': widget.postId.toString(),
                                     'pinned': pinPost == 1 ? '1' : '0',
                                     'type': widget.type!,
@@ -456,7 +448,7 @@ class _FinaleCreateState extends State<FinalCreate>
                                   Map<String, String> body = {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
-                                    'body': caption ?? "",
+                                    'body': captionController.text ?? "",
                                     'type': widget.type!,
                                     'contentID': '20',
                                     'aspect_ratio': '1.5',
@@ -491,9 +483,7 @@ class _FinaleCreateState extends State<FinalCreate>
 
                                       videoUploadProvider.startUpload(
                                           body, widget.editedVideo);
-                                      print("this video is not stopped");
-                                      videoController?.pause();
-                                      videoController?.dispose();
+
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
@@ -509,7 +499,7 @@ class _FinaleCreateState extends State<FinalCreate>
                                   Map<String, String> body = {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
-                                    'body': caption ?? "",
+                                    'body': captionController.text ?? "",
                                     'contentID': '20',
                                     'aspect_ratio': '1.5',
                                     'type': widget.type!,
@@ -544,7 +534,7 @@ class _FinaleCreateState extends State<FinalCreate>
                                   Map<String, String> body = {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
-                                    'body': caption ?? "",
+                                    'body': captionController.text ?? "",
                                     'pinned': pinPost == 1 ? '1' : '0',
                                     'price': price ?? '0',
                                     'type': widget.type!,
@@ -601,6 +591,73 @@ class _FinaleCreateState extends State<FinalCreate>
               ),
             ]))
           ],
-        ));
+        ));});
   }
 }
+
+
+class SingleVideoPlayerPage extends StatefulWidget {
+  final String videoUrl;
+
+  const SingleVideoPlayerPage({Key? key, required this.videoUrl})
+      : super(key: key); // Use the provided key
+  @override
+  _SingleVideoPlayerPage createState() => _SingleVideoPlayerPage();
+}
+
+class _SingleVideoPlayerPage extends State<SingleVideoPlayerPage> {
+  VideoPlayerController? _videoPlayerController;
+  Completer videoPlayerInitializedCompleter = Completer();
+  ChewieController? chewieController;
+
+  @override
+  void initState() {
+    super.initState();
+    _videoPlayerController = VideoPlayerController.network(widget.videoUrl);
+    _videoPlayerController!.initialize().then((_) async {
+      videoPlayerInitializedCompleter.complete(true);
+
+      chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController!,
+        showControlsOnInitialize: true,
+        allowFullScreen: true,
+        looping: true,
+        useRootNavigator: false,
+        zoomAndPan: true,
+        autoPlay:  true,
+        aspectRatio: 9/16,
+        showControls: true,
+
+      );
+    });
+
+  }
+
+  @override
+  void dispose() async {
+    super.dispose();
+    if (_videoPlayerController != null) {
+      await _videoPlayerController?.dispose().then((_) {
+    _videoPlayerController = null;
+    videoPlayerInitializedCompleter = Completer(); // resets the Completer
+    });
+    if (chewieController != null) {
+    chewieController!.dispose();
+    }
+  }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return  Chewie(
+      controller: ChewieController(
+        videoPlayerController:
+        VideoPlayerController.network(
+            widget.videoUrl!),
+        autoPlay: true,
+        looping: false,
+      ),
+    );
+  }
+}
+
