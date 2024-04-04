@@ -240,17 +240,9 @@ class _Home2ContentState extends State<Home2Content>
           }
         } else if (postsProvider.isLoading) {
           return Center(child: CircularProgressIndicator());
-        } else if (!postsProvider.isLastPage) {
-          return ElevatedButton(
-            onPressed: () {
-              postsProvider
-                  .fetchData(_pageNumber); // Trigger loading of the next page
-            },
-            child: Text('Load More'),
-          );
         } else {
           // No more posts to load
-          return Center(child: Text('No more posts to load.'));
+          return Center(child: errorDialog(size: 20));
         }
       },
     );

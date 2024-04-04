@@ -1,4 +1,4 @@
-package com.cyblogerz.bangapp
+package pro.bangapp.bangapptz
 
 import io.flutter.embedding.android.FlutterActivity
 
