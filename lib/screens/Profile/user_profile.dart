@@ -62,25 +62,19 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     _getMyInfo();
-    messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: false);
+    messagePaymentProvider =
+        Provider.of<MessagePaymentProvider>(context, listen: false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
     super.initState();
 
-
     messagePaymentProvider.addListener(() {
       if (messagePaymentProvider.payed == true) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) {
-              return MessagesScreen(
-                  widget.userid!,
-                  myName,
-                  myImage,
-                  privacySwitchValue,
-                  widget.userid,
-                  "0");
-            }));
-          privacySwitchValue = false;
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return MessagesScreen(widget.userid!, myName, myImage,
+              privacySwitchValue, widget.userid, "0");
+        }));
+        privacySwitchValue = false;
       }
     });
   }
@@ -150,7 +144,8 @@ class _UserProfileState extends State<UserProfile> {
   Future<List<dynamic>> getMyPosts(int pageNumber) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final viewerId = prefs.getInt('user_id').toString();
-    var response = await http.get(Uri.parse("$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=${widget.userid}&viewer_id=$viewerId"));
+    var response = await http.get(Uri.parse(
+        "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=${widget.userid}&viewer_id=$viewerId"));
     print(response.body);
     var data = json.decode(response.body);
     return data['data']['data'];
@@ -301,32 +296,35 @@ class _UserProfileState extends State<UserProfile> {
                   Expanded(
                       child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: mySubscribe ? OutlinedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                        onPressed: () async {
-                          //follow or unfollow
-                          buildSubscriptionPayment(context, mySubscribePrice, widget.userid);
-                        },
-                        child: Text(
-                          'Subscribe',
-                          style: TextStyle(color: Colors.black),
-                        )) :OutlinedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                        onPressed: () async {
-                          //follow or unfollow
-                        },
-                        child: Text(
-                          'Subscribe',
-                          style: TextStyle(color: Colors.white),
-                        )) ,
+                    child: mySubscribe
+                        ? OutlinedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                            onPressed: () async {
+                              //follow or unfollow
+                              buildSubscriptionPayment(
+                                  context, mySubscribePrice, widget.userid);
+                            },
+                            child: Text(
+                              'Subscribe',
+                              style: TextStyle(color: Colors.black),
+                            ))
+                        : OutlinedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                            onPressed: () async {
+                              //follow or unfollow
+                            },
+                            child: Text(
+                              'Subscribe',
+                              style: TextStyle(color: Colors.white),
+                            )),
                   )),
                   SizedBox(width: 10),
                   Expanded(
@@ -446,9 +444,9 @@ class _UserProfileState extends State<UserProfile> {
                     _persposts
                         ? Expanded(
                             child: ProfilePostsStream(
-                                userid: widget.userid.toString(),
-                              subscribe: mySubscribe,
-                            ))
+                            userid: widget.userid.toString(),
+                            subscribe: mySubscribe,
+                          ))
                         : Expanded(
                             child: Update(userid: widget.userid.toString())),
                   ],
@@ -578,7 +576,7 @@ class ProfilePostsStream extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ProfileProvider(),
-      child: _ProfilePostsStreamContent(userid: userid,subscribe: subscribe),
+      child: _ProfilePostsStreamContent(userid: userid, subscribe: subscribe),
     );
   }
 }
@@ -604,7 +602,8 @@ class _ProfilePostsStreamContentState
     final providerPost = Provider.of<ProfileProvider>(context, listen: false);
     providerPost.getUserPost(widget.userid, _pageNumber);
     _scrollController.addListener(_scrollListener);
-    subscriptionPaymentProvider = Provider.of<SubscriptionPaymentProvider>(context, listen: false);
+    subscriptionPaymentProvider =
+        Provider.of<SubscriptionPaymentProvider>(context, listen: false);
 
     subscriptionPaymentProvider.addListener(() {
       if (subscriptionPaymentProvider.payed == true) {
@@ -637,14 +636,11 @@ class _ProfilePostsStreamContentState
     return Consumer<ProfileProvider>(builder: (context, provider, child) {
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));
-      }
-      else if(widget.subscribe == true){
-        return Center(child: Text('Subscribe to View Users Posts', style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 15
-        )));
-      }
-      else if (provider.isLoading == false && provider.posts.isNotEmpty) {
+      } else if (widget.subscribe == true) {
+        return Center(
+            child: Text('Subscribe to View Users Posts',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)));
+      } else if (provider.isLoading == false && provider.posts.isNotEmpty) {
         return SingleChildScrollView(
           controller: _scrollController,
           child: GridView(
@@ -827,7 +823,12 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].postViews,
                                       provider)));
                         },
-                        child: VideoRect(message: provider.posts[i].imageUrl),
+                        child: CachedNetworkImage(
+                          imageUrl: provider.posts[i].pinned == 1
+                              ? pinnedUrl
+                              : provider.posts[i].thumbnailUrl!,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ] else if (provider.posts[i].type == 'video' &&

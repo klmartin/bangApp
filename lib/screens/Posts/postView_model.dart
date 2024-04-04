@@ -3,6 +3,7 @@ import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:bangapp/widgets/like_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../providers/Profile_Provider.dart';
 import 'package:bangapp/services/service.dart';
@@ -32,7 +33,7 @@ class POstView extends StatefulWidget {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
-  int? price;
+  String? price;
   int postViews;
   ProfileProvider? myProvider;
 
@@ -124,7 +125,7 @@ class PostCard extends StatefulWidget {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
-  int? price;
+  String? price;
   int postViews;
   ProfileProvider myProvider;
   PostCard(
@@ -156,12 +157,18 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool _isEditing = false;
+  TextEditingController _captionController = TextEditingController();
 
   var myProvider;
   void toggleEditing() {
     setState(() {
       _isEditing = !_isEditing;
     });
+  }
+
+  void initState() {
+    super.initState();
+    _captionController.text = widget.caption ?? '';
   }
 
   @override
@@ -190,167 +197,228 @@ class _PostCardState extends State<PostCard> {
           backgroundColor: Colors.white,
           actions: [SizedBox(width: 10)],
         ),
-        body: Container(
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(1, 30, 34, 45),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                postOptions(
-                        context,
-                        widget.userId,
-                        widget.userImage,
-                        widget.name,
-                        widget.followerCount,
-                        widget.postUrl,
-                        widget.postId,
-                        widget.userId,
-                        widget.type,
-                        widget.createdAt,
-                        widget.postViews,
-                        "profile") ??
-                    Container(),
-                InkWell(
-                  onTap: () {
-                    viewImage(context, widget.postUrl);
-                  },
-                  child: AspectRatio(
-                    aspectRatio: widget.imgWidth / widget.imgHeight,
-                    child: buildMediaWidget(
+        body: Stack(
+          children:[ Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              postOptions(
                       context,
+                      widget.userId,
+                      widget.userImage,
+                      widget.name,
+                      widget.followerCount,
                       widget.postUrl,
-                      widget.type,
-                      widget.imgWidth,
-                      widget.imgHeight,
-                      widget.pinned,
-                      widget.cacheUrl,
-                      widget.thumbnailUrl,
-                      widget.aspectRatio,
                       widget.postId,
-                      widget.price,
+                      widget.userId,
+                      widget.type,
+                      widget.createdAt,
+                      widget.postViews,
+                      "profile") ??
+                  Container(),
+              _isEditing ? AlertDialog(title: Center(child: Text("Edit Caption")),
+                  content: TextField(
+                    controller: _captionController,
+                    style: Theme.of(context).textTheme.bodyLarge!,
+                    decoration: InputDecoration(
+                      hintText: 'Type your caption...',
                     ),
                   ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      setState(() {
+                        widget.caption = _captionController.text;
+                        _isEditing = !_isEditing;
+                      });
+                    },
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.red),
+                    ),
+                    child: Text("Save"),
+                    onPressed: () async {
+                      var editMessage = await Service().editPost(widget.postId, _captionController.text);
+                      print(editMessage);
+
+                      Fluttertoast.showToast(
+                        msg: editMessage['message'],
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.grey[600],
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                      if (editMessage['message'] == "Post edited successfully") {
+                        setState(() {
+                          widget.caption = _captionController.text;
+                          _isEditing = !_isEditing;
+                        });
+                      }
+                    },
+                  ),
+                ]) :Container(),
+              InkWell(
+                onTap: () {
+                  viewImage(context, widget.postUrl);
+                },
+                child: buildMediaWidget(
+                  context,
+                  widget.postUrl,
+                  widget.type,
+                  widget.imgWidth,
+                  widget.imgHeight,
+                  widget.pinned,
+                  widget.cacheUrl,
+                  widget.thumbnailUrl,
+                  widget.aspectRatio,
+                  widget.postId,
+                  widget.price,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(left: 10),
-                      width: MediaQuery.of(context).size.width * 0.72,
-                      child: Row(
-                        children: [
-                          Text(
-                            widget.name, // Add your username here
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+
+                  Container(
+                    padding: EdgeInsets.only(left: 10),
+                    width: MediaQuery.of(context).size.width * 0.72,
+                    child: Row(
+                      children: [
+                        Text(
+                          widget.name, // Add your username here
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                            width:
+                                3), // Add some spacing between the username and caption
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: (){
+                              toggleEditing();
+                            },
+                            child: ReadMoreText(
+                              widget.caption ?? "",
+                              trimLines: 2,
+                              colorClickableText: Theme.of(context).primaryColor,
+                              trimMode: TrimMode.line,
+                              trimCollapsedText: '...Show more',
+                              trimExpandedText: '...Show less',
+                              textColor: Colors.black,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                              lessStyle: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              moreStyle: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                          SizedBox(
-                              width:
-                                  3), // Add some spacing between the username and caption
-                          Expanded(
-                            child: PostCaptionWidget(
-                                name: widget.name,
-                                caption: widget.caption,
-                                isEditing: false,
-                                postId: widget.postId),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      padding: EdgeInsets.only(right: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) {
-                                      return CommentsPage(
-                                        userId: widget.userId,
-                                        postId: widget.postId,
-                                      );
-                                    },
-                                  ));
-                                },
-                                child: const Icon(
-                                  CupertinoIcons.chat_bubble,
-                                  color: Colors.black,
-                                  size: 25,
-                                ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(right: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) {
+                                    return CommentsPage(
+                                      userId: widget.userId,
+                                      postId: widget.postId,
+                                    );
+                                  },
+                                ));
+                              },
+                              child: const Icon(
+                                CupertinoIcons.chat_bubble,
+                                color: Colors.black,
+                                size: 25,
                               ),
-                              Column(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-
-                                      widget.myProvider
-                                          .increaseLikes(widget.postId);
-                                      Service().likeAction(
-                                          widget.postId, "A", widget.userId);
-                                      setState(() {
-                                        if (widget.isLiked) {
-                                          widget.likeCount--;
-                                          widget.isLiked = false;
-                                        } else {
-                                          widget.likeCount++;
-                                          widget.isLiked = true;
-                                        }
-                                      });
-                                    },
-                                    child: widget.isLiked
-                                        ? Icon(CupertinoIcons.heart_fill,
-                                            color: Colors.red, size: 25)
-                                        : Icon(CupertinoIcons.heart,
-                                            color: Colors.red, size: 25),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-
-                                      Provider.of<UserLikesProvider>(context,
-                                              listen: false)
-                                          .getUserLikedPost(widget.postId);
-
-                                      LikesModal.showLikesModal(
-                                          context, widget.postId);
-                                    },
-                                    child: Text(
-                                      "${widget.likeCount.toString()} likes",
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                            ),
+                            Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    widget.myProvider
+                                        .increaseLikes(widget.postId);
+                                    Service().likeAction(
+                                        widget.postId, "A", widget.userId);
+                                    setState(() {
+                                      if (widget.isLiked) {
+                                        widget.likeCount--;
+                                        widget.isLiked = false;
+                                      } else {
+                                        widget.likeCount++;
+                                        widget.isLiked = true;
+                                      }
+                                    });
+                                  },
+                                  child: widget.isLiked
+                                      ? Icon(CupertinoIcons.heart_fill,
+                                          color: Colors.red, size: 25)
+                                      : Icon(CupertinoIcons.heart,
+                                          color: Colors.red, size: 25),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Provider.of<UserLikesProvider>(context,
+                                            listen: false)
+                                        .getUserLikedPost(widget.postId);
+                                    LikesModal.showLikesModal(
+                                        context, widget.postId);
+                                  },
+                                  child: Text(
+                                    "${widget.likeCount.toString()} likes",
+                                    style: TextStyle(
+                                      fontSize: 12.5,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
+                      ],
                     ),
-                  ],
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 15),
-                  child: GestureDetector(onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) {
-                        return CommentsPage(
-                          userId: widget.userId,
-                          postId: widget.postId,
-                        );
-                      },
-                    ));
-                  },child: Text('${widget.commentCount} comments')),
-                ),
-              ],
-            )));
+                  ),
+                ],
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 15),
+                child: GestureDetector(onTap: () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) {
+                      return CommentsPage(
+                        userId: widget.userId,
+                        postId: widget.postId,
+                      );
+                    },
+                  ));
+                },child: Text('${widget.commentCount} comments')),
+              ),
+            ],
+          )],
+        ));
   }
 }
 
@@ -374,10 +442,17 @@ class PostCaptionWidget extends StatefulWidget {
 class _PostCaptionWidgetState extends State<PostCaptionWidget> {
   bool _isEditing = false;
   TextEditingController _captionController = TextEditingController();
+  late FocusNode myFocusNode;
 
   @override
   void initState() {
     super.initState();
+    myFocusNode = FocusNode();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (ModalRoute.of(context)!.isCurrent) {
+        myFocusNode.requestFocus();
+      }
+    });
     _captionController.text = widget.caption ?? '';
   }
 
@@ -391,64 +466,66 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
         });
       },
       child: widget.isEditing
-          ? Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _captionController,
-                    style: Theme.of(context).textTheme.bodyLarge!,
-                    decoration: InputDecoration(
-                      hintText: 'Type your caption...',
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.check),
-                  onPressed: () async {
-                    var editMessage = await Service().editPost(widget.postId, _captionController.text);
-                    print(editMessage);
-
-                    Fluttertoast.showToast(
-                      msg: editMessage['message'],
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.CENTER,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.grey[600],
-                      textColor: Colors.white,
-                      fontSize: 16.0,
-                    );
-                    if (editMessage['message'] == "Post edited successfully") {
-                      setState(() {
-                        widget.caption = _captionController.text;
-                        widget.isEditing = !widget.isEditing;
-                      });
-                    }
-                  },
-                ),
-              ],
-            )
-          : ReadMoreText(
-              widget.caption ?? "",
-              trimLines: 2,
-              colorClickableText: Theme.of(context).primaryColor,
-              trimMode: TrimMode.line,
-              trimCollapsedText: '...Show more',
-              trimExpandedText: '...Show less',
-              textColor: Colors.black,
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.black,
-              ),
-              lessStyle: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-              moreStyle: TextStyle(
-                fontSize: 15,
-                color: Colors.black,
+          ? AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _captionController,
+              style: Theme.of(context).textTheme.bodyLarge!,
+              decoration: InputDecoration(
+                hintText: 'Type your caption...',
               ),
             ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: () async {
+              var editMessage = await Service().editPost(widget.postId, _captionController.text);
+
+              Fluttertoast.showToast(
+                msg: editMessage['message'],
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.grey[600],
+                textColor: Colors.white,
+                fontSize: 16.0,
+              );
+              if (editMessage['message'] == "Post edited successfully") {
+                setState(() {
+                  widget.caption = _captionController.text;
+                  widget.isEditing = !widget.isEditing;
+                });
+              }
+            },
+          ),
+        ],
+      )
+          : ReadMoreText(
+        widget.caption ?? "",
+        trimLines: 2,
+        colorClickableText: Theme.of(context).primaryColor,
+        trimMode: TrimMode.line,
+        trimCollapsedText: '...Show more',
+        trimExpandedText: '...Show less',
+        textColor: Colors.black,
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+        ),
+        lessStyle: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        moreStyle: TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+        ),
+      ),
     );
   }
 }

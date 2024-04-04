@@ -60,7 +60,7 @@ class _AppSettings extends State<AppSettings> {
           ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.person),
-            title: Text("Pin Profile"),
+            title: Text("Pin Profile",style: TextStyle(color:Colors.red),),
             subtitle: subscribe
                 ? TextFormField(
                     decoration: InputDecoration(
@@ -135,7 +135,7 @@ class _AppSettings extends State<AppSettings> {
           ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.message),
-            title: Text("Pin Messages"),
+            title: Text("Pin Messages",style: TextStyle(color:Colors.red),),
             subtitle: pinPost
                 ? TextFormField(
                     decoration: InputDecoration(

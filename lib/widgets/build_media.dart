@@ -60,6 +60,8 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
       ),
     );
   } else if (type == 'video' && isPinned == 0) {
+    print(mediaUrl);
+    print('this is media url');
     return CustomVideoPlayer(
         videoUrl: mediaUrl,
         cachingVideoUrl: cacheUrl,
@@ -142,6 +144,8 @@ void viewImage(BuildContext context, String imageUrl) {
 }
 
 Future<Null> buildFab(BuildContext context, price, postId) {
+  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+
   return showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -219,7 +223,6 @@ Future<Null> buildFab(BuildContext context, price, postId) {
       );
     },
   ).then((result) {
-    var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
     paymentProvider.paymentCanceled = true;
     print(paymentProvider.isPaying);
     print('Modal bottom sheet closed: $result');

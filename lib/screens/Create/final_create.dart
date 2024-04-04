@@ -21,6 +21,8 @@ import 'package:flutter_native_image/flutter_native_image.dart';
 import '../../providers/challenge_upload.dart';
 import '../../providers/image_upload.dart';
 import '../../providers/posts_provider.dart';
+import '../../providers/update_image_upload.dart';
+import '../../providers/update_video_upload.dart';
 import '../../providers/video_upload.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
 import 'create_page.dart';
@@ -180,7 +182,7 @@ class _FinaleCreateState extends State<FinalCreate>
             SizedBox(width: 10),
           ],
         ),
-        body: Column(
+        body: ListView(
           children: [
             Container(
                 child: Column(children: [
@@ -393,7 +395,15 @@ class _FinaleCreateState extends State<FinalCreate>
                                     'price': price ?? '0',
                                   };
                                   if (bangUpdate == 1) {
-                                    await service.addBangUpdate(body, filePath);
+                                    // await service.addBangUpdate(body, filePath);
+
+                                    final updateImageUploadProvider =
+                                    provider.Provider.of<
+                                        UpdateImageUploadProvider>(context,
+                                        listen: false);
+                                    updateImageUploadProvider.startUpload(
+                                        body, compressedImage.path);
+
                                     Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
@@ -438,13 +448,7 @@ class _FinaleCreateState extends State<FinalCreate>
                                 } else if (widget.editedVideo != null &&
                                     widget.editedVideo2 == null &&
                                     widget.type == 'video') {
-                                  // MediaInfo? mediaInfo =
-                                  //     await VideoCompress.compressVideo(
-                                  //   widget.editedVideo
-                                  //       .toString(), // Use the path property
-                                  //   quality: VideoQuality.Res640x480Quality,
-                                  //   deleteOrigin: true,
-                                  // );
+
                                   Map<String, String> body = {
                                     'user_id':
                                         prefs.getInt('user_id').toString(),
@@ -456,15 +460,16 @@ class _FinaleCreateState extends State<FinalCreate>
                                     'price': price ?? '0',
                                   };
                                   if (bangUpdate == 1) {
-                                    MediaInfo? mediaInfo =
-                                        await VideoCompress.compressVideo(
-                                      widget.editedVideo
-                                          .toString(), // Use the path property
-                                      quality: VideoQuality.Res640x480Quality,
-                                      deleteOrigin: true,
-                                    );
-                                    await service.addBangUpdate(
-                                        body, mediaInfo?.path ?? '');
+
+                                    final updateVideoUploadProvider =
+                                    provider.Provider.of<
+                                        UpdateVideoUploadProvider>(context,
+                                        listen: false);
+
+                                    updateVideoUploadProvider.startUpload(
+                                        body, widget.editedVideo);
+                                    print("${widget.editedVideo} this is the video");
+
                                     Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
@@ -483,6 +488,7 @@ class _FinaleCreateState extends State<FinalCreate>
 
                                       videoUploadProvider.startUpload(
                                           body, widget.editedVideo);
+                                      print("${widget.editedVideo} this is the video");
 
                                       Navigator.pushReplacement(
                                         context,

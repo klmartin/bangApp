@@ -69,8 +69,9 @@ class InsightCards extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 16), // Adjust spacing as needed
+          SizedBox(height: 25), // Adjust spacing as needed
           Card(
+            color: Colors.lightGreen,
             child: Column(
               children: [
                 ListTile(
@@ -86,8 +87,9 @@ class InsightCards extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 16), // Adjust spacing as needed
+          SizedBox(height: 20), // Adjust spacing as needed
           Card(
+            color: Colors.teal,
             child: Column(
               children: [
                 ListTile(
@@ -103,8 +105,9 @@ class InsightCards extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 16), // Adjust spacing as needed
+          SizedBox(height: 20), // Adjust spacing as needed
           Card(
+            color: Colors.amber,
             child: Column(
               children: [
                 ListTile(
@@ -114,6 +117,7 @@ class InsightCards extends StatelessWidget {
                   ),
                   subtitle: Text(
                     'Earnings from Messages: ${NumberFormat('#,###').format(userInsight['total_messages'])} ', // Use userInsight here instead of insightProvider.userInsight
+
                   ),
                 ),
                 // Add more content related to messages here if needed

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/post.dart';
 import 'package:bangapp/providers/posts_provider.dart'; // Import your PostsProvider class
@@ -100,8 +101,7 @@ class _Home2ContentState extends State<Home2Content>
 
   void _scrollListener() {
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.extentAfter < 500) {
       _pageNumber++;
       postsProvider
           .loadMoreData(_pageNumber); // Trigger loading of the next page
@@ -239,18 +239,10 @@ class _Home2ContentState extends State<Home2Content>
             );
           }
         } else if (postsProvider.isLoading) {
-          return Center(child: CircularProgressIndicator());
-        } else if (!postsProvider.isLastPage) {
-          return ElevatedButton(
-            onPressed: () {
-              postsProvider
-                  .fetchData(_pageNumber); // Trigger loading of the next page
-            },
-            child: Text('Load More'),
-          );
-        } else {
+          return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30));
+        }  else {
           // No more posts to load
-          return Center(child: Text('No more posts to load.'));
+          return Center(child: errorDialog(size: 10));
         }
       },
     );
@@ -276,6 +268,7 @@ class _Home2ContentState extends State<Home2Content>
           ),
           TextButton(
             onPressed: () {
+              print('pressed');
               final postsProvider =
                   Provider.of<PostsProvider>(context, listen: false);
               postsProvider.refreshData();

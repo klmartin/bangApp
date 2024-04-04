@@ -28,7 +28,7 @@ class VideoUploadProvider extends ChangeNotifier {
           ..files.add(await http.MultipartFile.fromPath('video', video!));
         try {
           var response = await http.Response.fromStream(await request.send());
-
+          print("${response.body} this is video upload response");
           if (response.statusCode == 200) {
             final response2 = jsonDecode(response.body);
             _uploadText = 'Processing Video...';

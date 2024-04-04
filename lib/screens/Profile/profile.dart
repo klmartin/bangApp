@@ -181,8 +181,7 @@ class _ProfileState extends State<Profile> {
                                   name: userProvider.userData!['name'],
                                   date_of_birth: DateTime.parse(
                                       userProvider.userData!['date_of_birth']),
-                                  phoneNumber: int.parse(
-                                      userProvider.userData!['phone_number']),
+                                  phoneNumber: userProvider.userData!['phone_number'],
                                   selectedHobbiesText: selectedHobbiesText,
                                   occupation: userProvider.userData!['occupation'] ?? "",
                                   bio: userProvider.userData!['bio'] ?? "",
@@ -522,6 +521,8 @@ buildPayments(selectedHobbiesText, BuildContext context, price, count) {
     builder: (BuildContext context) {
       return Builder(
         builder: (BuildContext innerContext) {
+  return Consumer<PaymentProvider>(
+  builder: (context, paymentProvider, _) {
           final userProvider = Provider.of<UserProvider>(innerContext);
           final TextEditingController phoneNumberController =
               TextEditingController(
@@ -585,13 +586,14 @@ buildPayments(selectedHobbiesText, BuildContext context, price, count) {
               ],
             ),
           );
+  },
+  );
         },
       );
     },
   ).then((result) {
-    // var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
-    // // paymentProvider.paymentCanceled = true;
-    // print(paymentProvider.isPaying);
+    paymentProvider.paymentCanceled = true;
+    print(paymentProvider.isPaying);
     print('Modal bottom sheet closed: $result');
   });
 }
@@ -746,7 +748,6 @@ class _ProfilePostsStreamContentState
 
   @override
   Widget build(BuildContext context) {
-    // Use the ProfileProvider here to build your UI based on the fetched posts
     return Consumer<ProfileProvider>(builder: (context, provider, child) {
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));
@@ -933,7 +934,7 @@ class _ProfilePostsStreamContentState
                                       )));
                         },
                         child: CachedNetworkImage(
-                          imageUrl: provider.posts[i].thumbnailUrl!,
+                          imageUrl: provider.posts[i].pinned == 1 ? pinnedUrl : provider.posts[i].thumbnailUrl!,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -1065,7 +1066,7 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].postViews,
                                       provider)));
                         },
-                        child: VideoRect(message: provider.posts[i].imageUrl),
+                        child: VideoRect(message:provider.posts[i].pinned==1 ? pinnedUrl : provider.posts[i].thumbnailUrl),
                       ),
                     ),
                   ] else if (provider.posts[i].type == 'video' &&
@@ -1102,7 +1103,7 @@ class _ProfilePostsStreamContentState
                             children: [
                               Expanded(
                                 child: VideoRect(
-                                    message: provider.posts[i].thumbnailUrl),
+                                    message:provider.posts[i].pinned==1 ? pinnedUrl :  provider.posts[i].thumbnailUrl  ),
                               ),
                               Expanded(
                                 child: VideoRect(

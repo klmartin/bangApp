@@ -1,10 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import '../services/azampay.dart';
-import 'package:web_socket_channel/io.dart';
-import '../services/token_storage_helper.dart';
 
 class PaymentProvider extends ChangeNotifier {
   bool _isPaying = false;
@@ -23,9 +19,9 @@ class PaymentProvider extends ChangeNotifier {
 
   set paymentCanceled(bool value) {
     _paymentCanceled = value;
+    _isPaying = false;
     notifyListeners();
   }
-
 
   Future<void> startPaying(phoneNumber, price, postId, type) async {
     _isPaying = true;
@@ -33,17 +29,17 @@ class PaymentProvider extends ChangeNotifier {
     notifyListeners();
 
     Map<String, dynamic> pay = await AzamPay().checkoutData(phoneNumber, price, postId, type);
-    var transactionId = pay['response']['transactionId'];
-    //await AzamPay().saveDummyAzamPay(pay['response']['transactionId'],type);
 
-    if (transactionId != null) {
-      _isPaying = false;
-      notifyListeners();
-      _processingStatusTimer = Timer.periodic(Duration(seconds: 2), (timer) {
-        _fetchPaymentStatus(transactionId);
+    if(pay.isNotEmpty)
+      {
+        var transactionId = pay['response']['transactionId'];
+        _isPaying = false;
         notifyListeners();
-      });
-    }
+        _processingStatusTimer = Timer.periodic(Duration(seconds: 2), (timer) {
+          _fetchPaymentStatus(transactionId);
+          notifyListeners();
+        });
+      }
     else{
       _isPaying = false;
       notifyListeners();

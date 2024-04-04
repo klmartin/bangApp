@@ -20,7 +20,7 @@ class EditPage extends StatefulWidget {
   final TextEditingController phoneNumberController;
   final TextEditingController bioController;
   String name;
-  int phoneNumber;
+  String phoneNumber;
   String occupation;
   String bio;
 
@@ -232,11 +232,11 @@ class _EditPageState extends State<EditPage> {
               ),
               TextField(
                 textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
                 controller: widget.phoneNumberController,
                 onChanged: (value) {
                   //Do something with the user input.
-                  widget.phoneNumber = int.parse(value);
+                  widget.phoneNumber = value;
                 },
                 decoration: InputDecoration(
                   labelText: 'Enter your phone number',
