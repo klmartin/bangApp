@@ -1,9 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import '../../api/google_signin_api.dart';
+import '../../components/square_tiles.dart';
 import '../../constants/urls.dart';
 import '../../nav.dart';
 import 'package:http/http.dart' as http;
@@ -35,17 +39,56 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
-  Future signIn() async {
-    final user = await GoogleSignInApi.login();
+  // Google sign-in method
+  Future<UserCredential> signInWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
 
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Sign in Failed'),
-      ));
-    } else {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => EditPage(),
-      ));
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+        return await FirebaseAuth.instance.signInWithCredential(credential);
+      } else {
+        throw FirebaseAuthException(
+          code: 'ERROR_ABORTED_BY_USER',
+          message: 'Sign in aborted by user',
+        );
+      }
+    } catch (e) {
+      print('Google sign-in error: $e');
+      throw e;
+    }
+  }
+
+// Facebook sign-in method
+  Future<UserCredential> signInWithFacebook() async {
+    try {
+      // Trigger the sign-in flow
+      final LoginResult loginResult = await FacebookAuth.instance.login();
+
+      // Check if the user canceled the login process
+      if (loginResult.status == LoginStatus.cancelled) {
+        throw FirebaseAuthException(
+          code: 'ERROR_ABORTED_BY_USER',
+          message: 'Sign in aborted by user',
+        );
+      }
+
+      // Obtain the access token and exchange it for a credential
+      final OAuthCredential credential =
+          FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+      // Sign in to Firebase with the Facebook credential
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      print('Facebook sign-in error: $e');
+      throw e;
     }
   }
 
@@ -53,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ModalProgressHUD(
+        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30),
         inAsyncCall: showSpinner,
         child: Padding(
           padding: EdgeInsets.all(30.0),
@@ -129,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 50.0, vertical: 100.0),
+                        EdgeInsets.symmetric(horizontal: 50.0, vertical: 25.0),
                     child: Container(
                       child: TextButton(
                           onPressed: () async {
@@ -218,10 +262,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              /*Colors.purple,
-                              Colors.deepPurple,
-                              Colors.blueAccent*/
-
                               Colors.deepOrange,
                               Colors.deepPurple,
                               Colors.redAccent
@@ -231,6 +271,102 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           borderRadius: BorderRadius.circular(20.0)),
                     ),
+                  ),
+                  const SizedBox(height: 25),
+                  //google + apple sign in buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SquareTile(
+                          imagePath: 'assets/images/google.png',
+                          onTap: () async {
+                            try {
+                              UserCredential userCredential = await signInWithGoogle();
+                              // Retrieve user details
+                              User? user = userCredential.user;
+                              if (user != null) {
+                                final response = await http.post(
+                                  Uri.parse('$baseUrl/v1/login'),
+                                  body: {
+                                    'email': user.email,
+                                    'password': user.uid,
+                                  },
+                                );
+                                final responseBody = jsonDecode(response.body);
+
+                                if (responseBody.containsKey('error') &&
+                                    responseBody['error'] ==
+                                        'invalid_credentials') {
+                                  Fluttertoast.showToast(
+                                    msg: responseBody['error'],
+                                    toastLength: Toast
+                                        .LENGTH_SHORT, // or Toast.LENGTH_LONG
+                                    gravity:
+                                    ToastGravity.CENTER, // Toast position
+                                    timeInSecForIosWeb:
+                                    1, // Time duration for iOS and web
+                                    backgroundColor: Colors.grey[600],
+                                    textColor: Colors.white,
+                                    fontSize: 16.0,
+                                  );
+                                  setState(() {
+                                    showSpinner = false;
+                                  });
+                                } else {
+                                  setState(() {
+                                    showSpinner = false;
+                                  });
+                                  _firebaseMessaging
+                                      .getToken()
+                                      .then((token) async {
+                                    SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                    prefs.setInt(
+                                        'user_id', responseBody['user_id']);
+                                    await TokenManager.saveToken(
+                                        responseBody['token']);
+                                    prefs.setString(
+                                        'user_image', responseBody['user_image']);
+                                    prefs.setString(
+                                        'token', responseBody['token']);
+                                    prefs.setString('name', responseBody['name']);
+                                    prefs.setString('device_token', token!);
+                                    prefs.setString('role', responseBody['role']);
+
+                                    Service().sendTokenToBackend(
+                                        token, responseBody['user_id']);
+                                    final userProvider =
+                                    Provider.of<UserProvider>(context,
+                                        listen: false);
+                                    if (userProvider.userData.isEmpty) {
+                                      userProvider.fetchUserData();
+                                    }
+                                  });
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Nav(initialIndex: 0)),
+                                  );
+                                }
+
+                              }
+                            } catch (e) {}
+                          }),
+                      const SizedBox(width: 10),
+                      //apple button
+                      // SquareTile(
+                      //   imagePath: 'assets/images/facebook.png',
+                      //   onTap: () async {
+                      //     try {
+                      //       await signInWithFacebook();
+                      //       // Handle successful sign-in
+                      //     } catch (e) {
+                      //       // Handle sign-in error
+                      //     }
+                      //   },
+                      // ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   MaterialButton(

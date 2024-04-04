@@ -873,7 +873,7 @@ class Service {
 
   Future<void> setUserProfile(
     dateOfBirth,
-    int? phoneNumber,
+    String? phoneNumber,
     String Hobbies,
     occupation,
     bio,

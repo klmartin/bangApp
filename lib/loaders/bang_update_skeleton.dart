@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:bangapp/widgets/user_profile.dart';
 import '../screens/Widgets/readmore.dart';
+import '../widgets/SearchBox.dart';
 
 class BangUpdateSkeleton extends StatefulWidget {
   const BangUpdateSkeleton();
@@ -20,7 +21,15 @@ class _BangUpdateSkeletonPageState extends State<BangUpdateSkeleton> {
     double halfScreenWidth = MediaQuery.of(context).size.width / 2;
     return Skeletonizer(
       enabled: _enabled,
-      child:Stack(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: SearchBox(),
+        ),
+        body: Column(
+          children: [
+        Expanded(
+          child:Stack(
         children: [
           Container(
             color: Colors.black,
@@ -139,6 +148,10 @@ class _BangUpdateSkeletonPageState extends State<BangUpdateSkeleton> {
           ),
         ],
       ),
+        ),
+          ],
+        ),
+      )
     );
   }
 }

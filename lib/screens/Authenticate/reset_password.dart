@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bangapp/services/service.dart';
 import 'login_screen.dart';
@@ -19,6 +20,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       body: Center(
         // Wrap the Column with Center
         child: ModalProgressHUD(
+          progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30),
           inAsyncCall: isLoading,
           child: Column(
             mainAxisAlignment: MainAxisAlignment

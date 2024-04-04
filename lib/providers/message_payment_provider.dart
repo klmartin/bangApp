@@ -19,6 +19,7 @@ class MessagePaymentProvider extends ChangeNotifier {
   Timer? _processingStatusTimer;
   set paymentCanceled(bool value) {
     _paymentCanceled = value;
+    _isPaying = false;
     notifyListeners();
   }
 
@@ -28,14 +29,18 @@ class MessagePaymentProvider extends ChangeNotifier {
     _payedPost = postId;
     notifyListeners();
     Map<String, dynamic> pay = await AzamPay().checkoutData(phoneNumber, price, postId,type);
-    var transactionId = pay['response']['transactionId'];
-    // this line is to comment;
-    //await AzamPay().saveDummyAzamPay(transactionId,type);
-    if( transactionId != null ){
+    print("this is message response");
+    print(pay.isNotEmpty);
+    if( pay.isNotEmpty ){
+      var transactionId = pay['response']['transactionId'];
       _processingStatusTimer = Timer.periodic(Duration(seconds: 2), (timer) {
         _fetchPaymentStatus(transactionId);
         notifyListeners();
       });
+    }
+    else{
+      _isPaying = false;
+      notifyListeners();
     }
     return true;
   }

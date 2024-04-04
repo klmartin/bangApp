@@ -19,7 +19,10 @@ import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/providers/posts_provider.dart';
 import 'package:bangapp/providers/subscription_payment_provider.dart';
 import 'package:bangapp/providers/update_comment_provider.dart';
+import 'package:bangapp/providers/update_video_upload.dart';
 import 'package:bangapp/providers/video_upload.dart';
+import 'package:bangapp/screens/Comments/notification_comment.dart';
+import 'package:bangapp/screens/Comments/post_comment.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
 import 'package:bangapp/screens/Widgets/video_upload.dart';
@@ -45,7 +48,6 @@ import 'package:bangapp/screens/Create/final_create.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:bangapp/services/service.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -79,9 +81,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => MessagePaymentProvider()),
     ChangeNotifierProvider(create: (context) => SubscriptionPaymentProvider()),
     ChangeNotifierProvider(create: (context) => InsightProvider()),
-
-
-
+    ChangeNotifierProvider(create: (context) => UpdateVideoUploadProvider()),
   ], child: MyApp()));
 }
 
@@ -134,7 +134,6 @@ class _AuthenticateState extends State<Authenticate> {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
-
 
 // For sharing images coming from outside the app while the app is closed
     ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
@@ -217,7 +216,7 @@ class _AuthenticateState extends State<Authenticate> {
       // YourAPIService.sendTokenToBackend(token);
     });
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print(message.data["type"]);
       // Handle incoming messages when the app is in the foreground.
       String? title = message.notification?.title;
@@ -232,36 +231,17 @@ class _AuthenticateState extends State<Authenticate> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MessagesScreen(notificationId,
-                message.data['user_name'] ?? "Username", logoUrl,false,0,"0"),
+            builder: (context) => MessagesScreen(
+                notificationId,
+                message.data['user_name'] ?? "Username",
+                logoUrl,
+                false,
+                0,
+                "0"),
           ),
         );
       }
-
-      if (title != null && body != null) {
-        _showLocalNotification(title, body);
-      } else {
-        print('Received message with missing title or body.');
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      print('notification type');
-      print(message.data["type"] == "message");
-
-      if (message.data["type"] == "message") {
-        int notificationId = int.parse(message.data['notification_id']);
-        String? userName = message.data['user_name'];
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                MessagesScreen(notificationId, userName ?? "Username", logoUrl,false,0,"0"),
-          ),
-        );
-      }
-
-      if (message.data["type"] == "like" || message.data["type"] == "comment") {
+      if (message.data["type"] == "like") {
         int notificationId = int.parse(message.data['notification_id']);
         String? userName = message.data['user_name'];
 
@@ -294,6 +274,95 @@ class _AuthenticateState extends State<Authenticate> {
                 postData[0]['post_views_count'],
                 Provider.of<ProfileProvider>(context, listen: false)),
           ),
+        );
+      }
+      if (message.data["type"] == "comment")
+      {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NotificationCommentsPage(userId: message.data['user_id'], postId: message.data['notification_id'])
+            )
+        );
+      }
+
+      if (message.data["type"] == "challenge") {
+        print('this is the challenge data');
+        print(message.data["notification_id"]);
+        int? challengeId = message.data['notification_id'] != null
+            ? int.tryParse(message.data['notification_id'])
+            : null;
+        // Pass the challengeId to ViewChallengePage
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ViewChallengePage(challengeId: challengeId),
+        ));
+      }
+      if (title != null && body != null) {
+        _showLocalNotification(title, body);
+      } else {
+        print('Received message with missing title or body.');
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      print('notification type');
+      print('');
+      print(message.data["type"] == "message");
+
+      if (message.data["type"] == "message") {
+        int notificationId = int.parse(message.data['notification_id']);
+        String? userName = message.data['user_name'];
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MessagesScreen(
+                notificationId, userName ?? "Username", logoUrl, false, 0, "0"),
+          ),
+        );
+      }
+
+      if (message.data["type"] == "like") {
+        int notificationId = int.parse(message.data['notification_id']);
+        String? userName = message.data['user_name'];
+
+        var postData =
+            await Service().getPostInfo(message.data['notification_id']);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => POstView(
+                postData[0]['user']['name'],
+                postData[0]['body'] ?? "",
+                postData[0]['image'],
+                postData[0]['challenge_img'] ?? '',
+                postData[0]['width'],
+                postData[0]['height'],
+                postData[0]['id'],
+                postData[0]['commentCount'],
+                postData[0]['user']['id'],
+                postData[0]['isLiked'],
+                postData[0]['like_count_A'] ?? 0,
+                postData[0]['type'],
+                postData[0]['user']['followerCount'],
+                postData[0]['created_at'] ?? '',
+                postData[0]['user_image_url'],
+                postData[0]['pinned'],
+                postData[0]['cache_url'],
+                postData[0]['thumbnail_url'],
+                postData[0]['aspect_ratio'],
+                postData[0]['price'],
+                postData[0]['post_views_count'],
+                Provider.of<ProfileProvider>(context, listen: false)),
+          ),
+        );
+      }
+      if (message.data["type"] == "comment")
+      {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NotificationCommentsPage(userId: message.data['user_id'], postId: message.data['notification_id'])
+            )
         );
       }
       if (message.data["type"] == "challenge") {

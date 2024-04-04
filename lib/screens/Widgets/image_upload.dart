@@ -15,19 +15,14 @@ class _ImageUploadState extends State<ImageUpload> {
 
   @override
   void initState()  {
-
     super.initState();
 
   }
 
-
-
   @override
-
 
   Widget build(BuildContext context) {
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
-
     return Container(
       height: 25,
       child: Column(

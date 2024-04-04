@@ -40,7 +40,7 @@ class PostsProvider with ChangeNotifier {
           .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
           .inMinutes;
 
-      if (minutes > 15 || cachedData.isEmpty) {
+      if (minutes > 5 || cachedData.isEmpty) {
         print('Fetching new data');
         _loading = true;
         notifyListeners();
@@ -61,11 +61,11 @@ class PostsProvider with ChangeNotifier {
         } else {
           handleServerError();
         }
-
         _currentPageNumber = _pageNumber;
       } else {
         print('Using cached data');
         final cacheData = prefs.getString(cacheKey);
+        print(cacheData);
         if (cacheData != null) {
           processResponseData(json.decode(cacheData));
         }
@@ -168,6 +168,8 @@ class PostsProvider with ChangeNotifier {
           'Authorization': 'Bearer $token', // Include other headers as needed
         },
       );
+      print(response.body);
+      print('refresh response');
       if (response.statusCode == 200) {
         responseData = json.decode(response.body);
       } else {

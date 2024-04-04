@@ -1,10 +1,12 @@
-//import 'dart:ffi';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import '../../components/square_tiles.dart';
+import '../../services/auth_services.dart';
 import '../../services/token_storage_helper.dart';
 import 'login_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -15,6 +17,9 @@ import 'package:bangapp/screens/Profile/edit_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/providers/user_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Register extends StatefulWidget {
   static const String id = 'register';
@@ -30,11 +35,65 @@ class _RegisterState extends State<Register> {
   late String confirmPassword;
   late String name;
   bool showSpinner = false;
+  bool _isObscured = true;
+  bool _isObscuredConfirm = true;
   @override
+
+  // Google sign-in method
+  Future<UserCredential> signInWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+        return await FirebaseAuth.instance.signInWithCredential(credential);
+      } else {
+        throw FirebaseAuthException(
+          code: 'ERROR_ABORTED_BY_USER',
+          message: 'Sign in aborted by user',
+        );
+      }
+    } catch (e) {
+      print('Google sign-in error: $e');
+      throw e;
+    }
+  }
+
+// Facebook sign-in method
+  Future<UserCredential> signInWithFacebook() async {
+    try {
+      // Trigger the sign-in flow
+      final LoginResult loginResult = await FacebookAuth.instance.login();
+
+      // Check if the user canceled the login process
+      if (loginResult.status == LoginStatus.cancelled) {
+        throw FirebaseAuthException(
+          code: 'ERROR_ABORTED_BY_USER',
+          message: 'Sign in aborted by user',
+        );
+      }
+
+      // Obtain the access token and exchange it for a credential
+      final OAuthCredential credential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+      // Sign in to Firebase with the Facebook credential
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      print('Facebook sign-in error: $e');
+      throw e;
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: ModalProgressHUD(
+        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30),
         inAsyncCall: showSpinner,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
@@ -59,7 +118,7 @@ class _RegisterState extends State<Register> {
                   name = value;
                 },
                 decoration: InputDecoration(
-                  labelText: 'Enter your name',
+                  labelText: 'Enter Full Name',
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.person),
                   enabledBorder: UnderlineInputBorder(
@@ -96,22 +155,27 @@ class _RegisterState extends State<Register> {
                 style: TextStyle(color: Colors.black),
                 cursorColor: Colors.black,
               ),
-
               SizedBox(
                 height: 8.0,
               ),
-
               TextField(
-                obscureText: true,
+                obscureText: _isObscured,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
                   password = value;
-                  //Do something with the user input.
                 },
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.lock_person),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isObscured = !_isObscured;
+                      });
+                    },
+                    icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility),
+                  ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
                   ),
@@ -122,14 +186,14 @@ class _RegisterState extends State<Register> {
                 keyboardType: TextInputType.text,
                 style: TextStyle(color: Colors.black),
                 cursorColor: Colors.black,
+
               ),
               SizedBox(
                 height: 24.0,
               ),
-
               //confirm password
               TextField(
-                obscureText: true,
+                obscureText: _isObscuredConfirm,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
                   confirmPassword = value;
@@ -139,6 +203,14 @@ class _RegisterState extends State<Register> {
                   labelText: 'Confirm Password',
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.lock_person),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isObscuredConfirm = !_isObscuredConfirm;
+                      });
+                    },
+                    icon: Icon(_isObscuredConfirm ? Icons.visibility_off : Icons.visibility),
+                  ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
                   ),
@@ -198,13 +270,11 @@ class _RegisterState extends State<Register> {
                               Service().sendTokenToBackend(
                                   token, responseBody['id']);
                             });
-                            SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
                             prefs.setInt('user_id', responseBody['id']);
                             await TokenManager.saveToken(
                                 responseBody['access_token']);
-                            prefs.setString(
-                                'token', responseBody['access_token']);
+                            prefs.setString('token', responseBody['access_token']);
                             prefs.setString('name', responseBody['name']);
                             prefs.setString('email', responseBody['email']);
                             print(prefs.getString('name'));
@@ -256,27 +326,83 @@ class _RegisterState extends State<Register> {
                     borderRadius: BorderRadius.circular(20.0)),
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 25),
               //google + apple sign in buttons
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     //google button
-              //     SquareTile(
-              //       imagePath: 'assets/images/google.png',
-              //       onTap: () => AuthService().signIn(),),
-              //
-              //     const SizedBox(width: 10),
-              //     //apple button
-              //     SquareTile(
-              //       imagePath: 'assets/images/apple.png',
-              //       onTap: () => AuthService().signIn(),
-              //     ),
-              //
-              //   ],
-              // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //google button
+                  SquareTile(
+                    imagePath: 'assets/images/google.png',
+                    onTap: () async {
+                      try {
+                        setState(() {
+                          showSpinner = true;
+                        });
+                        UserCredential userCredential = await signInWithGoogle();
+                        // Handle successful sign-in
+                        User? user = userCredential.user;
+                        if (user != null) {
+                          print([user.displayName,user.email,user.photoURL,user.phoneNumber]);
+                          final newGoogleUser = await AuthService().addGoogleUser(user.displayName,user.email,user.photoURL,user.phoneNumber,user.uid);
 
-              const SizedBox(height: 50),
+                          if(newGoogleUser.containsKey('access_token')){
+
+                            _firebaseMessaging.getToken().then((token) async {
+                              Service().sendTokenToBackend(
+                                  token, newGoogleUser['id']);
+                            });
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            prefs.setInt('user_id', newGoogleUser['id']);
+                            await TokenManager.saveToken(
+                                newGoogleUser['access_token']);
+                            prefs.setString('token', newGoogleUser['access_token']);
+                            prefs.setString('name', newGoogleUser['name']);
+                            prefs.setString('email', newGoogleUser['email']);
+                            print("this is seted ${prefs.getString('name')}");
+                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            if (userProvider.userData.isEmpty) {
+                              userProvider.fetchUserData();
+                            }
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditPage(),
+                                ));
+                          }
+                          print(newGoogleUser);
+                        }
+                        else{
+                          setState(() {
+                            showSpinner = false;
+                          });
+                        }
+                      }
+                      catch(e){
+                        print(e);
+                        setState(() {
+                          showSpinner = false;
+                        });
+                      }
+                    }),
+                  const SizedBox(width: 10),
+                  //apple button
+                  // SquareTile(
+                  //   imagePath: 'assets/images/facebook.png',
+                  //   onTap: () async {
+                  //     try {
+                  //       await signInWithFacebook();
+                  //       // Handle successful sign-in
+                  //     } catch (e) {
+                  //       // Handle sign-in error
+                  //     }
+                  //   },
+                  // ),
+
+                ],
+              ),
+
+              const SizedBox(height: 25),
               MaterialButton(
                 onPressed: () {
                   Navigator.pushNamed(context, LoginScreen.id);

@@ -45,7 +45,6 @@ class ProfileProvider extends ChangeNotifier {
         },
       );
       final responseData = json.decode(response.body);
-
       prefs.setString(cacheKey, json.encode(responseData));
       prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
 
@@ -104,8 +103,6 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<void> getUserPost(userId,_pageNumber) async {
-    print('pageNumber');
-    print(_pageNumber);
     final token = await TokenManager.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final viewerId = prefs.getInt('user_id').toString();
