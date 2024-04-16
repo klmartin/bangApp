@@ -112,7 +112,7 @@ class _BattleCommentState extends State<BattleComment> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(comment?.body ?? "",
+                    Text(comment.body ?? "",
                         style: TextStyle(fontWeight: FontWeight.w500)),
                     SizedBox(height: 5),
                     GestureDetector(
@@ -201,7 +201,7 @@ class _BattleCommentState extends State<BattleComment> {
                 ),
               ),
               title: Text(
-                comment!.battlecommentuser?.name ?? "",
+                comment.battlecommentuser?.name ?? "",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Column(

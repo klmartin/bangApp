@@ -14,6 +14,8 @@ class ImageUploadProvider extends ChangeNotifier {
   Future<bool> startUpload(body, image) async {
     _isUploading = true;
     _uploadText = 'Uploading Image...';
+    print(body);
+    print('imageBody');
     notifyListeners();
     final token = await TokenManager.getToken();
     final headers = {

@@ -17,7 +17,7 @@ class UpdateCommentProvider extends ChangeNotifier {
     notifyListeners();
     final Map<String, dynamic> response =
         await Service().getUpdateComments(postId.toString());
-    if (response != null && response.containsKey('comments')) {
+    if (response.containsKey('comments')) {
       final List<dynamic> commentsData = response['comments'];
       _comments = commentsData
           .map((commentData) => UpdateComment.fromJson(commentData))

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/image_post.dart';
-import '../services/api_cache_helper.dart';
 import '../services/token_storage_helper.dart';
 
 class ProfileProvider extends ChangeNotifier {
@@ -251,14 +250,9 @@ class ProfileProvider extends ChangeNotifier {
       // ignore: unrelated_type_equality_checks
       final post = _posts.firstWhere((update) => update.postId == postId);
 
-      if (post != null) {
-        post.commentCount++;
-        notifyListeners();
-      } else {
-        // Iterate through _posts and print all postIds
-        posts?.forEach((post) {});
-      }
-    } catch (e) {}
+      post.commentCount++;
+      notifyListeners();
+        } catch (e) {}
   }
 
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class NotificationSkeleton extends StatefulWidget {
@@ -105,6 +104,69 @@ class _NotificationSkeletonPageState extends State<NotificationSkeleton> {
           "https://bangapp.pro/BangAppBackend/storage/app/profile_pictures/ZnFXIuJj96hKdQe8Y6RTo2t6OJDTyhd1LznhgICH.jpg",
       "post_image_url":
           "https://bangapp.pro/BangAppBackend/storage/app/images/kKrtsnNGnIuSiuiShh5UFlBe141kZM6NciuO2oxI.jpg",
+      "post_thumbnail_url": null,
+      "post_type": "image",
+      "user": {
+        "id": 13,
+        "name": "Ghost",
+      },
+    },
+    {
+      "id": 342,
+      "user_id": 13,
+      "message": "Has Liked Your Post",
+      "type": "like",
+      "reference_id": 6,
+      "is_read": 1,
+      "created_at": "2024-02-27T17:02:50.000000Z",
+      "updated_at": "2024-02-27T17:02:56.000000Z",
+      "post_id": 534,
+      "user_image_url":
+      "https://bangapp.pro/BangAppBackend/storage/app/profile_pictures/ZnFXIuJj96hKdQe8Y6RTo2t6OJDTyhd1LznhgICH.jpg",
+      "post_image_url":
+      "https://bangapp.pro/BangAppBackend/storage/app/images/kKrtsnNGnIuSiuiShh5UFlBe141kZM6NciuO2oxI.jpg",
+      "post_thumbnail_url": null,
+      "post_type": "image",
+      "user": {
+        "id": 13,
+        "name": "Ghost",
+      },
+    },
+    {
+      "id": 342,
+      "user_id": 13,
+      "message": "Has Liked Your Post",
+      "type": "like",
+      "reference_id": 6,
+      "is_read": 1,
+      "created_at": "2024-02-27T17:02:50.000000Z",
+      "updated_at": "2024-02-27T17:02:56.000000Z",
+      "post_id": 534,
+      "user_image_url":
+      "https://bangapp.pro/BangAppBackend/storage/app/profile_pictures/ZnFXIuJj96hKdQe8Y6RTo2t6OJDTyhd1LznhgICH.jpg",
+      "post_image_url":
+      "https://bangapp.pro/BangAppBackend/storage/app/images/kKrtsnNGnIuSiuiShh5UFlBe141kZM6NciuO2oxI.jpg",
+      "post_thumbnail_url": null,
+      "post_type": "image",
+      "user": {
+        "id": 13,
+        "name": "Ghost",
+      },
+    },
+    {
+      "id": 342,
+      "user_id": 13,
+      "message": "Has Liked Your Post",
+      "type": "like",
+      "reference_id": 6,
+      "is_read": 1,
+      "created_at": "2024-02-27T17:02:50.000000Z",
+      "updated_at": "2024-02-27T17:02:56.000000Z",
+      "post_id": 534,
+      "user_image_url":
+      "https://bangapp.pro/BangAppBackend/storage/app/profile_pictures/ZnFXIuJj96hKdQe8Y6RTo2t6OJDTyhd1LznhgICH.jpg",
+      "post_image_url":
+      "https://bangapp.pro/BangAppBackend/storage/app/images/kKrtsnNGnIuSiuiShh5UFlBe141kZM6NciuO2oxI.jpg",
       "post_thumbnail_url": null,
       "post_type": "image",
       "user": {

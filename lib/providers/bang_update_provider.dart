@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../services/api_cache_helper.dart';
 import '../services/token_storage_helper.dart';
 
 class BangUpdate {
@@ -20,6 +19,7 @@ class BangUpdate {
   int likeCount;
   int commentCount;
   final int userId;
+  String? aspectRatio;
 
   BangUpdate(
       {required this.filename,
@@ -31,7 +31,9 @@ class BangUpdate {
       required this.likeCount,
       required this.isLiked,
       required this.commentCount,
-      required this.userId});
+      required this.userId,
+        required this.aspectRatio
+      });
 }
 
 class BangUpdateProvider extends ChangeNotifier {
@@ -82,6 +84,7 @@ class BangUpdateProvider extends ChangeNotifier {
                 : 0,
             isLiked: post['isLiked'],
             userId: post["user_id"],
+            aspectRatio:post["aspect_ratio"]
           );
         }
         ));
@@ -140,6 +143,7 @@ class BangUpdateProvider extends ChangeNotifier {
                 : 0,
             isLiked: post['isLiked'],
             userId: post["user_id"],
+              aspectRatio: post["aspect_ratio"]
           );
         })));
       } else {

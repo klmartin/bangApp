@@ -1,4 +1,3 @@
-import 'package:bangapp/providers/posts_provider.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
 
-import '../../loaders/comment_line_skeleton.dart';
 import '../../providers/Profile_Provider.dart';
 import '../Posts/notificationView_model.dart';
 
@@ -119,7 +117,7 @@ class _NotificationCommentsPageState extends State<NotificationCommentsPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(comment?.body ?? "",
+                    Text(comment.body ?? "",
                         style: TextStyle(fontWeight: FontWeight.w500)),
                     SizedBox(height: 5),
                     GestureDetector(
@@ -209,7 +207,7 @@ class _NotificationCommentsPageState extends State<NotificationCommentsPage> {
                 ),
               ),
               title: Text(
-                comment!.commentUser?.name ?? "",
+                comment.commentUser?.name ?? "",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Column(

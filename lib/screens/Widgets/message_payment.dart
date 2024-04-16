@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import '../../providers/message_payment_provider.dart';
-import '../../providers/payment_provider.dart';
 import 'package:bangapp/providers/user_provider.dart';
 
 

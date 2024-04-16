@@ -352,6 +352,40 @@ class Service {
     }
   }
 
+  Future<int> buyFollowers(count,hobbies) async {
+    try {
+      print([count,hobbies]);
+      print('buying followers');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/buyFollowers'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body:json.encode({
+          'user_id':prefs.getInt('user_id').toString(),
+          'hobbies': hobbies,
+          'count':count
+        })
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+        print("buyFollowers response");
+        return responseData['followers_added'];
+      } else {
+        return 0;
+      }
+    } catch (e) {
+      print(e);
+      return 0;
+      // Handle exceptions, if any
+    }
+  }
+
   Future<List<dynamic>> getBattleCommentReplies(String commentId) async {
     try {
       print(commentId);
@@ -1047,10 +1081,11 @@ class Service {
   }
 
   Future<Map<String, dynamic>> getMyInformation({int? userId}) async {
-
+    print("im here");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final viewerId = prefs.getInt('user_id');
     final token = await TokenManager.getToken();
+    print("$baseUrl/users/getMyInfo?user_id=$userId?&viewer_id=$viewerId");
     if (userId != null) {
       var response = await http.get(
         Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId?&viewer_id=$viewerId"),
@@ -1477,6 +1512,181 @@ class Service {
       return {};
     }
 
+  }
+
+  Future<List<Map<String, dynamic>>> getSuggestedFriends(contacts) async
+  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try{
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/getSuggestedFriends'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body:json.encode({
+          'user_id': prefs.getInt('user_id').toString(),
+          'contacts':contacts,
+        }),
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        return List<Map<String, dynamic>>.from(responseData['suggested_friends']);
+      }
+      else {
+        return [];
+      }
+    }
+    catch(e){
+      print(e);
+      return [];
+    }
 
   }
+
+  Future<List<Map<String, dynamic>>> getFriends({userId}) async
+  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var user_id = userId ?? prefs.getInt('user_id');
+    try{
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse('$baseUrl/allFriends/${user_id.toString()}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        return List<Map<String, dynamic>>.from(responseData['friends']);
+      }
+      else {
+        return [];
+      }
+    }
+    catch(e){
+      print(e);
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getFollowers({userId}) async
+  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var user_id = userId ?? prefs.getInt('user_id');
+    try{
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse('$baseUrl/allFollowers/${user_id.toString()}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        return List<Map<String, dynamic>>.from(responseData['followers']);
+      }
+      else {
+        return [];
+      }
+    }
+    catch(e){
+      print(e);
+      return [];
+    }
+  }
+
+  Future<String> requestFriendship(friendId) async
+  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try{
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/requestFriendship'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body:json.encode({
+          'user_id': prefs.getInt('user_id').toString(),
+          'friend_id':friendId,
+        }),
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData['message'];
+      }
+      else {
+        return "";
+      }
+    }
+    catch(e){
+      print(e);
+      return "";
+    }
+  }
+
+  Future<String> acceptFriendship(friendship_id) async
+  {
+    try{
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/acceptFriendship'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body:json.encode({
+          'friendship_id':friendship_id,
+        }),
+      );
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('message')) {
+        return responseData['message'];
+      }
+      else {
+        return responseData['error'];
+      }
+    }
+    catch(e){
+      print(e);
+      return "";
+    }
+  }
+
+  Future<String> declineFriendShip(friendship_id) async
+  {
+    try{
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/declineFriendship'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body:json.encode({
+          'friendship_id':friendship_id,
+        }),
+      );
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('message')) {
+        return responseData['message'];
+      }
+      else {
+        return responseData['error'];
+      }
+    }
+    catch(e){
+      print(e);
+      return "";
+    }
+  }
+
+
 }

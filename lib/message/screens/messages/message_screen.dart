@@ -730,3 +730,49 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
     print('Modal bottom sheet closed: $result');
   });
 }
+
+Future<Null> showSubscriptionInfo(BuildContext context,mySubscribeDays) {
+  return showModalBottomSheet(
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+    builder: (BuildContext context) {
+      return Builder(
+        builder: (BuildContext innerContext) {
+          return Consumer<SubscriptionPaymentProvider>(
+            builder: (context, subscriptionPaymentProvider, _) {
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Center(
+                        child: Text(
+                          'Subscription Days Remaining: $mySubscribeDays',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      );
+    },
+  ).then((result) {
+    var messagePaymentProvider =
+    Provider.of<MessagePaymentProvider>(context, listen: false);
+    messagePaymentProvider.paymentCanceled = true;
+    print(messagePaymentProvider.isPaying);
+    print('Modal bottom sheet closed: $result');
+  });
+}

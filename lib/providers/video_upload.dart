@@ -16,6 +16,8 @@ class VideoUploadProvider extends ChangeNotifier {
   Future<bool> startUpload(body,video) async {
     _isUploading = true;
    _uploadText = 'Uploading Video...';
+   print(body);
+   print("video body");
     print('Is Uploading after setting to true: $_isUploading');
     notifyListeners();
       final token = await TokenManager.getToken();

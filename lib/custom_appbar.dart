@@ -1,5 +1,4 @@
 
-import 'package:bangapp/inspiration/inspirations.dart';
 import 'package:bangapp/message/screens/chats/chats_screen.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +17,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     return AppBar(
+      titleSpacing:8,
       title: Text(
         title,
         style: TextStyle(
@@ -40,7 +40,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
           child: Stack(
             children: [
-              Container(margin: EdgeInsets.only(top: 14),
+              Container(margin: EdgeInsets.all(8),
                 height: 30,
                 width: 25,
                 child: Image.asset('assets/images/chatmessage.png')),

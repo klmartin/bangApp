@@ -1,5 +1,5 @@
 import 'package:bangapp/inspiration/video_container.dart';
-import 'package:bangapp/widgets/video_player.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
 
@@ -40,7 +40,7 @@ class _ViewVideoState extends State<ViewVideo> {
         Container(
           child: Column(
             children: [
-              VideoPlayerPage(mediaUrl: widget.videoUrl.toString()),
+              BetterPlayer.network(widget.videoUrl.toString()),
               Container(
                 padding: EdgeInsets.only(top:10, bottom: 10, left: 0),
                 child: Text(

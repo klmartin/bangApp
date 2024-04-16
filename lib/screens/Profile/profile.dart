@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Profile/edit_my_profile.dart';
 import 'package:bangapp/screens/settings/settings.dart';
@@ -12,8 +13,12 @@ import 'package:provider/provider.dart';
 import '../../models/hobby.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
+import '../../providers/follower_provider.dart';
+import '../../providers/friends_provider.dart';
 import '../../providers/payment_provider.dart';
 import '../../widgets/build_media.dart';
+import '../../widgets/followers_sheet.dart';
+import '../../widgets/friends_sheet.dart';
 import '../../widgets/video_rect.dart';
 import '../Posts/postView_model.dart';
 import '../Posts/post_challenge_view.dart';
@@ -48,7 +53,7 @@ class _ProfileState extends State<Profile> {
   List<Hobby> hobbyList = [];
   List<int> selectedHobbyIds = [];
   bool privacySwitchValue = false;
-  late PaymentProvider paymentProvider;
+  late FollowerProvider followerProvider;
   late UserProvider userProvider;
   final int _numberOfPostsPerRequest = 20;
   int _pageNumber = 1;
@@ -58,12 +63,13 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     userProvider = Provider.of<UserProvider>(context, listen: false);
-    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    followerProvider = Provider.of<FollowerProvider>(context, listen: false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
-    paymentProvider.addListener(() {
-      if (paymentProvider.isFinishPaying == true) {
-        userProvider.addFollowerCount(paymentProvider.payedPost);
+    followerProvider.addListener(() {
+      if (followerProvider.payed == true && followerProvider.followersCount > 0) {
+        userProvider.addFollowerCount(followerProvider.followersCount);
+        followerProvider.resetFollowerCount = 0;
       }
     });
   }
@@ -80,7 +86,6 @@ class _ProfileState extends State<Profile> {
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
-    // Build your UI using the imagePosts list
     return userProvider.userData.isEmpty
         ? ProfileHeaderSkeleton()
         : ListView(
@@ -91,7 +96,7 @@ class _ProfileState extends State<Profile> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
+                    padding: const EdgeInsets.only(left:8.0,right: 20.0, bottom: 10.0),
                     child: Container(
                         width: 80,
                         height: 80,
@@ -113,12 +118,11 @@ class _ProfileState extends State<Profile> {
                               )
                             : Container()),
                   ),
-                  SizedBox(width: 150),
+                  SizedBox(width: 135),
                   Padding(
-                    padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
+                    padding: const EdgeInsets.only(right: 8.0),
                     child: InkWell(
                       onTap: () {
-                        print('no fat');
                         openFilterDialog(context);
                       },
                       child: Container(
@@ -161,7 +165,7 @@ class _ProfileState extends State<Profile> {
                   text: TextSpan(
                       style: TextStyle(
                           color: Colors.black, fontFamily: 'Metropolis'),
-                      text: userProvider.userData!['bio']),
+                      text: userProvider.userData['bio']),
                 ),
               ),
               Row(
@@ -177,14 +181,14 @@ class _ProfileState extends State<Profile> {
                                 builder: (context) => EditPage(
                                   nameController: TextEditingController(),
                                   userImage:
-                                      userProvider.userData!['user_image_url'],
-                                  name: userProvider.userData!['name'],
+                                      userProvider.userData['user_image_url'],
+                                  name: userProvider.userData['name'],
                                   date_of_birth: DateTime.parse(
-                                      userProvider.userData!['date_of_birth']),
-                                  phoneNumber: userProvider.userData!['phone_number'],
+                                      userProvider.userData['date_of_birth']),
+                                  phoneNumber: userProvider.userData['phone_number'],
                                   selectedHobbiesText: selectedHobbiesText,
-                                  occupation: userProvider.userData!['occupation'] ?? "",
-                                  bio: userProvider.userData!['bio'] ?? "",
+                                  occupation: userProvider.userData['occupation'] ?? "",
+                                  bio: userProvider.userData['bio'] ?? "",
                                   occupationController: TextEditingController(),
                                   dateOfBirthController:
                                       TextEditingController(),
@@ -202,6 +206,7 @@ class _ProfileState extends State<Profile> {
                   SizedBox(width: 10),
                   Expanded(
                       child: Container(
+                        padding: EdgeInsets.only(right:8),
                     child: OutlinedButton(
                         onPressed: () {
                           Navigator.push(
@@ -226,7 +231,7 @@ class _ProfileState extends State<Profile> {
                           padding: const EdgeInsets.only(bottom: 5.0),
                           child: Text(
                             // '$posts',
-                            userProvider.userData!['postCount'].toString(),
+                            userProvider.userData['postCount'].toString(),
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
@@ -248,25 +253,32 @@ class _ProfileState extends State<Profile> {
                         color: Colors.grey,
                       ),
                     ),
-                    Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 5.0),
-                          child: Text(
-                            // '$followers',
-                            userProvider.userData!['followerCount'].toString(),
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                fontFamily: 'Metropolis'),
+                    GestureDetector(
+                      onTap: () async {
+                        FollowersModal.showFollowersModal(context);
+                        await Provider.of<FollowerProvider>(context,
+                            listen: false).getAllFollowers();
+                      },
+                      child: Column(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 5.0),
+                            child: Text(
+                              // '$followers',
+                              userProvider.userData['followerCount'].toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  fontFamily: 'Metropolis'),
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Followers',
-                          style:
-                              TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                        )
-                      ],
+                          Text(
+                            'Followers',
+                            style:
+                                TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                          )
+                        ],
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
@@ -276,25 +288,32 @@ class _ProfileState extends State<Profile> {
                         color: Colors.grey,
                       ),
                     ),
-                    Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4.0),
-                          child: Text(
-                            // '$following',
-                            userProvider.userData!['followingCount'].toString(),
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                fontFamily: 'Metropolis'),
+                    GestureDetector(
+                      onTap: () async
+                      {
+                        FriendsModal.showFriendsModal(context);
+                        await Provider.of<FriendProvider>(context,
+                            listen: false).getFriends();
+                      },
+                      child: Column(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4.0),
+                            child: Text(
+                              userProvider.userData['friendsCount'].toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  fontFamily: 'Metropolis'),
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Friends',
-                          style:
-                              TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                        )
-                      ],
+                          Text(
+                            'Friends',
+                            style:
+                                TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                          )
+                        ],
+                      ),
                     ),
                   ]),
               Container(
@@ -409,14 +428,13 @@ class _ProfileState extends State<Profile> {
 
   void openFilterDialog(BuildContext context) async {
     selectedHobbyList?.clear();
+    selectedHobbyIds?.clear();
     await FilterListDialog.display<Hobby>(
       context,
-      listData:
-          await Service().fetchHobbies(), // Use hobbyList as the data source
+      listData: await Service().fetchHobbies(), // Use hobbyList as the data source
       selectedListData: selectedHobbyList,
-      choiceChipLabel: (hobby) =>
-          hobby!.name, // Access the name property of Hobby
-      validateSelectedItem: (list, val) => list!.contains(val),
+      choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
+      validateSelectedItem: (list, val) => list != null ? list.contains(val) : false,
       onItemSearch: (hobby, query) {
         return hobby.name!.toLowerCase().contains(query.toLowerCase());
       },
@@ -427,13 +445,13 @@ class _ProfileState extends State<Profile> {
           updateSelectedHobbiesText();
         });
         Navigator.pop(context);
-        buildFab(context, selectedHobbiesText);
+        buildFab(context, selectedHobbiesText,selectedHobbyIds);
       },
     );
   }
 }
 
-buildFab(BuildContext context, selectedHobbiesText) {
+buildFab(BuildContext context, selectedHobbiesText,selectedHobbyIds) {
   print(selectedHobbiesText);
   return showModalBottomSheet(
     isScrollControlled: true,
@@ -469,10 +487,10 @@ buildFab(BuildContext context, selectedHobbiesText) {
               ),
               title: Text('Bronze'),
               trailing: Text('2,500 Tshs'),
-              subtitle: Text('500 followers'),
+              subtitle: Text('10 followers'),
               onTap: () {
                 Navigator.pop(context);
-                buildPayments(selectedHobbiesText, context, 2500, 500);
+                buildPayments(selectedHobbiesText, context, 1000, 10,selectedHobbyIds);
               },
             ),
             ListTile(
@@ -483,10 +501,10 @@ buildFab(BuildContext context, selectedHobbiesText) {
               ),
               title: Text('Silver'),
               trailing: Text('5,000 Tshs'),
-              subtitle: Text('1,100 followers'),
+              subtitle: Text('20 followers'),
               onTap: () async {
                 Navigator.pop(context);
-                buildPayments(selectedHobbiesText, context, 5000, 1100);
+                buildPayments(selectedHobbiesText, context, 5000, 20,selectedHobbyIds);
               },
             ),
             ListTile(
@@ -497,11 +515,11 @@ buildFab(BuildContext context, selectedHobbiesText) {
               ),
               title: Text('Gold'),
               trailing: Text('10,000 Tshs'),
-              subtitle: Text('2,300 followers'),
+              subtitle: Text('30 followers'),
               onTap: () {
                 print(selectedHobbiesText);
                 Navigator.pop(context);
-                buildPayments(selectedHobbiesText, context, 10000, 2300);
+                buildPayments(selectedHobbiesText, context, 10000, 30,selectedHobbyIds);
               },
             ),
           ],
@@ -511,8 +529,8 @@ buildFab(BuildContext context, selectedHobbiesText) {
   );
 }
 
-buildPayments(selectedHobbiesText, BuildContext context, price, count) {
-  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+buildPayments(selectedHobbiesText, BuildContext context, price, count,selectedHobbyIds) {
+  var paymentProvider = Provider.of<FollowerProvider>(context, listen: false);
   return showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -521,7 +539,7 @@ buildPayments(selectedHobbiesText, BuildContext context, price, count) {
     builder: (BuildContext context) {
       return Builder(
         builder: (BuildContext innerContext) {
-  return Consumer<PaymentProvider>(
+  return Consumer<FollowerProvider>(
   builder: (context, paymentProvider, _) {
           final userProvider = Provider.of<UserProvider>(innerContext);
           final TextEditingController phoneNumberController =
@@ -567,11 +585,10 @@ buildPayments(selectedHobbiesText, BuildContext context, price, count) {
                 ),
                 Center(
                   child: paymentProvider.isPaying
-                      ? LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30)
+                      ? LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30)
                       : TextButton(
                     onPressed: () async {
-
-                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, count, 'followers');                        },
+                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, count, 'followers',selectedHobbyIds);                        },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
@@ -725,7 +742,6 @@ class _ProfilePostsStreamContentState
   void initState() {
     super.initState();
     final providerPost = Provider.of<ProfileProvider>(context, listen: false);
-
     providerPost.getMyPosts(_pageNumber);
     _scrollController.addListener(_scrollListener);
   }
@@ -783,7 +799,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].commentCount,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -824,7 +840,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].commentCount,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -867,7 +883,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].commentCount,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -916,7 +932,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].commentCount,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -957,7 +973,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].commentCount,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -1000,7 +1016,7 @@ class _ProfilePostsStreamContentState
                                           provider.posts[i].imgWidth!,
                                           provider.posts[i].imgHeight!,
                                           provider.posts[i].postId!,
-                                          provider.posts[i].commentCount!,
+                                          provider.posts[i].commentCount,
                                           provider.posts[i].userId!,
                                           provider.posts[i].isLikedA,
                                           provider.posts[i].likeCountA,
@@ -1050,7 +1066,7 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].imgWidth!,
                                       provider.posts[i].imgHeight!,
                                       provider.posts[i].postId!,
-                                      provider.posts[i].commentCount!,
+                                      provider.posts[i].commentCount,
                                       provider.posts[i].userId!,
                                       provider.posts[i].isLikedA,
                                       provider.posts[i].likeCountA,
@@ -1087,7 +1103,7 @@ class _ProfilePostsStreamContentState
                                           provider.posts[i].imgWidth!,
                                           provider.posts[i].imgHeight!,
                                           provider.posts[i].postId!,
-                                          provider.posts[i].commentCount!,
+                                          provider.posts[i].commentCount,
                                           provider.posts[i].userId!,
                                           provider.posts[i].isLikedA,
                                           provider.posts[i].likeCountA,

@@ -30,8 +30,7 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
 
     try {
       final responseBody = await Service().deletePost(widget.imagePostId);
-      if (responseBody != null &&
-          responseBody['message'] == 'Post deleted successfully') {
+      if (responseBody['message'] == 'Post deleted successfully') {
         Fluttertoast.showToast(msg: responseBody['message']);
         if (widget.type == 'posts') {
           final postsProvider =
@@ -68,7 +67,7 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
           ),
           title: Text(
             "Delete Post",
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
         ),
         if (_isLoading)

@@ -4,6 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:bangapp/models/image_post.dart';
@@ -13,19 +15,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../message/screens/messages/message_screen.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
+import '../../providers/follower_provider.dart';
+import '../../providers/friends_provider.dart';
 import '../../providers/message_payment_provider.dart';
-import '../../providers/payment_provider.dart';
 import '../../providers/subscription_payment_provider.dart';
 import '../../widgets/build_media.dart';
+import '../../widgets/followers_sheet.dart';
+import '../../widgets/friends_sheet.dart';
 import '../../widgets/video_rect.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
-import 'package:bangapp/providers/user_provider.dart';
-import 'package:bangapp/loaders/profile_header_skeleton.dart';
 import 'package:bangapp/loaders/profile_posts_skeleton.dart';
 import 'package:bangapp/loaders/profile_updates_skeleton.dart';
-
-import '../Widgets/message_payment.dart';
 
 List<dynamic> followinglist = [];
 bool _persposts = true;
@@ -50,9 +51,12 @@ class _UserProfileState extends State<UserProfile> {
   int myPostCount = 0;
   bool mySubscribe = false;
   String mySubscribePrice = "";
+  int mySubscribeDays = 0;
   bool privacySwitchValue = false;
   int myFollowerCount = 0;
   int myFollowingCount = 0;
+  int myFriendsCount = 0;
+  bool isFriend = false;
   String description = "";
   final int _numberOfPostsPerRequest = 20;
   int _pageNumber = 1;
@@ -61,6 +65,7 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   void initState() {
+    print('user profile');
     _getMyInfo();
     messagePaymentProvider =
         Provider.of<MessagePaymentProvider>(context, listen: false);
@@ -77,6 +82,7 @@ class _UserProfileState extends State<UserProfile> {
         privacySwitchValue = false;
       }
     });
+
   }
 
   void _scrollListener() {
@@ -89,6 +95,8 @@ class _UserProfileState extends State<UserProfile> {
 
   void _getMyInfo() async {
     var myInfo = await Service().getMyInformation(userId: widget.userid);
+    print(myInfo['followerCount']);
+    print('followerCount');
     setState(() {
       myName = myInfo['name'] ?? "";
       myBio = myInfo['bio'] ?? "";
@@ -96,11 +104,14 @@ class _UserProfileState extends State<UserProfile> {
       myPostCount = myInfo['postCount'] ?? 0;
       myFollowerCount = myInfo['followerCount'] ?? 0;
       myFollowingCount = myInfo['followingCount'] ?? 0;
+      myFriendsCount = myInfo['friendsCount'] ?? 0;
       privacySwitchValue = myInfo['public'] == 1 ? true : false;
       mySubscribe = myInfo['subscribe'] == 1 ? true : false;
       myPrice = myInfo['price'] ?? "";
       mySubscribePrice = myInfo['subscriptionPrice'] ?? "";
+      mySubscribeDays = myInfo['subscriptionDays'] ?? 0;
       myId = myInfo['id'];
+      isFriend = myInfo['isFriend'] ?? false;
     });
   }
 
@@ -153,6 +164,7 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final friendProvider = Provider.of<FriendProvider>(context, listen: false);
     return Scaffold(
         appBar: AppBar(
           title: GestureDetector(
@@ -164,7 +176,11 @@ class _UserProfileState extends State<UserProfile> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.redAccent, Colors.orange],
+                  colors: [
+                    Color(0xFFF40BF5),
+                    Color(0xFFBF46BE),
+                    Color(0xFFF40BF5)
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -172,10 +188,29 @@ class _UserProfileState extends State<UserProfile> {
               child: Icon(Icons.navigate_before_outlined, size: 30),
             ),
           ),
+          actions: [
+            InkWell(
+              onTap: () {
+                if (privacySwitchValue) {
+                  buildMessagePayment(context, myPrice, myId);
+                } else {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return MessagesScreen(widget.userid!, myName, myImage,
+                        privacySwitchValue, widget.userid, "0");
+                  }));
+                }
+              },
+              child: Container(
+                  margin: EdgeInsets.only(top: 14),
+                  height: 40,
+                  width: 25,
+                  child: Image.asset('assets/images/chatmessage.png')),
+            ),
+            SizedBox(width: 20)
+          ],
           automaticallyImplyLeading: false,
           elevation: 0.0,
           backgroundColor: Colors.white,
-          actions: [SizedBox(width: 10)],
         ),
         body: Padding(
           padding: const EdgeInsets.all(15.0),
@@ -253,24 +288,31 @@ class _UserProfileState extends State<UserProfile> {
                       color: Colors.grey,
                     ),
                   ),
-                  Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4.0),
-                        child: Text(
-                          myFollowerCount.toString(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              fontFamily: 'Metropolis'),
+                  GestureDetector(
+                    onTap: () async {
+                      FriendsModal.showFriendsModal(context);
+                      await Provider.of<FriendProvider>(context, listen: false)
+                          .getFriends(userId: widget.userid);
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: Text(
+                            myFriendsCount.toString(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontFamily: 'Metropolis'),
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Friends',
-                        style:
-                            TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                      )
-                    ],
+                        Text(
+                          'Friends',
+                          style:
+                              TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                        )
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -315,39 +357,38 @@ class _UserProfileState extends State<UserProfile> {
                         : OutlinedButton(
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.white,
+                                Colors.grey.shade300,
                               ),
                             ),
                             onPressed: () async {
+                              showSubscriptionInfo(context, mySubscribeDays);
                               //follow or unfollow
                             },
                             child: Text(
-                              'Subscribe',
-                              style: TextStyle(color: Colors.white),
+                              'Subscribed',
+                              style: TextStyle(color: Colors.black),
                             )),
                   )),
                   SizedBox(width: 10),
                   Expanded(
                       child: Container(
                     child: OutlinedButton(
-                        onPressed: () {
-                          if (privacySwitchValue) {
-                            buildMessagePayment(context, myPrice, myId);
-                          } else {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return MessagesScreen(
-                                  widget.userid!,
-                                  myName,
-                                  myImage,
-                                  privacySwitchValue,
-                                  widget.userid,
-                                  "0");
-                            }));
+                        onPressed: () async {
+                          await friendProvider.requestFriendship(widget.userid);
+                          if(friendProvider.addingFriend == true){
+                            Fluttertoast.showToast(
+                              msg: friendProvider.requestMessage,
+                              toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
+                              gravity: ToastGravity.CENTER, // Toast position
+                              timeInSecForIosWeb: 1, // Time duration for iOS and web
+                              backgroundColor: Colors.grey[600],
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
                           }
                         },
                         child: Text(
-                          'Message',
+                          'Add Friend',
                           style: TextStyle(color: Colors.black),
                         )),
                   )),
@@ -671,7 +712,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].commentCount,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -712,7 +753,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].commentCount,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -755,7 +796,7 @@ class _ProfilePostsStreamContentState
                                   provider.posts[i].imgWidth!,
                                   provider.posts[i].imgHeight!,
                                   provider.posts[i].postId!,
-                                  provider.posts[i].commentCount!,
+                                  provider.posts[i].commentCount,
                                   provider.posts[i].userId!,
                                   provider.posts[i].isLikedA,
                                   provider.posts[i].likeCountA,
@@ -807,7 +848,7 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].imgWidth!,
                                       provider.posts[i].imgHeight!,
                                       provider.posts[i].postId!,
-                                      provider.posts[i].commentCount!,
+                                      provider.posts[i].commentCount,
                                       provider.posts[i].userId!,
                                       provider.posts[i].isLikedA,
                                       provider.posts[i].likeCountA,
@@ -849,7 +890,7 @@ class _ProfilePostsStreamContentState
                                           provider.posts[i].imgWidth!,
                                           provider.posts[i].imgHeight!,
                                           provider.posts[i].postId!,
-                                          provider.posts[i].commentCount!,
+                                          provider.posts[i].commentCount,
                                           provider.posts[i].userId!,
                                           provider.posts[i].isLikedA,
                                           provider.posts[i].likeCountA,

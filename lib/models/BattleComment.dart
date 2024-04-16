@@ -113,7 +113,7 @@ class BattleReplyUser {
   String? name;
   String? username;
   String? email;
-  Null? emailVerifiedAt;
+  Null emailVerifiedAt;
   String? image;
   String? bio;
   String? phoneNumber;

@@ -171,7 +171,11 @@ class _NotifyCardState extends State<NotifyCard> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.redAccent, Colors.orange],
+                  colors: [
+                    Color(0xFFF40BF5),
+                    Color(0xFFBF46BE),
+                    Color(0xFFF40BF5)
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -215,8 +219,6 @@ class _NotifyCardState extends State<NotifyCard> {
                         context,
                         widget.postUrl,
                         widget.type,
-                        widget.imgWidth,
-                        widget.imgHeight,
                         widget.pinned,
                         widget.cacheUrl,
                         widget.thumbnailUrl,

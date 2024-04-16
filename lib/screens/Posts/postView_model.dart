@@ -7,7 +7,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../providers/Profile_Provider.dart';
 import 'package:bangapp/services/service.dart';
-import '../../services/animation.dart';
 import '../../widgets/build_media.dart';
 import '../Comments/post_comment.dart';
 import '../Widgets/readmore.dart';
@@ -184,7 +183,11 @@ class _PostCardState extends State<PostCard> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.redAccent, Colors.orange],
+                  colors: [
+                    Color(0xFFF40BF5),
+                Color(0xFFBF46BE),
+                Color(0xFFF40BF5)
+                ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -269,8 +272,6 @@ class _PostCardState extends State<PostCard> {
                   context,
                   widget.postUrl,
                   widget.type,
-                  widget.imgWidth,
-                  widget.imgHeight,
                   widget.pinned,
                   widget.cacheUrl,
                   widget.thumbnailUrl,
@@ -375,7 +376,7 @@ class _PostCardState extends State<PostCard> {
                                       ? Icon(CupertinoIcons.heart_fill,
                                           color: Colors.red, size: 25)
                                       : Icon(CupertinoIcons.heart,
-                                          color: Colors.red, size: 25),
+                                          color: Colors.black, size: 25),
                                 ),
                                 GestureDetector(
                                   onTap: () {

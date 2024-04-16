@@ -1,14 +1,11 @@
 import 'package:bangapp/providers/bang_update_provider.dart';
 import 'package:bangapp/services/service.dart';
-import 'package:bangapp/widgets/video_player.dart';
-import 'package:chewie/chewie.dart';
+import 'package:better_player/better_player.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 import '../screens/Comments/updateComment.dart';
 import '../screens/Explore/bang_updates_like_button.dart';
 import '../screens/Widgets/readmore.dart';
@@ -142,7 +139,7 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
         ),
         Positioned(
           bottom: 30,
-          left: -50,
+          left: -60,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,6 +155,7 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
@@ -165,6 +163,7 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
               ),
               Row(
                 children: [
+                  SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.only(left: 70),
                     child: SizedBox(
@@ -207,11 +206,20 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
         Container(
           color: Colors.black,
           width: double.infinity,
-          child: GestureDetector(
-            onTap: () {
-
-            },
-            child: VideoPlayerPage(mediaUrl: bangUpdate.filename),
+          child: AspectRatio(
+            aspectRatio: double.parse(bangUpdate.aspectRatio),
+            child: BetterPlayerListVideoPlayer(
+              BetterPlayerDataSource(
+                BetterPlayerDataSourceType.network, bangUpdate.filename,liveStream: false,
+                videoFormat: BetterPlayerVideoFormat.hls,
+              ),
+              configuration: BetterPlayerConfiguration(
+                  autoPlay: true,
+                  aspectRatio:  double.parse(bangUpdate.aspectRatio)
+              ),
+              key: UniqueKey(),
+              playFraction: 0.8,
+            ),
           ),
         ),
         Positioned(
@@ -270,8 +278,9 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
         ),
         Positioned(
           bottom: 30,
-          left: -50,
+          left: -60,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
@@ -285,11 +294,13 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
               ),
+              SizedBox(height: 30),
               Padding(
                 padding: const EdgeInsets.only(left: 70),
                 child: SizedBox(

@@ -1,5 +1,5 @@
 import 'package:bangapp/screens/Widgets/post_options.dart';
-import 'package:chewie/chewie.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -201,16 +201,8 @@ class _PostCardState extends State<PostCard> {
                           height: 250,
                           child: Stack(
                             children: [
-                              Chewie(
-                                controller: ChewieController(
-                                  videoPlayerController:
-                                      VideoPlayerController.network(
-                                          widget.postUrl),
-                                  autoPlay: false,
-                                  looping: true,
-                                  showControls: true, // Hide controls if needed
-                                ),
-                              ),
+                              BetterPlayer.network(widget.postUrl),
+
                               Positioned(
                                 bottom: 5,
                                 child: Container(
@@ -240,16 +232,9 @@ class _PostCardState extends State<PostCard> {
                           height: 250, // Set your desired fixed height here
                           child: Stack(
                             children: [
-                              Chewie(
-                                controller: ChewieController(
-                                  videoPlayerController:
-                                      VideoPlayerController.network(
-                                          widget.challengeImgUrl),
-                                  autoPlay: false,
-                                  looping: true,
-                                  showControls: true, // Hide controls if needed
-                                ),
-                              ),
+                              BetterPlayer.network(widget.challengeImgUrl),
+
+
                               Positioned(
                                 bottom: 5,
                                 right: 0,
@@ -357,40 +342,39 @@ class _PostCardState extends State<PostCard> {
                   ],
                 ),
               ),
-              if (widget.caption != null)
-                Padding(
-                  padding: const EdgeInsets.only(left: 12, top: 2),
-                  child: Row(
-                    children: [
-                      Text(
-                        widget.name, // Add your username here
-                        style: TextStyle(
+              Padding(
+                padding: const EdgeInsets.only(left: 12, top: 2),
+                child: Row(
+                  children: [
+                    Text(
+                      widget.name, // Add your username here
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                        width:
+                            5), // Add some spacing between the username and caption
+                    Expanded(
+                      // Wrap the ReadMoreText with an Expanded widget
+                      child: ReadMoreText(
+                        widget.caption,
+                        trimLines: 1,
+                        style: Theme.of(context).textTheme.bodyLarge!,
+                        colorClickableText: Theme.of(context).primaryColor,
+                        trimMode: TrimMode.line,
+                        trimCollapsedText: '...Show more',
+                        trimExpandedText: '...Show less',
+                        moreStyle: TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
-                      SizedBox(
-                          width:
-                              5), // Add some spacing between the username and caption
-                      Expanded(
-                        // Wrap the ReadMoreText with an Expanded widget
-                        child: ReadMoreText(
-                          widget.caption,
-                          trimLines: 1,
-                          style: Theme.of(context).textTheme.bodyLarge!,
-                          colorClickableText: Theme.of(context).primaryColor,
-                          trimMode: TrimMode.line,
-                          trimCollapsedText: '...Show more',
-                          trimExpandedText: '...Show less',
-                          moreStyle: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
 
               Text("${widget.commentCount} comments"),
 
