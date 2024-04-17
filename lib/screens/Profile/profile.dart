@@ -20,6 +20,7 @@ import '../../widgets/build_media.dart';
 import '../../widgets/followers_sheet.dart';
 import '../../widgets/friends_sheet.dart';
 import '../../widgets/video_rect.dart';
+import '../Explore/bang_update_view.dart';
 import '../Posts/postView_model.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
@@ -47,6 +48,8 @@ class _ProfileState extends State<Profile> {
   ScrollController? _scrollController;
   bool _isLoading = false;
   int? phoneNumber;
+  List<Hobby> hobbies = [];
+
   DateTime date_of_birth = DateTime.now();
   String selectedHobbiesText = "";
   List<Hobby>? selectedHobbyList;
@@ -60,14 +63,24 @@ class _ProfileState extends State<Profile> {
   bool _persposts = true;
   List<ImagePost> allImagePosts = [];
 
+  void fetchHobbies() async {
+    setState(() async {
+      hobbies = await Service().fetchHobbies();
+      print(hobbies![0].name);
+      print('first hobby');
+    });
+  }
+
   void initState() {
     super.initState();
+    fetchHobbies();
     userProvider = Provider.of<UserProvider>(context, listen: false);
     followerProvider = Provider.of<FollowerProvider>(context, listen: false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
     followerProvider.addListener(() {
-      if (followerProvider.payed == true && followerProvider.followersCount > 0) {
+      if (followerProvider.payed == true &&
+          followerProvider.followersCount > 0) {
         userProvider.addFollowerCount(followerProvider.followersCount);
         followerProvider.resetFollowerCount = 0;
       }
@@ -93,10 +106,11 @@ class _ProfileState extends State<Profile> {
             controller: _scrollController,
             children: <Widget>[
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(left:8.0,right: 20.0, bottom: 10.0),
+                    padding: const EdgeInsets.only(
+                        left: 8.0, right: 20.0, bottom: 10.0),
                     child: Container(
                         width: 80,
                         height: 80,
@@ -118,44 +132,63 @@ class _ProfileState extends State<Profile> {
                               )
                             : Container()),
                   ),
-                  SizedBox(width: 135),
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: InkWell(
+                    child: GestureDetector(
                       onTap: () {
                         openFilterDialog(context);
                       },
                       child: Container(
-                        margin: EdgeInsets.only(right: 10),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Ionicons.person_add_outline,
-                              color: Theme.of(context).colorScheme.secondary,
-                              size: 30,
-                            ),
-                            Text(
-                              'Buy Followers',
-                              style: TextStyle(
-                                fontSize: 14.5,
-                              ),
-                            )
-                          ],
+                        width: 80,
+                        height: 80,
+                        child: Transform.translate(
+                          offset:
+                              Offset(0, 30), // Adjust the value of 8 as needed
+                          child: Icon(
+                            Ionicons.person_add_outline,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 30,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  userProvider.userData['name'],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Metropolis',
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      userProvider.userData['name'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Metropolis',
+                      ),
+                    ),
                   ),
-                ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            right: 8.0), // Adjust as needed
+                        child: GestureDetector(
+                          onTap: () {
+                            openFilterDialog(context);
+                          },
+                          child: Text(
+                            'Buy Followers',
+                            style: TextStyle(
+                              fontSize: 14.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),
@@ -185,9 +218,11 @@ class _ProfileState extends State<Profile> {
                                   name: userProvider.userData['name'],
                                   date_of_birth: DateTime.parse(
                                       userProvider.userData['date_of_birth']),
-                                  phoneNumber: userProvider.userData['phone_number'],
+                                  phoneNumber:
+                                      userProvider.userData['phone_number'],
                                   selectedHobbiesText: selectedHobbiesText,
-                                  occupation: userProvider.userData['occupation'] ?? "",
+                                  occupation:
+                                      userProvider.userData['occupation'] ?? "",
                                   bio: userProvider.userData['bio'] ?? "",
                                   occupationController: TextEditingController(),
                                   dateOfBirthController:
@@ -206,7 +241,7 @@ class _ProfileState extends State<Profile> {
                   SizedBox(width: 10),
                   Expanded(
                       child: Container(
-                        padding: EdgeInsets.only(right:8),
+                    padding: EdgeInsets.only(right: 8),
                     child: OutlinedButton(
                         onPressed: () {
                           Navigator.push(
@@ -257,7 +292,8 @@ class _ProfileState extends State<Profile> {
                       onTap: () async {
                         FollowersModal.showFollowersModal(context);
                         await Provider.of<FollowerProvider>(context,
-                            listen: false).getAllFollowers();
+                                listen: false)
+                            .getAllFollowers();
                       },
                       child: Column(
                         children: <Widget>[
@@ -274,8 +310,8 @@ class _ProfileState extends State<Profile> {
                           ),
                           Text(
                             'Followers',
-                            style:
-                                TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                            style: TextStyle(
+                                fontFamily: 'Metropolis', fontSize: 12),
                           )
                         ],
                       ),
@@ -289,11 +325,11 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () async
-                      {
+                      onTap: () async {
                         FriendsModal.showFriendsModal(context);
                         await Provider.of<FriendProvider>(context,
-                            listen: false).getFriends();
+                                listen: false)
+                            .getFriends();
                       },
                       child: Column(
                         children: <Widget>[
@@ -309,8 +345,8 @@ class _ProfileState extends State<Profile> {
                           ),
                           Text(
                             'Friends',
-                            style:
-                                TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                            style: TextStyle(
+                                fontFamily: 'Metropolis', fontSize: 12),
                           )
                         ],
                       ),
@@ -429,12 +465,16 @@ class _ProfileState extends State<Profile> {
   void openFilterDialog(BuildContext context) async {
     selectedHobbyList?.clear();
     selectedHobbyIds?.clear();
-    await FilterListDialog.display<Hobby>(
+    FilterListDialog.display<Hobby>(
       context,
-      listData: await Service().fetchHobbies(), // Use hobbyList as the data source
+      resetButtonText: "Select/Reset",
+      applyButtonText: "Buy",
+      backgroundColor: Color(0xFFF40BF5),
+      listData: hobbies, // Use hobbyList as the data source
       selectedListData: selectedHobbyList,
-      choiceChipLabel: (hobby) => hobby!.name, // Access the name property of Hobby
-      validateSelectedItem: (list, val) => list != null ? list.contains(val) : false,
+      choiceChipLabel: (hobby) =>
+          hobby!.name, // Access the name property of Hobby
+      validateSelectedItem: (list, val) => list!.contains(val),
       onItemSearch: (hobby, query) {
         return hobby.name!.toLowerCase().contains(query.toLowerCase());
       },
@@ -445,13 +485,13 @@ class _ProfileState extends State<Profile> {
           updateSelectedHobbiesText();
         });
         Navigator.pop(context);
-        buildFab(context, selectedHobbiesText,selectedHobbyIds);
+        buildFab(context, selectedHobbiesText, selectedHobbyIds);
       },
     );
   }
 }
 
-buildFab(BuildContext context, selectedHobbiesText,selectedHobbyIds) {
+buildFab(BuildContext context, selectedHobbiesText, selectedHobbyIds) {
   print(selectedHobbiesText);
   return showModalBottomSheet(
     isScrollControlled: true,
@@ -490,7 +530,8 @@ buildFab(BuildContext context, selectedHobbiesText,selectedHobbyIds) {
               subtitle: Text('10 followers'),
               onTap: () {
                 Navigator.pop(context);
-                buildPayments(selectedHobbiesText, context, 1000, 10,selectedHobbyIds);
+                buildPayments(
+                    selectedHobbiesText, context, 1000, 10, selectedHobbyIds);
               },
             ),
             ListTile(
@@ -504,7 +545,8 @@ buildFab(BuildContext context, selectedHobbiesText,selectedHobbyIds) {
               subtitle: Text('20 followers'),
               onTap: () async {
                 Navigator.pop(context);
-                buildPayments(selectedHobbiesText, context, 5000, 20,selectedHobbyIds);
+                buildPayments(
+                    selectedHobbiesText, context, 5000, 20, selectedHobbyIds);
               },
             ),
             ListTile(
@@ -519,7 +561,8 @@ buildFab(BuildContext context, selectedHobbiesText,selectedHobbyIds) {
               onTap: () {
                 print(selectedHobbiesText);
                 Navigator.pop(context);
-                buildPayments(selectedHobbiesText, context, 10000, 30,selectedHobbyIds);
+                buildPayments(
+                    selectedHobbiesText, context, 10000, 30, selectedHobbyIds);
               },
             ),
           ],
@@ -529,7 +572,8 @@ buildFab(BuildContext context, selectedHobbiesText,selectedHobbyIds) {
   );
 }
 
-buildPayments(selectedHobbiesText, BuildContext context, price, count,selectedHobbyIds) {
+buildPayments(
+    selectedHobbiesText, BuildContext context, price, count, selectedHobbyIds) {
   var paymentProvider = Provider.of<FollowerProvider>(context, listen: false);
   return showModalBottomSheet(
     context: context,
@@ -539,72 +583,80 @@ buildPayments(selectedHobbiesText, BuildContext context, price, count,selectedHo
     builder: (BuildContext context) {
       return Builder(
         builder: (BuildContext innerContext) {
-  return Consumer<FollowerProvider>(
-  builder: (context, paymentProvider, _) {
-          final userProvider = Provider.of<UserProvider>(innerContext);
-          final TextEditingController phoneNumberController =
-              TextEditingController(
-            text: userProvider.userData['phone_number'].toString(),
-          );
+          return Consumer<FollowerProvider>(
+            builder: (context, paymentProvider, _) {
+              final userProvider = Provider.of<UserProvider>(innerContext);
+              final TextEditingController phoneNumberController =
+                  TextEditingController(
+                text: userProvider.userData['phone_number'].toString(),
+              );
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Center(
-                    child: Text(
-                      'Pay $price Tshs for $selectedHobbiesText followers',
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Center(
+                        child: Text(
+                          'Pay $price Tshs for $selectedHobbiesText followers',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextField(
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.secondary,
+                      keyboardType: TextInputType.number,
+                      controller: phoneNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'Phone number',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.phone),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
                       ),
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
                     ),
-                  ),
+                    Center(
+                      child: paymentProvider.isPaying
+                          ? LoadingAnimationWidget.staggeredDotsWave(
+                              color: Color(0xFFF40BF5), size: 30)
+                          : TextButton(
+                              onPressed: () async {
+                                paymentProvider.startPaying(
+                                    userProvider.userData['phone_number']
+                                        .toString(),
+                                    price,
+                                    count,
+                                    'followers',
+                                    selectedHobbyIds);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                              child: Text(
+                                'Pay',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
                 ),
-                TextField(
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  controller: phoneNumberController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone number',
-                    labelStyle: TextStyle(color: Colors.black),
-                    prefixIcon: Icon(Icons.phone),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                  ),
-                  style: TextStyle(color: Colors.black),
-                  cursorColor: Colors.black,
-                ),
-                Center(
-                  child: paymentProvider.isPaying
-                      ? LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30)
-                      : TextButton(
-                    onPressed: () async {
-                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, count, 'followers',selectedHobbyIds);                        },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    child: Text(
-                      'Pay',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           );
-  },
-  );
         },
       );
     },
@@ -685,7 +737,24 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                         borderRadius: BorderRadius.circular(5),
                         child: InkWell(
                           onTap: () {
-                            viewImage(context, provider.updates[i].filename);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UpdateView(
+                                          provider.updates[i].postId,
+                                          provider.updates[i].type,
+                                          provider.updates[i].filename,
+                                          provider.updates[i].likeCount,
+                                          provider.updates[i].isLiked,
+                                          provider.updates[i].commentCount,
+                                          provider.updates[i].userImage,
+                                          provider.updates[i].userName,
+                                          provider.updates[i].caption,
+                                          provider.updates[i].aspectRatio,
+                                          provider.updates[i].thumbnailUrl,
+                                          provider.updates[i].cacheUrl,
+                                          provider
+                                        )));
                           },
                           child: CachedNetworkImage(
                             imageUrl: provider.updates[i].filename,
@@ -701,10 +770,29 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                         borderRadius: BorderRadius.circular(5),
                         child: InkWell(
                             onTap: () {
-                              print('pressed');
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => UpdateView(
+                                            provider.updates[i].postId,
+                                            provider.updates[i].type,
+                                            provider.updates[i].filename,
+                                            provider.updates[i].likeCount,
+                                            provider.updates[i].isLiked,
+                                            provider.updates[i].commentCount,
+                                            provider.updates[i].userImage,
+                                            provider.updates[i].userName,
+                                            provider.updates[i].caption,
+                                            provider.updates[i].aspectRatio,
+                                            provider.updates[i].thumbnailUrl,
+                                            provider.updates[i].cacheUrl,
+                                            provider
+                                          )));
                             },
-                            child: VideoRect(
-                                message: provider.updates[i].filename)),
+                            child: CachedNetworkImage(
+                              imageUrl: provider.updates[i].thumbnailUrl,
+                              fit: BoxFit.cover,
+                            )),
                       ),
                     )
                   ]
@@ -950,7 +1038,9 @@ class _ProfilePostsStreamContentState
                                       )));
                         },
                         child: CachedNetworkImage(
-                          imageUrl: provider.posts[i].pinned == 1 ? pinnedUrl : provider.posts[i].thumbnailUrl!,
+                          imageUrl: provider.posts[i].pinned == 1
+                              ? pinnedUrl
+                              : provider.posts[i].thumbnailUrl!,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -1082,7 +1172,10 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].postViews,
                                       provider)));
                         },
-                        child: VideoRect(message:provider.posts[i].pinned==1 ? pinnedUrl : provider.posts[i].thumbnailUrl),
+                        child: VideoRect(
+                            message: provider.posts[i].pinned == 1
+                                ? pinnedUrl
+                                : provider.posts[i].thumbnailUrl),
                       ),
                     ),
                   ] else if (provider.posts[i].type == 'video' &&
@@ -1119,7 +1212,9 @@ class _ProfilePostsStreamContentState
                             children: [
                               Expanded(
                                 child: VideoRect(
-                                    message:provider.posts[i].pinned==1 ? pinnedUrl :  provider.posts[i].thumbnailUrl  ),
+                                    message: provider.posts[i].pinned == 1
+                                        ? pinnedUrl
+                                        : provider.posts[i].thumbnailUrl),
                               ),
                               Expanded(
                                 child: VideoRect(
@@ -1137,6 +1232,3 @@ class _ProfilePostsStreamContentState
     });
   }
 }
-
-
-

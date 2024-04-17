@@ -338,7 +338,6 @@ class PostItem2 extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 10),
           ],
         ),
@@ -547,7 +546,6 @@ class PostItem2 extends StatelessWidget {
                 ],
               ),
             ),
-
             GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -562,7 +560,6 @@ class PostItem2 extends StatelessWidget {
                   );
                 },
                 child: Text("$commentCount comments")),
-
             const SizedBox(height: 10),
           ],
         ),

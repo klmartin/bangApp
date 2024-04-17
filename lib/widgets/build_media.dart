@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:bangapp/providers/user_provider.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../components/video_player.dart';
 import '../constants/urls.dart';
 import 'package:better_player/better_player.dart';
@@ -59,29 +60,11 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
   } else if (type == 'video' && isPinned == 0) {
     print(mediaUrl);
     print('this is media url');
-    // return CustomVideoPlayer(
-    //     videoUrl: mediaUrl,
-    //     cachingVideoUrl: cacheUrl,
-    //     thumbnailUrl: thumbnailUrl,
-    //     aspectRatio: aspectRatio);
-
-    return BetterPlayerListVideoPlayer(
-      BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network, mediaUrl,liveStream: false,
-        videoFormat: BetterPlayerVideoFormat.hls,
-      ),
-      configuration: BetterPlayerConfiguration(
-        autoPlay: true,
-        aspectRatio:  double.parse(aspectRatio) ?? 0.5625,
-        controlsConfiguration:
-        BetterPlayerControlsConfiguration(
-          showControls: false,
-        ),
-      ),
-      key: UniqueKey(),
-      playFraction: 0.8,
-    );
-
+    return CustomVideoPlayer(
+        videoUrl: mediaUrl,
+        cachingVideoUrl: cacheUrl,
+        thumbnailUrl: thumbnailUrl,
+        aspectRatio: aspectRatio);
   } else {
     return Container();
   }

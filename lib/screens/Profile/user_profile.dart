@@ -23,6 +23,7 @@ import '../../widgets/build_media.dart';
 import '../../widgets/followers_sheet.dart';
 import '../../widgets/friends_sheet.dart';
 import '../../widgets/video_rect.dart';
+import '../Explore/bang_update_view.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
 import 'package:bangapp/loaders/profile_posts_skeleton.dart';
@@ -82,7 +83,6 @@ class _UserProfileState extends State<UserProfile> {
         privacySwitchValue = false;
       }
     });
-
   }
 
   void _scrollListener() {
@@ -375,12 +375,14 @@ class _UserProfileState extends State<UserProfile> {
                     child: OutlinedButton(
                         onPressed: () async {
                           await friendProvider.requestFriendship(widget.userid);
-                          if(friendProvider.addingFriend == true){
+                          if (friendProvider.addingFriend == true) {
                             Fluttertoast.showToast(
                               msg: friendProvider.requestMessage,
-                              toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
+                              toastLength:
+                                  Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
                               gravity: ToastGravity.CENTER, // Toast position
-                              timeInSecForIosWeb: 1, // Time duration for iOS and web
+                              timeInSecForIosWeb:
+                                  1, // Time duration for iOS and web
                               backgroundColor: Colors.grey[600],
                               textColor: Colors.white,
                               fontSize: 16.0,
@@ -576,7 +578,23 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                         borderRadius: BorderRadius.circular(5),
                         child: InkWell(
                           onTap: () {
-                            viewImage(context, provider.updates[i].filename);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UpdateView(
+                                        provider.updates[i].postId,
+                                        provider.updates[i].type,
+                                        provider.updates[i].filename,
+                                        provider.updates[i].likeCount,
+                                        provider.updates[i].isLiked,
+                                        provider.updates[i].commentCount,
+                                        provider.updates[i].userImage,
+                                        provider.updates[i].userName,
+                                        provider.updates[i].caption,
+                                        provider.updates[i].aspectRatio,
+                                        provider.updates[i].thumbnailUrl,
+                                        provider.updates[i].cacheUrl,
+                                        provider)));
                           },
                           child: CachedNetworkImage(
                             imageUrl: provider.updates[i].filename,
@@ -592,10 +610,28 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                         borderRadius: BorderRadius.circular(5),
                         child: InkWell(
                             onTap: () {
-                              print('pressed');
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => UpdateView(
+                                          provider.updates[i].postId,
+                                          provider.updates[i].type,
+                                          provider.updates[i].filename,
+                                          provider.updates[i].likeCount,
+                                          provider.updates[i].isLiked,
+                                          provider.updates[i].commentCount,
+                                          provider.updates[i].userImage,
+                                          provider.updates[i].userName,
+                                          provider.updates[i].caption,
+                                          provider.updates[i].aspectRatio,
+                                          provider.updates[i].thumbnailUrl,
+                                          provider.updates[i].cacheUrl,
+                                          provider)));
                             },
-                            child: VideoRect(
-                                message: provider.updates[i].filename)),
+                            child: CachedNetworkImage(
+                              imageUrl: provider.updates[i].thumbnailUrl,
+                              fit: BoxFit.cover,
+                            )),
                       ),
                     )
                   ]

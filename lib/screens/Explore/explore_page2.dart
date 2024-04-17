@@ -1,17 +1,15 @@
-import 'package:bangapp/screens/Widgets/image_upload.dart';
 import 'package:bangapp/widgets/buildBangUpdate2.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-import '../../loaders/bang_update_skeleton.dart';
+import '../../nav.dart';
 import '../../providers/bang_update_provider.dart';
 import '../../providers/update_image_upload.dart';
-import '../../providers/update_video_upload.dart';
 import '../../providers/video_upload.dart';
 import '../../widgets/SearchBox.dart';
 import 'package:preload_page_view/preload_page_view.dart';
-
-import '../Widgets/update_video_upload.dart';
+import '../Widgets/update_image_upload.dart';
 import '../Widgets/video_upload.dart';
 
 class BangUpdates2 extends StatefulWidget {
@@ -24,7 +22,6 @@ class _BangUpdates2State extends State<BangUpdates2> {
   late VideoUploadProvider videoUploadProvider; // Declare it here
   late UpdateImageUploadProvider updateImageUploadProvider; // Declare it here
 
-
   void initState() {
     super.initState();
     final bangUpdateProvider =
@@ -35,24 +32,18 @@ class _BangUpdates2State extends State<BangUpdates2> {
     updateImageUploadProvider =
         Provider.of<UpdateImageUploadProvider>(context, listen: false);
 
-    videoUploadProvider.addListener(() {
-      if (videoUploadProvider.uploadText == 'Upload Complete') {
-        BangUpdateProvider().fetchBangUpdates();
-        // _scrollController.jumpTo(0);
-        // final profileProvider =
-        // Provider.of<ProfileProvider>(context, listen: false);
-        // profileProvider.getMyPosts(1);
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     final bangUpdateProvider =
         Provider.of<BangUpdateProvider>(context, listen: true);
-
+    final updateImageUploadProvider2 =
+        Provider.of<UpdateImageUploadProvider>(context, listen: true);
+    final updateVideoUploadProvider2 =
+    Provider.of<VideoUploadProvider>(context, listen: true);
     return bangUpdateProvider.isLoading
-        ? BangUpdateSkeleton()
+        ? Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30))
         : Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.black,
@@ -60,8 +51,8 @@ class _BangUpdates2State extends State<BangUpdates2> {
             ),
             body: Column(
               children: [
-                videoUploadProvider.isUploading ? VideoUpload() : Container(),
-                updateImageUploadProvider.isUploading ? ImageUpload() : Container(),
+                updateVideoUploadProvider2.isUploading ? VideoUpload() : Container(),
+                updateImageUploadProvider2.isUploading ? UpdateImageUpload() : Container(),
                 Expanded(
                   child: BangUpdates3(),
                 ),
@@ -79,7 +70,37 @@ class BangUpdates3 extends StatefulWidget {
 class _BangUpdates3State extends State<BangUpdates3> {
   late BangUpdateProvider bangUpdateProvider;
   int currentIndex = 0;
+  late VideoUploadProvider videoUploadProvider; // Declare it here
+  late UpdateImageUploadProvider updateImageUploadProvider; // Declare it here
 
+  void initState() {
+    videoUploadProvider =
+        Provider.of<VideoUploadProvider>(context, listen: false);
+    updateImageUploadProvider =
+        Provider.of<UpdateImageUploadProvider>(context, listen: false);
+
+    videoUploadProvider.addListener(() {
+      if (videoUploadProvider.uploadText == 'Upload Complete') {
+        BangUpdateProvider().refreshUpdates();
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    Nav(initialIndex: 1)));
+      }
+    });
+
+    updateImageUploadProvider.addListener(() {
+      if (updateImageUploadProvider.uploadText == 'Upload Complete') {
+        BangUpdateProvider().refreshUpdates();
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    Nav(initialIndex: 1)));
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     bangUpdateProvider = Provider.of<BangUpdateProvider>(context,listen: true);
@@ -87,7 +108,6 @@ class _BangUpdates3State extends State<BangUpdates3> {
       children: [
         PreloadPageView.builder(
           key: const PageStorageKey<String>('chemba'),
-          controller: PreloadPageController(),
           preloadPagesCount: 3,
           scrollDirection: Axis.vertical,
           itemCount: bangUpdateProvider.bangUpdates.length,

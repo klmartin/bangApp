@@ -163,6 +163,7 @@ class _EditPageState extends State<EditPage> {
                 ),
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.text,
                 controller: widget.nameController,
@@ -189,8 +190,8 @@ class _EditPageState extends State<EditPage> {
               SizedBox(
                 height: 8.0,
               ),
-
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 controller: widget.dateOfBirthController,
                 onTap: () async {
@@ -231,6 +232,7 @@ class _EditPageState extends State<EditPage> {
                 height: 8.0,
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.text,
                 controller: widget.phoneNumberController,
@@ -258,6 +260,7 @@ class _EditPageState extends State<EditPage> {
                 height: 8.0,
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 onTap: () async {
                   openFilterDialog();
@@ -285,6 +288,7 @@ class _EditPageState extends State<EditPage> {
                 height: 8.0,
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.text,
                 controller: widget.occupationController,
@@ -321,6 +325,7 @@ class _EditPageState extends State<EditPage> {
                         //child: Text('Bio'),
                       ),
                       TextField(
+                        textCapitalization:TextCapitalization.sentences,
                         minLines: 6,
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
@@ -360,7 +365,6 @@ class _EditPageState extends State<EditPage> {
 
                     child: TextButton(
                         onPressed: () async {
-                          print([widget.date_of_birth,widget.phoneNumber,widget.selectedHobbiesText,widget.occupation,rimage,widget.name]);
                           await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber,widget.selectedHobbiesText,widget.occupation,widget.bio,rimage,widget.name);
                           Navigator.push(
                             context,

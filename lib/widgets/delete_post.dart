@@ -73,7 +73,7 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
         if (_isLoading)
           Center(
             child: LoadingAnimationWidget.staggeredDotsWave(
-                color: Colors.red, size: 35),
+                color: Color(0xFFF40BF5), size: 35),
           ),
       ],
     );

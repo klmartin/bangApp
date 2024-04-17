@@ -215,7 +215,7 @@ class _CreateState extends State<Create> {
                                 ),
                               );
                             } else {
-                              return CircularProgressIndicator();
+                              return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30));
                             }
                           },
                         );
@@ -235,7 +235,7 @@ class _CreateState extends State<Create> {
                               // Handle errors if any
                             } else {
                               // Loading indicator while waiting for the thumbnail
-                              return LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30);
+                              return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30));
                             }
                           },
                         );
@@ -367,7 +367,7 @@ class _MediaGridState extends State<MediaGrid> {
                   return Container();
                 }
               } else {
-                return CircularProgressIndicator();
+                return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30));
               }
             },
           ),

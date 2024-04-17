@@ -112,6 +112,7 @@ class _RegisterState extends State<Register> {
                 height: 48.0,
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.name,
                 onChanged: (value) {
@@ -135,6 +136,7 @@ class _RegisterState extends State<Register> {
                 height: 8.0,
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.emailAddress,
                 onChanged: (value) {
@@ -159,6 +161,7 @@ class _RegisterState extends State<Register> {
                 height: 8.0,
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 obscureText: _isObscured,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
@@ -193,6 +196,7 @@ class _RegisterState extends State<Register> {
               ),
               //confirm password
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 obscureText: _isObscuredConfirm,
                 textAlign: TextAlign.center,
                 onChanged: (value) {

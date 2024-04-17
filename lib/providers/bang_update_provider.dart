@@ -156,6 +156,58 @@ class BangUpdateProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshUpdates() async {
+    try {
+      final token = await TokenManager.getToken();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('user_id').toString();
+      print('nipo hapa');
+      print("$baseUrl/bang-updates/$userId/$_perPage/1");
+      final response = await http.get(
+        Uri.parse(
+          "$baseUrl/bang-updates/$userId/$_perPage/1",
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        _bangUpdates = List<BangUpdate>.from(data.map((post) {
+          return BangUpdate(
+              filename: post['filename'],
+              type: post['type'],
+              caption: post['caption'] ?? "",
+              postId: post['id'],
+              likeCount: post['bang_update_like_count'] != null &&
+                  post['bang_update_like_count'].isNotEmpty
+                  ? post['bang_update_like_count'][0]['like_count']
+                  : 0,
+              userImage: post['user_image_url'],
+              userName: post['user']['name'],
+              commentCount: post['bang_update_comments'] != null &&
+                  post['bang_update_comments'].isNotEmpty
+                  ? post['bang_update_comments'][0]['comment_count']
+                  : 0,
+              isLiked: post['isLiked'],
+              userId: post["user_id"],
+              aspectRatio:post["aspect_ratio"]
+          );
+        }
+        ));
+        _loading = false;
+        notifyListeners();
+      } else {
+        // Handle error
+        print("Error: ${response.statusCode}");
+      }
+    } catch (error) {
+      // Handle error
+      print("Error: $error");
+    }
+  }
 
   void increaseLikes(int postId) {
     final bangUpdate =

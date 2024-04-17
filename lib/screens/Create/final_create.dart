@@ -15,6 +15,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import '../../loaders/video_skeleton.dart';
 import '../../nav.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
@@ -219,9 +220,7 @@ class _FinaleCreateState extends State<FinalCreate>
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 // Show a loading indicator while waiting for the aspect ratio
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                                return VideoSkeletonSkeleton();
                               } else if (snapshot.hasError) {
                                 // Handle error
                                 return Center(
@@ -282,7 +281,7 @@ class _FinaleCreateState extends State<FinalCreate>
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               // While waiting for the aspect ratio, return a loading indicator or placeholder
-                              return CircularProgressIndicator();
+                              return VideoSkeletonSkeleton();
                             } else if (snapshot.hasError) {
                               // If an error occurred while retrieving the aspect ratio, handle it accordingly
                               return Text('Error: ${snapshot.error}');
@@ -337,6 +336,7 @@ class _FinaleCreateState extends State<FinalCreate>
                     children: <Widget>[
                       Expanded(
                         child: TextField(
+                          textCapitalization:TextCapitalization.sentences,
                           controller: captionController,
                           decoration: InputDecoration(
                             hintText: "Write a caption...",
@@ -367,7 +367,7 @@ class _FinaleCreateState extends State<FinalCreate>
                             pinPost = value ? 1 : 0;
                           });
                         },
-                        activeColor: Color(0xFFF40BF5), // Set the color of the thumb when the switch is active
+                        activeColor: Colors.blueGrey, // Set the color of the thumb when the switch is active
                         inactiveTrackColor: Colors.white,
                       ),
                       SizedBox(width: 20),
@@ -388,7 +388,7 @@ class _FinaleCreateState extends State<FinalCreate>
                                       bangUpdate = value ? 1 : 0;
                                     });
                                   },
-                                  activeColor: Color(0xFFF40BF5), // Set the color of the thumb when the switch is active
+                                  activeColor: Colors.blueGrey, // Set the color of the thumb when the switch is active
                                   inactiveTrackColor: Colors.white,
                                 ),
                               ],

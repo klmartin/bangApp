@@ -1,20 +1,16 @@
-import 'dart:convert';
 import 'package:bangapp/screens/Profile/user_profile.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'package:bangapp/models/notification.dart';
-import 'package:bangapp/constants/urls.dart';
-import 'package:bangapp/screens/Posts/notificationView_model.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/friends_provider.dart';
 import '../../providers/notification_provider.dart';
-import '../../services/token_storage_helper.dart';
 import 'package:bangapp/loaders/notification_skeleton.dart';
+
+import '../Posts/postView_model.dart';
 
 class Activity extends StatefulWidget {
   @override
@@ -32,6 +28,7 @@ class _Activity extends State<Activity> {
   bool isLoading = true; // Initially set to true to show the loader
   @override
   void initState() {
+    print('from notification');
     super.initState();
     friendProvider = Provider.of<FriendProvider>(context, listen: false);
 
@@ -158,7 +155,7 @@ class _Activity extends State<Activity> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NotifyView(
+            builder: (context) => POstView(
                 postDetails[0]['user']['name'],
                 postDetails[0]['body'] ?? "",
                 postDetails[0]['image'],
@@ -178,6 +175,7 @@ class _Activity extends State<Activity> {
                 postDetails[0]['cache_url'],
                 postDetails[0]['thumbnail_url'],
                 postDetails[0]['aspect_ratio'],
+                postDetails[0]['price'],
                 postDetails[0]['post_views_count'],
                 Provider.of<ProfileProvider>(context, listen: false)),
           ),
@@ -204,7 +202,7 @@ class _Activity extends State<Activity> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => NotifyView(
+                builder: (context) => POstView(
                     postDetails[0]['user']['name'],
                     postDetails[0]['body'] ?? "",
                     postDetails[0]['image'],
@@ -224,6 +222,7 @@ class _Activity extends State<Activity> {
                     postDetails[0]['cache_url'],
                     postDetails[0]['thumbnail_url'],
                     postDetails[0]['aspect_ratio'],
+                    postDetails[0]['price'],
                     postDetails[0]['post_views_count'],
                     Provider.of<ProfileProvider>(context, listen: false)),
               ),
@@ -244,7 +243,7 @@ class _Activity extends State<Activity> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => NotifyView(
+                builder: (context) => POstView(
                     postDetails[0]['user']['name'],
                     postDetails[0]['body'] ?? "",
                     postDetails[0]['image'],
@@ -264,6 +263,7 @@ class _Activity extends State<Activity> {
                     postDetails[0]['cache_url'],
                     postDetails[0]['thumbnail_url'],
                     postDetails[0]['aspect_ratio'],
+                    postDetails[0]['price'],
                     postDetails[0]['post_views_count'],
                     Provider.of<ProfileProvider>(context, listen: false)),
               ),

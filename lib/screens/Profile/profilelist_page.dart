@@ -202,6 +202,7 @@ class _UsersStreamState extends State<UsersStream> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
+            textCapitalization:TextCapitalization.sentences,
             controller: _searchController,
             onChanged: (value) {
               if (value.isNotEmpty) {

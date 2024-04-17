@@ -291,6 +291,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       children: [
         Expanded(
           child: TextField(
+            textCapitalization:TextCapitalization.sentences,
             controller: _textEditingController,
             decoration: InputDecoration(
               hintText: "Type message",
@@ -329,7 +330,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 Provider.of<ChatProvider>(context, listen: false)
                     .setShouldRefresh(true);
               },
-              child: Icon(Icons.arrow_back, color: Colors.white, size: 33),
+              child: Icon(Icons.arrow_back, color: Colors.black, size: 33),
             ),
           ),
           CircleAvatar(
@@ -567,6 +568,7 @@ Future<Null> buildMessagePayment(BuildContext context, price, postId) {
                       ),
                     ),
                     TextField(
+                      textCapitalization:TextCapitalization.sentences,
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       controller: phoneNumberController,
@@ -673,6 +675,7 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
                       ),
                     ),
                     TextField(
+                      textCapitalization:TextCapitalization.sentences,
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       controller: phoneNumberController,

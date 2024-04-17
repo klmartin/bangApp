@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bangapp/providers/create_post_provider.dart';
 import 'package:bangapp/providers/update_image_upload.dart';
+import 'package:bangapp/screens/Comments/notification_comment.dart';
 import 'package:bangapp/widgets/splash_screen.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -29,7 +31,6 @@ import 'package:bangapp/providers/update_comment_provider.dart';
 import 'package:bangapp/providers/update_video_upload.dart';
 import 'package:bangapp/providers/video_upload.dart';
 import 'package:bangapp/screens/Activity/activity_page.dart';
-import 'package:bangapp/screens/Comments/notification_comment.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +93,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => FriendProvider()),
     ChangeNotifierProvider(create: (context) => NotificationProvider()),
     ChangeNotifierProvider(create: (context) => UpdateImageUploadProvider()),
+    ChangeNotifierProvider(create: (context) => CreatePostProvider()),
 
   ], child: MyApp()));
 }

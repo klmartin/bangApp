@@ -7,9 +7,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
-
 import '../../providers/Profile_Provider.dart';
-import '../Posts/notificationView_model.dart';
+import '../Posts/postView_model.dart';
 
 class NotificationCommentsPage extends StatefulWidget {
   final  userId;
@@ -312,7 +311,7 @@ class _NotificationCommentsPageState extends State<NotificationCommentsPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NotifyView(
+              builder: (context) => POstView(
                   postDetails[0]['user']['name'],
                   postDetails[0]['body'] ?? "",
                   postDetails[0]['image'],
@@ -332,6 +331,7 @@ class _NotificationCommentsPageState extends State<NotificationCommentsPage> {
                   postDetails[0]['cache_url'],
                   postDetails[0]['thumbnail_url'],
                   postDetails[0]['aspect_ratio'],
+                  postDetails[0]['price'],
                   postDetails[0]['post_views_count'],
                   Provider.of<ProfileProvider>(context, listen: false)),
             ),
