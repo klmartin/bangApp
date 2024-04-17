@@ -46,7 +46,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to the camera for taking photos and videos to enhance your experience.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to the photo library to upload and post your images, You can delete your photos anytie</string>
+	<string>This app requires access to the photo library to upload and post your images, You can delete your uploaded photos anytime.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchImageFile</key>

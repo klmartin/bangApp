@@ -18,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class Register extends StatefulWidget {
@@ -65,29 +65,29 @@ class _RegisterState extends State<Register> {
   }
 
 // Facebook sign-in method
-  Future<UserCredential> signInWithFacebook() async {
-    try {
-      // Trigger the sign-in flow
-      final LoginResult loginResult = await FacebookAuth.instance.login();
+  // Future<UserCredential> signInWithFacebook() async {
+  //   try {
+  //     // Trigger the sign-in flow
+  //     final LoginResult loginResult = await FacebookAuth.instance.login();
 
-      // Check if the user canceled the login process
-      if (loginResult.status == LoginStatus.cancelled) {
-        throw FirebaseAuthException(
-          code: 'ERROR_ABORTED_BY_USER',
-          message: 'Sign in aborted by user',
-        );
-      }
+  //     // Check if the user canceled the login process
+  //     if (loginResult.status == LoginStatus.cancelled) {
+  //       throw FirebaseAuthException(
+  //         code: 'ERROR_ABORTED_BY_USER',
+  //         message: 'Sign in aborted by user',
+  //       );
+  //     }
 
-      // Obtain the access token and exchange it for a credential
-      final OAuthCredential credential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+  //     // Obtain the access token and exchange it for a credential
+  //     final OAuthCredential credential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
-      // Sign in to Firebase with the Facebook credential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } catch (e) {
-      print('Facebook sign-in error: $e');
-      throw e;
-    }
-  }
+  //     // Sign in to Firebase with the Facebook credential
+  //     return await FirebaseAuth.instance.signInWithCredential(credential);
+  //   } catch (e) {
+  //     print('Facebook sign-in error: $e');
+  //     throw e;
+  //   }
+  // }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -328,79 +328,79 @@ class _RegisterState extends State<Register> {
 
               const SizedBox(height: 25),
               //google + apple sign in buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //google button
-                  SquareTile(
-                    imagePath: 'assets/images/google.png',
-                    onTap: () async {
-                      try {
-                        setState(() {
-                          showSpinner = true;
-                        });
-                        UserCredential userCredential = await signInWithGoogle();
-                        // Handle successful sign-in
-                        User? user = userCredential.user;
-                        if (user != null) {
-                          print([user.displayName,user.email,user.photoURL,user.phoneNumber]);
-                          final newGoogleUser = await AuthService().addGoogleUser(user.displayName,user.email,user.photoURL,user.phoneNumber,user.uid);
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     //google button
+              //     SquareTile(
+              //       imagePath: 'assets/images/google.png',
+              //       onTap: () async {
+              //         try {
+              //           setState(() {
+              //             showSpinner = true;
+              //           });
+              //           UserCredential userCredential = await signInWithGoogle();
+              //           // Handle successful sign-in
+              //           User? user = userCredential.user;
+              //           if (user != null) {
+              //             print([user.displayName,user.email,user.photoURL,user.phoneNumber]);
+              //             final newGoogleUser = await AuthService().addGoogleUser(user.displayName,user.email,user.photoURL,user.phoneNumber,user.uid);
 
-                          if(newGoogleUser.containsKey('access_token')){
+              //             if(newGoogleUser.containsKey('access_token')){
 
-                            _firebaseMessaging.getToken().then((token) async {
-                              Service().sendTokenToBackend(
-                                  token, newGoogleUser['id']);
-                            });
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
-                            prefs.setInt('user_id', newGoogleUser['id']);
-                            await TokenManager.saveToken(
-                                newGoogleUser['access_token']);
-                            prefs.setString('token', newGoogleUser['access_token']);
-                            prefs.setString('name', newGoogleUser['name']);
-                            prefs.setString('email', newGoogleUser['email']);
-                            print("this is seted ${prefs.getString('name')}");
-                            final userProvider = Provider.of<UserProvider>(context, listen: false);
-                            if (userProvider.userData.isEmpty) {
-                              userProvider.fetchUserData();
-                            }
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditPage(),
-                                ));
-                          }
-                          print(newGoogleUser);
-                        }
-                        else{
-                          setState(() {
-                            showSpinner = false;
-                          });
-                        }
-                      }
-                      catch(e){
-                        print(e);
-                        setState(() {
-                          showSpinner = false;
-                        });
-                      }
-                    }),
-                  const SizedBox(width: 10),
-                  //apple button
-                  // SquareTile(
-                  //   imagePath: 'assets/images/facebook.png',
-                  //   onTap: () async {
-                  //     try {
-                  //       await signInWithFacebook();
-                  //       // Handle successful sign-in
-                  //     } catch (e) {
-                  //       // Handle sign-in error
-                  //     }
-                  //   },
-                  // ),
+              //               _firebaseMessaging.getToken().then((token) async {
+              //                 Service().sendTokenToBackend(
+              //                     token, newGoogleUser['id']);
+              //               });
+              //               SharedPreferences prefs = await SharedPreferences.getInstance();
+              //               prefs.setInt('user_id', newGoogleUser['id']);
+              //               await TokenManager.saveToken(
+              //                   newGoogleUser['access_token']);
+              //               prefs.setString('token', newGoogleUser['access_token']);
+              //               prefs.setString('name', newGoogleUser['name']);
+              //               prefs.setString('email', newGoogleUser['email']);
+              //               print("this is seted ${prefs.getString('name')}");
+              //               final userProvider = Provider.of<UserProvider>(context, listen: false);
+              //               if (userProvider.userData.isEmpty) {
+              //                 userProvider.fetchUserData();
+              //               }
+              //               Navigator.pushReplacement(
+              //                   context,
+              //                   MaterialPageRoute(
+              //                     builder: (context) => EditPage(),
+              //                   ));
+              //             }
+              //             print(newGoogleUser);
+              //           }
+              //           else{
+              //             setState(() {
+              //               showSpinner = false;
+              //             });
+              //           }
+              //         }
+              //         catch(e){
+              //           print(e);
+              //           setState(() {
+              //             showSpinner = false;
+              //           });
+              //         }
+              //       }),
+              //     const SizedBox(width: 10),
+              //     //apple button
+              //     // SquareTile(
+              //     //   imagePath: 'assets/images/facebook.png',
+              //     //   onTap: () async {
+              //     //     try {
+              //     //       await signInWithFacebook();
+              //     //       // Handle successful sign-in
+              //     //     } catch (e) {
+              //     //       // Handle sign-in error
+              //     //     }
+              //     //   },
+              //     // ),
 
-                ],
-              ),
+              //   ],
+              // ),
 
               const SizedBox(height: 25),
               MaterialButton(
