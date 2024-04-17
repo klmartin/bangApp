@@ -1,4 +1,3 @@
-import 'package:bangapp/providers/posts_provider.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +7,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
-
-import '../../loaders/comment_line_skeleton.dart';
 import '../../providers/Profile_Provider.dart';
-import '../Posts/notificationView_model.dart';
+import '../Posts/postView_model.dart';
 
 class NotificationCommentsPage extends StatefulWidget {
   final  userId;
@@ -119,7 +116,7 @@ class _NotificationCommentsPageState extends State<NotificationCommentsPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(comment?.body ?? "",
+                    Text(comment.body ?? "",
                         style: TextStyle(fontWeight: FontWeight.w500)),
                     SizedBox(height: 5),
                     GestureDetector(
@@ -209,7 +206,7 @@ class _NotificationCommentsPageState extends State<NotificationCommentsPage> {
                 ),
               ),
               title: Text(
-                comment!.commentUser?.name ?? "",
+                comment.commentUser?.name ?? "",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Column(
@@ -314,7 +311,7 @@ class _NotificationCommentsPageState extends State<NotificationCommentsPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NotifyView(
+              builder: (context) => POstView(
                   postDetails[0]['user']['name'],
                   postDetails[0]['body'] ?? "",
                   postDetails[0]['image'],
@@ -334,6 +331,7 @@ class _NotificationCommentsPageState extends State<NotificationCommentsPage> {
                   postDetails[0]['cache_url'],
                   postDetails[0]['thumbnail_url'],
                   postDetails[0]['aspect_ratio'],
+                  postDetails[0]['price'],
                   postDetails[0]['post_views_count'],
                   Provider.of<ProfileProvider>(context, listen: false)),
             ),

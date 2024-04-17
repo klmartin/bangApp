@@ -126,7 +126,7 @@ class _BangInspirationBuilder extends State<BangInspirationBuilder> {
                             },
                             child:
                             CachedNetworkImage(
-                              imageUrl: provider.inspirations[i].thumbnail!,
+                              imageUrl: provider.inspirations[i].thumbnail,
                               fit: BoxFit.cover,
                             ),
                           ),

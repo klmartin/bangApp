@@ -8,6 +8,9 @@ class BangUpdate {
   bool isLiked;
   int likeCount;
   int commentCount;
+  final String thumbnailUrl;
+  final String cacheUrl;
+  final String aspectRatio;
 
   BangUpdate({
     required this.filename,
@@ -19,6 +22,9 @@ class BangUpdate {
     required this.likeCount,
     required this.isLiked,
     required this.commentCount,
+    required this.thumbnailUrl,
+    required this.cacheUrl,
+    required this.aspectRatio,
   });
 
   factory BangUpdate.fromJson(Map<String, dynamic> json) {
@@ -38,6 +44,9 @@ class BangUpdate {
            json['bang_update_comments'].isNotEmpty
            ? json['bang_update_comments'][0]['comment_count']
            : 0,
+      thumbnailUrl: json['thumbnail_url'] ?? "",
+      cacheUrl: json['cache_url'] ?? "",
+      aspectRatio: json['aspect_ratio'] ??"",
     );
 
 

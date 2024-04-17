@@ -8,6 +8,7 @@ class Insight extends StatefulWidget {
   @override
   _InsightState createState() => _InsightState();
 }
+
 class _InsightState extends State<Insight> {
   late InsightProvider insightProvider;
 
@@ -29,14 +30,13 @@ class _InsightState extends State<Insight> {
           return insightProvider.loading
               ? InsightSkeleton()
               : insightProvider.userInsight.isEmpty
-              ? Center(child: Text('No data available'))
-              : InsightCards(userInsight: insightProvider.userInsight);
+                  ? Center(child: Text('No data available'))
+                  : InsightCards(userInsight: insightProvider.userInsight);
         },
       ),
     );
   }
 }
-
 
 class InsightCards extends StatelessWidget {
   final Map<String, dynamic> userInsight;
@@ -71,7 +71,7 @@ class InsightCards extends StatelessWidget {
           ),
           SizedBox(height: 25), // Adjust spacing as needed
           Card(
-            color: Colors.lightGreen,
+
             child: Column(
               children: [
                 ListTile(
@@ -89,7 +89,6 @@ class InsightCards extends StatelessWidget {
           ),
           SizedBox(height: 20), // Adjust spacing as needed
           Card(
-            color: Colors.teal,
             child: Column(
               children: [
                 ListTile(
@@ -107,7 +106,6 @@ class InsightCards extends StatelessWidget {
           ),
           SizedBox(height: 20), // Adjust spacing as needed
           Card(
-            color: Colors.amber,
             child: Column(
               children: [
                 ListTile(
@@ -117,19 +115,97 @@ class InsightCards extends StatelessWidget {
                   ),
                   subtitle: Text(
                     'Earnings from Messages: ${NumberFormat('#,###').format(userInsight['total_messages'])} ', // Use userInsight here instead of insightProvider.userInsight
-
                   ),
                 ),
                 // Add more content related to messages here if needed
               ],
             ),
           ),
+          SizedBox(height: 20),
+          Table(
+            children: [
+              TableRow(
+                children: [
+                  TableCell(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Text(
+                          'Percentage',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TableCell(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Text(
+                          'Recipient',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              TableRow(
+                children: [
+                  TableCell(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Text(
+                          '25%',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TableCell(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Text(
+                          'Bangapp',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              TableRow(
+                children: [
+                  TableCell(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Text(
+                          '75%',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TableCell(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Text(
+                          'You',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          )
         ],
       ),
     );
   }
 }
-
-
-
-

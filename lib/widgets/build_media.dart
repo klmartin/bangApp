@@ -4,31 +4,29 @@ import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:bangapp/providers/user_provider.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../components/video_player.dart';
 import '../constants/urls.dart';
+import 'package:better_player/better_player.dart';
 import '../providers/payment_provider.dart';
-import '../services/azampay.dart';
 
-Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
-    imgHeight, isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
+Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
+     isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
   if (type == 'image' && isPinned == 0) {
 
     return AspectRatio(
-      aspectRatio: imgWidth / imgHeight,
+      aspectRatio: double.parse(aspectRatio),
       child: GestureDetector(
         onTap: () {
           viewImage(context, mediaUrl);
         },
         child: CachedNetworkImage(
           imageUrl: mediaUrl,
-          height: imgHeight.toDouble(),
-          width: imgWidth.toDouble(),
           fit: BoxFit.cover,
           placeholder: (context, url) => AspectRatio(
-            aspectRatio: imgWidth / imgHeight,
+            aspectRatio: double.parse(aspectRatio),
             child: Shimmer.fromColors(
               baseColor: const Color.fromARGB(255, 30, 34, 45),
               highlightColor:
@@ -49,7 +47,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
         fit: BoxFit.cover,
         imageUrl: pinnedUrl,
         placeholder: (context, url) => AspectRatio(
-          aspectRatio: imgWidth / imgHeight,
+          aspectRatio: double.parse(aspectRatio),
           child: Shimmer.fromColors(
             baseColor: const Color.fromARGB(255, 30, 34, 45),
             highlightColor:
@@ -67,7 +65,6 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
         cachingVideoUrl: cacheUrl,
         thumbnailUrl: thumbnailUrl,
         aspectRatio: aspectRatio);
-    //return VideoPlayerPage(mediaUrl: mediaUrl);
   } else {
     return Container();
   }
@@ -199,7 +196,7 @@ Future<Null> buildFab(BuildContext context, price, postId) {
                     ),
                     Center(
                       child: paymentProvider.isPaying
-                          ? LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30)
+                          ? LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30)
                           : TextButton(
                         onPressed: () async {
                           paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, postId, 'post');                        },

@@ -93,7 +93,7 @@ class _RegisterState extends State<Register> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: ModalProgressHUD(
-        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30),
+        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30),
         inAsyncCall: showSpinner,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
@@ -104,7 +104,7 @@ class _RegisterState extends State<Register> {
               ),
               Center(
                 child: Image.asset(
-                  "images/app_icon.jpg",
+                  "assets/images/app_icon.jpg",
                   height: 60,
                 ),
               ),
@@ -112,6 +112,7 @@ class _RegisterState extends State<Register> {
                 height: 48.0,
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.name,
                 onChanged: (value) {
@@ -135,6 +136,7 @@ class _RegisterState extends State<Register> {
                 height: 8.0,
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.emailAddress,
                 onChanged: (value) {
@@ -159,6 +161,7 @@ class _RegisterState extends State<Register> {
                 height: 8.0,
               ),
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 obscureText: _isObscured,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
@@ -193,6 +196,7 @@ class _RegisterState extends State<Register> {
               ),
               //confirm password
               TextField(
+                textCapitalization:TextCapitalization.sentences,
                 obscureText: _isObscuredConfirm,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
@@ -310,15 +314,15 @@ class _RegisterState extends State<Register> {
                   height: 42.0,
                   child: Text(
                     'Register',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.deepOrange,
-                        Colors.deepPurple,
-                        Colors.redAccent
+                        Color(0xFFF40BF5),
+                        Color(0xFFBF46BE),
+                        Color(0xFFF40BF5)
                       ],
                       begin: Alignment.bottomRight,
                       end: Alignment.topLeft,
@@ -418,7 +422,7 @@ class _RegisterState extends State<Register> {
                     const Text(
                       'Login',
                       style: TextStyle(
-                        color: Colors.blue,
+                        color: Color(0xFFF40BF5),
                         fontWeight: FontWeight.bold,
                       ),
                     )

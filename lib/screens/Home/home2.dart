@@ -53,8 +53,7 @@ class _Home2ContentState extends State<Home2Content>
     challengeUploadProvider =
         Provider.of<ChallengeUploadProvider>(context, listen: false);
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
-    print(_pageNumber);
-    print('this is page number');
+
     postsProvider.fetchData(_pageNumber);
 
     videoUploadProvider.addListener(() {
@@ -137,15 +136,15 @@ class _Home2ContentState extends State<Home2Content>
 
   Widget buildPostsView(PostsProvider postsProvider) {
     if (postsProvider.isLoading) {
-      return const Center(
+      return  Center(
         child: HomeSkeleton(),
       );
-    } else if (postsProvider.isError) {
+    } else if (postsProvider.isError == true) {
       return Center(
         child: errorDialog(size: 10),
       );
-    } else if (postsProvider.posts == null || postsProvider.posts!.isEmpty) {
-      Center(
+    } else if (postsProvider.posts!.isEmpty) {
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -160,7 +159,6 @@ class _Home2ContentState extends State<Home2Content>
         ),
       );
     }
-
     return ListView.builder(
       key: const PageStorageKey<String>('page'),
       controller: _scrollController, // Attach the ScrollController
@@ -239,10 +237,7 @@ class _Home2ContentState extends State<Home2Content>
             );
           }
         } else if (postsProvider.isLoading) {
-          return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30));
-        }  else {
-          // No more posts to load
-          return Center(child: errorDialog(size: 10));
+          return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30));
         }
       },
     );

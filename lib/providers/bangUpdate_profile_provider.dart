@@ -6,7 +6,7 @@ import '../services/api_cache_helper.dart';
 
 class BangUpdateProfileProvider extends ChangeNotifier {
   bool _isLoading = true;
-  final int _numberOfPostsPerRequest = 20;
+  final int _numberOfPostsPerRequest = 10;
   int _pageNumber = 1;
 
   List<BangUpdate> _updates = [];
@@ -33,4 +33,17 @@ class BangUpdateProfileProvider extends ChangeNotifier {
     _pageNumber++;
     notifyListeners();
   }
+
+  void increaseLikes(int postId) {
+    final post = _updates.firstWhere((update) => update.postId == postId);
+    if (post.isLiked) {
+      post.likeCount--;
+      post.isLiked = false;
+    } else {
+      post.likeCount++;
+      post.isLiked = true;
+    }
+    notifyListeners();
+  }
+
 }

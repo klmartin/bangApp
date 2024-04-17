@@ -18,6 +18,7 @@ class PostsProvider with ChangeNotifier {
   final int _nextPageTrigger = 3;
 
   List<Post> _posts = [];
+  List<String> videos = [];
 
   List<Post>? get posts => _posts;
   bool get isLastPage => _isLastPage;
@@ -73,7 +74,6 @@ class PostsProvider with ChangeNotifier {
       }
     } catch (e) {
       print(e);
-      // Handle the error here...
     } finally {
       _loading = false;
       notifyListeners();
@@ -87,8 +87,6 @@ class PostsProvider with ChangeNotifier {
       final userId = prefs.getInt('user_id').toString();
       final String cacheKey = 'cached_posts';
       final token = await TokenManager.getToken();
-
-      notifyListeners();
 
       final response = await get(
         Uri.parse(
@@ -106,11 +104,10 @@ class PostsProvider with ChangeNotifier {
       } else {
         handleServerError();
       }
-
       _currentPageNumber = _pageNumber;
     } catch (e) {
       print(e);
-      // Handle the error here...
+
     } finally {
       _loading = false;
       notifyListeners();
@@ -134,25 +131,25 @@ class PostsProvider with ChangeNotifier {
         )).toList();
         return newPost(data, challenges);
       }).toList();
+      responseList.forEach((value) {
+        if (value['type'] == 'video') {
+          videos.add(value['image']); // Assuming 'videoUrl' is the key for video links
+        }
+      });
       _posts.addAll(newPosts);
       _loading = false;
       notifyListeners();
     } else {
       _loading = false;
-      _error = true;
       notifyListeners();
     }
   }
 
   void handleServerError() {
-    // Handle server error (e.g., response.statusCode is not 200)
-    // You may want to set an error flag or log the error
+    _error = true;
+    notifyListeners();
   }
 
-  void handleError(dynamic error) {
-    // Handle other exceptions (e.g., network error)
-    // You may want to set an error flag or log the error
-  }
 
   Future<void> refreshData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -173,9 +170,12 @@ class PostsProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         responseData = json.decode(response.body);
       } else {
-
+        _error = true;
+        notifyListeners();
       }
       if (responseData.containsKey('data')) {
+        print('refresh response print');
+        print(_error);
         List<dynamic> responseList = responseData['data']['data'];
         final newPosts = responseList.map((data) {
           List<dynamic>? challengesList = data['challenges'];
@@ -198,7 +198,6 @@ class PostsProvider with ChangeNotifier {
         notifyListeners();
       } else {
         _loading = false;
-        _error = true;
         notifyListeners();
       }
     } catch (e) {
@@ -258,25 +257,17 @@ class PostsProvider with ChangeNotifier {
   void incrementCommentCountByPostId(int postId) {
     try {
       final post = _posts.firstWhere((update) => update.postId == postId);
-      if (post != null) {
-        post.commentCount++;
-        notifyListeners();
-      } else {
-        posts?.forEach((post) {});
-      }
-    } catch (e) {}
+      post.commentCount++;
+      notifyListeners();
+        } catch (e) {}
   }
 
   void decrementCommentCountByPostId(int postId) {
     try {
       final post = _posts.firstWhere((update) => update.postId == postId);
-      if (post != null) {
-        post.commentCount--;
-        notifyListeners();
-      } else {
-        posts?.forEach((post) {});
-      }
-    } catch (e) {}
+      post.commentCount--;
+      notifyListeners();
+        } catch (e) {}
   }
 
   void increaseLikes(int postId) {
@@ -293,7 +284,6 @@ class PostsProvider with ChangeNotifier {
 
   void increaseLikes2(int postId, int postType) {
     final post = _posts.firstWhere((update) => update.postId == postId);
-    // ignore: unnecessary_null_comparison
     if (post != null) {
       if (postType == 1) {
         if (post.isLikedA == false) {

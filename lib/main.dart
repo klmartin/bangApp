@@ -1,6 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bangapp/providers/create_post_provider.dart';
+import 'package:bangapp/providers/update_image_upload.dart';
+import 'package:bangapp/screens/Comments/notification_comment.dart';
+import 'package:bangapp/widgets/splash_screen.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart';
@@ -10,10 +16,13 @@ import 'package:bangapp/providers/battle_comment_provider.dart';
 import 'package:bangapp/providers/challenge_upload.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
+import 'package:bangapp/providers/follower_provider.dart';
+import 'package:bangapp/providers/friends_provider.dart';
 import 'package:bangapp/providers/image_upload.dart';
 import 'package:bangapp/providers/inprirations_Provider.dart';
 import 'package:bangapp/providers/insights_provider.dart';
 import 'package:bangapp/providers/message_payment_provider.dart';
+import 'package:bangapp/providers/notification_provider.dart';
 import 'package:bangapp/providers/payment_provider.dart';
 import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/providers/posts_provider.dart';
@@ -21,11 +30,9 @@ import 'package:bangapp/providers/subscription_payment_provider.dart';
 import 'package:bangapp/providers/update_comment_provider.dart';
 import 'package:bangapp/providers/update_video_upload.dart';
 import 'package:bangapp/providers/video_upload.dart';
-import 'package:bangapp/screens/Comments/notification_comment.dart';
-import 'package:bangapp/screens/Comments/post_comment.dart';
+import 'package:bangapp/screens/Activity/activity_page.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
-import 'package:bangapp/screens/Widgets/video_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -34,7 +41,6 @@ import 'package:bangapp/screens/Chat/calls_chat.dart';
 import 'package:bangapp/screens/Chat/new_message_chat.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
 import 'firebase_options.dart';
@@ -48,9 +54,10 @@ import 'package:bangapp/screens/Create/final_create.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferences.getInstance();
   // Listen for shared data when the app starts
   if (Platform.isIOS) {
@@ -82,9 +89,14 @@ void main() async {
     ChangeNotifierProvider(create: (context) => SubscriptionPaymentProvider()),
     ChangeNotifierProvider(create: (context) => InsightProvider()),
     ChangeNotifierProvider(create: (context) => UpdateVideoUploadProvider()),
+    ChangeNotifierProvider(create: (context) => FollowerProvider()),
+    ChangeNotifierProvider(create: (context) => FriendProvider()),
+    ChangeNotifierProvider(create: (context) => NotificationProvider()),
+    ChangeNotifierProvider(create: (context) => UpdateImageUploadProvider()),
+    ChangeNotifierProvider(create: (context) => CreatePostProvider()),
+
   ], child: MyApp()));
 }
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -136,7 +148,7 @@ class _AuthenticateState extends State<Authenticate> {
     _configureLocalNotifications();
 
 // For sharing images coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
+    ReceiveSharingIntent.instance.getInitialMedia().then((List<SharedMediaFile> value) {
       final firstSharedFile = value.isNotEmpty ? value[0] : null;
 
       if (firstSharedFile != null) {
@@ -218,6 +230,7 @@ class _AuthenticateState extends State<Authenticate> {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print(message.data["type"]);
+      print('notification type');
       // Handle incoming messages when the app is in the foreground.
       String? title = message.notification?.title;
       String? body = message.notification?.body;
@@ -285,7 +298,14 @@ class _AuthenticateState extends State<Authenticate> {
             )
         );
       }
-
+      if(message.data["type"] == "friend"){
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Nav(initialIndex: 3)
+            )
+        );
+      }
       if (message.data["type"] == "challenge") {
         print('this is the challenge data');
         print(message.data["notification_id"]);
@@ -306,7 +326,7 @@ class _AuthenticateState extends State<Authenticate> {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       print('notification type');
-      print('');
+      print(message.data["type"]);
       print(message.data["type"] == "message");
 
       if (message.data["type"] == "message") {
@@ -376,6 +396,15 @@ class _AuthenticateState extends State<Authenticate> {
           builder: (context) => ViewChallengePage(challengeId: challengeId),
         ));
       }
+
+      if(message.data["type"] == "friend"){
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Nav(initialIndex: 3)
+            )
+        );
+      }
     });
   }
 
@@ -415,7 +444,7 @@ class _AuthenticateState extends State<Authenticate> {
       future: userProvider.readUserDataFromFile(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return Center(child: SplashAnimation());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {

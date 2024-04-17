@@ -20,7 +20,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       body: Center(
         // Wrap the Column with Center
         child: ModalProgressHUD(
-          progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30),
+          progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30),
           inAsyncCall: isLoading,
           child: Column(
             mainAxisAlignment: MainAxisAlignment

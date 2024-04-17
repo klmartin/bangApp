@@ -6,7 +6,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
-import '../../api/google_signin_api.dart';
 import '../../components/square_tiles.dart';
 import '../../constants/urls.dart';
 import '../../nav.dart';
@@ -33,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late String email;
   late String password;
   final user = GoogleSignInAccount;
+  bool _isObscured = true;
 
   @override
   void initState() {
@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ModalProgressHUD(
-        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30),
+        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30),
         inAsyncCall: showSpinner,
         child: Padding(
           padding: EdgeInsets.all(30.0),
@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Center(
                     child: Image.asset(
-                      "images/app_icon.jpg",
+                      "assets/images/app_icon.jpg",
                       height: 60,
                     ),
                   ),
@@ -147,11 +147,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 10.0,
                         ),
                         TextField(
-                          obscureText: true,
+                          obscureText: _isObscured,
                           textAlign: TextAlign.center,
                           onChanged: (value) {
                             password = value;
-                            //Do something with the user input.
                           },
                           decoration: InputDecoration(
                             labelText: 'Password',
@@ -162,6 +161,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isObscured = !_isObscured;
+                                });
+                              },
+                              icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility),
                             ),
                           ),
                           keyboardType: TextInputType.text,
@@ -262,15 +269,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             'Login',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           )),
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.deepOrange,
-                              Colors.deepPurple,
-                              Colors.redAccent
+                              Color(0xFFF40BF5),
+                              Color(0xFFBF46BE),
+                              Color(0xFFF40BF5)
                             ],
                             begin: Alignment.bottomRight,
                             end: Alignment.topLeft,
@@ -389,13 +396,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Text(
                           'Not a member?',
-                          style: TextStyle(color: Colors.grey[700]),
+                          style: TextStyle(color: Colors.black),
                         ),
                         const SizedBox(width: 4),
                         const Text(
                           'SignUp',
                           style: TextStyle(
-                            color: Colors.blue,
+                            color: Color(0xFFF40BF5),
                             fontWeight: FontWeight.bold,
                           ),
                         )
@@ -416,13 +423,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Text(
                           'Forgot Password?',
-                          style: TextStyle(color: Colors.grey[700]),
+                          style: TextStyle(color: Colors.black),
                         ),
                         const SizedBox(width: 4),
                         const Text(
                           'Reset Password',
                           style: TextStyle(
-                            color: Colors.blue,
+                            color: Color(0xFFF40BF5),
                             fontWeight: FontWeight.bold,
                           ),
                         )

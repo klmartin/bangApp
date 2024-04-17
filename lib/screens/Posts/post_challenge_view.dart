@@ -9,7 +9,6 @@ import 'package:bangapp/services/service.dart';
 import '../../widgets/build_media.dart';
 import '../Comments/post_comment.dart';
 import '../Widgets/readmore.dart';
-import 'package:provider/provider.dart';
 
 class POstChallengeView extends StatefulWidget {
   String name;
@@ -426,39 +425,38 @@ class _PostCardState extends State<PostCard> {
                   ],
                 ),
               ),
-              if (widget.caption != null)
-                Padding(
-                  padding: const EdgeInsets.only(left: 12, top: 2),
-                  child: Row(
-                    children: [
-                      Text(
-                        widget.caption, // Add your username here
-                        style: TextStyle(
+              Padding(
+                padding: const EdgeInsets.only(left: 12, top: 2),
+                child: Row(
+                  children: [
+                    Text(
+                      widget.caption, // Add your username here
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                        width:
+                            5), // Add some spacing between the username and caption
+                    Expanded(
+                      child: ReadMoreText(
+                        widget.caption,
+                        trimLines: 1,
+                        style: Theme.of(context).textTheme.bodyLarge!,
+                        colorClickableText: Theme.of(context).primaryColor,
+                        trimMode: TrimMode.line,
+                        trimCollapsedText: '...Show more',
+                        trimExpandedText: '...Show less',
+                        moreStyle: TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
-                      SizedBox(
-                          width:
-                              5), // Add some spacing between the username and caption
-                      Expanded(
-                        child: ReadMoreText(
-                          widget.caption,
-                          trimLines: 1,
-                          style: Theme.of(context).textTheme.bodyLarge!,
-                          colorClickableText: Theme.of(context).primaryColor,
-                          trimMode: TrimMode.line,
-                          trimCollapsedText: '...Show more',
-                          trimExpandedText: '...Show less',
-                          moreStyle: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
               GestureDetector(
                   onTap: () {
                     Navigator.push(

@@ -16,7 +16,7 @@ class CommentProvider extends ChangeNotifier {
     _loading = true;
     notifyListeners();
     final Map<String, dynamic> response = await Service().getComments(postId.toString());
-    if (response != null && response.containsKey('comments')) {
+    if (response.containsKey('comments')) {
       final List<dynamic> commentsData = response['comments'];
       print(commentsData);
       print('comments data');
@@ -35,7 +35,7 @@ class CommentProvider extends ChangeNotifier {
     _postingLoading = true;
     notifyListeners();
     var response = await Service().postComment(context, postId, commentText, userId);
-    if(response != null && response.containsKey('data')){
+    if(response.containsKey('data')){
       var newCommentData = response['data'];
       Comment newComment = Comment.fromJson(newCommentData);
       _comments.insert(0, newComment);

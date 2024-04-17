@@ -1,5 +1,11 @@
 buildscript {
-    ext.kotlin_version = '1.8.20'
+    ext.exoPlayerVersion = "2.18.1"
+    ext.lifecycleVersion = "2.6.0-alpha02"
+    ext.annotationVersion = "1.4.0"
+    ext.workVersion = "2.7.1"
+
+    ext.gradleVersion = "7.3.0"
+    ext.kotlin_version = "1.8.20"
     repositories {
         google()
         jcenter()

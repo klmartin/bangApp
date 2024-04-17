@@ -6,10 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart'; // Import the BoxDataProvider
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:bangapp/widgets/video_player.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import '../../providers/payment_provider.dart';
-import '../../services/payment_service.dart';
 import '../../services/service.dart';
 import '../Comments/battleComment.dart';
 import 'package:bangapp/loaders/battle_skeleton.dart';
@@ -135,14 +133,17 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '     Bang Battle',
-          style: TextStyle(
-            fontFamily: 'Metropolis',
-            color: Colors.black,
-            fontSize: 20.0,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -1,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'Bang Battle',
+            style: TextStyle(
+              fontFamily: 'Metropolis',
+              color: Colors.black,
+              fontSize: 20.0,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -1,
+            ),
           ),
         ),
         Consumer<BoxDataProvider>(
@@ -300,9 +301,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                                               ),
                                                             ),
                                                           ),
-                                                          body: VideoPlayerPage(
-                                                              mediaUrl: box
-                                                                  .imageUrl1))));
+                                                          body: Container())));
                                           // MaterialPageRoute(builder: (context) => VideoPlayerPage(mediaUrl: box.imageUrl1)));
                                         },
                                         child: Stack(
@@ -373,9 +372,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                                         ),
                                                       ),
                                                     ),
-                                                    body: VideoPlayerPage(
-                                                        mediaUrl:
-                                                            box.imageUrl2))));
+                                                    body: Container())));
                                         // MaterialPageRoute(builder: (context) => VideoPlayerPage(mediaUrl: box.imageUrl2)));
                                       },
                                       child: Stack(
@@ -471,7 +468,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                                     color: Colors.red,
                                                     size: 25)
                                                 : Icon(CupertinoIcons.heart,
-                                                    color: Colors.red,
+                                                    color: Colors.black,
                                                     size: 25),
                                           ),
                                           Text("${box.likeCountA} Likes")
@@ -544,7 +541,7 @@ class _SmallBoxCarouselState extends State<SmallBoxCarousel> {
                                                       color: Colors.red,
                                                       size: 25)
                                                   : Icon(CupertinoIcons.heart,
-                                                      color: Colors.red,
+                                                      color: Colors.black,
                                                       size: 25),
                                             ),
                                             SizedBox(

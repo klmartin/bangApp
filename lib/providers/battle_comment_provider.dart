@@ -15,7 +15,7 @@ class BattleCommentProvider extends ChangeNotifier {
     _loading = true;
     notifyListeners();
     final Map<String, dynamic> response = await Service().getBattleComments(postId.toString());
-    if (response != null && response.containsKey('comments')) {
+    if (response.containsKey('comments')) {
       final List<dynamic> commentsData = response['comments'];
       _comments = commentsData.map((commentData) => BattleComment.fromJson(commentData)).toList();
       _loading = false;

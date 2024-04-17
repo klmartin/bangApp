@@ -113,7 +113,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(comment?.body ?? "",
+                    Text(comment.body ?? "",
                         style: TextStyle(fontWeight: FontWeight.w500)),
                     SizedBox(height: 5),
                     GestureDetector(
@@ -201,7 +201,7 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
                 ),
               ),
               title: Text(
-                comment!.updatecommentuser?.name ?? "",
+                comment.updatecommentuser?.name ?? "",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Column(

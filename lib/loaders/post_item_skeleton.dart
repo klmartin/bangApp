@@ -14,7 +14,6 @@ import '../../models/post.dart';
 import '../../services/animation.dart';
 import '../../widgets/build_media.dart';
 import 'dart:io';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '../screens/Comments/commentspage.dart';
 

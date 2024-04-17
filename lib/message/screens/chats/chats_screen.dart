@@ -63,42 +63,34 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Chats", context: context),
-      body: const Body(),
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.grey.shade200,
-        buttonBackgroundColor: Colors.redAccent.shade100,
-        height: 50.0,
-        color: Colors.white,
-        items: <Widget>[
-          Icon(
-            Icons.home,
-            color: Colors.black,
-            size: 25,
+      appBar: AppBar(
+        titleSpacing: 8,
+        title: GestureDetector(
+          onTap: () async {
+            Navigator.of(context).pop();
+          },
+          child: Container(
+            padding: EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFF40BF5),
+                  Color(0xFFBF46BE),
+                  Color(0xFFF40BF5)
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Icon(Icons.navigate_before_outlined, size: 30),
           ),
-          Icon(
-            Icons.search,
-            color: Colors.black,
-            size: 25.0,
-          ),
-          Icon(
-            Icons.create_outlined,
-            color: Colors.black,
-            size: 25.0,
-          ),
-          FaIcon(
-            FontAwesomeIcons.heart,
-            size: 25.0,
-          ),
-          Icon(
-            Icons.person_outline,
-            color: Colors.black,
-            size: 25.0,
-          ),
-        ],
-        index: _selectedIndex,
-        onTap: _onItemTap,
+        ),
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+        backgroundColor: Colors.white,
       ),
+      body: const Body(),
     );
   }
 
@@ -109,12 +101,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
     });
   }
 
-  List<Widget> _widgetOptions = [
-    Home2(),
-    CR.Create(),
-    Activity(),
-    Profile(),
-  ];
 
   BottomNavigationBar buildBottomNavigationBar() {
     return BottomNavigationBar(

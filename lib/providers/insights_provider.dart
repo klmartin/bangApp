@@ -14,7 +14,7 @@ class InsightProvider extends ChangeNotifier {
     notifyListeners();
     _userInsight = await Service().fetchUserInsight();
     _loading = false;
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });
   }

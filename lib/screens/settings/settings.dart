@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:bangapp/screens/Authenticate/login_screen.dart';
 import "package:bangapp/services/service.dart";
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/token_storage_helper.dart';
+import 'friends.dart';
 import 'insight.dart';
 
 class AppSettings extends StatefulWidget {
@@ -43,7 +42,10 @@ class _AppSettings extends State<AppSettings> {
         children: <Widget>[
           ListTile(
             leading: FaIcon(FontAwesomeIcons.userPlus),
-            title: Text("Follow and Invite Friends  "),
+            title: Text("Invite Friends"),
+            onTap: () => {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Friends()))
+            },
           ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.moneyBill),
@@ -54,13 +56,13 @@ class _AppSettings extends State<AppSettings> {
               )
             },
           ),
-          ListTile(
-            leading: FaIcon(FontAwesomeIcons.lock),
-            title: Text("Notifications & Privacy"),
-          ),
+          // ListTile(
+          //   leading: FaIcon(FontAwesomeIcons.lock),
+          //   title: Text("Notifications & Privacy"),
+          // ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.person),
-            title: Text("Pin Profile",style: TextStyle(color:Colors.red),),
+            title: Text("Pin Profile"),
             subtitle: subscribe
                 ? TextFormField(
                     decoration: InputDecoration(
@@ -113,6 +115,8 @@ class _AppSettings extends State<AppSettings> {
                 : Container(),
             trailing: Switch(
               value: subscribe,
+              activeColor: Color(0xFFF40BF5), // Set the color of the thumb when the switch is active
+              inactiveTrackColor: Colors.white,
               onChanged: (bool value) async {
                 print(subscribe);
                 var valueRes = await Service().pinProfile();
@@ -135,7 +139,7 @@ class _AppSettings extends State<AppSettings> {
           ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.message),
-            title: Text("Pin Messages",style: TextStyle(color:Colors.red),),
+            title: Text("Pin Messages"),
             subtitle: pinPost
                 ? TextFormField(
                     decoration: InputDecoration(
@@ -162,12 +166,10 @@ class _AppSettings extends State<AppSettings> {
                     onChanged: (val) async {
                       print('changed');
                       var newPrice = await Service().setUserPinPrice(val);
-                      print(newPrice);
                       if (newPrice['message'] == 'Price set successfully') {
                         userProvider.userData['price'] = newPrice['price'];
                       }
-                      print('this is new Price');
-                      print(val);
+
                       Fluttertoast.showToast(
                         msg: newPrice['message'],
                         toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
@@ -185,6 +187,8 @@ class _AppSettings extends State<AppSettings> {
                 : Container(),
             trailing: Switch(
               value: pinPost,
+              activeColor: Color(0xFFF40BF5), // Set the color of the thumb when the switch is active
+              inactiveTrackColor: Colors.white,
               onChanged: (bool value) async {
                 print(pinPost);
                 print('this is pinpost');
@@ -208,20 +212,20 @@ class _AppSettings extends State<AppSettings> {
               },
             ),
           ),
-          ListTile(
-            leading: FaIcon(FontAwesomeIcons.shieldAlt),
-            title: Text("Security"),
-          ),
-          ListTile(
-              leading: FaIcon(FontAwesomeIcons.user), title: Text("Account")),
-          ListTile(
-            leading: FaIcon(FontAwesomeIcons.questionCircle),
-            title: Text("Help"),
-          ),
-          ListTile(
-            leading: FaIcon(FontAwesomeIcons.exclamationCircle),
-            title: Text("About"),
-          ),
+          // ListTile(
+          //   leading: FaIcon(FontAwesomeIcons.shieldAlt),
+          //   title: Text("Security"),
+          // ),
+          // ListTile(
+          //     leading: FaIcon(FontAwesomeIcons.user), title: Text("Account")),
+          // ListTile(
+          //   leading: FaIcon(FontAwesomeIcons.questionCircle),
+          //   title: Text("Help"),
+          // ),
+          // ListTile(
+          //   leading: FaIcon(FontAwesomeIcons.exclamationCircle),
+          //   title: Text("About"),
+          // ),
           ListTile(
             leading: Icon(Icons.logout),
             title: Text("Logout"),
@@ -244,7 +248,7 @@ class _AppSettings extends State<AppSettings> {
                       ElevatedButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.red),
+                              MaterialStateProperty.all<Color>(Color(0xFFF40BF5)),
                         ),
                         child: Text("Logout"),
                         onPressed: () {
@@ -256,7 +260,6 @@ class _AppSettings extends State<AppSettings> {
                   );
                 },
               );
-              // If user confirms logout
               if (confirmLogout == true) {
                 await TokenManager.clearToken();
                 await userProvider.clearUserDataFile();
@@ -269,7 +272,6 @@ class _AppSettings extends State<AppSettings> {
             leading: Icon(Icons.delete_forever),
             title: Text("Delete Account"),
             onTap: () async {
-              // Show confirmation dialog
               bool confirmDelete = await showDialog(
                 context: context,
                 builder: (BuildContext context) {

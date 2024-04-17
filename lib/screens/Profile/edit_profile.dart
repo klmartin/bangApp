@@ -204,7 +204,7 @@ class _EditPageState extends State<EditPage> {
         ),
       ),
       body:ModalProgressHUD(
-        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30),
+        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30),
         inAsyncCall: showSpinner,
         child: SingleChildScrollView(
           child: Padding(
@@ -250,6 +250,7 @@ class _EditPageState extends State<EditPage> {
                   height: 8.0,
                 ),
                 TextField(
+                  textCapitalization:TextCapitalization.sentences,
                   textAlign: TextAlign.center,
                   controller: _dateController,
                   onTap: () async {
@@ -288,6 +289,7 @@ class _EditPageState extends State<EditPage> {
                   height: 8.0,
                 ),
                 TextField(
+                  textCapitalization:TextCapitalization.sentences,
                   controller: _phoneNumberController,
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.text,
@@ -313,6 +315,7 @@ class _EditPageState extends State<EditPage> {
                   height: 8.0,
                 ),
                 TextField(
+                  textCapitalization:TextCapitalization.sentences,
                   textAlign: TextAlign.center,
                   onTap: () async {
                     openFilterDialog();
@@ -339,6 +342,7 @@ class _EditPageState extends State<EditPage> {
                   height: 8.0,
                 ),
                 TextField(
+                  textCapitalization:TextCapitalization.sentences,
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.text,
                   onChanged: (value) {
@@ -372,6 +376,7 @@ class _EditPageState extends State<EditPage> {
                           //child: Text('Bio'),
                         ),
                         TextField(
+                          textCapitalization:TextCapitalization.sentences,
                           minLines: 6,
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
@@ -410,9 +415,9 @@ class _EditPageState extends State<EditPage> {
                             setState(() {
                               showSpinner = true;
                             });
-                            if(hobbyList.isEmpty){Fluttertoast.showToast(msg: "Please Select Hobbies");}
-                            else if(hobbyList.length < 5){Fluttertoast.showToast(msg: "Please Select More Than 5 Hobbies");}
-                            else{
+                            // if(hobbyList.isEmpty){Fluttertoast.showToast(msg: "Please Select Hobbies");}
+                            // else if(hobbyList.length < 5){Fluttertoast.showToast(msg: "Please Select More Than 5 Hobbies");}
+                            // else{
                               await Service().setUserProfile(
                                   date_of_birth,
                                   phoneNumber!,
@@ -427,8 +432,8 @@ class _EditPageState extends State<EditPage> {
                                   builder: (context) => Nav(initialIndex: 0),
                                 ),
                               );
-                            }
-                          },
+                            },
+                          // },
                           child: Text(
                             'Update',
                             style: TextStyle(
@@ -439,9 +444,9 @@ class _EditPageState extends State<EditPage> {
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.deepOrange,
-                            Colors.deepPurple,
-                            Colors.redAccent
+                            Color(0xFFF40BF5),
+                            Color(0xFFBF46BE),
+                            Color(0xFFF40BF5)
                           ],
                           begin: Alignment.bottomRight,
                           end: Alignment.topLeft,

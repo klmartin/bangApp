@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +30,8 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
 
 
   return  Padding(
-    padding: const EdgeInsets.symmetric(
-        horizontal: 16.0, vertical: 8.0),
+    padding: const EdgeInsets.only(
+        left: 8.0, bottom:8,right: 8),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -351,14 +350,12 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                       );
 
                                       // If user selects a reason, report the post
-                                      if (reason != null) {
-                                        final response = await Service().reportPost(imagePostId, reason);
-                                        print('reporting post');
-                                        if(response != null && response.containsKey('message')){
-                                          Fluttertoast.showToast(msg: response['message']);
-                                        }
+                                      final response = await Service().reportPost(imagePostId, reason);
+                                      print('reporting post');
+                                      if(response.containsKey('message')){
+                                        Fluttertoast.showToast(msg: response['message']);
                                       }
-                                    },
+                                                                        },
                                     minLeadingWidth: 20,
                                     leading: Icon(
                                       CupertinoIcons.arrow_2_circlepath_circle,
@@ -383,8 +380,8 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
               },
             );
           },
-          child: const Icon(
-            CupertinoIcons.ellipsis,
+          child: Icon(
+            CupertinoIcons.ellipsis_vertical,
             color: Colors.black,
             size: 24,
           ),

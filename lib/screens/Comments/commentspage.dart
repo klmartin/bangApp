@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
 
-import '../../loaders/comment_line_skeleton.dart';
 
 class CommentsPage extends StatefulWidget {
   final int? userId;
@@ -119,7 +118,7 @@ class _CommentsPageState extends State<CommentsPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(comment?.body ?? "",
+                              Text(comment.body ?? "",
                                   style:
                                       TextStyle(fontWeight: FontWeight.w500)),
                               SizedBox(height: 5),
@@ -210,7 +209,7 @@ class _CommentsPageState extends State<CommentsPage> {
                           ),
                         ),
                         title: Text(
-                          comment!.commentUser?.name ?? "",
+                          comment.commentUser?.name ?? "",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(

@@ -1,10 +1,12 @@
 import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/services/animation.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 
 class LikesModal {
+
   static void showLikesModal(BuildContext context, int postId) {
     showModalBottomSheet(
       context: context,
@@ -27,7 +29,7 @@ class LikesModal {
                   Expanded(
                     child: likedUsersProvider.isLoading
                         ? Center(
-                            child: CircularProgressIndicator(),
+                            child:  LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30),
                           )
                         : ListView.builder(
                             shrinkWrap: true,
@@ -66,4 +68,5 @@ class LikesModal {
       },
     );
   }
+
 }

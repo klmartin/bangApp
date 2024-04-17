@@ -6,7 +6,6 @@ import 'package:bangapp/screens/Widgets/readmore.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:bangapp/widgets/like_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +16,6 @@ import '../../services/animation.dart';
 import '../../widgets/build_media.dart';
 import '../Comments/commentspage.dart';
 import 'dart:io';
-import 'package:photo_view/photo_view.dart';
 
 class PostItem2 extends StatelessWidget {
   final int postId;
@@ -157,7 +155,6 @@ class PostItem2 extends StatelessWidget {
                       },
                       child: Container(
                         height: 250, // Set your desired fixed height here
-
                         child: Stack(
                           children: [
                             CachedNetworkImage(
@@ -204,13 +201,12 @@ class PostItem2 extends StatelessWidget {
             ),
             //displaying first challenge picture
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+
                     children: [
                       GestureDetector(
                         onTap: () {
@@ -224,17 +220,16 @@ class PostItem2 extends StatelessWidget {
                             ? Icon(CupertinoIcons.heart_fill,
                                 color: Colors.red, size: 25)
                             : Icon(CupertinoIcons.heart,
-                                color: Colors.red, size: 25),
+                                color: Colors.black, size: 25),
                       ),
-                      Text("${likeCountA.toString()} Likes")
+                      // Text("${likeCountA.toString()} Likes")
                     ],
                   ), //for liking first picture
+                  SizedBox(
+                    width: 15,
+                  ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      SizedBox(
-                        width: 15,
-                      ),
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -253,94 +248,96 @@ class PostItem2 extends StatelessWidget {
                           color: Colors.black,
                           size: 25,
                         ),
-                      ), //for comments
-                      const SizedBox(
+                      ),
+                      SizedBox(
                         width: 10,
                       ),
-
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              final countUpdate = Provider.of<PostsProvider>(
-                                  context,
-                                  listen: false);
-                              countUpdate.increaseLikes2(postId, 2);
-                              Service().likeAction(postId, "B", userId);
-                            },
-                            child: isLikedB
-                                ? Icon(CupertinoIcons.heart_fill,
-                                    color: Colors.red, size: 25)
-                                : Icon(CupertinoIcons.heart,
-                                    color: Colors.red, size: 25),
-                          ),
-                          Text("${likeCountB.toString()} Likes")
-                        ],
-                      )
+                      GestureDetector(
+                        onTap: () {
+                          final countUpdate = Provider.of<PostsProvider>(
+                              context,
+                              listen: false);
+                          countUpdate.increaseLikes2(postId, 2);
+                          Service().likeAction(postId, "B", userId);
+                        },
+                        child: isLikedB
+                            ? Icon(CupertinoIcons.heart_fill,
+                            color: Colors.red, size: 25)
+                            : Icon(CupertinoIcons.heart,
+                            color: Colors.black, size: 25),
+                      ),
                     ],
+                  ), //for comments
+
+                  // Text("${likeCountB.toString()} Likes"),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left:8.0,right:8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("${likeCountA.toString()} Likes"),
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          createRoute(
+                            CommentsPage(
+                              postId: postId, userId: userId,
+                              myProvider: myProvider,
+                              // currentUser: 1,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text("$commentCount comments")),
+                  Text("${likeCountB.toString()} Likes")
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, top: 2),
+              child: Row(
+                children: [
+                  Text(
+                    name, // Add your username here
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                      width:
+                          5), // Add some spacing between the username and caption
+                  Expanded(
+                    child: ReadMoreText(
+                      caption,
+                      trimLines: 1,
+                      colorClickableText: Theme.of(context).primaryColor,
+                      trimMode: TrimMode.line,
+                      textColor: Colors.black,
+                      trimCollapsedText: '...Show more',
+                      trimExpandedText: '...Show less',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.black,
+                      ),
+                      lessStyle: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      moreStyle: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-            if (caption != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 12, top: 2),
-                child: Row(
-                  children: [
-                    Text(
-                      name, // Add your username here
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(
-                        width:
-                            5), // Add some spacing between the username and caption
-                    Expanded(
-                      child: ReadMoreText(
-                        caption,
-                        trimLines: 1,
-                        colorClickableText: Theme.of(context).primaryColor,
-                        trimMode: TrimMode.line,
-                        textColor: Colors.black,
-                        trimCollapsedText: '...Show more',
-                        trimExpandedText: '...Show less',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                        ),
-                        lessStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        moreStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    createRoute(
-                      CommentsPage(
-                        postId: postId, userId: userId,
-                        myProvider: myProvider,
-                        // currentUser: 1,
-                      ),
-                    ),
-                  );
-                },
-                child: Text("$commentCount comments")),
-
             const SizedBox(height: 10),
           ],
         ),
@@ -371,15 +368,7 @@ class PostItem2 extends StatelessWidget {
                         height: 250,
                         child: Stack(
                           children: [
-                            Chewie(
-                              controller: ChewieController(
-                                videoPlayerController:
-                                    VideoPlayerController.network(image),
-                                autoPlay: false,
-                                looping: true,
-                                showControls: true, // Hide controls if needed
-                              ),
-                            ),
+                           Container(),
                             Positioned(
                               bottom: 5,
                               child: Container(
@@ -409,15 +398,7 @@ class PostItem2 extends StatelessWidget {
                         height: 250, // Set your desired fixed height here
                         child: Stack(
                           children: [
-                            Chewie(
-                              controller: ChewieController(
-                                videoPlayerController:
-                                    VideoPlayerController.network(challengeImg),
-                                autoPlay: false,
-                                looping: true,
-                                showControls: true, // Hide controls if needed
-                              ),
-                            ),
+                            Container(),
                             Positioned(
                               bottom: 5,
                               right: 0,
@@ -463,7 +444,7 @@ class PostItem2 extends StatelessWidget {
                             ? Icon(CupertinoIcons.heart_fill,
                                 color: Colors.red, size: 25)
                             : Icon(CupertinoIcons.heart,
-                                color: Colors.red, size: 25),
+                                color: Colors.black, size: 25),
                       ),
                       Text("${likeCountA.toString()} Likes")
                     ],
@@ -513,7 +494,7 @@ class PostItem2 extends StatelessWidget {
                                 ? Icon(CupertinoIcons.heart_fill,
                                     color: Colors.red, size: 25)
                                 : Icon(CupertinoIcons.heart,
-                                    color: Colors.red, size: 25),
+                                    color: Colors.black, size: 25),
                           ),
                           Text("${likeCountB.toString()} Likes")
                         ],
@@ -523,50 +504,48 @@ class PostItem2 extends StatelessWidget {
                 ],
               ),
             ),
-            if (caption != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 12, top: 2),
-                child: Row(
-                  children: [
-                    Text(
-                      name, // Add your username here
+            Padding(
+              padding: const EdgeInsets.only(left: 12, top: 2),
+              child: Row(
+                children: [
+                  Text(
+                    name, // Add your username here
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                      width:
+                          5), // Add some spacing between the username and caption
+                  Expanded(
+                    // Wrap the ReadMoreText with an Expanded widget
+                    child: ReadMoreText(
+                      caption,
+                      trimLines: 1,
+                      colorClickableText: Theme.of(context).primaryColor,
+                      trimMode: TrimMode.line,
+                      textColor: Colors.black,
+                      trimCollapsedText: '...Show more',
+                      trimExpandedText: '...Show less',
                       style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.black,
+                      ),
+                      lessStyle: TextStyle(
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      moreStyle: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
-                    SizedBox(
-                        width:
-                            5), // Add some spacing between the username and caption
-                    Expanded(
-                      // Wrap the ReadMoreText with an Expanded widget
-                      child: ReadMoreText(
-                        caption,
-                        trimLines: 1,
-                        colorClickableText: Theme.of(context).primaryColor,
-                        trimMode: TrimMode.line,
-                        textColor: Colors.black,
-                        trimCollapsedText: '...Show more',
-                        trimExpandedText: '...Show less',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                        ),
-                        lessStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        moreStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
+            ),
             GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -581,7 +560,6 @@ class PostItem2 extends StatelessWidget {
                   );
                 },
                 child: Text("$commentCount comments")),
-
             const SizedBox(height: 10),
           ],
         ),
@@ -598,14 +576,14 @@ class PostItem2 extends StatelessWidget {
             postOptions(context, userId, userImage, name, followerCount, image,
                     postId, userId, type, createdAt,postViews, "posts") ??
                 Container(),
-            buildMediaWidget(context, image, type, width, height, isPinned,
+            buildMediaWidget(context, image, type, isPinned,
                     cacheUrl, thumbnailUrl, aspectRatio, postId, price) ??
                 Container(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.only(left: 8),
+                  padding: EdgeInsets.all(8),
                   width: MediaQuery.of(context).size.width * 0.82,
                   child: Row(
                     children: [
@@ -616,8 +594,7 @@ class PostItem2 extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                          width:
-                              5), // Add some spacing between the username and caption
+                          width: 5), // Add some spacing between the username and caption
                       Expanded(
                         child: ReadMoreText(
                           caption,
@@ -646,12 +623,12 @@ class PostItem2 extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.only(right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Row(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Row(
                         children: [
                           GestureDetector(
                             onTap: () {
@@ -671,6 +648,7 @@ class PostItem2 extends StatelessWidget {
                               size: 25,
                             ),
                           ),
+                          SizedBox(width: 4),
                           Column(
                             children: [
                               GestureDetector(
@@ -685,52 +663,61 @@ class PostItem2 extends StatelessWidget {
                                     ? Icon(CupertinoIcons.heart_fill,
                                         color: Colors.red, size: 25)
                                     : Icon(CupertinoIcons.heart,
-                                        color: Colors.red, size: 25),
+                                        color: Colors.black, size: 25),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  Provider.of<UserLikesProvider>(context,
-                                          listen: false)
-                                      .getUserLikedPost(postId);
 
-                                  LikesModal.showLikesModal(context, postId);
-                                },
-                                child: Text(
-                                  "$likeCountA likes",
-                                  style: TextStyle(
-                                    fontSize: 12.5,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
                             ],
                           ),
                         ],
-                      )
-                    ],
-                  ),
+                      ),
+                    )
+                  ],
                 ),
               ],
             ),
             Container(
-              margin: EdgeInsets.only(left: 15),
-              child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      createRoute(
-                        CommentsPage(
-                          postId: postId, userId: userId,
-                          myProvider: myProvider,
-                          // currentUser: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(left: 8),
+                    child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            createRoute(
+                              CommentsPage(
+                                postId: postId, userId: userId,
+                                myProvider: myProvider,
+                                // currentUser: 1,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text("$commentCount comments")),
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(right: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        Provider.of<UserLikesProvider>(context,
+                                listen: false)
+                            .getUserLikedPost(postId);
+                        LikesModal.showLikesModal(context, postId);
+                      },
+                      child: Text(
+                        "$likeCountA likes",
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: Colors.black,
                         ),
                       ),
-                    );
-                  },
-                  child: Text("$commentCount comments")),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
           ],
         ),
       );
@@ -757,8 +744,6 @@ class PostItem2 extends StatelessWidget {
                           context,
                           imageUrl,
                           type,
-                          width,
-                          height,
                           isPinned,
                           cacheUrl,
                           thumbnailUrl,
@@ -858,7 +843,7 @@ class PostItem2 extends StatelessWidget {
                                           ? Icon(CupertinoIcons.heart_fill,
                                               color: Colors.red, size: 25)
                                           : Icon(CupertinoIcons.heart,
-                                              color: Colors.red, size: 25),
+                                              color: Colors.black, size: 25),
                                     ),
                                     GestureDetector(
                                       onTap: () {
