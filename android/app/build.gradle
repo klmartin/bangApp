@@ -34,14 +34,13 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 33
+    ndkVersion "25.1.8937393"
     compileSdkVersion 34
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
     lintOptions {
-
         checkReleaseBuilds false
     }
     defaultConfig {
@@ -54,7 +53,6 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
-
 
     /*signingConfigs{
         debug{
@@ -104,6 +102,7 @@ android {
         implementation 'com.google.firebase:firebase-messaging:14.6.5'
         implementation 'com.android.support:multidex:1.0.3'
         implementation 'com.google.android.gms:play-services-auth:20.4.1'
+
 
     }
 
