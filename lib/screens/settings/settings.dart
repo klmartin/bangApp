@@ -5,6 +5,7 @@ import "package:bangapp/services/service.dart";
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import '../../services/token_storage_helper.dart';
+import 'blocked_users.dart';
 import 'friends.dart';
 import 'insight.dart';
 
@@ -216,6 +217,15 @@ class _AppSettings extends State<AppSettings> {
           //   leading: FaIcon(FontAwesomeIcons.shieldAlt),
           //   title: Text("Security"),
           // ),
+          ListTile(
+            leading: FaIcon(FontAwesomeIcons.shieldAlt),
+            title: Text("Blocked Users"),
+            onTap: () => {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => BlockedUsers())
+              )
+            },
+          ),
           // ListTile(
           //     leading: FaIcon(FontAwesomeIcons.user), title: Text("Account")),
           // ListTile(

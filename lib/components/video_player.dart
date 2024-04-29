@@ -55,6 +55,23 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
     });
   }
 
+  // void onVisibilityChanged(double visibleFraction) async {
+  //   if (_betterPlayerController != null) { // Check if controller is not null
+  //     bool? isPlaying = await _betterPlayerController.isPlaying();
+  //     bool? initialized = _betterPlayerController.isVideoInitialized();
+  //     if (visibleFraction >= 0.90) {
+  //       if (initialized! && !isPlaying!) {
+  //         _betterPlayerController.play();
+  //       }
+  //     } else if (visibleFraction <= 0.10) {
+  //       if (initialized! && isPlaying!) {
+  //         _betterPlayerController.pause();
+  //       }
+  //     }
+  //   }
+  // }
+
+
   void _initializePlayer() async {
     final fileInfo = await checkCacheFor(widget.cachingVideoUrl);
     if (fileInfo == null) {
@@ -65,8 +82,13 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
           looping: true,
           aspectRatio: double.parse(widget.aspectRatio),
           controlsConfiguration: BetterPlayerControlsConfiguration(
-            showControls: false,
-
+            showControls: true,
+            enableOverflowMenu: false,
+            enableSkips: false,
+            enableMute: true,
+            enableFullscreen: true,
+            enablePlayPause: true,
+            enableProgressBar: true,
           ),
         ),
         betterPlayerDataSource: BetterPlayerDataSource(
@@ -84,7 +106,13 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
           looping: true,
           aspectRatio: double.parse(widget.aspectRatio),
           controlsConfiguration: BetterPlayerControlsConfiguration(
-            showControls: false,
+            showControls: true,
+            enableOverflowMenu: false,
+            enableSkips: false,
+            enableMute: true,
+            enableFullscreen: true,
+            enablePlayPause: true,
+            enableProgressBar: true,
           ),
         ),
         betterPlayerDataSource: BetterPlayerDataSource(
@@ -102,29 +130,23 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
   @override
   void dispose() {
-    _betterPlayerController.dispose();
+    _betterPlayerController?.dispose(); // Check if controller is not null before disposing
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: double.parse(widget.aspectRatio),
-      child: VisibilityDetector(
-        key: stickyKey,
-        onVisibilityChanged: (VisibilityInfo info) async {
-          if (info.visibleFraction > 0.90) {
-            _betterPlayerController.play();
-            print("playing");
-            print(widget.videoUrl);
-
-          } else if (info.visibleFraction < 0.10) {
-            print("pausing");
-            print(widget.videoUrl);
-            _betterPlayerController.pause();
-
-          }
-        },
+    return VisibilityDetector(
+      key: widget.key!,
+      onVisibilityChanged: (VisibilityInfo info) async {
+        if (info.visibleFraction > 0.90) {
+          _betterPlayerController.play();
+        } else if (info.visibleFraction < 0.10) {
+          _betterPlayerController.pause();
+        }
+      },
+      child: AspectRatio(
+        aspectRatio: double.parse(widget.aspectRatio),
         child: FutureBuilder(
           builder: (context, snapshot) {
             if (_betterPlayerController != null && isControllerReady) {

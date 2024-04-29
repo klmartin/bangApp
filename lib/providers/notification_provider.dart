@@ -52,6 +52,8 @@ class NotificationProvider extends ChangeNotifier {
             'application/json', // Include other headers as needed
           },
         );
+        print(response.body);
+        print('this is response notification');
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
           List<dynamic> responseList = data['notifications']['data'];

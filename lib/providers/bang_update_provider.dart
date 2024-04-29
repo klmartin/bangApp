@@ -20,6 +20,8 @@ class BangUpdate {
   int commentCount;
   final int userId;
   String? aspectRatio;
+  String? cacheUrl;
+  String? thumbnailUrl;
 
   BangUpdate(
       {required this.filename,
@@ -32,7 +34,9 @@ class BangUpdate {
       required this.isLiked,
       required this.commentCount,
       required this.userId,
-        required this.aspectRatio
+        required this.aspectRatio,
+        required this.cacheUrl,
+        required this.thumbnailUrl,
       });
 }
 
@@ -84,7 +88,9 @@ class BangUpdateProvider extends ChangeNotifier {
                 : 0,
             isLiked: post['isLiked'],
             userId: post["user_id"],
-            aspectRatio:post["aspect_ratio"]
+            aspectRatio:post["aspect_ratio"],
+            cacheUrl: post["cache_url"] ?? "",
+            thumbnailUrl: post["thumbnail_url"] ?? ""
           );
         }
         ));
@@ -143,7 +149,9 @@ class BangUpdateProvider extends ChangeNotifier {
                 : 0,
             isLiked: post['isLiked'],
             userId: post["user_id"],
-              aspectRatio: post["aspect_ratio"]
+              aspectRatio: post["aspect_ratio"],
+              cacheUrl: post["cache_url"] ?? "",
+              thumbnailUrl: post["thumbnail_url"] ?? ""
           );
         })));
       } else {
@@ -193,7 +201,9 @@ class BangUpdateProvider extends ChangeNotifier {
                   : 0,
               isLiked: post['isLiked'],
               userId: post["user_id"],
-              aspectRatio:post["aspect_ratio"]
+              aspectRatio:post["aspect_ratio"],
+              cacheUrl: post["cache_url"] ?? "",
+              thumbnailUrl: post["thumbnail_url"] ?? ""
           );
         }
         ));

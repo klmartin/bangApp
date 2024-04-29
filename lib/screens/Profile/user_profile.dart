@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/screens/Profile/profilelist_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +21,6 @@ import '../../providers/follower_provider.dart';
 import '../../providers/friends_provider.dart';
 import '../../providers/message_payment_provider.dart';
 import '../../providers/subscription_payment_provider.dart';
-import '../../widgets/build_media.dart';
-import '../../widgets/followers_sheet.dart';
 import '../../widgets/friends_sheet.dart';
 import '../../widgets/video_rect.dart';
 import '../Explore/bang_update_view.dart';
@@ -67,13 +67,13 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     print('user profile');
+    super.initState();
+    BackButtonInterceptor.add(myInterceptor);
     _getMyInfo();
     messagePaymentProvider =
         Provider.of<MessagePaymentProvider>(context, listen: false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
-    super.initState();
-
     messagePaymentProvider.addListener(() {
       if (messagePaymentProvider.payed == true) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -83,6 +83,17 @@ class _UserProfileState extends State<UserProfile> {
         privacySwitchValue = false;
       }
     });
+  }
+
+  @override
+  void dispose() {
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();
+  }
+
+  bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    Navigator.pop(context);
+    return true;
   }
 
   void _scrollListener() {
@@ -119,7 +130,6 @@ class _UserProfileState extends State<UserProfile> {
     if (_isLoading) {
       return;
     }
-
     setState(() {
       _isLoading = true;
     });
@@ -489,6 +499,7 @@ class _UserProfileState extends State<UserProfile> {
                             child: ProfilePostsStream(
                             userid: widget.userid.toString(),
                             subscribe: mySubscribe,
+                              username: myName,
                           ))
                         : Expanded(
                             child: Update(userid: widget.userid.toString())),
@@ -527,6 +538,7 @@ class _UpdatePostsStreamContent extends StatefulWidget {
 
 class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
   ScrollController _scrollController = ScrollController();
+  int _pageNumber = 1;
 
   @override
   void initState() {
@@ -548,7 +560,11 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
         _scrollController.position.maxScrollExtent - 200) {
       final updateProvider =
           Provider.of<BangUpdateProfileProvider>(context, listen: false);
-      updateProvider.getMyUpdate(); // Trigger loading of the next page
+      if (updateProvider.isLoading != true) {
+        _pageNumber++;
+        updateProvider.loadMoreUserUpdates(
+            widget.userid, _pageNumber); // Trigger loading of the next page
+      }
     }
   }
 
@@ -648,12 +664,12 @@ class ProfilePostsStream extends StatelessWidget {
   @override
   String userid;
   bool subscribe;
-
-  ProfilePostsStream({required this.userid, required this.subscribe});
+  String username;
+  ProfilePostsStream({required this.userid, required this.subscribe,required this.username});
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ProfileProvider(),
-      child: _ProfilePostsStreamContent(userid: userid, subscribe: subscribe),
+      child: _ProfilePostsStreamContent(userid: userid, subscribe: subscribe,username: username,),
     );
   }
 }
@@ -661,7 +677,8 @@ class ProfilePostsStream extends StatelessWidget {
 class _ProfilePostsStreamContent extends StatefulWidget {
   String userid;
   bool subscribe;
-  _ProfilePostsStreamContent({required this.userid, required this.subscribe});
+  String username;
+  _ProfilePostsStreamContent({required this.userid, required this.subscribe,required this.username});
   @override
   _ProfilePostsStreamContentState createState() =>
       _ProfilePostsStreamContentState();
@@ -701,10 +718,12 @@ class _ProfilePostsStreamContentState
   void _scrollListener() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      _pageNumber++;
       final profileProvider =
           Provider.of<ProfileProvider>(context, listen: false);
-      profileProvider.loadMoreUserData(widget.userid, _pageNumber);
+      if (profileProvider.isLoading != true) {
+        _pageNumber++;
+        profileProvider.loadMoreUserData(widget.userid, _pageNumber);
+      }
     }
   }
 
@@ -715,7 +734,7 @@ class _ProfilePostsStreamContentState
         return Center(child: Text('No Posts Available'));
       } else if (widget.subscribe == true) {
         return Center(
-            child: Text('Subscribe to View Users Posts',
+            child: Text('Subscribe to View ${widget.username} Posts',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)));
       } else if (provider.isLoading == false && provider.posts.isNotEmpty) {
         return SingleChildScrollView(
@@ -917,8 +936,7 @@ class _ProfilePostsStreamContentState
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        POstVideoChallengeView(
+                                    builder: (context) => POstVideoChallengeView(
                                           provider.posts[i].name!,
                                           provider.posts[i].caption!,
                                           provider.posts[i].imageUrl!,

@@ -69,12 +69,13 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
             "Delete Post",
             style: Theme.of(context).textTheme.bodyLarge,
           ),
+          subtitle: _isLoading
+              ? Center(
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                      color: Color(0xFFF40BF5), size: 35),
+                )
+              : Center(),
         ),
-        if (_isLoading)
-          Center(
-            child: LoadingAnimationWidget.staggeredDotsWave(
-                color: Color(0xFFF40BF5), size: 35),
-          ),
       ],
     );
   }

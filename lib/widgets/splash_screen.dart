@@ -17,13 +17,13 @@ class _SplashAnimationState extends State<SplashAnimation> {
       height: 100,
     );
     Widget title = const Text(
-      'BangApp',
+      'BangApp TZ',
       textAlign: TextAlign.center,
       style: TextStyle(
         fontWeight: FontWeight.w500,
-        fontSize: 40,
-        fontFamily: "Gilroy",
-        color: Color(0xFFDDDDDD),
+        fontSize: 70.0,
+        fontFamily: "Billabong",
+        color:  Color(0xFFF40BF5),
         height: 1,
         letterSpacing: -1,
       ),

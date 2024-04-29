@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:bangapp/widgets/terms_and_conditions_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -37,16 +39,19 @@ class _RegisterState extends State<Register> {
   bool showSpinner = false;
   bool _isObscured = true;
   bool _isObscuredConfirm = true;
+  bool acceptTerms = false;
   @override
 
   // Google sign-in method
   Future<UserCredential> signInWithGoogle() async {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
 
       if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
@@ -79,7 +84,8 @@ class _RegisterState extends State<Register> {
       }
 
       // Obtain the access token and exchange it for a credential
-      final OAuthCredential credential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+      final OAuthCredential credential =
+          FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
       // Sign in to Firebase with the Facebook credential
       return await FirebaseAuth.instance.signInWithCredential(credential);
@@ -93,7 +99,8 @@ class _RegisterState extends State<Register> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: ModalProgressHUD(
-        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30),
+        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(
+            color: Color(0xFFF40BF5), size: 30),
         inAsyncCall: showSpinner,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
@@ -112,7 +119,7 @@ class _RegisterState extends State<Register> {
                 height: 48.0,
               ),
               TextField(
-                textCapitalization:TextCapitalization.sentences,
+                textCapitalization: TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.name,
                 onChanged: (value) {
@@ -136,7 +143,7 @@ class _RegisterState extends State<Register> {
                 height: 8.0,
               ),
               TextField(
-                textCapitalization:TextCapitalization.sentences,
+                textCapitalization: TextCapitalization.sentences,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.emailAddress,
                 onChanged: (value) {
@@ -161,7 +168,6 @@ class _RegisterState extends State<Register> {
                 height: 8.0,
               ),
               TextField(
-                textCapitalization:TextCapitalization.sentences,
                 obscureText: _isObscured,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
@@ -177,7 +183,8 @@ class _RegisterState extends State<Register> {
                         _isObscured = !_isObscured;
                       });
                     },
-                    icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                        _isObscured ? Icons.visibility_off : Icons.visibility),
                   ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
@@ -189,14 +196,12 @@ class _RegisterState extends State<Register> {
                 keyboardType: TextInputType.text,
                 style: TextStyle(color: Colors.black),
                 cursorColor: Colors.black,
-
               ),
               SizedBox(
                 height: 24.0,
               ),
               //confirm password
               TextField(
-                textCapitalization:TextCapitalization.sentences,
                 obscureText: _isObscuredConfirm,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
@@ -213,7 +218,9 @@ class _RegisterState extends State<Register> {
                         _isObscuredConfirm = !_isObscuredConfirm;
                       });
                     },
-                    icon: Icon(_isObscuredConfirm ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(_isObscuredConfirm
+                        ? Icons.visibility_off
+                        : Icons.visibility),
                   ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
@@ -226,6 +233,37 @@ class _RegisterState extends State<Register> {
                 style: TextStyle(color: Colors.black),
                 cursorColor: Colors.black,
               ),
+              Row(
+                children: [
+                  Checkbox(
+                    value: acceptTerms,
+                    onChanged: (newValue) {
+                      setState(() {
+                        acceptTerms = newValue!;
+                      });
+                    },
+                    activeColor: acceptTerms ? Colors.blue : Colors.red,
+                    checkColor: Colors.white,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // Navigate to the terms and conditions page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TermsAndConditionsPage()),
+                      );
+                    },
+                    child: Text(
+                      'Accept the terms and conditions',
+                      style: TextStyle(
+                        color: Color(0xFFF40BF5),
+                        fontSize: 16,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(
                 height: 24.0,
               ),
@@ -235,7 +273,7 @@ class _RegisterState extends State<Register> {
                     setState(() {
                       showSpinner = true;
                     });
-                    if (password == confirmPassword) {
+                    if (password == confirmPassword && acceptTerms) {
                       try {
                         var response = await http.post(
                           Uri.parse('$baseUrl/v1/register'),
@@ -274,16 +312,21 @@ class _RegisterState extends State<Register> {
                               Service().sendTokenToBackend(
                                   token, responseBody['id']);
                             });
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
                             prefs.setInt('user_id', responseBody['id']);
                             await TokenManager.saveToken(
                                 responseBody['access_token']);
-                            prefs.setString('token', responseBody['access_token']);
+                            prefs.setString(
+                                'token', responseBody['access_token']);
                             prefs.setString('name', responseBody['name']);
                             prefs.setString('email', responseBody['email']);
                             print(prefs.getString('name'));
-                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            final userProvider = Provider.of<UserProvider>(
+                                context,
+                                listen: false);
                             if (userProvider.userData.isEmpty) {
+                              print('naingia hapa');
                               userProvider.fetchUserData();
                             }
                             Navigator.pushReplacement(
@@ -300,13 +343,25 @@ class _RegisterState extends State<Register> {
                         showSpinner = false;
                       }
                     } else {
-                      Fluttertoast.showToast(
-                        msg: "Password and Confirm Password do not Match",
-                        toastLength: Toast.LENGTH_LONG,
-                        gravity: ToastGravity.CENTER,
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                      );
+                      if(password != confirmPassword){
+                        Fluttertoast.showToast(
+                          msg: "Password and Confirm Password do not Match",
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.CENTER,
+                          backgroundColor: Color(0xFFF40BF5),
+                          textColor: Colors.white,
+                        );
+                      }
+                      if(acceptTerms == false){
+                        Fluttertoast.showToast(
+                          msg: "Pleas Accept/Read our Terms and Conditions",
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.CENTER,
+                          backgroundColor: Color(0xFFF40BF5),
+                          textColor: Colors.white,
+                        );
+                      }
+
                       showSpinner = false;
                     }
                   },
@@ -337,58 +392,67 @@ class _RegisterState extends State<Register> {
                 children: [
                   //google button
                   SquareTile(
-                    imagePath: 'assets/images/google.png',
-                    onTap: () async {
-                      try {
-                        setState(() {
-                          showSpinner = true;
-                        });
-                        UserCredential userCredential = await signInWithGoogle();
-                        // Handle successful sign-in
-                        User? user = userCredential.user;
-                        if (user != null) {
-                          print([user.displayName,user.email,user.photoURL,user.phoneNumber]);
-                          final newGoogleUser = await AuthService().addGoogleUser(user.displayName,user.email,user.photoURL,user.phoneNumber,user.uid);
+                      imagePath: 'assets/images/google.png',
+                      onTap: () async {
+                        try {
+                          setState(() {
+                            showSpinner = true;
+                          });
+                          UserCredential userCredential =
+                              await signInWithGoogle();
+                          // Handle successful sign-in
+                          User? user = userCredential.user;
+                          if (user != null) {
+                            print([
+                              user.displayName,
+                              user.email,
+                              user.photoURL,
+                              user.phoneNumber
+                            ]);
+                            final newGoogleUser = await AuthService()
+                                .addGoogleUser(user.displayName, user.email,
+                                    user.photoURL, user.phoneNumber, user.uid);
 
-                          if(newGoogleUser.containsKey('access_token')){
-
-                            _firebaseMessaging.getToken().then((token) async {
-                              Service().sendTokenToBackend(
-                                  token, newGoogleUser['id']);
-                            });
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
-                            prefs.setInt('user_id', newGoogleUser['id']);
-                            await TokenManager.saveToken(
-                                newGoogleUser['access_token']);
-                            prefs.setString('token', newGoogleUser['access_token']);
-                            prefs.setString('name', newGoogleUser['name']);
-                            prefs.setString('email', newGoogleUser['email']);
-                            print("this is seted ${prefs.getString('name')}");
-                            final userProvider = Provider.of<UserProvider>(context, listen: false);
-                            if (userProvider.userData.isEmpty) {
-                              userProvider.fetchUserData();
+                            if (newGoogleUser.containsKey('access_token')) {
+                              _firebaseMessaging.getToken().then((token) async {
+                                Service().sendTokenToBackend(
+                                    token, newGoogleUser['id']);
+                              });
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.setInt('user_id', newGoogleUser['id']);
+                              await TokenManager.saveToken(
+                                  newGoogleUser['access_token']);
+                              prefs.setString(
+                                  'token', newGoogleUser['access_token']);
+                              prefs.setString('name', newGoogleUser['name']);
+                              prefs.setString('email', newGoogleUser['email']);
+                              print("this is seted ${prefs.getString('name')}");
+                              final userProvider = Provider.of<UserProvider>(
+                                  context,
+                                  listen: false);
+                              if (userProvider.userData.isEmpty) {
+                                userProvider.fetchUserData();
+                              }
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditPage(),
+                                  ));
                             }
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditPage(),
-                                ));
+                            print(newGoogleUser);
+                          } else {
+                            setState(() {
+                              showSpinner = false;
+                            });
                           }
-                          print(newGoogleUser);
-                        }
-                        else{
+                        } catch (e) {
+                          print(e);
                           setState(() {
                             showSpinner = false;
                           });
                         }
-                      }
-                      catch(e){
-                        print(e);
-                        setState(() {
-                          showSpinner = false;
-                        });
-                      }
-                    }),
+                      }),
                   const SizedBox(width: 10),
                   //apple button
                   // SquareTile(
@@ -402,7 +466,6 @@ class _RegisterState extends State<Register> {
                   //     }
                   //   },
                   // ),
-
                 ],
               ),
 

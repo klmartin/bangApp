@@ -3,12 +3,15 @@ import 'package:bangapp/services/service.dart';
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/friend.dart';
 
 
 class FriendProvider with ChangeNotifier {
   bool _loading = false;
+  bool _removingFriend = false;
   bool get isLoading => _loading;
+  bool get removingFriend => _removingFriend;
   List<Friend> _friends = [];
   List<Friend> _allFriends = [];
   List<Friend> get allFriends => _allFriends;
@@ -24,6 +27,7 @@ class FriendProvider with ChangeNotifier {
     if (status.isGranted) {
       _loading = true;
       notifyListeners();
+
       List<Contact> contacts = await ContactsService.getContacts(withThumbnails: false);
       for (var contact in contacts) {
         for (var phone in contact.phones!) {
@@ -37,7 +41,8 @@ class FriendProvider with ChangeNotifier {
         userId: friendData['id'],
         name: friendData['name'],
         image: friendData['user_image_url'],
-        isFriend: false, // Initialize isFriend to false
+        isFriend: friendData['is_friend'], // Initialize isFriend to false
+        friendAdded: friendData['friend_added']
       )).toList();
       _loading = false;
       notifyListeners();
@@ -86,7 +91,8 @@ class FriendProvider with ChangeNotifier {
       userId: friendData['id'],
       name: friendData['name'],
       image: friendData['user_image_url'],
-      isFriend: false, // Initialize isFriend to false
+      isFriend: friendData['is_friend'], // Initialize isFriend to false
+      friendAdded: friendData['friend_added']
     )).toList();
     _loading = false;
     notifyListeners();
@@ -101,5 +107,15 @@ class FriendProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {}
   }
+
+  Future<String> removeFriendship(int imageUserId) async {
+    _removingFriend = false;
+    notifyListeners();
+    var message = await Service().removeFriendship(imageUserId);
+    _removingFriend = true;
+    notifyListeners();
+    return message;
+  }
+
 
 }

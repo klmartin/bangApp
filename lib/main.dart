@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bangapp/providers/blocked_users_provider.dart';
 import 'package:bangapp/providers/create_post_provider.dart';
 import 'package:bangapp/providers/update_image_upload.dart';
 import 'package:bangapp/screens/Comments/notification_comment.dart';
@@ -54,6 +55,7 @@ import 'package:bangapp/screens/Create/final_create.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:bangapp/services/service.dart';
+
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
@@ -94,6 +96,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => NotificationProvider()),
     ChangeNotifierProvider(create: (context) => UpdateImageUploadProvider()),
     ChangeNotifierProvider(create: (context) => CreatePostProvider()),
+    ChangeNotifierProvider(create: (context) => BlockedUsersProvider()),
 
   ], child: MyApp()));
 }
@@ -449,15 +452,30 @@ class _AuthenticateState extends State<Authenticate> {
           return Text('Error: ${snapshot.error}');
         } else {
           Map<String, dynamic>? userData = snapshot.data;
-          if (userData != null && userData.containsKey('device_token')) {
-            String token = userData['device_token'];
-            if (token.isNotEmpty) {
-              return Nav(initialIndex: 0);
+          if (userData == null || userData.isEmpty) {
+            // If userData is empty, return Welcome page
+            return Welcome();
+          } else {
+            String? token = userData['device_token'];
+            var dateOfBirth = userData['date_of_birth'];
+            if (token != null && token.isNotEmpty) {
+              // If device_token is present and not empty
+              if (dateOfBirth == null || dateOfBirth.isEmpty) {
+                // If date_of_birth is null or empty, return EditPage
+                return EditPage();
+              } else {
+                // If device_token is present and date_of_birth is not empty, return Nav
+                return Nav(initialIndex: 0);
+              }
+            } else {
+              // If device_token is not present or empty, return Welcome page
+              return Welcome();
             }
           }
-          return Welcome();
         }
       },
     );
   }
+
+
 }

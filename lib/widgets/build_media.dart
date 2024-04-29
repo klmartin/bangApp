@@ -1,3 +1,4 @@
+import 'package:bangapp/widgets/video_player_item.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,16 +7,13 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:bangapp/providers/user_provider.dart';
-import 'package:visibility_detector/visibility_detector.dart';
-import '../components/video_player.dart';
 import '../constants/urls.dart';
-import 'package:better_player/better_player.dart';
 import '../providers/payment_provider.dart';
+
 
 Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
      isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
   if (type == 'image' && isPinned == 0) {
-
     return AspectRatio(
       aspectRatio: double.parse(aspectRatio),
       child: GestureDetector(
@@ -38,7 +36,6 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
       ),
     );
   } else if (type == 'image' || type == 'video' && isPinned == 1) {
-
     return GestureDetector(
       onTap: () {
         buildFab(context, price, postId);
@@ -58,13 +55,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
       ),
     );
   } else if (type == 'video' && isPinned == 0) {
-    print(mediaUrl);
-    print('this is media url');
-    return CustomVideoPlayer(
-        videoUrl: mediaUrl,
-        cachingVideoUrl: cacheUrl,
-        thumbnailUrl: thumbnailUrl,
-        aspectRatio: aspectRatio);
+     return VideoPlayerItem(videoUrl: mediaUrl,aspectRatio: aspectRatio,thumbnailUrl: thumbnailUrl, cacheUrl: cacheUrl);
   } else {
     return Container();
   }
@@ -74,7 +65,6 @@ void viewImage(BuildContext context, String imageUrl) {
   Navigator.of(context).push(
     MaterialPageRoute(
         builder: (context) => Scaffold(
-
           body: PhotoView(
             imageProvider: CachedNetworkImageProvider(imageUrl),
             minScale: PhotoViewComputedScale.contained,
@@ -84,56 +74,56 @@ void viewImage(BuildContext context, String imageUrl) {
               color: Colors.black,
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // Show the popup menu
-              final RenderBox fabRenderBox = context.findRenderObject() as RenderBox;
-              final fabOffset = fabRenderBox.localToGlobal(Offset.zero);
-              showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(
-                  fabOffset.dx,
-                  fabOffset.dy - 200,
-                  fabOffset.dx,
-                  fabOffset.dy,
-                ),
-                // position: RelativeRect.fromLTRB(0, 0, 0, 100),
-                items: [
-                  PopupMenuItem(
-                    child: ListTile(
-                      leading: Icon(Icons.camera_alt),
-                      title: Text('Take a Photo or Video'),
-                      onTap: () async {
-                        final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
-                        if (pickedFile != null) {
-
-                          print('Picked image from camera: ${pickedFile.path}');
-                        }
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    child: ListTile(
-                      leading: Icon(Icons.photo_library),
-                      title: Text('Select from Gallery'),
-                      onTap: () async {
-                        final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-                        if (pickedFile != null) {
-
-                          print('Picked image from gallery: ${pickedFile.path}');
-                        }
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ],
-              );
-            },
-            child: Icon(Icons.add),
-          ),
-          // Add a PopupMenuButton for displaying the options
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          // floatingActionButton: FloatingActionButton(
+          //   onPressed: () {
+          //     // Show the popup menu
+          //     final RenderBox fabRenderBox = context.findRenderObject() as RenderBox;
+          //     final fabOffset = fabRenderBox.localToGlobal(Offset.zero);
+          //     showMenu(
+          //       context: context,
+          //       position: RelativeRect.fromLTRB(
+          //         fabOffset.dx,
+          //         fabOffset.dy - 200,
+          //         fabOffset.dx,
+          //         fabOffset.dy,
+          //       ),
+          //       // position: RelativeRect.fromLTRB(0, 0, 0, 100),
+          //       items: [
+          //         PopupMenuItem(
+          //           child: ListTile(
+          //             leading: Icon(Icons.camera_alt),
+          //             title: Text('Take a Photo or Video'),
+          //             onTap: () async {
+          //               final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+          //               if (pickedFile != null) {
+          //
+          //                 print('Picked image from camera: ${pickedFile.path}');
+          //               }
+          //               Navigator.pop(context);
+          //             },
+          //           ),
+          //         ),
+          //         PopupMenuItem(
+          //           child: ListTile(
+          //             leading: Icon(Icons.photo_library),
+          //             title: Text('Select from Gallery'),
+          //             onTap: () async {
+          //               final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+          //               if (pickedFile != null) {
+          //
+          //                 print('Picked image from gallery: ${pickedFile.path}');
+          //               }
+          //               Navigator.pop(context);
+          //             },
+          //           ),
+          //         ),
+          //       ],
+          //     );
+          //   },
+          //   child: Icon(Icons.add),
+          // ),
+          // // Add a PopupMenuButton for displaying the options
+          // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
         ),
     ),

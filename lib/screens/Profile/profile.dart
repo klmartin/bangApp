@@ -17,6 +17,7 @@ import '../../providers/follower_provider.dart';
 import '../../providers/friends_provider.dart';
 import '../../providers/payment_provider.dart';
 import '../../widgets/build_media.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../widgets/followers_sheet.dart';
 import '../../widgets/friends_sheet.dart';
 import '../../widgets/video_rect.dart';
@@ -214,12 +215,13 @@ class _ProfileState extends State<Profile> {
                                 builder: (context) => EditPage(
                                   nameController: TextEditingController(),
                                   userImage:
-                                      userProvider.userData['user_image_url'],
-                                  name: userProvider.userData['name'],
-                                  date_of_birth: DateTime.parse(
-                                      userProvider.userData['date_of_birth']),
+                                      userProvider.userData['user_image_url'] ?? "",
+                                  name: userProvider.userData['name'] ?? "",
+                                  date_of_birth: userProvider.userData['date_of_birth'] != null
+                                      ? DateTime.parse(userProvider.userData['date_of_birth'])
+                                      : DateTime.parse("2000-01-01"),
                                   phoneNumber:
-                                      userProvider.userData['phone_number'],
+                                      userProvider.userData['phone_number'] ?? "",
                                   selectedHobbiesText: selectedHobbiesText,
                                   occupation:
                                       userProvider.userData['occupation'] ?? "",
@@ -684,7 +686,8 @@ class _UpdatePostsStreamContent extends StatefulWidget {
 }
 
 class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
-  ScrollController _scrollController = ScrollController();
+  ScrollController _scrollUpdateController = ScrollController();
+  int _pageNumber = 1;
 
   @override
   void initState() {
@@ -692,21 +695,25 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
     final updateProvider =
         Provider.of<BangUpdateProfileProvider>(context, listen: false);
     updateProvider.getMyUpdate();
-    _scrollController.addListener(_scrollListener);
+    _scrollUpdateController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scrollUpdateController.dispose();
     super.dispose();
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollUpdateController.position.pixels >=
+        _scrollUpdateController.position.maxScrollExtent - 200) {
+      print('this is mwisho');
       final updateProvider =
           Provider.of<BangUpdateProfileProvider>(context, listen: false);
-      updateProvider.getMyUpdate(); // Trigger loading of the next page
+      if(updateProvider.isLoading != true){
+        _pageNumber++;
+        updateProvider.loadMoreUpdates(_pageNumber); // Trigger loading of the next page
+      }
     }
   }
 
@@ -719,7 +726,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
       } else if (provider.isLoading == false && provider.updates.isNotEmpty) {
         return SingleChildScrollView(
           key: const PageStorageKey<String>('update'),
-          controller: _scrollController,
+          controller: _scrollUpdateController,
           child: GridView(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -843,10 +850,12 @@ class _ProfilePostsStreamContentState
   void _scrollListener() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      _pageNumber++;
-      final profileProvider =
-          Provider.of<ProfileProvider>(context, listen: false);
-      profileProvider.loadMoreData(_pageNumber);
+      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      if(profileProvider.isLoading != true)
+      {
+        _pageNumber++;
+        profileProvider.loadMoreData(_pageNumber);
+      }
     }
   }
 

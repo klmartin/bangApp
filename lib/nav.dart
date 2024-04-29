@@ -12,6 +12,7 @@ import 'package:bangapp/screens/Home/Home2.dart';
 import 'package:bangapp/services/service.dart';
 import 'screens/Profile/profile.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
+import 'package:video_player/video_player.dart';
 
 
 class Nav extends StatefulWidget {
@@ -27,17 +28,15 @@ class _NavState extends State<Nav> {
   bool _isAppBarEnabled = true; // Variable to track app bar state
   int _selectedIndex = 0;
   late List<Widget> _widgetOptions ;
-
   @override
   void initState() {
-
     super.initState();
     _selectedIndex = widget.initialIndex;
     _widgetOptions = [
       Home2(),
       BangUpdates2(),
       CR.Create(),
-      Activity(),
+       Activity(),
       Profile(),
     ];
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);

@@ -1,3 +1,4 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:date_formatter/date_formatter.dart';
 import 'package:filter_list/filter_list.dart';
@@ -14,14 +15,13 @@ import '../../models/hobby.dart';
 import '../../nav.dart';
 import '../../services/api_cache_helper.dart';
 
-late String? _descr;
-late String? phoneNumber;
-late String occupation;
+String _descr = "";
+String phoneNumber = "";
+String occupation = "";
 String selectedHobbiesText = "";
-DateTime date_of_birth = DateTime.now();
+DateTime date_of_birth = DateTime.parse("2000-01-01");
 TextEditingController _dateController = TextEditingController();
 TextEditingController _phoneNumberController = TextEditingController();
-
 
 Service? loggedInUser;
 
@@ -55,7 +55,26 @@ class _EditPageState extends State<EditPage> {
   @override
   void initState() {
     super.initState();
+    BackButtonInterceptor.add(myInterceptor);
     imagePicker = ImagePicker();
+  }
+
+  @override
+  void dispose() {
+    setState(() {
+      _descr = "";
+      phoneNumber = "";
+      occupation = "";
+      selectedHobbiesText = "";
+      date_of_birth = DateTime.parse("2000-01-01");
+    });
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();
+  }
+
+  bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    print("BACK BUTTON!");
+    return true;
   }
 
   bool showSpinner = false;
@@ -63,7 +82,6 @@ class _EditPageState extends State<EditPage> {
   List<Hobby>? selectedHobbyList;
   List<Hobby> hobbyList = [];
   List<int> selectedHobbyIds = [];
-
 
   void updateSelectedHobbiesText() {
     setState(() {
@@ -78,8 +96,14 @@ class _EditPageState extends State<EditPage> {
   }
 
   void openFilterDialog() async {
+    setState(() {
+      selectedHobbyList?.clear();
+      selectedHobbyIds?.clear();
+      selectedHobbiesText = "";
+    });
     await FilterListDialog.display<Hobby>(
       context,
+      resetButtonText: "Select/Reset",
       listData: await fetchHobbies(), // Use hobbyList as the data source
       selectedListData: selectedHobbyList,
       choiceChipLabel: (hobby) =>
@@ -168,10 +192,9 @@ class _EditPageState extends State<EditPage> {
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.deepOrange,
-                          Colors.deepPurple,
-                          Colors.redAccent
-
+                          Color(0xFFF40BF5),
+                          Color(0xFFBF46BE),
+                          Color(0xFFF40BF5)
                         ],
                         begin: Alignment.bottomRight,
                         end: Alignment.topLeft,
@@ -189,13 +212,8 @@ class _EditPageState extends State<EditPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.close,
-              color: Colors.black,
-            )),
         title: Center(
           child: Text(
             'Set Profile',
@@ -203,8 +221,9 @@ class _EditPageState extends State<EditPage> {
           ),
         ),
       ),
-      body:ModalProgressHUD(
-        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30),
+      body: ModalProgressHUD(
+        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(
+            color: Color(0xFFF40BF5), size: 30),
         inAsyncCall: showSpinner,
         child: SingleChildScrollView(
           child: Padding(
@@ -217,7 +236,8 @@ class _EditPageState extends State<EditPage> {
                     children: [
                       rimage != null
                           ? Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               child: Container(
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
@@ -250,7 +270,7 @@ class _EditPageState extends State<EditPage> {
                   height: 8.0,
                 ),
                 TextField(
-                  textCapitalization:TextCapitalization.sentences,
+                  textCapitalization: TextCapitalization.sentences,
                   textAlign: TextAlign.center,
                   controller: _dateController,
                   onTap: () async {
@@ -259,7 +279,8 @@ class _EditPageState extends State<EditPage> {
                       initialDate: date_of_birth,
                       //initialDate: DateTime.now(),
                       firstDate: DateTime(1900, 1),
-                      lastDate: DateTime(2100, 12),
+                      lastDate: DateTime(DateTime.now().year - 18,
+                          DateTime.now().month, DateTime.now().day),
                     );
                     if (picked != null) {
                       setState(() {
@@ -289,7 +310,7 @@ class _EditPageState extends State<EditPage> {
                   height: 8.0,
                 ),
                 TextField(
-                  textCapitalization:TextCapitalization.sentences,
+                  textCapitalization: TextCapitalization.sentences,
                   controller: _phoneNumberController,
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.text,
@@ -315,7 +336,7 @@ class _EditPageState extends State<EditPage> {
                   height: 8.0,
                 ),
                 TextField(
-                  textCapitalization:TextCapitalization.sentences,
+                  textCapitalization: TextCapitalization.sentences,
                   textAlign: TextAlign.center,
                   onTap: () async {
                     openFilterDialog();
@@ -342,7 +363,7 @@ class _EditPageState extends State<EditPage> {
                   height: 8.0,
                 ),
                 TextField(
-                  textCapitalization:TextCapitalization.sentences,
+                  textCapitalization: TextCapitalization.sentences,
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.text,
                   onChanged: (value) {
@@ -376,7 +397,7 @@ class _EditPageState extends State<EditPage> {
                           //child: Text('Bio'),
                         ),
                         TextField(
-                          textCapitalization:TextCapitalization.sentences,
+                          textCapitalization: TextCapitalization.sentences,
                           minLines: 6,
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
@@ -412,12 +433,35 @@ class _EditPageState extends State<EditPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 50.0),
                       child: TextButton(
                           onPressed: () async {
-                            setState(() {
-                              showSpinner = true;
-                            });
-                            // if(hobbyList.isEmpty){Fluttertoast.showToast(msg: "Please Select Hobbies");}
-                            // else if(hobbyList.length < 5){Fluttertoast.showToast(msg: "Please Select More Than 5 Hobbies");}
-                            // else{
+                            print(date_of_birth);
+                            print('date of birth');
+                            print(DateTime.parse("2000-01-01"));
+                            if (rimage == null) {
+                              Fluttertoast.showToast(
+                                  msg: "Upload Your Profile Picture");
+                            } else if (date_of_birth ==
+                                DateTime.parse("2000-01-01")) {
+                              Fluttertoast.showToast(
+                                  msg: "Enter Correct Date of Birth");
+                            } else if (phoneNumber.isEmpty) {
+                              Fluttertoast.showToast(
+                                  msg: "Enter Your Phone Number");
+                            } else if (selectedHobbyIds.isEmpty) {
+                              Fluttertoast.showToast(
+                                  msg: "Please Select Hobbies");
+                            } else if (selectedHobbyIds.length < 5) {
+                              Fluttertoast.showToast(
+                                  msg: "Please Select More Than 5 Hobbies");
+                            } else if (occupation.isEmpty) {
+                              Fluttertoast.showToast(
+                                  msg: "Please Write Your Occupation");
+                            } else if (_descr.isEmpty) {
+                              Fluttertoast.showToast(
+                                  msg: "Write Something For The Bio");
+                            } else {
+                              setState(() {
+                                showSpinner = true;
+                              });
                               await Service().setUserProfile(
                                   date_of_birth,
                                   phoneNumber!,
@@ -426,14 +470,14 @@ class _EditPageState extends State<EditPage> {
                                   _descr,
                                   rimage,
                                   '');
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => Nav(initialIndex: 0),
                                 ),
                               );
-                            },
-                          // },
+                            }
+                          },
                           child: Text(
                             'Update',
                             style: TextStyle(

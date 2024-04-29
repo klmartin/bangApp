@@ -102,8 +102,7 @@ class _Home2ContentState extends State<Home2Content>
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
     if (_scrollController.position.extentAfter < 500) {
       _pageNumber++;
-      postsProvider
-          .loadMoreData(_pageNumber); // Trigger loading of the next page
+      postsProvider.loadMoreData(_pageNumber); // Trigger loading of the next page
     }
   }
 

@@ -10,7 +10,6 @@ import 'package:provider/provider.dart' as provider;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
-import 'package:checkbox_grouped/checkbox_grouped.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:bangapp/providers/user_provider.dart';
@@ -89,7 +88,6 @@ class _FinaleCreateState extends State<FinalCreate>
     }
   }
 
-  GroupController checkController = GroupController();
   final captionController = TextEditingController();
   var image;
   bool light = true;

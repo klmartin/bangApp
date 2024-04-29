@@ -318,4 +318,9 @@ class PostsProvider with ChangeNotifier {
       notifyListeners();
     } else {}
   }
+
+  void deletePostByUserID(int userId) {
+    _posts.removeWhere((post) => post.userId == userId);
+    notifyListeners();
+  }
 }

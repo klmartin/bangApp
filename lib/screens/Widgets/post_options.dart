@@ -5,9 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mime/mime.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../providers/posts_provider.dart';
 import '../../services/animation.dart';
 import '../../widgets/delete_post.dart';
+import '../../widgets/hide_post.dart';
 import '../../widgets/user_profile.dart';
 import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 import '../Create/video_editing/video_edit.dart';
@@ -116,7 +119,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                 height: 5,
                                 width: 100,
                                 decoration: BoxDecoration(
-                                  color: Colors.blue,
+                                  color: Color(0xFFF40BF5),
                                   borderRadius:
                                   BorderRadius.circular(20),
                                 ),
@@ -172,7 +175,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                         toastLength: Toast.LENGTH_SHORT,
                                         gravity: ToastGravity.CENTER,
                                         timeInSecForIosWeb: 1,
-                                        backgroundColor: Colors.red,
+                                        backgroundColor: Color(0xFFF40BF5),
                                         textColor: Colors.white,
                                       );
                                     },
@@ -257,6 +260,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                   )
                                 ],
                               ),
+                              HidePostWidget(imagePostId: imagePostId, imageUserId: imageUserId),
                               Column(
                                 children: [
                                   ListTile(

@@ -6,6 +6,7 @@ import 'package:bangapp/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 import 'chat_card.dart';
 
@@ -60,16 +61,44 @@ class Body extends StatelessWidget {
                             isActive: true,
                             unreadCount: conv.unreadCount,
                           ),
-                          press: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MessagesScreen(
-                                  conv.receiverId ?? 0,
-                                  conv.receiverName ?? "Username",
-                                  conv.image ?? logoUrl,conv.privacySwitchValue,conv.id,conv.price
-                              ),
-                            ),
-                          ),
+                          press: () {
+                            if (conv.isActive) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Alert"),
+                                    content: Text("Your conversation is Locked!"),
+                                    actions: [
+                                      TextButton(
+                                        child: Text("Pay"),
+                                        onPressed: () {
+                                          buildMessagePayment(context, conv.price, conv.receiverId);
+                                          Navigator.pop(context); // Close the alert dialog
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              // Navigate to MessagesScreen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MessagesScreen(
+                                    conv.receiverId ?? 0,
+                                    conv.receiverName ?? "Username",
+                                    conv.image ?? logoUrl,
+                                    conv.privacySwitchValue,
+                                    conv.id,
+                                    conv.price,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+
                         );
                       });
                 }

@@ -280,100 +280,100 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 25),
                   //google + apple sign in buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SquareTile(
-                          imagePath: 'assets/images/google.png',
-                          onTap: () async {
-                            try {
-                              UserCredential userCredential = await signInWithGoogle();
-                              // Retrieve user details
-                              User? user = userCredential.user;
-                              if (user != null) {
-                                final response = await http.post(
-                                  Uri.parse('$baseUrl/v1/login'),
-                                  body: {
-                                    'email': user.email,
-                                    'password': user.uid,
-                                  },
-                                );
-                                final responseBody = jsonDecode(response.body);
-
-                                if (responseBody.containsKey('error') &&
-                                    responseBody['error'] ==
-                                        'invalid_credentials') {
-                                  Fluttertoast.showToast(
-                                    msg: responseBody['error'],
-                                    toastLength: Toast
-                                        .LENGTH_SHORT, // or Toast.LENGTH_LONG
-                                    gravity:
-                                    ToastGravity.CENTER, // Toast position
-                                    timeInSecForIosWeb:
-                                    1, // Time duration for iOS and web
-                                    backgroundColor: Colors.grey[600],
-                                    textColor: Colors.white,
-                                    fontSize: 16.0,
-                                  );
-                                  setState(() {
-                                    showSpinner = false;
-                                  });
-                                } else {
-                                  setState(() {
-                                    showSpinner = false;
-                                  });
-                                  _firebaseMessaging
-                                      .getToken()
-                                      .then((token) async {
-                                    SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
-                                    prefs.setInt(
-                                        'user_id', responseBody['user_id']);
-                                    await TokenManager.saveToken(
-                                        responseBody['token']);
-                                    prefs.setString(
-                                        'user_image', responseBody['user_image']);
-                                    prefs.setString(
-                                        'token', responseBody['token']);
-                                    prefs.setString('name', responseBody['name']);
-                                    prefs.setString('device_token', token!);
-                                    prefs.setString('role', responseBody['role']);
-
-                                    Service().sendTokenToBackend(
-                                        token, responseBody['user_id']);
-                                    final userProvider =
-                                    Provider.of<UserProvider>(context,
-                                        listen: false);
-                                    if (userProvider.userData.isEmpty) {
-                                      userProvider.fetchUserData();
-                                    }
-                                  });
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            Nav(initialIndex: 0)),
-                                  );
-                                }
-
-                              }
-                            } catch (e) {}
-                          }),
-                      const SizedBox(width: 10),
-                      //apple button
-                      // SquareTile(
-                      //   imagePath: 'assets/images/facebook.png',
-                      //   onTap: () async {
-                      //     try {
-                      //       await signInWithFacebook();
-                      //       // Handle successful sign-in
-                      //     } catch (e) {
-                      //       // Handle sign-in error
-                      //     }
-                      //   },
-                      // ),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     // SquareTile(
+                  //     //     imagePath: 'assets/images/google.png',
+                  //     //     onTap: () async {
+                  //     //       try {
+                  //     //         UserCredential userCredential = await signInWithGoogle();
+                  //     //         // Retrieve user details
+                  //     //         User? user = userCredential.user;
+                  //     //         if (user != null) {
+                  //     //           final response = await http.post(
+                  //     //             Uri.parse('$baseUrl/v1/login'),
+                  //     //             body: {
+                  //     //               'email': user.email,
+                  //     //               'password': user.uid,
+                  //     //             },
+                  //     //           );
+                  //     //           final responseBody = jsonDecode(response.body);
+                  //     //
+                  //     //           if (responseBody.containsKey('error') &&
+                  //     //               responseBody['error'] ==
+                  //     //                   'invalid_credentials') {
+                  //     //             Fluttertoast.showToast(
+                  //     //               msg: responseBody['error'],
+                  //     //               toastLength: Toast
+                  //     //                   .LENGTH_SHORT, // or Toast.LENGTH_LONG
+                  //     //               gravity:
+                  //     //               ToastGravity.CENTER, // Toast position
+                  //     //               timeInSecForIosWeb:
+                  //     //               1, // Time duration for iOS and web
+                  //     //               backgroundColor: Colors.grey[600],
+                  //     //               textColor: Colors.white,
+                  //     //               fontSize: 16.0,
+                  //     //             );
+                  //     //             setState(() {
+                  //     //               showSpinner = false;
+                  //     //             });
+                  //     //           } else {
+                  //     //             setState(() {
+                  //     //               showSpinner = false;
+                  //     //             });
+                  //     //             _firebaseMessaging
+                  //     //                 .getToken()
+                  //     //                 .then((token) async {
+                  //     //               SharedPreferences prefs =
+                  //     //               await SharedPreferences.getInstance();
+                  //     //               prefs.setInt(
+                  //     //                   'user_id', responseBody['user_id']);
+                  //     //               await TokenManager.saveToken(
+                  //     //                   responseBody['token']);
+                  //     //               prefs.setString(
+                  //     //                   'user_image', responseBody['user_image']);
+                  //     //               prefs.setString(
+                  //     //                   'token', responseBody['token']);
+                  //     //               prefs.setString('name', responseBody['name']);
+                  //     //               prefs.setString('device_token', token!);
+                  //     //               prefs.setString('role', responseBody['role']);
+                  //     //
+                  //     //               Service().sendTokenToBackend(
+                  //     //                   token, responseBody['user_id']);
+                  //     //               final userProvider =
+                  //     //               Provider.of<UserProvider>(context,
+                  //     //                   listen: false);
+                  //     //               if (userProvider.userData.isEmpty) {
+                  //     //                 userProvider.fetchUserData();
+                  //     //               }
+                  //     //             });
+                  //     //             Navigator.pushReplacement(
+                  //     //               context,
+                  //     //               MaterialPageRoute(
+                  //     //                   builder: (context) =>
+                  //     //                       Nav(initialIndex: 0)),
+                  //     //             );
+                  //     //           }
+                  //     //
+                  //     //         }
+                  //     //       } catch (e) {}
+                  //     //     }),
+                  //     const SizedBox(width: 10),
+                  //     //apple button
+                  //     // SquareTile(
+                  //     //   imagePath: 'assets/images/facebook.png',
+                  //     //   onTap: () async {
+                  //     //     try {
+                  //     //       await signInWithFacebook();
+                  //     //       // Handle successful sign-in
+                  //     //     } catch (e) {
+                  //     //       // Handle sign-in error
+                  //     //     }
+                  //     //   },
+                  //     // ),
+                  //   ],
+                  // ),
                   const SizedBox(height: 10),
                   MaterialButton(
                     onPressed: () {

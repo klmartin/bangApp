@@ -1,11 +1,13 @@
 import 'package:bangapp/providers/bang_update_provider.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:bangapp/widgets/video_player_item.dart';
 import 'package:better_player/better_player.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart';
+import '../components/video_player.dart';
 import '../screens/Comments/updateComment.dart';
 import '../screens/Explore/bang_updates_like_button.dart';
 import '../screens/Widgets/readmore.dart';
@@ -206,21 +208,7 @@ Widget buildBangUpdate2(BuildContext context, bangUpdate, index) {
         Container(
           color: Colors.black,
           width: double.infinity,
-          child: AspectRatio(
-            aspectRatio: double.parse(bangUpdate.aspectRatio),
-            child: BetterPlayerListVideoPlayer(
-              BetterPlayerDataSource(
-                BetterPlayerDataSourceType.network, bangUpdate.filename,liveStream: false,
-                videoFormat: BetterPlayerVideoFormat.hls,
-              ),
-              configuration: BetterPlayerConfiguration(
-                  autoPlay: true,
-                  aspectRatio:  double.parse(bangUpdate.aspectRatio)
-              ),
-              key: UniqueKey(),
-              playFraction: 0.8,
-            ),
-          ),
+          child:VideoPlayerItem(videoUrl:  bangUpdate.filename,aspectRatio:  bangUpdate.aspectRatio,thumbnailUrl: bangUpdate.thumbnailUrl,cacheUrl: bangUpdate.cacheUrl,)
         ),
         Positioned(
           bottom: 0,

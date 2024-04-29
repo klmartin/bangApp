@@ -106,7 +106,7 @@ class UserBubble extends StatelessWidget {
                           backgroundImage: NetworkImage(this.profileUrl),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 10.0, left: 20.0),
+                          padding: const EdgeInsets.only(top: 8.0, left: 20.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

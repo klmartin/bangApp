@@ -43,7 +43,7 @@ class _BangUpdates2State extends State<BangUpdates2> {
     final updateVideoUploadProvider2 =
     Provider.of<VideoUploadProvider>(context, listen: true);
     return bangUpdateProvider.isLoading
-        ? Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30))
+        ? Container(color: Colors.black,child: Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30)))
         : Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.black,
@@ -92,6 +92,7 @@ class _BangUpdates3State extends State<BangUpdates3> {
 
     updateImageUploadProvider.addListener(() {
       if (updateImageUploadProvider.uploadText == 'Upload Complete') {
+        print('upload complete');
         BangUpdateProvider().refreshUpdates();
         Navigator.pushReplacement(
             context,

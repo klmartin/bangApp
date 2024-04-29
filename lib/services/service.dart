@@ -129,8 +129,7 @@ class Service {
       ..files.add(await http.MultipartFile.fromPath('image', filepath));
     try {
       var response = await http.Response.fromStream(await request.send());
-      print(response.body);
-      print('update responseee');
+
       if (response.statusCode == 201) {
         final response2 = jsonDecode(response.body);
 
@@ -220,6 +219,46 @@ class Service {
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load current user');
+    }
+  }
+
+  Future<List<dynamic>> loadMoreUpdates(pageNumber) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('user_id').toString();
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse(
+          "$baseUrl/user-bang-updates?_page=$pageNumber&_limit=10&user_id=$userId",
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      return json.decode(response.body);
+    } catch (e) {
+      print("Error loading updates: $e");
+      return []; // Or handle the error as needed, returning an empty list for simplicity
+    }
+  }
+
+  Future<List<dynamic>> loadMoreUserUpdates(pageNumber, userId) async {
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse(
+          "$baseUrl/user-bang-updates?_page=$pageNumber&_limit=10&user_id=$userId",
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      return json.decode(response.body);
+    } catch (e) {
+      print("Error loading updates: $e");
+      return []; // Or handle the error as needed, returning an empty list for simplicity
     }
   }
 
@@ -316,7 +355,7 @@ class Service {
         },
       );
       if (response.statusCode == 200) {
-        return  json.decode(response.body);
+        return json.decode(response.body);
       } else {
         return {};
       }
@@ -352,24 +391,23 @@ class Service {
     }
   }
 
-  Future<int> buyFollowers(count,hobbies) async {
+  Future<int> buyFollowers(count, hobbies) async {
     try {
-      print([count,hobbies]);
+      print([count, hobbies]);
       print('buying followers');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = await TokenManager.getToken();
-      final response = await http.post(
-        Uri.parse('$baseUrl/buyFollowers'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json', // Include other headers as needed
-        },
-        body:json.encode({
-          'user_id':prefs.getInt('user_id').toString(),
-          'hobbies': hobbies,
-          'count':count
-        })
-      );
+      final response = await http.post(Uri.parse('$baseUrl/buyFollowers'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type':
+                'application/json', // Include other headers as needed
+          },
+          body: json.encode({
+            'user_id': prefs.getInt('user_id').toString(),
+            'hobbies': hobbies,
+            'count': count
+          }));
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -438,7 +476,6 @@ class Service {
       // Handle exceptions, if any
     }
   }
-
 
   Future<List<Hobby>> fetchHobbies() async {
     final token = await TokenManager.getToken();
@@ -536,7 +573,8 @@ class Service {
     }
   }
 
-  Future<Map<String, dynamic>> postComment(BuildContext context, postId, commentText, userId) async {
+  Future<Map<String, dynamic>> postComment(
+      BuildContext context, postId, commentText, userId) async {
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -561,8 +599,8 @@ class Service {
     }
   }
 
-  Future postCommentReply(BuildContext context, postId, commentId, commentText) async
-  {
+  Future postCommentReply(
+      BuildContext context, postId, commentId, commentText) async {
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -588,8 +626,8 @@ class Service {
     }
   }
 
-  Future postUpdateCommentReply(BuildContext context, postId, commentId, commentText) async
-  {
+  Future postUpdateCommentReply(
+      BuildContext context, postId, commentId, commentText) async {
     try {
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -614,11 +652,10 @@ class Service {
     }
   }
 
-
-  Future postBattleCommentReply(BuildContext context, postId, commentId, commentText) async
-  {
+  Future postBattleCommentReply(
+      BuildContext context, postId, commentId, commentText) async {
     try {
-      print([postId,commentId,commentText]);
+      print([postId, commentId, commentText]);
       print('this is commentreply data');
       final token = await TokenManager.getToken();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -714,7 +751,6 @@ class Service {
 
   Future<Map<String, dynamic>> deleteComment(commentId) async {
     try {
-
       final token = await TokenManager.getToken();
       final response = await http.get(
         Uri.parse('$baseUrl/deleteComment/$commentId'),
@@ -1088,7 +1124,8 @@ class Service {
     print("$baseUrl/users/getMyInfo?user_id=$userId?&viewer_id=$viewerId");
     if (userId != null) {
       var response = await http.get(
-        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId?&viewer_id=$viewerId"),
+        Uri.parse(
+            "$baseUrl/users/getMyInfo?user_id=$userId?&viewer_id=$viewerId"),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
@@ -1100,7 +1137,8 @@ class Service {
     } else {
       var userId = prefs.getInt('user_id').toString();
       var response = await http.get(
-        Uri.parse("$baseUrl/users/getMyInfo?user_id=$userId?&viewer_id=$userId"),
+        Uri.parse(
+            "$baseUrl/users/getMyInfo?user_id=$userId?&viewer_id=$userId"),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
@@ -1272,8 +1310,8 @@ class Service {
           'user_id': prefs.getInt('user_id').toString(), // Convert to string
         }),
       );
-        print(response.body);
-        print('pin profile response');
+      print(response.body);
+      print('pin profile response');
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData;
@@ -1285,7 +1323,6 @@ class Service {
       return {};
     }
   }
-
 
   Future<Map<String, dynamic>> setUserPinPrice(price) async {
     try {
@@ -1390,8 +1427,7 @@ class Service {
     }
   }
 
-  Future<Map<String, dynamic>> editPost(postId, caption) async
-  {
+  Future<Map<String, dynamic>> editPost(postId, caption) async {
     print([postId, caption]);
     try {
       final token = await TokenManager.getToken();
@@ -1401,9 +1437,9 @@ class Service {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
         },
-        body:json.encode({
-          'id':postId,
-          'caption':caption,
+        body: json.encode({
+          'id': postId,
+          'caption': caption,
         }),
       );
       print('this is edit response');
@@ -1422,8 +1458,7 @@ class Service {
     }
   }
 
-  Future<Map<String, dynamic>> reportPost(postId,reason) async
-  {
+  Future<Map<String, dynamic>> reportPost(postId, reason) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('user_id').toString();
     try {
@@ -1434,11 +1469,8 @@ class Service {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
         },
-        body:json.encode({
-          'post_id':postId,
-          'user_id':userId,
-          'reason':reason
-        }),
+        body: json
+            .encode({'post_id': postId, 'user_id': userId, 'reason': reason}),
       );
       print('this is report response');
       print(response.body);
@@ -1456,8 +1488,7 @@ class Service {
     }
   }
 
-  Future<Map<String, dynamic>> subscribeUser(userId) async
-  {
+  Future<Map<String, dynamic>> subscribeUser(userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       final token = await TokenManager.getToken();
@@ -1467,9 +1498,9 @@ class Service {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
         },
-        body:json.encode({
+        body: json.encode({
           'subscriber_id': prefs.getInt('user_id').toString(),
-          'user_id':userId,
+          'user_id': userId,
         }),
       );
       if (response.statusCode == 200) {
@@ -1484,11 +1515,9 @@ class Service {
       print('error');
       return {};
     }
-
   }
 
-  Future<Map<String, dynamic>> fetchUserInsight() async
-  {
+  Future<Map<String, dynamic>> fetchUserInsight() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       final token = await TokenManager.getToken();
@@ -1511,46 +1540,55 @@ class Service {
       print('error');
       return {};
     }
-
   }
 
-  Future<List<Map<String, dynamic>>> getSuggestedFriends(contacts) async
-  {
+  Future<List<Map<String, dynamic>>> getSuggestedFriends(contacts) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    try{
+    try {
+      final userId = prefs.getInt('user_id').toString();
+      final String cacheKey = 'cached_friends';
       final token = await TokenManager.getToken();
-      final response = await http.post(
-        Uri.parse('$baseUrl/getSuggestedFriends'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json', // Include other headers as needed
-        },
-        body:json.encode({
-          'user_id': prefs.getInt('user_id').toString(),
-          'contacts':contacts,
-        }),
-      );
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
+      final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+      var minutes = DateTime.now()
+          .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+          .inMinutes;
+      final String cachedData = prefs.getString(cacheKey) ?? '';
+      var response = "";
+      if (minutes > 5 || cachedData.isEmpty) {
+        final res = await http.post(
+          Uri.parse('$baseUrl/getSuggestedFriends'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type':
+                'application/json', // Include other headers as needed
+          },
+          body: json.encode({
+            'user_id': prefs.getInt('user_id').toString(),
+            'contacts': contacts,
+          }),
+        );
+        if (res.statusCode == 200) {
+          prefs.setInt(
+              '${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+          response = json.decode(res.body);
+          prefs.setString(cacheKey, json.encode(response));
+        }
+      } else {
+        response = json.decode(cachedData);
+      }
+      final responseData = json.decode(response);
 
-        return List<Map<String, dynamic>>.from(responseData['suggested_friends']);
-      }
-      else {
-        return [];
-      }
-    }
-    catch(e){
+      return List<Map<String, dynamic>>.from(responseData['suggested_friends']);
+    } catch (e) {
       print(e);
       return [];
     }
-
   }
 
-  Future<List<Map<String, dynamic>>> getFriends({userId}) async
-  {
+  Future<List<Map<String, dynamic>>> getFriends({userId}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = userId ?? prefs.getInt('user_id');
-    try{
+    try {
       final token = await TokenManager.getToken();
       final response = await http.get(
         Uri.parse('$baseUrl/allFriends/${user_id.toString()}'),
@@ -1563,22 +1601,19 @@ class Service {
         final responseData = json.decode(response.body);
 
         return List<Map<String, dynamic>>.from(responseData['friends']);
-      }
-      else {
+      } else {
         return [];
       }
-    }
-    catch(e){
+    } catch (e) {
       print(e);
       return [];
     }
   }
 
-  Future<List<Map<String, dynamic>>> getFollowers({userId}) async
-  {
+  Future<List<Map<String, dynamic>>> getFollowers({userId}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = userId ?? prefs.getInt('user_id');
-    try{
+    try {
       final token = await TokenManager.getToken();
       final response = await http.get(
         Uri.parse('$baseUrl/allFollowers/${user_id.toString()}'),
@@ -1591,21 +1626,18 @@ class Service {
         final responseData = json.decode(response.body);
 
         return List<Map<String, dynamic>>.from(responseData['followers']);
-      }
-      else {
+      } else {
         return [];
       }
-    }
-    catch(e){
+    } catch (e) {
       print(e);
       return [];
     }
   }
 
-  Future<String> requestFriendship(friendId) async
-  {
+  Future<String> requestFriendship(friendId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    try{
+    try {
       final token = await TokenManager.getToken();
       final response = await http.post(
         Uri.parse('$baseUrl/requestFriendship'),
@@ -1613,28 +1645,25 @@ class Service {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
         },
-        body:json.encode({
+        body: json.encode({
           'user_id': prefs.getInt('user_id').toString(),
-          'friend_id':friendId,
+          'friend_id': friendId,
         }),
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['message'];
-      }
-      else {
+      } else {
         return "";
       }
-    }
-    catch(e){
+    } catch (e) {
       print(e);
       return "";
     }
   }
 
-  Future<String> acceptFriendship(friendship_id) async
-  {
-    try{
+  Future<String> acceptFriendship(friendship_id) async {
+    try {
       final token = await TokenManager.getToken();
       final response = await http.post(
         Uri.parse('$baseUrl/acceptFriendship'),
@@ -1642,27 +1671,24 @@ class Service {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
         },
-        body:json.encode({
-          'friendship_id':friendship_id,
+        body: json.encode({
+          'friendship_id': friendship_id,
         }),
       );
       final responseData = json.decode(response.body);
       if (responseData.containsKey('message')) {
         return responseData['message'];
-      }
-      else {
+      } else {
         return responseData['error'];
       }
-    }
-    catch(e){
+    } catch (e) {
       print(e);
       return "";
     }
   }
 
-  Future<String> declineFriendShip(friendship_id) async
-  {
-    try{
+  Future<String> declineFriendShip(friendship_id) async {
+    try {
       final token = await TokenManager.getToken();
       final response = await http.post(
         Uri.parse('$baseUrl/declineFriendship'),
@@ -1670,23 +1696,142 @@ class Service {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Include other headers as needed
         },
-        body:json.encode({
-          'friendship_id':friendship_id,
+        body: json.encode({
+          'friendship_id': friendship_id,
         }),
       );
       final responseData = json.decode(response.body);
       if (responseData.containsKey('message')) {
         return responseData['message'];
-      }
-      else {
+      } else {
         return responseData['error'];
       }
-    }
-    catch(e){
+    } catch (e) {
       print(e);
       return "";
     }
   }
 
+  Future<String> showFewerPost(imagePostId, imageUserId) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var userId = prefs.getInt('user_id');
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/fewerPosts'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body: json.encode({
+          'user_id': userId,
+          'user_post_id': imageUserId,
+          'post_id': imagePostId,
+        }),
+      );
+      print(response.body);
+      print('show fewer post');
+      final responseData = json.decode(response.body);
+      return responseData['message'];
+    } catch (e) {
+      print(e);
+      return "";
+    }
+  }
 
+  Future<String> removeFriendship(imageUserId) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var userId = prefs.getInt('user_id');
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/deleteFriendship'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body: json.encode({'user_id': userId, 'friend_id': imageUserId}),
+      );
+      print(response.body);
+      print('show remove friendship');
+      final responseData = json.decode(response.body);
+      return responseData['message'];
+    } catch (e) {
+      print(e);
+      return "";
+    }
+  }
+
+  Future<String> blockUser(imageUserId) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var userId = prefs.getInt('user_id');
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/blockUser'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body: json.encode({'user_id': userId, 'blocked_user_id': imageUserId}),
+      );
+      print(response.body);
+      print('block user');
+      final responseData = json.decode(response.body);
+
+      return responseData['message'];
+    } catch (e) {
+      print(e);
+      return "";
+    }
+  }
+
+  Future<List<dynamic>> getBlockedUsers() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      final token = await TokenManager.getToken();
+      final response = await http.get(
+        Uri.parse(
+            '$baseUrl/getBlockedUsers/${prefs.getInt('user_id').toString()}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData["users_blocked"];
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e);
+      print('error');
+      return [];
+    }
+  }
+
+  Future<String> unblockUser(blockedUserId) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var userId = prefs.getInt('user_id');
+      final token = await TokenManager.getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/unblockUser'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+        body: json.encode({'user_id': userId, 'blocked_user_id': blockedUserId}),
+      );
+      print(response.body);
+      print('block user');
+      final responseData = json.decode(response.body);
+
+      return responseData['message'];
+    } catch (e) {
+      print(e);
+      return "";
+    }
+  }
 }

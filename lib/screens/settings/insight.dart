@@ -23,7 +23,34 @@ class _InsightState extends State<Insight> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Insights'),
+        automaticallyImplyLeading: false,
+        title: GestureDetector(
+          onTap: () async {
+            Navigator.pop(context);
+          },
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFFF40BF5),
+                      Color(0xFFBF46BE),
+                      Color(0xFFF40BF5)
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Icon(Icons.arrow_back_rounded, size: 30),
+              ),
+              SizedBox(width: 8), // Add some space between the icon and the text
+              Text('Insights'),
+            ],
+          ),
+        ),
       ),
       body: Consumer<InsightProvider>(
         builder: (context, insightProvider, _) {
@@ -80,8 +107,9 @@ class InsightCards extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    'Earning from Posts:   ${NumberFormat('#,###').format(userInsight['total_post'])}', // Use userInsight here instead of insightProvider.userInsight
+                    'Earning from Posts:   ', // Use userInsight here instead of insightProvider.userInsight
                   ),
+                  trailing:  Text(NumberFormat('#,###').format(userInsight['total_post']),style:  TextStyle(fontSize: 15)),
                 ),
                 // Add more content related to pinned posts here if needed
               ],
@@ -97,8 +125,11 @@ class InsightCards extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    'Earnings from Subscriptions: ${NumberFormat('#,###').format(userInsight['total_subscription'])}', // Use userInsight here instead of insightProvider.userInsight
+                    'Earnings from Subscriptions: ', // Use userInsight here instead of insightProvider.userInsight
                   ),
+                    trailing:Text(
+                       NumberFormat('#,###').format(userInsight['total_subscription']),style:  TextStyle(fontSize: 15) // Use userInsight here instead of insightProvider.userInsight
+                    ),
                 ),
                 // Add more content related to subscriptions here if needed
               ],
@@ -114,96 +145,15 @@ class InsightCards extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    'Earnings from Messages: ${NumberFormat('#,###').format(userInsight['total_messages'])} ', // Use userInsight here instead of insightProvider.userInsight
+                    'Earnings from Messages: ', // Use userInsight here instead of insightProvider.userInsight
                   ),
+                  trailing: Text(NumberFormat('#,###').format(userInsight['total_messages']), style:  TextStyle(fontSize: 15)),
                 ),
                 // Add more content related to messages here if needed
               ],
             ),
           ),
           SizedBox(height: 20),
-          Table(
-            children: [
-              TableRow(
-                children: [
-                  TableCell(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          'Percentage',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                  TableCell(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          'Recipient',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              TableRow(
-                children: [
-                  TableCell(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          '25%',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                  TableCell(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          'Bangapp',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              TableRow(
-                children: [
-                  TableCell(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          '75%',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                  TableCell(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          'You',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          )
         ],
       ),
     );

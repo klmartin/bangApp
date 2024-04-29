@@ -35,6 +35,8 @@ class UpdateImageUploadProvider extends ChangeNotifier {
         var response = await http.Response.fromStream(await request.send());
         if (response.statusCode == 200) {
           final response2 = jsonDecode(response.body);
+          print(response2);
+          print('tis is response 2');
           _isUploading = false;
           _uploadText = 'Upload Complete';
           notifyListeners();
