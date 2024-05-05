@@ -1,6 +1,7 @@
 
 import 'package:bangapp/loaders/notification_skeleton.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:bangapp/widgets/app_bar_tittle.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -84,34 +85,8 @@ class _BlockedUsersState extends State<BlockedUsers> {
     return Scaffold(
       appBar: AppBar(
           automaticallyImplyLeading: false,
-          titleSpacing: 8,
-          title:GestureDetector(
-            onTap: () async {
-              Navigator.pop(context);
-            },
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFF40BF5),
-                        Color(0xFFBF46BE),
-                        Color(0xFFF40BF5)
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: Icon(Icons.arrow_back_rounded, size: 30),
-                ),
-                SizedBox(width: 8), // Add some space between the icon and the text
-                Text('Blocked Users'),
-              ],
-            ),
-          )),
+          title:AppBarTitle(text: "Blocked Users")
+      ),
       body: blockedUsersProvider.loading ? NotificationSkeleton() :  ListView.builder(
         itemCount: blockedUsersProvider.blockedUsers.length,
         itemBuilder: (BuildContext context, int index) {

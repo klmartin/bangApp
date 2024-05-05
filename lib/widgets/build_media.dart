@@ -1,4 +1,6 @@
+import 'package:bangapp/flickplayer/flick_multi_manager.dart';
 import 'package:bangapp/widgets/video_player_item.dart';
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,9 +10,10 @@ import 'package:shimmer/shimmer.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import '../constants/urls.dart';
+import '../flickplayer/flick_multi_player.dart';
 import '../providers/payment_provider.dart';
 
-
+late FlickMultiManager flickMultiManager;
 Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
      isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
   if (type == 'image' && isPinned == 0) {
@@ -55,6 +58,8 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
       ),
     );
   } else if (type == 'video' && isPinned == 0) {
+    flickMultiManager = FlickMultiManager();
+    //return FlickMultiPlayer(url: mediaUrl, flickMultiManager: flickMultiManager,image: thumbnailUrl,aspectRatio: aspectRatio);
      return VideoPlayerItem(videoUrl: mediaUrl,aspectRatio: aspectRatio,thumbnailUrl: thumbnailUrl, cacheUrl: cacheUrl);
   } else {
     return Container();

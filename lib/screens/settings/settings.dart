@@ -5,6 +5,7 @@ import "package:bangapp/services/service.dart";
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import '../../services/token_storage_helper.dart';
+import '../../widgets/app_bar_tittle.dart';
 import 'blocked_users.dart';
 import 'friends.dart';
 import 'insight.dart';
@@ -33,10 +34,8 @@ class _AppSettings extends State<AppSettings> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Settings",
-          style: TextStyle(color: Colors.black),
-        ),
+        automaticallyImplyLeading: false,
+        title: AppBarTitle(text: 'Settings'),
         backgroundColor: Colors.white,
       ),
       body: ListView(

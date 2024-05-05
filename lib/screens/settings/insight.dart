@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../loaders/insight_skeleton.dart';
 import '../../providers/insights_provider.dart';
+import '../../widgets/app_bar_tittle.dart';
+import '../../widgets/back_button.dart';
 
 class Insight extends StatefulWidget {
   @override
@@ -24,33 +26,7 @@ class _InsightState extends State<Insight> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: GestureDetector(
-          onTap: () async {
-            Navigator.pop(context);
-          },
-          child: Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFFF40BF5),
-                      Color(0xFFBF46BE),
-                      Color(0xFFF40BF5)
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Icon(Icons.arrow_back_rounded, size: 30),
-              ),
-              SizedBox(width: 8), // Add some space between the icon and the text
-              Text('Insights'),
-            ],
-          ),
-        ),
+        title: AppBarTitle(text: 'Insights'),
       ),
       body: Consumer<InsightProvider>(
         builder: (context, insightProvider, _) {

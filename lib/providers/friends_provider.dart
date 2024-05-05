@@ -108,13 +108,19 @@ class FriendProvider with ChangeNotifier {
     } catch (e) {}
   }
 
-  Future<String> removeFriendship(int imageUserId) async {
+  Future<String> removeFriendship(int friendId) async {
     _removingFriend = false;
     notifyListeners();
-    var message = await Service().removeFriendship(imageUserId);
+    var message = await Service().removeFriendship(friendId);
     _removingFriend = true;
     notifyListeners();
     return message;
+  }
+
+  void deleteFriend(friendId)
+  {
+    _friends.removeWhere((friend) => friend.userId == friendId);
+    notifyListeners();
   }
 
 

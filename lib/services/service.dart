@@ -1752,8 +1752,6 @@ class Service {
         },
         body: json.encode({'user_id': userId, 'friend_id': imageUserId}),
       );
-      print(response.body);
-      print('show remove friendship');
       final responseData = json.decode(response.body);
       return responseData['message'];
     } catch (e) {

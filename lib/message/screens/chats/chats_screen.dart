@@ -5,6 +5,7 @@ import 'package:bangapp/screens/Activity/activity_page.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
 import 'package:bangapp/screens/Home/Home2.dart';
 import 'package:bangapp/screens/Profile/profile.dart';
+import 'package:bangapp/widgets/app_bar_tittle.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -64,31 +65,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        titleSpacing: 8,
-        title: GestureDetector(
-          onTap: () async {
-            Navigator.of(context).pop();
-          },
-          child: Container(
-            padding: EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFFF40BF5),
-                  Color(0xFFBF46BE),
-                  Color(0xFFF40BF5)
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Icon(Icons.navigate_before_outlined, size: 30),
-          ),
-        ),
+        title: AppBarTitle(text: ""),
         automaticallyImplyLeading: false,
-        elevation: 0.0,
-        backgroundColor: Colors.white,
       ),
       body: const Body(),
     );

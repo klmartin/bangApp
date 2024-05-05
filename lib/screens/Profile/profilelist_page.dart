@@ -1,3 +1,4 @@
+import 'package:bangapp/widgets/app_bar_tittle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -23,14 +24,9 @@ class _ProfileListState extends State<ProfileList> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              CupertinoIcons.back,
-              color: Colors.black,
-            ),
-          ),
+          title: AppBarTitle(text: ''),
         ),
         body: UsersStream(),
       ),

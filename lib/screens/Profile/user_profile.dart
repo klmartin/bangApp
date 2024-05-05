@@ -300,7 +300,7 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      FriendsModal.showFriendsModal(context);
+                      FriendsModal.showFriendsModal(context, widget.userid);
                       await Provider.of<FriendProvider>(context, listen: false)
                           .getFriends(userId: widget.userid);
                     },

@@ -17,7 +17,7 @@ import 'package:bangapp/loaders/home_skeleton.dart';
 import '../Widgets/video_upload.dart';
 
 class Home2 extends StatelessWidget {
-  Home2();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +55,16 @@ class _Home2ContentState extends State<Home2Content>
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
 
     postsProvider.fetchData(_pageNumber);
+
+    postsProvider.addListener(() {
+      if (postsProvider.isTop) {
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(0);
+        }
+        postsProvider.refreshData();
+        postsProvider.setTop(false);
+      }
+    });
 
     videoUploadProvider.addListener(() {
       if (videoUploadProvider.uploadText == 'Upload Complete') {

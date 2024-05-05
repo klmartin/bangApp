@@ -433,9 +433,7 @@ class _EditPageState extends State<EditPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 50.0),
                       child: TextButton(
                           onPressed: () async {
-                            print(date_of_birth);
-                            print('date of birth');
-                            print(DateTime.parse("2000-01-01"));
+                           
                             if (rimage == null) {
                               Fluttertoast.showToast(
                                   msg: "Upload Your Profile Picture");

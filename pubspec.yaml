@@ -112,6 +112,7 @@ dependencies:
   toggle_switch: ^2.3.0
   choice: ^2.3.2
   back_button_interceptor: ^7.0.3
+  flick_video_player: ^0.7.0
 
 dev_dependencies:
   flutter_test:

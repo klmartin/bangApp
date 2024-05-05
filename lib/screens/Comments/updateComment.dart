@@ -9,6 +9,7 @@ import 'package:bangapp/providers/user_provider.dart';
 
 import '../../providers/bang_update_provider.dart';
 import '../../providers/update_comment_provider.dart';
+import '../../widgets/app_bar_tittle.dart';
 
 class UpdateCommentsPage extends StatefulWidget {
   final int? userId;
@@ -304,19 +305,8 @@ class _UpdateCommentsPageState extends State<UpdateCommentsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(CupertinoIcons.back),
-        ),
-        title: Text(
-          'Comments',
-          style: TextStyle(
-            fontFamily: 'Metropolis',
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-        ),
+        automaticallyImplyLeading: false,
+        title: AppBarTitle(text:"Comments"),
         backgroundColor: Colors.white,
       ),
       body: Container(

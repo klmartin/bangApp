@@ -246,7 +246,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 BoxShadow(
                   offset: const Offset(0, 4),
                   blurRadius: 32,
-                  color: const Color(0xFF087949).withOpacity(0.08),
+                  color: const Color(0xFFF40BF5).withOpacity(0.08),
                 ),
               ],
             ),

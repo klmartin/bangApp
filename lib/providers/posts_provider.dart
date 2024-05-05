@@ -10,6 +10,7 @@ import '../services/token_storage_helper.dart';
 
 class PostsProvider with ChangeNotifier {
   bool _isLastPage = false;
+  bool _isTop = false;
   int _pageNumber = 0;
   late  int _currentPageNumber = 0;
   bool _error = false;
@@ -24,6 +25,7 @@ class PostsProvider with ChangeNotifier {
   bool get isLastPage => _isLastPage;
   bool get isLoading => _loading;
   bool get isError => _error;
+  bool get isTop => _isTop;
 
   num get nextPageTrigger => _nextPageTrigger;
 
@@ -95,7 +97,9 @@ class PostsProvider with ChangeNotifier {
           'Authorization': 'Bearer $token',
         },
       );
-
+      print(response.body);
+      print('loadin more response');
+      print("$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         prefs.setString(cacheKey, json.encode(responseData));
@@ -150,7 +154,6 @@ class PostsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<void> refreshData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id').toString();
@@ -165,8 +168,7 @@ class PostsProvider with ChangeNotifier {
           'Authorization': 'Bearer $token', // Include other headers as needed
         },
       );
-      print(response.body);
-      print('refresh response');
+
       if (response.statusCode == 200) {
         responseData = json.decode(response.body);
       } else {
@@ -321,6 +323,11 @@ class PostsProvider with ChangeNotifier {
 
   void deletePostByUserID(int userId) {
     _posts.removeWhere((post) => post.userId == userId);
+    notifyListeners();
+  }
+
+  void setTop(status){
+    _isTop = status;
     notifyListeners();
   }
 }

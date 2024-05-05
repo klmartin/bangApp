@@ -15,9 +15,6 @@ import '../../providers/Profile_Provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
 import '../../providers/follower_provider.dart';
 import '../../providers/friends_provider.dart';
-import '../../providers/payment_provider.dart';
-import '../../widgets/build_media.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../widgets/followers_sheet.dart';
 import '../../widgets/friends_sheet.dart';
 import '../../widgets/video_rect.dart';
@@ -328,7 +325,7 @@ class _ProfileState extends State<Profile> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        FriendsModal.showFriendsModal(context);
+                        FriendsModal.showFriendsModal(context,userProvider.userData['id']);
                         await Provider.of<FriendProvider>(context,
                                 listen: false)
                             .getFriends();

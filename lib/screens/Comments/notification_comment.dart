@@ -1,3 +1,4 @@
+import 'package:bangapp/widgets/back_button.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -337,7 +338,7 @@ class _NotificationCommentsPageState extends State<NotificationCommentsPage> {
             ),
           );} ,
           color: Colors.black,
-          icon: Icon(CupertinoIcons.back),
+          icon: CustomBackButton(),
         ),
         title: Text(
           'Comments',

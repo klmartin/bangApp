@@ -10,7 +10,6 @@ import '../../components/square_tiles.dart';
 import '../../constants/urls.dart';
 import '../../nav.dart';
 import 'package:http/http.dart' as http;
-import 'package:get_storage/get_storage.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bangapp/screens/Authenticate/register_screen.dart';
@@ -221,12 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                                 SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
-                                      await GetStorage.init();
-                                      final box = GetStorage();
-                                      box.write('user_id', responseBody['user_id']);
-                                      print(box.read('user_id'));
-                                      print("this is user id from get storage");
-                                      // out: GetX is the best
+
 
                                   prefs.setInt(
                                       'user_id', responseBody['user_id']);
@@ -241,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _firebaseMessaging
                                     .getToken()
                                     .then((token) async {
-                                
+
                                   Service().sendTokenToBackend(
                                       token, responseBody['user_id']);
                                   final userProvider =

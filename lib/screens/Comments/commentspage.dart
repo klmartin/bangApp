@@ -1,4 +1,5 @@
 import 'package:bangapp/providers/posts_provider.dart';
+import 'package:bangapp/widgets/app_bar_tittle.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -309,19 +310,8 @@ class _CommentsPageState extends State<CommentsPage> {
     final commentProvider = Provider.of<CommentProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(CupertinoIcons.back),
-        ),
-        title: Text(
-          'Comments',
-          style: TextStyle(
-            fontFamily: 'Metropolis',
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-        ),
+        automaticallyImplyLeading: false,
+        title: AppBarTitle(text:"Comments"),
         backgroundColor: Colors.white,
       ),
       body: Container(

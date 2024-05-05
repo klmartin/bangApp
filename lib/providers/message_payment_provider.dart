@@ -9,6 +9,8 @@ class MessagePaymentProvider extends ChangeNotifier {
   bool _isFinishPaying = false;
   bool _paymentCanceled = false;
   int _payedPost = 0;
+  List<dynamic> _userPaidData = [];
+  List<dynamic> get userPaidData => _userPaidData;
   String _payingText = 'Processing Payment...';
   bool get isPaying => _isPaying;
   bool get isFinishPaying => _isFinishPaying;
@@ -23,6 +25,11 @@ class MessagePaymentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setUserPaidData(List<dynamic> data) {
+    _userPaidData.clear();
+    _userPaidData = data;
+    notifyListeners();
+  }
 
   Future<bool> startPaying(phoneNumber, price, postId,type) async {
     _isPaying = true;

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bangapp/widgets/forward_button.dart';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -151,22 +152,7 @@ class _CreateState extends State<Create> {
                 }
               }
             },
-            child: Container(
-              padding: EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFFF40BF5),
-                    Color(0xFFBF46BE),
-                    Color(0xFFF40BF5)
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Icon(Icons.navigate_next, size: 30),
-            ),
+            child: ForwardButton(),
           ),
           SizedBox(width: 10)
         ],

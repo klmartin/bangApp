@@ -8,6 +8,8 @@ import '../../models/friend.dart';
 import '../../providers/friends_provider.dart';
 import 'package:bangapp/screens/Profile/user_profile.dart';
 
+import '../../widgets/app_bar_tittle.dart';
+
 
 class Friends extends StatefulWidget {
   @override
@@ -25,7 +27,8 @@ class _FriendsState extends State<Friends> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Invite Friends'),
+        automaticallyImplyLeading: false,
+        title:  AppBarTitle(text: 'Invite Friends'),
       ),
       body: Consumer<FriendProvider>(
         builder: (context, friendProvider, _) {

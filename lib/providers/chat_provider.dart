@@ -56,18 +56,18 @@ class Conversation {
 class Message {
   final int id;
   final int senderId;
-   String message;
-   String? messageType;
+  String message;
+  String? messageType;
   final List<Participants>? participants;
   int isReady;
   Message({
     required this.messageType,
     required this.id,
-      required this.senderId,
-      required this.message,
-      this.participants,
-      required this.isReady,
-      });
+    required this.senderId,
+    required this.message,
+    this.participants,
+    required this.isReady,
+  });
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
@@ -124,14 +124,17 @@ class ChatProvider with ChangeNotifier {
         throw Exception('Failed to load conversations');
       }
     } catch (error) {
-      _showSnackbar('Error loading conversations: $error', context);
+      print(error);
+      print("this is an error");
+      throw Exception(error);
     }
   }
 
-  Future getTotalUnreadMessages() async{
+  Future getTotalUnreadMessages() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id');
-    final response =  await http.get(Uri.parse('$baseUrl/getTotalUnreadMessages?user_id=$userId'));
+    final response = await http
+        .get(Uri.parse('$baseUrl/getTotalUnreadMessages?user_id=$userId'));
     _totalUnreadMessages = jsonDecode(response.body)['unreadCount'];
     print(jsonDecode(response.body));
     notifyListeners();
@@ -154,7 +157,7 @@ class ChatProvider with ChangeNotifier {
         throw Exception('Failed to load messages');
       }
     } catch (error) {
-      _showSnackbar('Error loading messages: $error', context);
+      throw Exception(error);
     }
   }
 
@@ -190,97 +193,95 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
-Future<void> sendMessage(BuildContext context, int user1Id, int user2Id,
-    String message, ChatProvider chatProvider, socket) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getInt('user_id');
-  try {
-    final response = await http.post(Uri.parse('$baseUrl/sendMessage'), body: {
-      'sender_id': user1Id.toString(),
-      'user2_id': user2Id.toString(),
-      'message': message,
-    });
-
-    if (response.statusCode == 200) {
-      final newMessage = Message.fromJson(jsonDecode(response.body));
-      final serv = new Service();
-      final data = jsonDecode(response.body);
-      final createdAt = DateTime.parse(data['created_at']);
-      final timeAgo = timeago.format(createdAt);
-      final rawMessage = {
-        'conversation_id': data['conversation_id'].toString(),
+  Future<void> sendMessage(BuildContext context, int user1Id, int user2Id,
+      String message, ChatProvider chatProvider, socket) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    try {
+      final response =
+          await http.post(Uri.parse('$baseUrl/sendMessage'), body: {
         'sender_id': user1Id.toString(),
         'user2_id': user2Id.toString(),
-        'message': data['message'],
-        'time': timeAgo,
-      };
-      print(rawMessage);
-      socket.emit('updateLastMessageInConversation', rawMessage);
+        'message': message,
+      });
 
-      chatProvider._messages.insert(0, newMessage);
-      notifyListeners();
-      // _showSnackbar('Message sent successfully', context);
-    } else {
-      throw Exception('Failed to send message');
+      if (response.statusCode == 200) {
+        final newMessage = Message.fromJson(jsonDecode(response.body));
+        final serv = new Service();
+        final data = jsonDecode(response.body);
+        final createdAt = DateTime.parse(data['created_at']);
+        final timeAgo = timeago.format(createdAt);
+        final rawMessage = {
+          'conversation_id': data['conversation_id'].toString(),
+          'sender_id': user1Id.toString(),
+          'user2_id': user2Id.toString(),
+          'message': data['message'],
+          'time': timeAgo,
+        };
+        print(rawMessage);
+        socket.emit('updateLastMessageInConversation', rawMessage);
+
+        chatProvider._messages.insert(0, newMessage);
+        notifyListeners();
+      } else {
+        throw Exception('Failed to send message');
+      }
+    } catch (error) {
+      throw Exception(error);
     }
-  } catch (error) {
-    _showSnackbar('Error sending message: $error', context);
   }
-}
 
-Future<void> sendImageMessage(
-  BuildContext context,
-  int user1Id,
-  int user2Id,
-  File imageFile, // Assuming you have a File object for the image
-  ChatProvider chatProvider,
-  socket,
-) async {
-  print("The above is image response.................");
+  Future<void> sendImageMessage(
+    BuildContext context,
+    int user1Id,
+    int user2Id,
+    File imageFile, // Assuming you have a File object for the image
+    ChatProvider chatProvider,
+    socket,
+  ) async {
+    print("The above is image response.................");
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getInt('user_id');
-  try {
-    // You may need to adjust the URL and parameters based on your API
-    final url = Uri.parse('$baseUrl/sendImageMessage');
-    var request = http.MultipartRequest('POST', url);
-    request.fields['sender_id'] = user1Id.toString();
-    request.fields['user2_id'] = user2Id.toString();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    try {
+      // You may need to adjust the URL and parameters based on your API
+      final url = Uri.parse('$baseUrl/sendImageMessage');
+      var request = http.MultipartRequest('POST', url);
+      request.fields['sender_id'] = user1Id.toString();
+      request.fields['user2_id'] = user2Id.toString();
 
-    // Add the image file to the request
-    request.files.add(await http.MultipartFile.fromPath('attachment', imageFile.path));
+      // Add the image file to the request
+      request.files
+          .add(await http.MultipartFile.fromPath('attachment', imageFile.path));
 
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      final data = jsonDecode(await response.stream.bytesToString()); // Corrected this line
-      final newMessage = Message.fromJson(data);
-      final createdAt = DateTime.parse(data['created_at']);
-      final timeAgo = timeago.format(createdAt);
-      print(data);
-      final rawMessage = {
-        'conversation_id': data['conversation_id'].toString(),
-        'sender_id': user1Id.toString(),
-        'user2_id': user2Id.toString(),
-        'message': data['message'],
-        'time': timeAgo,
-      };
-      print("The above is image response.................");
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        final data = jsonDecode(
+            await response.stream.bytesToString()); // Corrected this line
+        final newMessage = Message.fromJson(data);
+        final createdAt = DateTime.parse(data['created_at']);
+        final timeAgo = timeago.format(createdAt);
+        print(data);
+        final rawMessage = {
+          'conversation_id': data['conversation_id'].toString(),
+          'sender_id': user1Id.toString(),
+          'user2_id': user2Id.toString(),
+          'message': data['message'],
+          'time': timeAgo,
+        };
+        print("The above is image response.................");
 
-      socket.emit('updateLastMessageInConversation', rawMessage);
-      chatProvider._messages.insert(0, newMessage);
-      notifyListeners();
-      // _showSnackbar('Image message sent successfully', context); // Add your Snackbar logic here
-    } else {
-      print(response.statusCode);
-      throw Exception('Failed to send image message');
+        socket.emit('updateLastMessageInConversation', rawMessage);
+        chatProvider._messages.insert(0, newMessage);
+        notifyListeners();
+      } else {
+        print(response.statusCode);
+        throw Exception('Failed to send image message');
+      }
+    } catch (error) {
+      throw Exception(error);
     }
-  } catch (error) {
-    _showSnackbar('Error sending image message: $error', context); // You need to define this function
   }
-}
-
-
-
 
   Future<void> startConversation(
       BuildContext context, int userId, int recipientId) async {
@@ -291,12 +292,10 @@ Future<void> sendImageMessage(
       'user_id': userId.toString(),
       'recipient_id': recipientId.toString(),
     };
-    final response = await http.post(
-        Uri.parse('$baseUrl/startNewChat'),
-        body: {
-          'user_id': userId.toString(),
-          'recipient_id': recipientId.toString(),
-        });
+    final response = await http.post(Uri.parse('$baseUrl/startNewChat'), body: {
+      'user_id': userId.toString(),
+      'recipient_id': recipientId.toString(),
+    });
     print(body);
     print(Uri.parse('$baseUrl/startNewChat'));
     print(response.body);
@@ -308,14 +307,6 @@ Future<void> sendImageMessage(
     } else {
       throw Exception('Failed to start conversation');
     }
-  }
-
-  void _showSnackbar(String message, context) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: Duration(seconds: 3),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void updateLastMessageInConverstion(lastMessage) {
@@ -337,7 +328,7 @@ Future<void> sendImageMessage(
               isActive: false,
               receiverId: 11,
               unreadCount: 11,
-               messageType: '',
+              messageType: '',
             ));
 
     if (conversation.id != 0) {
@@ -355,58 +346,57 @@ Future<void> sendImageMessage(
       print(
           'Conversation not found with id: ${lastMessage['conversation_id']}');
     }
-    }
-
-
+  }
 
   Future<void> sendVideoMessage(
-  BuildContext context,
-  int user1Id,
-  int user2Id,
-  File imageFile, // Assuming you have a File object for the image
-  ChatProvider chatProvider,
-  socket,
-) async {
-  print("The above is image response.................");
+    BuildContext context,
+    int user1Id,
+    int user2Id,
+    File imageFile, // Assuming you have a File object for the image
+    ChatProvider chatProvider,
+    socket,
+  ) async {
+    print("The above is image response.................");
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getInt('user_id');
-  try {
-    // You may need to adjust the URL and parameters based on your API
-    final url = Uri.parse('$baseUrl/sendVideoMessage');
-    var request = http.MultipartRequest('POST', url);
-    request.fields['sender_id'] = user1Id.toString();
-    request.fields['user2_id'] = user2Id.toString();
-    // Add the image file to the request
-    request.files.add(await http.MultipartFile.fromPath('attachment', imageFile.path));
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      final data = jsonDecode(await response.stream.bytesToString()); // Corrected this line
-      final newMessage = Message.fromJson(data);
-      final createdAt = DateTime.parse(data['created_at']);
-      final timeAgo = timeago.format(createdAt);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    try {
+      // You may need to adjust the URL and parameters based on your API
+      final url = Uri.parse('$baseUrl/sendVideoMessage');
+      var request = http.MultipartRequest('POST', url);
+      request.fields['sender_id'] = user1Id.toString();
+      request.fields['user2_id'] = user2Id.toString();
+      // Add the image file to the request
+      request.files
+          .add(await http.MultipartFile.fromPath('attachment', imageFile.path));
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        final data = jsonDecode(
+            await response.stream.bytesToString()); // Corrected this line
+        final newMessage = Message.fromJson(data);
+        final createdAt = DateTime.parse(data['created_at']);
+        final timeAgo = timeago.format(createdAt);
 
-      final rawMessage = {
-        'conversation_id': data['conversation_id'].toString(),
-        'sender_id': user1Id.toString(),
-        'user2_id': user2Id.toString(),
-        'message': data['message'],
-        'time': timeAgo,
-      };
+        final rawMessage = {
+          'conversation_id': data['conversation_id'].toString(),
+          'sender_id': user1Id.toString(),
+          'user2_id': user2Id.toString(),
+          'message': data['message'],
+          'time': timeAgo,
+        };
 
-    //  _sendMessageToSocket(rawMessage);
-      socket.emit('updateLastMessageInConversation', rawMessage);
-      chatProvider._messages.insert(0, newMessage);
-      notifyListeners();
-      // _showSnackbar('Image message sent successfully', context); // Add your Snackbar logic here
-    } else {
-      print(response.statusCode);
-      throw Exception('Failed to send image message');
+        //  _sendMessageToSocket(rawMessage);
+        socket.emit('updateLastMessageInConversation', rawMessage);
+        chatProvider._messages.insert(0, newMessage);
+        notifyListeners();
+      } else {
+        print(response.statusCode);
+        throw Exception('Failed to send image message');
+      }
+    } catch (error) {
+      throw Exception(error);
     }
-  } catch (error) {
-    _showSnackbar('Error sending image message: $error', context); // You need to define this function
   }
-}
 
   void deletePinnedById(int payedPost) {
     _conversations.forEach((conv) {
@@ -416,9 +406,4 @@ Future<void> sendImageMessage(
       }
     });
   }
-
-
 }
-
-
-

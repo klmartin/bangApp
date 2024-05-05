@@ -25,6 +25,8 @@ import '../../providers/video_upload.dart';
 import 'package:video_player/video_player.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
 
+import '../../widgets/back_button.dart';
+
 class FinalCreate extends StatefulWidget {
   static const String id = 'final_posts';
   final Uint8List? editedImage;
@@ -168,22 +170,7 @@ class _FinaleCreateState extends State<FinalCreate>
                   ),
                 );
               },
-              child: Container(
-                padding: EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFFF40BF5),
-                      Color(0xFFBF46BE),
-                      Color(0xFFF40BF5)
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Icon(Icons.arrow_back_rounded, size: 30),
-              ),
+              child: CustomBackButton(),
             ),
             automaticallyImplyLeading: true,
             elevation: 0.0,
@@ -253,10 +240,6 @@ class _FinaleCreateState extends State<FinalCreate>
                               return Container(
                                 width: 190,
                                 height: 200,
-                                decoration: BoxDecoration(
-                                  color: Colors.red[200],
-                                  borderRadius: BorderRadius.circular(32),
-                                ),
                                 child: Image.memory(
                                   images[index],
                                   width: 190.0,

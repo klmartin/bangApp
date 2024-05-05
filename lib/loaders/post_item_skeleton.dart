@@ -120,7 +120,7 @@ class PostItemSkeleton extends StatelessWidget {
               children: [
                 Container(
                   padding: EdgeInsets.only(left: 8),
-                  width: MediaQuery.of(context).size.width * 0.82,
+                  width: MediaQuery.of(context).size.width * 0.70,
                   child: Row(
                     children: [
                       Text(

@@ -95,8 +95,10 @@ Widget build(BuildContext context) {
     key: Key(widget.videoUrl),
     onVisibilityChanged: (visibilityInfo) {
       if (visibilityInfo.visibleFraction < 0.7) {
+        print('pausing video');
         _videoPlayerController.pause();
       } else {
+        print('playing video');
         _videoPlayerController.play();
       }
     },
