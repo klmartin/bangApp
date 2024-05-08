@@ -73,16 +73,16 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                           ),
                         ),
                         SizedBox(width: 5),
-                        Text(
-                          '        $followerCount Followers',
-                          style: const TextStyle(
-                            fontFamily: 'EuclidTriangle',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            letterSpacing: 0,
-                            color: Colors.black,
-                          ),
-                        )
+                        // Text(
+                        //   '        $followerCount Followers',
+                        //   style: const TextStyle(
+                        //     fontFamily: 'EuclidTriangle',
+                        //     fontWeight: FontWeight.bold,
+                        //     fontSize: 15,
+                        //     letterSpacing: 0,
+                        //     color: Colors.black,
+                        //   ),
+                        // )
                       ],
                     ),
                     const SizedBox(height: 2),
@@ -132,8 +132,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                     ListTile(
                                         leading: Icon(
                                       CupertinoIcons.eye,
-                                      color: Theme.of(context)
-                                          .primaryColor,
+                                      color: Colors.black,
                                     ),
                                     title: Text(
                                       "$postViews Views",
@@ -182,8 +181,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                     minLeadingWidth: 20,
                                     leading: Icon(
                                       CupertinoIcons.link,
-                                      color: Theme.of(context)
-                                          .primaryColor,
+                                      color: Colors.black,
                                     ),
                                     title: Text(
                                       "Copy URL",
@@ -243,8 +241,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                     minLeadingWidth: 20,
                                     leading: Icon(
                                       CupertinoIcons.photo,
-                                      color: Theme.of(context)
-                                          .primaryColor,
+                                      color: Colors.black,
                                     ),
                                     title: Text(
                                       "Challenge $type",
@@ -363,7 +360,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                     minLeadingWidth: 20,
                                     leading: Icon(
                                       CupertinoIcons.arrow_2_circlepath_circle,
-                                      color: Theme.of(context).primaryColor,
+                                      color: Colors.black,
                                     ),
                                     title: Text(
                                       "Report this Post",

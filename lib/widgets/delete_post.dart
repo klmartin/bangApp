@@ -63,7 +63,7 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
           minLeadingWidth: 20,
           leading: Icon(
             CupertinoIcons.delete,
-            color: Theme.of(context).primaryColor,
+            color: Colors.black,
           ),
           title: Text(
             "Delete Post",

@@ -118,7 +118,7 @@ class _ProfileState extends State<Profile> {
                             image: DecorationImage(
                               image: CachedNetworkImageProvider(
                                   userProvider.userData['user_image_url'] ??
-                                      ""),
+                                      profileUrl),
                               fit: BoxFit.cover,
                             )),
                         child: rimage != null
@@ -130,27 +130,27 @@ class _ProfileState extends State<Profile> {
                               )
                             : Container()),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        openFilterDialog(context);
-                      },
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        child: Transform.translate(
-                          offset:
-                              Offset(0, 30), // Adjust the value of 8 as needed
-                          child: Icon(
-                            Ionicons.person_add_outline,
-                            color: Theme.of(context).colorScheme.secondary,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(right: 8.0),
+                  //   child: GestureDetector(
+                  //     onTap: () {
+                  //       openFilterDialog(context);
+                  //     },
+                  //     child: Container(
+                  //       width: 80,
+                  //       height: 80,
+                  //       child: Transform.translate(
+                  //         offset:
+                  //             Offset(0, 30), // Adjust the value of 8 as needed
+                  //         child: Icon(
+                  //           Ionicons.person_add_outline,
+                  //           color: Theme.of(context).colorScheme.secondary,
+                  //           size: 30,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               Row(
@@ -167,25 +167,25 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            right: 8.0), // Adjust as needed
-                        child: GestureDetector(
-                          onTap: () {
-                            openFilterDialog(context);
-                          },
-                          child: Text(
-                            'Buy Followers',
-                            style: TextStyle(
-                              fontSize: 14.5,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Padding(
+                  //       padding: const EdgeInsets.only(
+                  //           right: 8.0), // Adjust as needed
+                  //       child: GestureDetector(
+                  //         onTap: () {
+                  //           openFilterDialog(context);
+                  //         },
+                  //         child: Text(
+                  //           'Buy Followers',
+                  //           style: TextStyle(
+                  //             fontSize: 14.5,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
               Padding(
@@ -212,7 +212,7 @@ class _ProfileState extends State<Profile> {
                                 builder: (context) => EditPage(
                                   nameController: TextEditingController(),
                                   userImage:
-                                      userProvider.userData['user_image_url'] ?? "",
+                                      userProvider.userData['user_image_url'] ?? profileUrl,
                                   name: userProvider.userData['name'] ?? "",
                                   date_of_birth: userProvider.userData['date_of_birth'] != null
                                       ? DateTime.parse(userProvider.userData['date_of_birth'])

@@ -71,10 +71,8 @@ class _BodyState extends State<Body> {
                   return Text('Error: ${snapshot.error}');
                 } else {
                   final chatProvider = Provider.of<ChatProvider>(context);
-
                   final conversations =
                       chatProvider.conversations;
-
                   return ListView.builder(
                       itemCount: conversations.length,
                       itemBuilder: (context, index) {

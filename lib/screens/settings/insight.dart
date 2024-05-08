@@ -54,6 +54,13 @@ class InsightCards extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20), // if you need this
+              side: BorderSide(
+                color: Colors.grey.withOpacity(0.8),
+                width: 1,
+              ),
+            ),
             child: Column(
               children: [
                 ListTile(
@@ -74,7 +81,13 @@ class InsightCards extends StatelessWidget {
           ),
           SizedBox(height: 25), // Adjust spacing as needed
           Card(
-
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20), // if you need this
+              side: BorderSide(
+                color: Colors.grey.withOpacity(0.8),
+                width: 1,
+              ),
+            ),
             child: Column(
               children: [
                 ListTile(
@@ -93,6 +106,13 @@ class InsightCards extends StatelessWidget {
           ),
           SizedBox(height: 20), // Adjust spacing as needed
           Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20), // if you need this
+              side: BorderSide(
+                color: Colors.grey.withOpacity(0.8),
+                width: 1,
+              ),
+            ),
             child: Column(
               children: [
                 ListTile(
@@ -113,6 +133,13 @@ class InsightCards extends StatelessWidget {
           ),
           SizedBox(height: 20), // Adjust spacing as needed
           Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20), // if you need this
+              side: BorderSide(
+                color: Colors.grey.withOpacity(0.8),
+                width: 1,
+              ),
+            ),
             child: Column(
               children: [
                 ListTile(

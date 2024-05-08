@@ -1650,6 +1650,7 @@ class Service {
           'friend_id': friendId,
         }),
       );
+      print(response.body);
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         return responseData['message'];

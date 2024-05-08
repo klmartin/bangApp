@@ -13,7 +13,6 @@
 #include <firebase_core/firebase_core_plugin_c_api.h>
 #include <modal_progress_hud_nsn/modal_progress_hud_nsn_plugin_c_api.h>
 #include <printing/printing_plugin.h>
-#include <rive_common/rive_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   CloudFirestorePluginCApiRegisterWithRegistrar(
@@ -30,6 +29,4 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("ModalProgressHudNsnPluginCApi"));
   PrintingPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("PrintingPlugin"));
-  RivePluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("RivePlugin"));
 }

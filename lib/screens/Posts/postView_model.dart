@@ -307,8 +307,7 @@ class _PostCardState extends State<PostCard> {
                               child: ReadMoreText(
                                 widget.caption ?? "",
                                 trimLines: 2,
-                                colorClickableText:
-                                    Theme.of(context).primaryColor,
+                                colorClickableText:Colors.black,
                                 trimMode: TrimMode.line,
                                 trimCollapsedText: '...Show more',
                                 trimExpandedText: '...Show less',
@@ -320,11 +319,11 @@ class _PostCardState extends State<PostCard> {
                                 lessStyle: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color: Color(0xFFF40BF5),
                                 ),
                                 moreStyle: TextStyle(
                                   fontSize: 15,
-                                  color: Colors.black,
+                                  color: Color(0xFFF40BF5),
                                 ),
                               ),
                             ),
@@ -537,11 +536,11 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
               lessStyle: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Color(0xFFF40BF5),
               ),
               moreStyle: TextStyle(
                 fontSize: 15,
-                color: Colors.black,
+                color: Color(0xFFF40BF5),
               ),
             ),
     );

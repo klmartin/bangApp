@@ -94,7 +94,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt,postViews, "posts") ??
+                    postId, userId, type, createdAt, postViews, "posts") ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -206,7 +206,6 @@ class PostItem2 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
-
                     children: [
                       GestureDetector(
                         onTap: () {
@@ -262,9 +261,9 @@ class PostItem2 extends StatelessWidget {
                         },
                         child: isLikedB
                             ? Icon(CupertinoIcons.heart_fill,
-                            color: Colors.red, size: 25)
+                                color: Colors.red, size: 25)
                             : Icon(CupertinoIcons.heart,
-                            color: Colors.black, size: 25),
+                                color: Colors.black, size: 25),
                       ),
                     ],
                   ), //for comments
@@ -274,7 +273,7 @@ class PostItem2 extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left:8.0,right:8.0),
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -307,14 +306,12 @@ class PostItem2 extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
-                      width:
-                          5), // Add some spacing between the username and caption
+                  SizedBox(width: 5), // Add some spacing between the username and caption
                   Expanded(
                     child: ReadMoreText(
                       caption,
                       trimLines: 1,
-                      colorClickableText: Theme.of(context).primaryColor,
+                      colorClickableText: Colors.black,
                       trimMode: TrimMode.line,
                       textColor: Colors.black,
                       trimCollapsedText: '...Show more',
@@ -326,13 +323,14 @@ class PostItem2 extends StatelessWidget {
                       lessStyle: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Color(0xFFF40BF5),
                       ),
                       moreStyle: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Color(0xFFF40BF5),
                       ),
+                      delimiterStyle: TextStyle(color:Colors.black),
                     ),
                   ),
                 ],
@@ -353,7 +351,7 @@ class PostItem2 extends StatelessWidget {
         child: Column(
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt,postViews, "posts") ??
+                    postId, userId, type, createdAt, postViews, "posts") ??
                 Container(),
             AspectRatio(
               aspectRatio: 190 / 120,
@@ -368,7 +366,7 @@ class PostItem2 extends StatelessWidget {
                         height: 250,
                         child: Stack(
                           children: [
-                           Container(),
+                            Container(),
                             Positioned(
                               bottom: 5,
                               child: Container(
@@ -522,7 +520,7 @@ class PostItem2 extends StatelessWidget {
                     child: ReadMoreText(
                       caption,
                       trimLines: 1,
-                      colorClickableText: Theme.of(context).primaryColor,
+                      colorClickableText: Colors.black,
                       trimMode: TrimMode.line,
                       textColor: Colors.black,
                       trimCollapsedText: '...Show more',
@@ -534,13 +532,14 @@ class PostItem2 extends StatelessWidget {
                       lessStyle: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Color(0xFFF40BF5),
                       ),
                       moreStyle: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Color(0xFFF40BF5),
                       ),
+                      delimiterStyle: TextStyle(color:Colors.black),
                     ),
                   ),
                 ],
@@ -574,10 +573,10 @@ class PostItem2 extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             postOptions(context, userId, userImage, name, followerCount, image,
-                    postId, userId, type, createdAt,postViews, "posts") ??
+                    postId, userId, type, createdAt, postViews, "posts") ??
                 Container(),
-            buildMediaWidget(context, image, type, isPinned,
-                    cacheUrl, thumbnailUrl, aspectRatio, postId, price) ??
+            buildMediaWidget(context, image, type, isPinned, cacheUrl,
+                    thumbnailUrl, aspectRatio, postId, price) ??
                 Container(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -594,30 +593,32 @@ class PostItem2 extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                          width: 5), // Add some spacing between the username and caption
+                          width:
+                              5), // Add some spacing between the username and caption
                       Expanded(
                         child: ReadMoreText(
                           caption,
                           trimLines: 1,
-                          colorClickableText: Theme.of(context).primaryColor,
+                          colorClickableText: Colors.black,
                           trimMode: TrimMode.line,
                           textColor: Colors.black,
                           trimCollapsedText: '...Show more',
                           trimExpandedText: '...Show less',
                           style: TextStyle(
                             fontSize: 15,
+                            fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
                           lessStyle: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Color(0xFFF40BF5),
                           ),
                           moreStyle: TextStyle(
                             fontSize: 15,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFF40BF5),
                           ),
+                          delimiterStyle: TextStyle(color:Colors.black),
                         ),
                       ),
                     ],
@@ -665,7 +666,6 @@ class PostItem2 extends StatelessWidget {
                                     : Icon(CupertinoIcons.heart,
                                         color: Colors.black, size: 25),
                               ),
-
                             ],
                           ),
                         ],
@@ -700,8 +700,7 @@ class PostItem2 extends StatelessWidget {
                     padding: EdgeInsets.only(right: 8),
                     child: GestureDetector(
                       onTap: () {
-                        Provider.of<UserLikesProvider>(context,
-                                listen: false)
+                        Provider.of<UserLikesProvider>(context, listen: false)
                             .getUserLikedPost(postId);
                         LikesModal.showLikesModal(context, postId);
                       },
@@ -729,8 +728,19 @@ class PostItem2 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              postOptions(context, userId, userImage, name, followerCount,
-                      image, postId, userId, type, createdAt,postViews, "posts") ??
+              postOptions(
+                      context,
+                      userId,
+                      userImage,
+                      name,
+                      followerCount,
+                      image,
+                      postId,
+                      userId,
+                      type,
+                      createdAt,
+                      postViews,
+                      "posts") ??
                   Container(),
               SizedBox(
                 height: 400,
@@ -740,16 +750,8 @@ class PostItem2 extends StatelessWidget {
                     final imageUrl = challenges[index].challengeImg;
                     return AspectRatio(
                       aspectRatio: width / height,
-                      child: buildMediaWidget(
-                          context,
-                          imageUrl,
-                          type,
-                          isPinned,
-                          cacheUrl,
-                          thumbnailUrl,
-                          aspectRatio,
-                          postId,
-                          price),
+                      child: buildMediaWidget(context, imageUrl, type, isPinned,
+                          cacheUrl, thumbnailUrl, aspectRatio, postId, price),
                     );
                   },
                 ),
@@ -778,8 +780,7 @@ class PostItem2 extends StatelessWidget {
                               child: ReadMoreText(
                                 caption,
                                 trimLines: 1,
-                                colorClickableText:
-                                    Theme.of(context).primaryColor,
+                                colorClickableText:Colors.black,
                                 trimMode: TrimMode.line,
                                 textColor: Colors.black,
                                 trimCollapsedText: '...Show more',
@@ -791,13 +792,14 @@ class PostItem2 extends StatelessWidget {
                                 lessStyle: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color: Color(0xFFF40BF5),
                                 ),
                                 moreStyle: TextStyle(
                                   fontSize: 15,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Color(0xFFF40BF5),
                                   fontWeight: FontWeight.bold,
                                 ),
+                                delimiterStyle: TextStyle(color:Colors.black),
                               ),
                             ),
                           ],

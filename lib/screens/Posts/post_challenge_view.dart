@@ -443,15 +443,20 @@ class _PostCardState extends State<PostCard> {
                         widget.caption,
                         trimLines: 1,
                         style: Theme.of(context).textTheme.bodyLarge!,
-                        colorClickableText: Theme.of(context).primaryColor,
+                        colorClickableText: Colors.black,
                         trimMode: TrimMode.line,
                         trimCollapsedText: '...Show more',
                         trimExpandedText: '...Show less',
                         moreStyle: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                          color: Color(0xFFF40BF5),
                         ),
+                          lessStyle: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFF40BF5),
+                          )
                       ),
                     ),
                   ],

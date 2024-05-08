@@ -4,9 +4,11 @@ import 'dart:typed_data';
 import 'package:bangapp/providers/blocked_users_provider.dart';
 import 'package:bangapp/providers/create_post_provider.dart';
 import 'package:bangapp/providers/update_image_upload.dart';
+import 'package:bangapp/providers/user_profile_data_provider.dart';
 import 'package:bangapp/screens/Comments/notification_comment.dart';
 import 'package:bangapp/widgets/splash_screen.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/screens/messages/message_screen.dart';
@@ -59,7 +61,9 @@ import 'package:bangapp/services/service.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
-   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  final _noScreenshot = NoScreenshot.instance;
+  await _noScreenshot.screenshotOff();
   await SharedPreferences.getInstance();
   // Listen for shared data when the app starts
   if (Platform.isIOS) {
@@ -97,9 +101,10 @@ void main() async {
     ChangeNotifierProvider(create: (context) => UpdateImageUploadProvider()),
     ChangeNotifierProvider(create: (context) => CreatePostProvider()),
     ChangeNotifierProvider(create: (context) => BlockedUsersProvider()),
-
+    ChangeNotifierProvider(create: (context) => UserProfileDataProvider()),
   ], child: MyApp()));
 }
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -151,7 +156,9 @@ class _AuthenticateState extends State<Authenticate> {
     _configureLocalNotifications();
 
 // For sharing images coming from outside the app while the app is closed
-    ReceiveSharingIntent.instance.getInitialMedia().then((List<SharedMediaFile> value) {
+    ReceiveSharingIntent.instance
+        .getInitialMedia()
+        .then((List<SharedMediaFile> value) {
       final firstSharedFile = value.isNotEmpty ? value[0] : null;
 
       if (firstSharedFile != null) {
@@ -292,22 +299,17 @@ class _AuthenticateState extends State<Authenticate> {
           ),
         );
       }
-      if (message.data["type"] == "comment")
-      {
+      if (message.data["type"] == "comment") {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => NotificationCommentsPage(userId: message.data['user_id'], postId: message.data['notification_id'])
-            )
-        );
+                builder: (context) => NotificationCommentsPage(
+                    userId: message.data['user_id'],
+                    postId: message.data['notification_id'])));
       }
-      if(message.data["type"] == "friend"){
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Nav(initialIndex: 3)
-            )
-        );
+      if (message.data["type"] == "friend") {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => Nav(initialIndex: 3)));
       }
       if (message.data["type"] == "challenge") {
         print('this is the challenge data');
@@ -379,14 +381,13 @@ class _AuthenticateState extends State<Authenticate> {
           ),
         );
       }
-      if (message.data["type"] == "comment")
-      {
+      if (message.data["type"] == "comment") {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => NotificationCommentsPage(userId: message.data['user_id'], postId: message.data['notification_id'])
-            )
-        );
+                builder: (context) => NotificationCommentsPage(
+                    userId: message.data['user_id'],
+                    postId: message.data['notification_id'])));
       }
       if (message.data["type"] == "challenge") {
         print('this is the challenge data');
@@ -400,13 +401,9 @@ class _AuthenticateState extends State<Authenticate> {
         ));
       }
 
-      if(message.data["type"] == "friend"){
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Nav(initialIndex: 3)
-            )
-        );
+      if (message.data["type"] == "friend") {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => Nav(initialIndex: 3)));
       }
     });
   }
@@ -476,6 +473,4 @@ class _AuthenticateState extends State<Authenticate> {
       },
     );
   }
-
-
 }

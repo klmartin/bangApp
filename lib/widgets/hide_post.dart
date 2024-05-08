@@ -107,7 +107,7 @@ class _HidePostWidgetState extends State<HidePostWidget> {
           minLeadingWidth: 20,
           leading: Icon(
             CupertinoIcons.eye_slash,
-            color: Theme.of(context).primaryColor,
+            color: Colors.black,
           ),
           title: Text(
             "Hide Post",
