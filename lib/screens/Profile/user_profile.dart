@@ -178,7 +178,7 @@ class _UserProfileState extends State<UserProfile> {
               onTap: () {
                 if (userProfileDataProvider.userData['public']) {
                   buildMessagePayment(context,
-                      userProfileDataProvider.userData['price'], widget.userid);
+                      userProfileDataProvider.userData['price'], int.parse(widget.userid));
                 } else {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return MessagesScreen(
@@ -747,7 +747,7 @@ class _ProfilePostsStreamContentState
               context,
               userProfileDataProvider
                   .userData['subscriptionPrice'],
-              widget.userid); },
+              int.parse(widget.userid)); },
           child: Center(
               child: Text('Subscribe to View ${widget.username} Posts',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),

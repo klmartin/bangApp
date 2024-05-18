@@ -130,6 +130,7 @@ class _ProfileState extends State<Profile> {
                               )
                             : Container()),
                   ),
+
                   // Padding(
                   //   padding: const EdgeInsets.only(right: 8.0),
                   //   child: GestureDetector(
@@ -212,13 +213,18 @@ class _ProfileState extends State<Profile> {
                                 builder: (context) => EditPage(
                                   nameController: TextEditingController(),
                                   userImage:
-                                      userProvider.userData['user_image_url'] ?? profileUrl,
+                                      userProvider.userData['user_image_url'] ??
+                                          profileUrl,
                                   name: userProvider.userData['name'] ?? "",
-                                  date_of_birth: userProvider.userData['date_of_birth'] != null
-                                      ? DateTime.parse(userProvider.userData['date_of_birth'])
-                                      : DateTime.parse("2000-01-01"),
+                                  date_of_birth:
+                                      userProvider.userData['date_of_birth'] !=
+                                              null
+                                          ? DateTime.parse(userProvider
+                                              .userData['date_of_birth'])
+                                          : DateTime.parse("2000-01-01"),
                                   phoneNumber:
-                                      userProvider.userData['phone_number'] ?? "",
+                                      userProvider.userData['phone_number'] ??
+                                          "",
                                   selectedHobbiesText: selectedHobbiesText,
                                   occupation:
                                       userProvider.userData['occupation'] ?? "",
@@ -325,7 +331,8 @@ class _ProfileState extends State<Profile> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        FriendsModal.showFriendsModal(context,userProvider.userData['id']);
+                        FriendsModal.showFriendsModal(
+                            context, userProvider.userData['id']);
                         await Provider.of<FriendProvider>(context,
                                 listen: false)
                             .getFriends();
@@ -631,6 +638,14 @@ buildPayments(
                           ? LoadingAnimationWidget.staggeredDotsWave(
                               color: Color(0xFFF40BF5), size: 30)
                           : TextButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(Color(
+                                        0xFFF40BF5)), // Change background color
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white), // Change text color
+                              ),
                               onPressed: () async {
                                 paymentProvider.startPaying(
                                     userProvider.userData['phone_number']
@@ -640,14 +655,8 @@ buildPayments(
                                     'followers',
                                     selectedHobbyIds);
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
                               child: Text(
                                 'Pay',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
                               ),
                             ),
                     ),
@@ -707,9 +716,10 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
       print('this is mwisho');
       final updateProvider =
           Provider.of<BangUpdateProfileProvider>(context, listen: false);
-      if(updateProvider.isLoading != true){
+      if (updateProvider.isLoading != true) {
         _pageNumber++;
-        updateProvider.loadMoreUpdates(_pageNumber); // Trigger loading of the next page
+        updateProvider
+            .loadMoreUpdates(_pageNumber); // Trigger loading of the next page
       }
     }
   }
@@ -745,20 +755,19 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => UpdateView(
-                                          provider.updates[i].postId,
-                                          provider.updates[i].type,
-                                          provider.updates[i].filename,
-                                          provider.updates[i].likeCount,
-                                          provider.updates[i].isLiked,
-                                          provider.updates[i].commentCount,
-                                          provider.updates[i].userImage,
-                                          provider.updates[i].userName,
-                                          provider.updates[i].caption,
-                                          provider.updates[i].aspectRatio,
-                                          provider.updates[i].thumbnailUrl,
-                                          provider.updates[i].cacheUrl,
-                                          provider
-                                        )));
+                                        provider.updates[i].postId,
+                                        provider.updates[i].type,
+                                        provider.updates[i].filename,
+                                        provider.updates[i].likeCount,
+                                        provider.updates[i].isLiked,
+                                        provider.updates[i].commentCount,
+                                        provider.updates[i].userImage,
+                                        provider.updates[i].userName,
+                                        provider.updates[i].caption,
+                                        provider.updates[i].aspectRatio,
+                                        provider.updates[i].thumbnailUrl,
+                                        provider.updates[i].cacheUrl,
+                                        provider)));
                           },
                           child: CachedNetworkImage(
                             imageUrl: provider.updates[i].filename,
@@ -778,20 +787,19 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => UpdateView(
-                                            provider.updates[i].postId,
-                                            provider.updates[i].type,
-                                            provider.updates[i].filename,
-                                            provider.updates[i].likeCount,
-                                            provider.updates[i].isLiked,
-                                            provider.updates[i].commentCount,
-                                            provider.updates[i].userImage,
-                                            provider.updates[i].userName,
-                                            provider.updates[i].caption,
-                                            provider.updates[i].aspectRatio,
-                                            provider.updates[i].thumbnailUrl,
-                                            provider.updates[i].cacheUrl,
-                                            provider
-                                          )));
+                                          provider.updates[i].postId,
+                                          provider.updates[i].type,
+                                          provider.updates[i].filename,
+                                          provider.updates[i].likeCount,
+                                          provider.updates[i].isLiked,
+                                          provider.updates[i].commentCount,
+                                          provider.updates[i].userImage,
+                                          provider.updates[i].userName,
+                                          provider.updates[i].caption,
+                                          provider.updates[i].aspectRatio,
+                                          provider.updates[i].thumbnailUrl,
+                                          provider.updates[i].cacheUrl,
+                                          provider)));
                             },
                             child: CachedNetworkImage(
                               imageUrl: provider.updates[i].thumbnailUrl,
@@ -847,9 +855,9 @@ class _ProfilePostsStreamContentState
   void _scrollListener() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-      if(profileProvider.isLoading != true)
-      {
+      final profileProvider =
+          Provider.of<ProfileProvider>(context, listen: false);
+      if (profileProvider.isLoading != true) {
         _pageNumber++;
         profileProvider.loadMoreData(_pageNumber);
       }

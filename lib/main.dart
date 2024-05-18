@@ -312,8 +312,6 @@ class _AuthenticateState extends State<Authenticate> {
             MaterialPageRoute(builder: (context) => Nav(initialIndex: 3)));
       }
       if (message.data["type"] == "challenge") {
-        print('this is the challenge data');
-        print(message.data["notification_id"]);
         int? challengeId = message.data['notification_id'] != null
             ? int.tryParse(message.data['notification_id'])
             : null;

@@ -13,12 +13,19 @@ import '../../services/token_storage_helper.dart';
 void main() => runApp(ProfileList());
 
 class ProfileList extends StatefulWidget {
+  final bool? fromNav;
+  final int? navIndex;
+  ProfileList({this.fromNav, this.navIndex});
   @override
   State<ProfileList> createState() => _ProfileListState();
 }
 
 class _ProfileListState extends State<ProfileList> {
   @override
+  void initState() {
+    print(widget.navIndex);
+    print('navigation index');
+  }
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -26,7 +33,7 @@ class _ProfileListState extends State<ProfileList> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
-          title: AppBarTitle(text: ''),
+          title: AppBarTitle(text: 'Search Users', isFromNav: widget.fromNav, navIndex:widget.navIndex),
         ),
         body: UsersStream(),
       ),
@@ -61,7 +68,6 @@ class UserBubble extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
-
             SearchHistoryManager().saveSearch([
               {
                 'profileUrl' : this.profileUrl,
@@ -210,8 +216,19 @@ class _UsersStreamState extends State<UsersStream> {
               }
             },
             decoration: InputDecoration(
-              hintText: 'Search users...',
+              hintText: "Enter Username...",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFF40BF5), // Border color when the TextField is focused
+                ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
             ),
+
           ),
         ),
         Expanded(

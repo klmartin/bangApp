@@ -118,22 +118,67 @@ class _AppSettings extends State<AppSettings> {
               activeColor: Color(0xFFF40BF5), // Set the color of the thumb when the switch is active
               inactiveTrackColor: Colors.white,
               onChanged: (bool value) async {
-                print(subscribe);
-                var valueRes = await Service().pinProfile();
-                userProvider.userData['subscribe'] = valueRes['value'];
-                setState(() {
-                  subscribe = !subscribe;
-                  print(subscribe);
-                });
-                Fluttertoast.showToast(
-                  msg: valueRes['message'],
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.grey[600],
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
+                if(subscribe == true){
+                  setState(() {
+                    subscribe = !subscribe;
+                  });
+                  var valueRes = await Service().pinProfile();
+                  userProvider.userData['subscribe'] = valueRes['value'];
+                  Fluttertoast.showToast(
+                    msg: valueRes['message'],
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.grey[600],
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+                }
+                else{
+                  // Show AlertDialog
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Your Account is going to be a business account'),
+                        content: Text('33% of earnings goes to BangApp'),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFF40BF5)), // Change background color
+                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Change text color
+                            ),
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          ElevatedButton(
+                            child: Text('OK'),
+                            onPressed: () async {
+                              setState(() {
+                                subscribe = !subscribe;
+                              });
+                              Navigator.of(context).pop();
+                              var valueRes = await Service().pinProfile();
+                              userProvider.userData['subscribe'] = valueRes['value'];
+                              Fluttertoast.showToast(
+                                msg: valueRes['message'],
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.grey[600],
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+
               },
             ),
           ),
@@ -169,7 +214,6 @@ class _AppSettings extends State<AppSettings> {
                       if (newPrice['message'] == 'Price set successfully') {
                         userProvider.userData['price'] = newPrice['price'];
                       }
-
                       Fluttertoast.showToast(
                         msg: newPrice['message'],
                         toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
@@ -190,25 +234,69 @@ class _AppSettings extends State<AppSettings> {
               activeColor: Color(0xFFF40BF5), // Set the color of the thumb when the switch is active
               inactiveTrackColor: Colors.white,
               onChanged: (bool value) async {
-                print(pinPost);
-                print('this is pinpost');
+                // Show AlertDialog
+                if(pinPost == true){
+                  setState(() {
+                    pinPost = !pinPost;
+                  });
+                  var valueRes = await Service().pinMessage();
+                  userProvider.userData['public'] = valueRes['value'];
+                  // Show toast message
+                  Fluttertoast.showToast(
+                    msg: valueRes['message'],
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.grey[600],
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+                }
+                else{
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Your Account is going to be a business account'),
+                        content: Text('33% of earnings goes to BangApp'),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFF40BF5)), // Change background color
+                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Change text color
+                            ),
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          ElevatedButton(
+                            child: Text('OK'),
+                            onPressed: () async {
+                              setState(() {
+                                pinPost = !pinPost;
+                              });
+                              Navigator.of(context).pop();
+                              var valueRes = await Service().pinMessage();
+                              userProvider.userData['public'] = valueRes['value'];
+                              // Show toast message
+                              Fluttertoast.showToast(
+                                msg: valueRes['message'],
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.grey[600],
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
 
-                var valueRes = await Service().pinMessage();
-                userProvider.userData['public'] = valueRes['value'];
-                setState(() {
-                  pinPost = !pinPost;
-                  print(pinPost);
-                  print('this is pinpost after');
-                });
-                Fluttertoast.showToast(
-                  msg: valueRes['message'],
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.grey[600],
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
               },
             ),
           ),

@@ -71,7 +71,7 @@ class _NavState extends State<Nav> {
     ));
 
     return Scaffold(
-      appBar: _isAppBarEnabled ? CustomAppBar(title: 'BangApp', context: context,  ): null,
+      appBar: _isAppBarEnabled ? CustomAppBar(title: 'BangApp', context: context,navIndex: _selectedIndex): null,
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.grey.shade200,

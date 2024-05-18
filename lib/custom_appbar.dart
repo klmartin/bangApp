@@ -1,14 +1,16 @@
 
 import 'package:bangapp/message/screens/chats/chats_screen.dart';
 import 'package:bangapp/providers/chat_provider.dart';
+import 'package:bangapp/screens/Profile/profilelist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final int? navIndex;
   final BuildContext context;
 
-  CustomAppBar({required this.title, required this.context});
+  CustomAppBar({required this.title, required this.context, this.navIndex});
 
   @override
   Size get preferredSize => Size.fromHeight(56.0);
@@ -29,6 +31,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       actions: [
+        InkWell(
+        onTap: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileList(fromNav:true,navIndex:navIndex)),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(right: 2,bottom: 5),
+          child: Icon(
+            Icons.search,
+            color: Colors.black,
+            size: 30,
+          ),
+        ),
+      ),
         InkWell(
           onTap: () {
             Navigator.push(

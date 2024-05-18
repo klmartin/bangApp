@@ -118,9 +118,10 @@ class PostsProvider with ChangeNotifier {
     }
   }
 
-
   void processResponseData(Map<String, dynamic> responseData) {
     if (responseData.containsKey('data')) {
+      print(responseData);
+      print('respnse data');
       List<dynamic> responseList = responseData['data']['data'];
       final newPosts = responseList.map((data) {
         List<dynamic>? challengesList = data['challenges'];

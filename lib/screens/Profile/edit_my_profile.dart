@@ -265,7 +265,7 @@ class _EditPageState extends State<EditPage> {
                   },
                   readOnly: true, // Make the TextField read-only to prevent manual input
                   decoration: InputDecoration(
-                    labelText: 'Select hobbies and intrests',
+                    labelText: 'Select hobbies and interests',
                     labelStyle: TextStyle(color: Colors.black),
                     prefixIcon: Icon(
                         Icons.accessibility_new
@@ -366,6 +366,9 @@ class _EditPageState extends State<EditPage> {
                             setState(() {
                               showSpinner = true;
                             });
+                            print('hobbies');
+                            print(widget.selectedHobbiesText);
+                            print('hobbies id');
                             await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber,widget.selectedHobbiesText,widget.occupation,widget.bio,rimage,widget.name);
                             Navigator.pushReplacement(
                               context,

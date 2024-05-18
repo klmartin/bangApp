@@ -291,7 +291,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       children: [
         Expanded(
           child: TextField(
-            textCapitalization:TextCapitalization.sentences,
+            textCapitalization: TextCapitalization.sentences,
             controller: _textEditingController,
             decoration: InputDecoration(
               hintText: "Type message",
@@ -568,7 +568,7 @@ Future<Null> buildMessagePayment(BuildContext context, price, postId) {
                       ),
                     ),
                     TextField(
-                      textCapitalization:TextCapitalization.sentences,
+                      textCapitalization: TextCapitalization.sentences,
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       controller: phoneNumberController,
@@ -599,14 +599,16 @@ Future<Null> buildMessagePayment(BuildContext context, price, postId) {
                                     postId,
                                     'message');
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(Color(
+                                        0xFFF40BF5)), // Change background color
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white), // Change text color
                               ),
                               child: Text(
                                 'Pay',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
                               ),
                             ),
                     ),
@@ -675,7 +677,7 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
                       ),
                     ),
                     TextField(
-                      textCapitalization:TextCapitalization.sentences,
+                      textCapitalization: TextCapitalization.sentences,
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       controller: phoneNumberController,
@@ -698,6 +700,10 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
                           ? LoadingAnimationWidget.staggeredDotsWave(
                               color: Colors.red, size: 30)
                           : TextButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFF40BF5)), // Change background color
+                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Change text color
+                        ),
                               onPressed: () async {
                                 subscriptionPaymentProvider.startPaying(
                                     userProvider.userData['phone_number']
@@ -706,14 +712,9 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
                                     userId,
                                     'subscription');
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
+
                               child: Text(
                                 'Pay',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
                               ),
                             ),
                     ),
@@ -734,7 +735,7 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
   });
 }
 
-Future<Null> showSubscriptionInfo(BuildContext context,mySubscribeDays) {
+Future<Null> showSubscriptionInfo(BuildContext context, mySubscribeDays) {
   return showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -773,7 +774,7 @@ Future<Null> showSubscriptionInfo(BuildContext context,mySubscribeDays) {
     },
   ).then((result) {
     var messagePaymentProvider =
-    Provider.of<MessagePaymentProvider>(context, listen: false);
+        Provider.of<MessagePaymentProvider>(context, listen: false);
     messagePaymentProvider.paymentCanceled = true;
     print(messagePaymentProvider.isPaying);
     print('Modal bottom sheet closed: $result');

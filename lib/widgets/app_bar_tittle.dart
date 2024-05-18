@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
 
+import '../nav.dart';
 import 'back_button.dart';
 
 class AppBarTitle extends StatelessWidget {
   final String text;
-
-  const AppBarTitle({Key? key, required this.text}) : super(key: key);
+  final bool? isFromNav;
+  final int? navIndex;
+  const AppBarTitle({Key? key, required this.text, this.isFromNav, this.navIndex}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        Navigator.pop(context);
+        if (isFromNav ?? false) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Nav(initialIndex: navIndex ?? 0,)),
+          );
+        } else {
+          Navigator.pop(context);
+        }
       },
       child: Row(
         children: [
