@@ -45,7 +45,7 @@ android {
     }
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "pro.bangapp.bangapptz"
+        applicationId "com.cyblogerz.bangapp"
         //minSdkVersion 26
         //targetSdkVersion 33
         minSdkVersion 25
@@ -102,7 +102,6 @@ android {
         implementation 'com.google.firebase:firebase-messaging:14.6.5'
         implementation 'com.android.support:multidex:1.0.3'
         implementation 'com.google.android.gms:play-services-auth:20.4.1'
-
 
     }
 
