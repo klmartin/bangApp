@@ -30,8 +30,7 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
 
     try {
       final responseBody = await Service().deletePost(widget.imagePostId);
-      if (responseBody != null &&
-          responseBody['message'] == 'Post deleted successfully') {
+      if (responseBody['message'] == 'Post deleted successfully') {
         Fluttertoast.showToast(msg: responseBody['message']);
         if (widget.type == 'posts') {
           final postsProvider =
@@ -64,18 +63,18 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
           minLeadingWidth: 20,
           leading: Icon(
             CupertinoIcons.delete,
-            color: Theme.of(context).primaryColor,
           ),
           title: Text(
             "Delete Post",
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
+          subtitle: _isLoading
+              ? Center(
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                      color: Color(0xFFF40BF5), size: 35),
+                )
+              : Center(),
         ),
-        if (_isLoading)
-          Center(
-            child: LoadingAnimationWidget.staggeredDotsWave(
-                color: Colors.red, size: 35),
-          ),
       ],
     );
   }

@@ -15,8 +15,8 @@ class UserLikesProvider extends ChangeNotifier {
 
   Future<void> getUserLikedPost(int postId) async {
     _isLoading = true;
+    _likedUsers.clear();
     notifyListeners();
-
     final token = await TokenManager.getToken();
     try {
       final url = Uri.parse("$baseUrl/getPostLikes/$postId");
@@ -28,7 +28,6 @@ class UserLikesProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        _likedUsers.clear();
         _likedUsers.addAll(
           (data['liked_users'] as List)
               .map((user) => User.fromJson(user))

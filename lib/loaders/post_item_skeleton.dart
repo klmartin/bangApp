@@ -14,7 +14,6 @@ import '../../models/post.dart';
 import '../../services/animation.dart';
 import '../../widgets/build_media.dart';
 import 'dart:io';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '../screens/Comments/commentspage.dart';
 
@@ -121,7 +120,7 @@ class PostItemSkeleton extends StatelessWidget {
               children: [
                 Container(
                   padding: EdgeInsets.only(left: 8),
-                  width: MediaQuery.of(context).size.width * 0.82,
+                  width: MediaQuery.of(context).size.width * 0.70,
                   child: Row(
                     children: [
                       Text(

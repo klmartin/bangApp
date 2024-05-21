@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/image_post.dart';
-import '../services/api_cache_helper.dart';
 import '../services/token_storage_helper.dart';
 
 class ProfileProvider extends ChangeNotifier {
@@ -45,40 +44,37 @@ class ProfileProvider extends ChangeNotifier {
         },
       );
       final responseData = json.decode(response.body);
-
       prefs.setString(cacheKey, json.encode(responseData));
       prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
 
       processResponseData(responseData);
       _isLoading = false;
       _currentPageNumber = _pageNumber;
-      _pageNumber++;
-      print(_pageNumber);
       notifyListeners();
     } else if (_pageNumber != _currentPageNumber) {
       final cacheData = prefs.getString(cacheKey);
       if (cacheData != null) {
         processResponseData(json.decode(cachedData));
       }
-      final response = await get(
-        Uri.parse(
-          "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId",
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json', // Include other headers as needed
-        },
-      );
-      final responseData = json.decode(response.body);
+      else{
+        final response = await get(
+          Uri.parse(
+            "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId",
+          ),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json', // Include other headers as needed
+          },
+        );
+        final responseData = json.decode(response.body);
 
-      prefs.setString(cacheKey, json.encode(responseData));
-      prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+        prefs.setString(cacheKey, json.encode(responseData));
+        prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
 
-      processResponseData(responseData);
-      _isLoading = false;
-      _currentPageNumber = _pageNumber;
-      _pageNumber++;
-      print(_pageNumber);
+        processResponseData(responseData);
+        _currentPageNumber = _pageNumber;
+      }
+
       notifyListeners();
     } else {
       print('Using cached data');
@@ -104,8 +100,6 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<void> getUserPost(userId,_pageNumber) async {
-    print('pageNumber');
-    print(_pageNumber);
     final token = await TokenManager.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final viewerId = prefs.getInt('user_id').toString();
@@ -134,36 +128,32 @@ class ProfileProvider extends ChangeNotifier {
       processResponseData(responseData);
       _isLoading = false;
       _currentPageNumber = _pageNumber;
-      _pageNumber++;
-      print(_pageNumber);
       notifyListeners();
     } else if (_pageNumber != _currentPageNumber) {
       final cacheData = prefs.getString(cacheKey);
       if (cacheData != null) {
         processResponseData(json.decode(cachedData));
       }
-      final response = await get(
-        Uri.parse(
-          "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId",
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json', // Include other headers as needed
-        },
-      );
-      final responseData = json.decode(response.body);
+      else{
+        final response = await get(
+          Uri.parse(
+            "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$userId",
+          ),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json', // Include other headers as needed
+          },
+        );
+        final responseData = json.decode(response.body);
 
-      prefs.setString(cacheKey, json.encode(responseData));
-      prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+        prefs.setString(cacheKey, json.encode(responseData));
+        prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
 
-      processResponseData(responseData);
-      _isLoading = false;
+        processResponseData(responseData);
+      }
       _currentPageNumber = _pageNumber;
-      _pageNumber++;
-      print(_pageNumber);
       notifyListeners();
     } else {
-      print('Using cached data');
       final cacheData = prefs.getString(cacheKey);
       if (cacheData != null) {
         processResponseData(json.decode(cachedData));
@@ -173,13 +163,10 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<void> loadMoreUserData(userId, int _pageNumber) async {
     try {
-      print('get more data');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final viewerId = prefs.getInt('user_id').toString();
       final String cacheKey = 'cached_posts';
       final token = await TokenManager.getToken();
-
-      notifyListeners();
       final response = await get(
         Uri.parse(
           "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId&viewer_id=$viewerId",
@@ -198,7 +185,6 @@ class ProfileProvider extends ChangeNotifier {
       } else {
         handleServerError();
       }
-
       _currentPageNumber = _pageNumber;
     } catch (e) {
       print(e);
@@ -254,14 +240,9 @@ class ProfileProvider extends ChangeNotifier {
       // ignore: unrelated_type_equality_checks
       final post = _posts.firstWhere((update) => update.postId == postId);
 
-      if (post != null) {
-        post.commentCount++;
-        notifyListeners();
-      } else {
-        // Iterate through _posts and print all postIds
-        posts?.forEach((post) {});
-      }
-    } catch (e) {}
+      post.commentCount++;
+      notifyListeners();
+        } catch (e) {}
   }
 
 

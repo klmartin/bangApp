@@ -22,7 +22,7 @@ class _WelcomeState extends State<Welcome> {
             ),
 
             Image.asset(
-              "images/app_icon.jpg",
+              "assets/images/app_icon.jpg",
               height: 60,
             ),
 
@@ -38,10 +38,7 @@ class _WelcomeState extends State<Welcome> {
                     ),
                 ),
               ),
-
-
             ),
-
             Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -58,15 +55,15 @@ class _WelcomeState extends State<Welcome> {
                           child: Text(
                             'Login',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           )),
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.deepOrange,
-                              Colors.deepPurple,
-                              Colors.redAccent
+                              Color(0xFFF40BF5),
+                              Color(0xFFBF46BE),
+                              Color(0xFFF40BF5)
                             ],
                             begin: Alignment.bottomRight,
                             end: Alignment.topLeft,
@@ -102,7 +99,7 @@ class _WelcomeState extends State<Welcome> {
                       },
                       child: Text('Sign Up',
                         style: TextStyle(
-                        color: Colors.blue,
+                        color: Color(0xFFF40BF5),
                         fontWeight: FontWeight.bold,
                       ),
                       ),

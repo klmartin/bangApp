@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bangapp/widgets/forward_button.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:bangapp/screens/Create/video_editing/video_edit.dart';
 
@@ -17,9 +19,7 @@ class Create extends StatefulWidget {
 
 class _CreateState extends State<Create> {
   List<AssetEntity> _selectedAssets = [];
-  List<ChewieController?> chewieControllerList = [];
-  VideoPlayerController? _videoPlayerController;
-  ChewieController? _chewieController;
+
   int _activePage = 0;
   final PageController _pageViewController =
       PageController(initialPage: 0); // set the initial page you want to show
@@ -39,15 +39,10 @@ class _CreateState extends State<Create> {
         if (_selectedAssets[0].type == AssetType.video) {
           _initializeVideoPlayer();
         } else if (_selectedAssets[0].type == AssetType.image) {
-          if (_chewieController != null) {
-            _chewieController!.pause();
-          }
+
         }
       } else {
-        _videoPlayerController?.dispose();
-        _chewieController?.dispose();
-        _videoPlayerController = null;
-        _chewieController = null;
+
       }
     });
   }
@@ -62,11 +57,7 @@ class _CreateState extends State<Create> {
         videoControllers.add(controller);
       }
       setState(() {
-        _chewieController = ChewieController(
-          videoPlayerController: videoControllers[0], // Display the first video
-          autoPlay: false,
-          looping: false,
-        );
+
       });
     }
   }
@@ -74,15 +65,12 @@ class _CreateState extends State<Create> {
   @override
   void initState() {
     super.initState();
-    _videoPlayerController = null;
-    _chewieController = null;
   }
 
   @override
   void dispose() {
     super.dispose();
-    _videoPlayerController?.dispose();
-    _chewieController?.dispose();
+
     _pageViewController.dispose();
   }
 
@@ -164,18 +152,7 @@ class _CreateState extends State<Create> {
                 }
               }
             },
-            child: Container(
-              padding: EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.redAccent, Colors.orange],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Icon(Icons.navigate_next, size: 30),
-            ),
+            child: ForwardButton(),
           ),
           SizedBox(width: 10)
         ],
@@ -204,25 +181,26 @@ class _CreateState extends State<Create> {
                           builder: (BuildContext context, AsyncSnapshot<File?> fileSnapshot) {
                             if (fileSnapshot.connectionState == ConnectionState.done && fileSnapshot.hasData) {
                               final videoController = VideoPlayerController.file(fileSnapshot.data!);
-                              final chewieController = ChewieController(
-                                videoPlayerController: videoController,
-                                autoPlay: false,
-                                looping: false,
-                                aspectRatio:_chewieController?.aspectRatio
-                              );
-                              videoController.initialize().then((_) {
-                                setState(() {
-                                  // Update the Chewie controller once the video is initialized
-                                  chewieControllerList[index] = chewieController;
-                                });
-                              });
                               return Container(
                                 height: MediaQuery.of(context).size.height / 2.2,
                                 width: MediaQuery.of(context).size.width,
-                                child: Chewie(controller: chewieController),
+                                child: BetterPlayer.file(
+                                    fileSnapshot.data!.path,
+                                  betterPlayerConfiguration:
+                                  BetterPlayerConfiguration(
+                                    fit: BoxFit.fitHeight,
+                                    aspectRatio: (MediaQuery.of(context).size.height / 2.2) / (MediaQuery.of(context).size.width),
+                                    autoPlay: true,
+                                    looping: true,
+                                    controlsConfiguration:
+                                    BetterPlayerControlsConfiguration(
+                                      showControls: false,
+                                    ),
+                                  ),
+                                ),
                               );
                             } else {
-                              return CircularProgressIndicator();
+                              return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30));
                             }
                           },
                         );
@@ -242,7 +220,7 @@ class _CreateState extends State<Create> {
                               // Handle errors if any
                             } else {
                               // Loading indicator while waiting for the thumbnail
-                              return CircularProgressIndicator();
+                              return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30));
                             }
                           },
                         );
@@ -332,64 +310,60 @@ class _MediaGridState extends State<MediaGrid> {
   _fetchNewMedia() async {
     lastPage = currentPage;
     var result = await PhotoManager.requestPermissionExtend();
-    if (result != null) {
-      List<AssetPathEntity> albums =
-          await PhotoManager.getAssetPathList(onlyAll: true);
-      List<AssetEntity> media =
-          await albums[0].getAssetListPaged(page: currentPage, size: 80);
-      List<Widget> temp = [];
-      for (var asset in media) {
-        temp.add(
-          GestureDetector(
-            onTap: () {
-              widget.onSelectAsset(asset);
-            },
-            child: FutureBuilder<Uint8List?>(
-              future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-              builder:
-                  (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasData) {
-                    return Stack(
-                      children: <Widget>[
-                        Positioned.fill(
-                          child: Image.memory(
-                            snapshot.data!,
-                            fit: BoxFit.cover,
-                          ),
+    List<AssetPathEntity> albums =
+        await PhotoManager.getAssetPathList(onlyAll: true);
+    List<AssetEntity> media =
+        await albums[0].getAssetListPaged(page: currentPage, size: 80);
+    List<Widget> temp = [];
+    for (var asset in media) {
+      temp.add(
+        GestureDetector(
+          onTap: () {
+            widget.onSelectAsset(asset);
+          },
+          child: FutureBuilder<Uint8List?>(
+            future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+            builder:
+                (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  return Stack(
+                    children: <Widget>[
+                      Positioned.fill(
+                        child: Image.memory(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
                         ),
-                        if (asset.type == AssetType.video)
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Padding(
-                              padding: EdgeInsets.only(right: 5, bottom: 5),
-                              child: Icon(
-                                Icons.videocam,
-                                color: Colors.white,
-                              ),
+                      ),
+                      if (asset.type == AssetType.video)
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 5, bottom: 5),
+                            child: Icon(
+                              Icons.videocam,
+                              color: Colors.white,
                             ),
                           ),
-                      ],
-                    );
-                  } else {
-                    return Container();
-                  }
+                        ),
+                    ],
+                  );
                 } else {
-                  return CircularProgressIndicator();
+                  return Container();
                 }
-              },
-            ),
+              } else {
+                return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30));
+              }
+            },
           ),
-        );
-      }
-      setState(() {
-        _mediaList.addAll(temp);
-        currentPage++;
-      });
-    } else {
-      // Handle permission denied
+        ),
+      );
     }
-  }
+    setState(() {
+      _mediaList.addAll(temp);
+      currentPage++;
+    });
+    }
 
   @override
   Widget build(BuildContext context) {

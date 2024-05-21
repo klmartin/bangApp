@@ -20,7 +20,7 @@ class ImagePost {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
-  int? price;
+  String? price;
   int postViews;
 
   ImagePost({

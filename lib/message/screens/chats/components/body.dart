@@ -6,11 +6,40 @@ import 'package:bangapp/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
+import '../../../../providers/message_payment_provider.dart';
 import 'chat_card.dart';
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
+  @override
+  _BodyState createState() => _BodyState();
+}
+class _BodyState extends State<Body> {
+  late MessagePaymentProvider messagePaymentProvider;
+
+  void initState() {
+    super.initState();
+    messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: false);
+    messagePaymentProvider.addListener(() {
+      if (messagePaymentProvider.payed == true) {
+        final userPaidData = messagePaymentProvider.userPaidData;
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return MessagesScreen(
+            userPaidData[0] ?? 0, // receiverId
+            userPaidData[1] ?? "Username", // receiverName
+            userPaidData[2] ?? logoUrl, // image
+            userPaidData[3], // privacySwitchValue
+            userPaidData[4], // id
+            userPaidData[5], // price
+          );
+        }));
+
+      }
+    });
+  }
+
 
   Future<int?> getUserIdFromSharedPreferences() async {
     final prefs = await SharedPreferences.getInstance();
@@ -42,10 +71,8 @@ class Body extends StatelessWidget {
                   return Text('Error: ${snapshot.error}');
                 } else {
                   final chatProvider = Provider.of<ChatProvider>(context);
-
                   final conversations =
                       chatProvider.conversations;
-
                   return ListView.builder(
                       itemCount: conversations.length,
                       itemBuilder: (context, index) {
@@ -60,16 +87,55 @@ class Body extends StatelessWidget {
                             isActive: true,
                             unreadCount: conv.unreadCount,
                           ),
-                          press: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MessagesScreen(
-                                  conv.receiverId ?? 0,
-                                  conv.receiverName ?? "Username",
-                                  conv.image ?? logoUrl,conv.privacySwitchValue,conv.id,conv.price
-                              ),
-                            ),
-                          ),
+                          press: () {
+                              print('conv status');
+                              print(conv.isActive);
+                              print(conv.privacySwitchValue);
+                            if (conv.privacySwitchValue! && conv.isActive==false ) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Alert"),
+                                    content: Text("Your conversation is Locked!"),
+                                    actions: [
+                                      TextButton(
+                                        child: Text("Pay"),
+                                        onPressed: () {
+                                          messagePaymentProvider.setUserPaidData([
+                                            conv.receiverId ?? 0,
+                                            conv.receiverName ?? "Username",
+                                            conv.image ?? logoUrl,
+                                            conv.privacySwitchValue,
+                                            conv.id,
+                                            conv.price,
+                                          ]);
+                                          buildMessagePayment(context, conv.price, conv.receiverId);
+                                          // Navigator.pop(context); // Close the alert dialog
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              // Navigate to MessagesScreen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MessagesScreen(
+                                    conv.receiverId ?? 0,
+                                    conv.receiverName ?? "Username",
+                                    conv.image ?? logoUrl,
+                                    conv.privacySwitchValue,
+                                    conv.id,
+                                    conv.price,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+
                         );
                       });
                 }

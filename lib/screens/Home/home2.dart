@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/post.dart';
 import 'package:bangapp/providers/posts_provider.dart'; // Import your PostsProvider class
@@ -16,7 +17,7 @@ import 'package:bangapp/loaders/home_skeleton.dart';
 import '../Widgets/video_upload.dart';
 
 class Home2 extends StatelessWidget {
-  Home2();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,9 +53,18 @@ class _Home2ContentState extends State<Home2Content>
     challengeUploadProvider =
         Provider.of<ChallengeUploadProvider>(context, listen: false);
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
-    print(_pageNumber);
-    print('this is page number');
+
     postsProvider.fetchData(_pageNumber);
+
+    postsProvider.addListener(() {
+      if (postsProvider.isTop) {
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(0);
+        }
+        postsProvider.refreshData();
+        postsProvider.setTop(false);
+      }
+    });
 
     videoUploadProvider.addListener(() {
       if (videoUploadProvider.uploadText == 'Upload Complete') {
@@ -100,11 +110,9 @@ class _Home2ContentState extends State<Home2Content>
 
   void _scrollListener() {
     final postsProvider = Provider.of<PostsProvider>(context, listen: false);
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.extentAfter < 500) {
       _pageNumber++;
-      postsProvider
-          .loadMoreData(_pageNumber); // Trigger loading of the next page
+      postsProvider.loadMoreData(_pageNumber); // Trigger loading of the next page
     }
   }
 
@@ -137,19 +145,29 @@ class _Home2ContentState extends State<Home2Content>
 
   Widget buildPostsView(PostsProvider postsProvider) {
     if (postsProvider.isLoading) {
-      return const Center(
+      return  Center(
         child: HomeSkeleton(),
       );
-    } else if (postsProvider.isError) {
+    } else if (postsProvider.isError == true) {
       return Center(
         child: errorDialog(size: 10),
       );
-    } else if (postsProvider.posts == null || postsProvider.posts!.isEmpty) {
+    } else if (postsProvider.posts!.isEmpty) {
       return Center(
-        child: Text("No posts available."),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("No posts available."),
+            ElevatedButton(
+              onPressed: () {
+                postsProvider.refreshData();
+              },
+              child: Text('Refresh Posts'),
+            ),
+          ],
+        ),
       );
     }
-
     return ListView.builder(
       key: const PageStorageKey<String>('page'),
       controller: _scrollController, // Attach the ScrollController
@@ -228,18 +246,7 @@ class _Home2ContentState extends State<Home2Content>
             );
           }
         } else if (postsProvider.isLoading) {
-          return Center(child: CircularProgressIndicator());
-        } else if (!postsProvider.isLastPage) {
-          return ElevatedButton(
-            onPressed: () {
-              postsProvider
-                  .fetchData(_pageNumber); // Trigger loading of the next page
-            },
-            child: Text('Load More'),
-          );
-        } else {
-          // No more posts to load
-          return Center(child: Text('No more posts to load.'));
+          return Center(child: LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30));
         }
       },
     );
@@ -265,6 +272,7 @@ class _Home2ContentState extends State<Home2Content>
           ),
           TextButton(
             onPressed: () {
+              print('pressed');
               final postsProvider =
                   Provider.of<PostsProvider>(context, listen: false);
               postsProvider.refreshData();

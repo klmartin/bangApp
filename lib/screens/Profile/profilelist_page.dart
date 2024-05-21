@@ -1,3 +1,4 @@
+import 'package:bangapp/widgets/app_bar_tittle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,25 +13,27 @@ import '../../services/token_storage_helper.dart';
 void main() => runApp(ProfileList());
 
 class ProfileList extends StatefulWidget {
+  final bool? fromNav;
+  final int? navIndex;
+  ProfileList({this.fromNav, this.navIndex});
   @override
   State<ProfileList> createState() => _ProfileListState();
 }
 
 class _ProfileListState extends State<ProfileList> {
   @override
+  void initState() {
+    print(widget.navIndex);
+    print('navigation index');
+  }
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              CupertinoIcons.back,
-              color: Colors.black,
-            ),
-          ),
+          title: AppBarTitle(text: 'Search Users', isFromNav: widget.fromNav, navIndex:widget.navIndex),
         ),
         body: UsersStream(),
       ),
@@ -65,7 +68,6 @@ class UserBubble extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
-
             SearchHistoryManager().saveSearch([
               {
                 'profileUrl' : this.profileUrl,
@@ -106,7 +108,7 @@ class UserBubble extends StatelessWidget {
                           backgroundImage: NetworkImage(this.profileUrl),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 10.0, left: 20.0),
+                          padding: const EdgeInsets.only(top: 8.0, left: 20.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -202,6 +204,7 @@ class _UsersStreamState extends State<UsersStream> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
+            textCapitalization:TextCapitalization.sentences,
             controller: _searchController,
             onChanged: (value) {
               if (value.isNotEmpty) {
@@ -213,8 +216,19 @@ class _UsersStreamState extends State<UsersStream> {
               }
             },
             decoration: InputDecoration(
-              hintText: 'Search users...',
+              hintText: "Enter Username...",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFF40BF5), // Border color when the TextField is focused
+                ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
             ),
+
           ),
         ),
         Expanded(

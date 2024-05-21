@@ -290,6 +290,7 @@ class ApiCacheHelper {
       apiCall: () async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         final userId = prefs.getInt('user_id').toString();
+
         final response = await http.get(
           Uri.parse(
             "$baseUrl/user-bang-updates?_page=$pageNumber&_limit=$numberOfPostsPerRequest&user_id=$userId",
@@ -385,6 +386,8 @@ class ApiCacheHelper {
           },
         );
         if (response.statusCode == 200) {
+          print(response.body);
+          print('this is response');
           return json.decode(response.body);
         } else {
           // Handle server error

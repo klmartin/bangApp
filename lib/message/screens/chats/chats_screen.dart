@@ -5,6 +5,7 @@ import 'package:bangapp/screens/Activity/activity_page.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
 import 'package:bangapp/screens/Home/Home2.dart';
 import 'package:bangapp/screens/Profile/profile.dart';
+import 'package:bangapp/widgets/app_bar_tittle.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -63,42 +64,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Chats", context: context),
-      body: const Body(),
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.grey.shade200,
-        buttonBackgroundColor: Colors.redAccent.shade100,
-        height: 50.0,
-        color: Colors.white,
-        items: <Widget>[
-          Icon(
-            Icons.home,
-            color: Colors.black,
-            size: 25,
-          ),
-          Icon(
-            Icons.search,
-            color: Colors.black,
-            size: 25.0,
-          ),
-          Icon(
-            Icons.create_outlined,
-            color: Colors.black,
-            size: 25.0,
-          ),
-          FaIcon(
-            FontAwesomeIcons.heart,
-            size: 25.0,
-          ),
-          Icon(
-            Icons.person_outline,
-            color: Colors.black,
-            size: 25.0,
-          ),
-        ],
-        index: _selectedIndex,
-        onTap: _onItemTap,
+      appBar: AppBar(
+        title: AppBarTitle(text: ""),
+        automaticallyImplyLeading: false,
       ),
+      body: const Body(),
     );
   }
 
@@ -109,12 +79,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
     });
   }
 
-  List<Widget> _widgetOptions = [
-    Home2(),
-    CR.Create(),
-    Activity(),
-    Profile(),
-  ];
 
   BottomNavigationBar buildBottomNavigationBar() {
     return BottomNavigationBar(
@@ -142,7 +106,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   AppBar buildAppBar() {
     return AppBar(
-      backgroundColor: kPrimaryColor,
       automaticallyImplyLeading: false,
       title: const Text("Chats"),
       actions: [

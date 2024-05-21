@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:bangapp/screens/Profile/profile_upload.dart';
 import 'package:bangapp/services/service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'dart:io';
 import '../../models/hobby.dart';
 import '../../nav.dart';
@@ -20,7 +22,7 @@ class EditPage extends StatefulWidget {
   final TextEditingController phoneNumberController;
   final TextEditingController bioController;
   String name;
-  int phoneNumber;
+  String phoneNumber;
   String occupation;
   String bio;
 
@@ -85,64 +87,28 @@ class _EditPageState extends State<EditPage> {
             style: TextStyle(color: Colors.black),
           ),
         ),
-        actions: <Widget>[
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.check,
-                color: Colors.purple,
-              ))
-        ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: <Widget>[
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if(widget.userImage != '' && rimage == null)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            widget.userImage, // Provide the remote URL here
-                            fit: BoxFit.cover,
-                            width: 100,
-                            height: 100,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if(widget.userImage == '' && rimage == null)
-                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            //to show image, you type like this.
-                            "assets/images/empty_profile.jpg",
-                            fit: BoxFit.cover,
-                            width: 100,
-                            height: 100,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if(rimage != null && widget.userImage == '')
+      body: ModalProgressHUD(
+        progressIndicator: LoadingAnimationWidget.staggeredDotsWave(
+            color: Color(0xFFF40BF5), size: 30),
+        inAsyncCall: showSpinner,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: <Widget>[
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if(widget.userImage != '' && rimage == null)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.file(
-                              //to show image, you type like this.
-                              File(rimage!),
+                            child: Image.network(
+                              widget.userImage, // Provide the remote URL here
                               fit: BoxFit.cover,
                               width: 100,
                               height: 100,
@@ -150,246 +116,289 @@ class _EditPageState extends State<EditPage> {
                           ),
                         ),
                       ),
-                    TextButton(
-                        onPressed: () {
-                          chooseUploadFile(context);
-                        },
-                        child: Text(
-                          'Change Profile photo',
-                          style: TextStyle(color: Colors.purple),
-                        ))
-                  ],
-
-                ),
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.text,
-                controller: widget.nameController,
-                onChanged: (value) {
-                  //Do something with the user input.
-                  widget.name = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter your name',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(
-                      Icons.accessibility
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-
-              TextField(
-                textAlign: TextAlign.center,
-                controller: widget.dateOfBirthController,
-                onTap: () async {
-                  final DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: widget.date_of_birth,
-                    //initialDate: DateTime.now(),
-                    firstDate: DateTime(1900, 1),
-                    lastDate: DateTime(2100, 12),
-                  );
-                  if (picked != null) {
-                    setState(() {
-                      widget.date_of_birth = picked;
-                      widget._dateController.text = DateFormatter.formatDateTime(
-                        dateTime: widget.date_of_birth,
-                        outputFormat: 'dd/MM/yyyy',
-                      );
-                    });
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter your date of birth',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(
-                      Icons.date_range
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                controller: widget.phoneNumberController,
-                onChanged: (value) {
-                  //Do something with the user input.
-                  widget.phoneNumber = int.parse(value);
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter your phone number',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(
-                      Icons.phone
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                onTap: () async {
-                  openFilterDialog();
-                },
-                readOnly: true, // Make the TextField read-only to prevent manual input
-                decoration: InputDecoration(
-                  labelText: 'Select hobbies and intrests',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(
-                      Icons.accessibility_new
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-                controller: TextEditingController(text: widget.selectedHobbiesText),
-                // Show the selected hobbies in the TextField
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.text,
-                controller: widget.occupationController,
-                onChanged: (value) {
-                  widget.occupation = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Occupation',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(
-                      Icons.work_outline
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        //child: Text('Bio'),
-                      ),
-                      TextField(
-                        minLines: 6,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        textAlign: TextAlign.center,
-                        controller: widget.bioController,
-                        onChanged: (value) {
-                          widget.bio = value;
-                          //Do something with the user input.
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'Bio',
-                          labelStyle: TextStyle(color: Colors.black),
-                          prefixIcon: Icon(
-                              Icons.info_outline
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black),
+                      if(widget.userImage == '' && rimage == null)
+                       Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              //to show image, you type like this.
+                              "assets/images/empty_profile.jpg",
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            ),
                           ),
                         ),
-                        style: TextStyle(color: Colors.black),
-                        cursorColor: Colors.black,
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding:
-                EdgeInsets.symmetric(horizontal: 50.0, vertical: 100.0),
-                child: Container(
-                  // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
-
-                    child: TextButton(
-                        onPressed: () async {
-                          print([widget.date_of_birth,widget.phoneNumber,widget.selectedHobbiesText,widget.occupation,rimage,widget.name]);
-                          await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber,widget.selectedHobbiesText,widget.occupation,widget.bio,rimage,widget.name);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Nav(initialIndex: 4),
+                      if(rimage != null && widget.userImage == '')
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Container(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                //to show image, you type like this.
+                                File(rimage!),
+                                fit: BoxFit.cover,
+                                width: 100,
+                                height: 100,
+                              ),
                             ),
-                          );
-                        },
-                        child: Text(
-                          'Update',
-                          style: TextStyle(
-                            color: Colors.white,
                           ),
-                        )),
+                        ),
+                      TextButton(
+                          onPressed: () {
+                            chooseUploadFile(context);
+                          },
+                          child: Text(
+                            'Change Profile photo',
+                            style: TextStyle(color: Colors.purple),
+                          ))
+                    ],
+
                   ),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.deepOrange,
-                          Colors.deepPurple,
-                          Colors.redAccent
-                        ],
-                        begin: Alignment.bottomRight,
-                        end: Alignment.topLeft,
-                      ),
-                      borderRadius: BorderRadius.circular(20.0)),
                 ),
-              ),
-            ],
+                TextField(
+                  textCapitalization:TextCapitalization.sentences,
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.text,
+                  controller: widget.nameController,
+                  onChanged: (value) {
+                    //Do something with the user input.
+                    widget.name = value;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Enter your name',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(
+                        Icons.accessibility
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                ),
+                SizedBox(
+                  height: 8.0,
+                ),
+                TextField(
+                  textCapitalization:TextCapitalization.sentences,
+                  textAlign: TextAlign.center,
+                  controller: widget.dateOfBirthController,
+                  onTap: () async {
+                    final DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: widget.date_of_birth,
+                      //initialDate: DateTime.now(),
+                      firstDate: DateTime(1900, 1),
+                      lastDate: DateTime(2100, 12),
+                    );
+                    if (picked != null) {
+                      setState(() {
+                        widget.date_of_birth = picked;
+                        widget._dateController.text = DateFormatter.formatDateTime(
+                          dateTime: widget.date_of_birth,
+                          outputFormat: 'dd/MM/yyyy',
+                        );
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Enter your date of birth',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(
+                        Icons.date_range
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                ),
+                SizedBox(
+                  height: 8.0,
+                ),
+                TextField(
+                  textCapitalization:TextCapitalization.sentences,
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.text,
+                  controller: widget.phoneNumberController,
+                  onChanged: (value) {
+                    //Do something with the user input.
+                    widget.phoneNumber = value;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Enter your phone number',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(
+                        Icons.phone
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                ),
+                SizedBox(
+                  height: 8.0,
+                ),
+                TextField(
+                  textCapitalization:TextCapitalization.sentences,
+                  textAlign: TextAlign.center,
+                  onTap: () async {
+                    openFilterDialog();
+                  },
+                  readOnly: true, // Make the TextField read-only to prevent manual input
+                  decoration: InputDecoration(
+                    labelText: 'Select hobbies and interests',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(
+                        Icons.accessibility_new
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                  controller: TextEditingController(text: widget.selectedHobbiesText),
+                  // Show the selected hobbies in the TextField
+                ),
+                SizedBox(
+                  height: 8.0,
+                ),
+                TextField(
+                  textCapitalization:TextCapitalization.sentences,
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.text,
+                  controller: widget.occupationController,
+                  onChanged: (value) {
+                    widget.occupation = value;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Occupation',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(
+                        Icons.work_outline
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                ),
+                SizedBox(
+                  height: 8.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          //child: Text('Bio'),
+                        ),
+                        TextField(
+                          textCapitalization:TextCapitalization.sentences,
+                          minLines: 6,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          textAlign: TextAlign.center,
+                          controller: widget.bioController,
+                          onChanged: (value) {
+                            widget.bio = value;
+                            //Do something with the user input.
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Bio',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(
+                                Icons.info_outline
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.black),
+                          cursorColor: Colors.black,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 50.0, vertical: 100.0),
+                  child: Container(
+                    // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+
+                      child: TextButton(
+                          onPressed: () async {
+                            setState(() {
+                              showSpinner = true;
+                            });
+                            print('hobbies');
+                            print(widget.selectedHobbiesText);
+                            print('hobbies id');
+                            await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber,widget.selectedHobbiesText,widget.occupation,widget.bio,rimage,widget.name);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Nav(initialIndex: 4),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Update',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          )),
+                    ),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFFF40BF5),
+                            Color(0xFFBF46BE),
+                            Color(0xFFF40BF5)
+                          ],
+                          begin: Alignment.bottomRight,
+                          end: Alignment.topLeft,
+                        ),
+                        borderRadius: BorderRadius.circular(20.0)),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -497,9 +506,9 @@ class _EditPageState extends State<EditPage> {
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.deepOrange,
-                          Colors.deepPurple,
-                          Colors.redAccent
+                          Color(0xFFF40BF5),
+                          Color(0xFFBF46BE),
+                          Color(0xFFF40BF5)
                         ],
                         begin: Alignment.bottomRight,
                         end: Alignment.topLeft,

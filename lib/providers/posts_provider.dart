@@ -10,6 +10,7 @@ import '../services/token_storage_helper.dart';
 
 class PostsProvider with ChangeNotifier {
   bool _isLastPage = false;
+  bool _isTop = false;
   int _pageNumber = 0;
   late  int _currentPageNumber = 0;
   bool _error = false;
@@ -18,11 +19,13 @@ class PostsProvider with ChangeNotifier {
   final int _nextPageTrigger = 3;
 
   List<Post> _posts = [];
+  List<String> videos = [];
 
   List<Post>? get posts => _posts;
   bool get isLastPage => _isLastPage;
   bool get isLoading => _loading;
   bool get isError => _error;
+  bool get isTop => _isTop;
 
   num get nextPageTrigger => _nextPageTrigger;
 
@@ -40,7 +43,7 @@ class PostsProvider with ChangeNotifier {
           .difference(DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
           .inMinutes;
 
-      if (minutes > 15 || cachedData.isEmpty) {
+      if (minutes > 5 || cachedData.isEmpty) {
         print('Fetching new data');
         _loading = true;
         notifyListeners();
@@ -61,11 +64,11 @@ class PostsProvider with ChangeNotifier {
         } else {
           handleServerError();
         }
-
         _currentPageNumber = _pageNumber;
       } else {
         print('Using cached data');
         final cacheData = prefs.getString(cacheKey);
+        print(cacheData);
         if (cacheData != null) {
           processResponseData(json.decode(cacheData));
         }
@@ -73,7 +76,6 @@ class PostsProvider with ChangeNotifier {
       }
     } catch (e) {
       print(e);
-      // Handle the error here...
     } finally {
       _loading = false;
       notifyListeners();
@@ -88,8 +90,6 @@ class PostsProvider with ChangeNotifier {
       final String cacheKey = 'cached_posts';
       final token = await TokenManager.getToken();
 
-      notifyListeners();
-
       final response = await get(
         Uri.parse(
             "$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId"),
@@ -97,7 +97,9 @@ class PostsProvider with ChangeNotifier {
           'Authorization': 'Bearer $token',
         },
       );
-
+      print(response.body);
+      print('loadin more response');
+      print("$baseUrl/getPost?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=$userId");
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         prefs.setString(cacheKey, json.encode(responseData));
@@ -106,20 +108,20 @@ class PostsProvider with ChangeNotifier {
       } else {
         handleServerError();
       }
-
       _currentPageNumber = _pageNumber;
     } catch (e) {
       print(e);
-      // Handle the error here...
+
     } finally {
       _loading = false;
       notifyListeners();
     }
   }
 
-
   void processResponseData(Map<String, dynamic> responseData) {
     if (responseData.containsKey('data')) {
+      print(responseData);
+      print('respnse data');
       List<dynamic> responseList = responseData['data']['data'];
       final newPosts = responseList.map((data) {
         List<dynamic>? challengesList = data['challenges'];
@@ -134,24 +136,23 @@ class PostsProvider with ChangeNotifier {
         )).toList();
         return newPost(data, challenges);
       }).toList();
+      responseList.forEach((value) {
+        if (value['type'] == 'video') {
+          videos.add(value['image']); // Assuming 'videoUrl' is the key for video links
+        }
+      });
       _posts.addAll(newPosts);
       _loading = false;
       notifyListeners();
     } else {
       _loading = false;
-      _error = true;
       notifyListeners();
     }
   }
 
   void handleServerError() {
-    // Handle server error (e.g., response.statusCode is not 200)
-    // You may want to set an error flag or log the error
-  }
-
-  void handleError(dynamic error) {
-    // Handle other exceptions (e.g., network error)
-    // You may want to set an error flag or log the error
+    _error = true;
+    notifyListeners();
   }
 
   Future<void> refreshData() async {
@@ -168,12 +169,16 @@ class PostsProvider with ChangeNotifier {
           'Authorization': 'Bearer $token', // Include other headers as needed
         },
       );
+
       if (response.statusCode == 200) {
         responseData = json.decode(response.body);
       } else {
-
+        _error = true;
+        notifyListeners();
       }
       if (responseData.containsKey('data')) {
+        print('refresh response print');
+        print(_error);
         List<dynamic> responseList = responseData['data']['data'];
         final newPosts = responseList.map((data) {
           List<dynamic>? challengesList = data['challenges'];
@@ -196,7 +201,6 @@ class PostsProvider with ChangeNotifier {
         notifyListeners();
       } else {
         _loading = false;
-        _error = true;
         notifyListeners();
       }
     } catch (e) {
@@ -256,25 +260,17 @@ class PostsProvider with ChangeNotifier {
   void incrementCommentCountByPostId(int postId) {
     try {
       final post = _posts.firstWhere((update) => update.postId == postId);
-      if (post != null) {
-        post.commentCount++;
-        notifyListeners();
-      } else {
-        posts?.forEach((post) {});
-      }
-    } catch (e) {}
+      post.commentCount++;
+      notifyListeners();
+        } catch (e) {}
   }
 
   void decrementCommentCountByPostId(int postId) {
     try {
       final post = _posts.firstWhere((update) => update.postId == postId);
-      if (post != null) {
-        post.commentCount--;
-        notifyListeners();
-      } else {
-        posts?.forEach((post) {});
-      }
-    } catch (e) {}
+      post.commentCount--;
+      notifyListeners();
+        } catch (e) {}
   }
 
   void increaseLikes(int postId) {
@@ -291,7 +287,6 @@ class PostsProvider with ChangeNotifier {
 
   void increaseLikes2(int postId, int postType) {
     final post = _posts.firstWhere((update) => update.postId == postId);
-    // ignore: unnecessary_null_comparison
     if (post != null) {
       if (postType == 1) {
         if (post.isLikedA == false) {
@@ -325,5 +320,15 @@ class PostsProvider with ChangeNotifier {
 
       notifyListeners();
     } else {}
+  }
+
+  void deletePostByUserID(int userId) {
+    _posts.removeWhere((post) => post.userId == userId);
+    notifyListeners();
+  }
+
+  void setTop(status){
+    _isTop = status;
+    notifyListeners();
   }
 }

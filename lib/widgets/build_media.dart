@@ -1,34 +1,33 @@
+import 'package:bangapp/flickplayer/flick_multi_manager.dart';
+import 'package:bangapp/widgets/video_player_item.dart';
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:bangapp/providers/user_provider.dart';
-import '../components/video_player.dart';
 import '../constants/urls.dart';
+import '../flickplayer/flick_multi_player.dart';
 import '../providers/payment_provider.dart';
-import '../services/azampay.dart';
 
-Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
-    imgHeight, isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
+late FlickMultiManager flickMultiManager;
+Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
+     isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
   if (type == 'image' && isPinned == 0) {
-
     return AspectRatio(
-      aspectRatio: imgWidth / imgHeight,
+      aspectRatio: double.parse(aspectRatio),
       child: GestureDetector(
         onTap: () {
           viewImage(context, mediaUrl);
         },
         child: CachedNetworkImage(
           imageUrl: mediaUrl,
-          height: imgHeight.toDouble(),
-          width: imgWidth.toDouble(),
           fit: BoxFit.cover,
           placeholder: (context, url) => AspectRatio(
-            aspectRatio: imgWidth / imgHeight,
+            aspectRatio: double.parse(aspectRatio),
             child: Shimmer.fromColors(
               baseColor: const Color.fromARGB(255, 30, 34, 45),
               highlightColor:
@@ -40,7 +39,6 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
       ),
     );
   } else if (type == 'image' || type == 'video' && isPinned == 1) {
-
     return GestureDetector(
       onTap: () {
         buildFab(context, price, postId);
@@ -49,7 +47,7 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
         fit: BoxFit.cover,
         imageUrl: pinnedUrl,
         placeholder: (context, url) => AspectRatio(
-          aspectRatio: imgWidth / imgHeight,
+          aspectRatio: double.parse(aspectRatio),
           child: Shimmer.fromColors(
             baseColor: const Color.fromARGB(255, 30, 34, 45),
             highlightColor:
@@ -60,12 +58,9 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type, imgWidth,
       ),
     );
   } else if (type == 'video' && isPinned == 0) {
-    return CustomVideoPlayer(
-        videoUrl: mediaUrl,
-        cachingVideoUrl: cacheUrl,
-        thumbnailUrl: thumbnailUrl,
-        aspectRatio: aspectRatio);
-    //return VideoPlayerPage(mediaUrl: mediaUrl);
+    flickMultiManager = FlickMultiManager();
+    //return FlickMultiPlayer(url: mediaUrl, flickMultiManager: flickMultiManager,image: thumbnailUrl,aspectRatio: aspectRatio);
+     return VideoPlayerItem(videoUrl: mediaUrl,aspectRatio: aspectRatio,thumbnailUrl: thumbnailUrl, cacheUrl: cacheUrl);
   } else {
     return Container();
   }
@@ -75,7 +70,6 @@ void viewImage(BuildContext context, String imageUrl) {
   Navigator.of(context).push(
     MaterialPageRoute(
         builder: (context) => Scaffold(
-
           body: PhotoView(
             imageProvider: CachedNetworkImageProvider(imageUrl),
             minScale: PhotoViewComputedScale.contained,
@@ -85,56 +79,56 @@ void viewImage(BuildContext context, String imageUrl) {
               color: Colors.black,
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // Show the popup menu
-              final RenderBox fabRenderBox = context.findRenderObject() as RenderBox;
-              final fabOffset = fabRenderBox.localToGlobal(Offset.zero);
-              showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(
-                  fabOffset.dx,
-                  fabOffset.dy - 200,
-                  fabOffset.dx,
-                  fabOffset.dy,
-                ),
-                // position: RelativeRect.fromLTRB(0, 0, 0, 100),
-                items: [
-                  PopupMenuItem(
-                    child: ListTile(
-                      leading: Icon(Icons.camera_alt),
-                      title: Text('Take a Photo or Video'),
-                      onTap: () async {
-                        final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
-                        if (pickedFile != null) {
-
-                          print('Picked image from camera: ${pickedFile.path}');
-                        }
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    child: ListTile(
-                      leading: Icon(Icons.photo_library),
-                      title: Text('Select from Gallery'),
-                      onTap: () async {
-                        final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-                        if (pickedFile != null) {
-
-                          print('Picked image from gallery: ${pickedFile.path}');
-                        }
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ],
-              );
-            },
-            child: Icon(Icons.add),
-          ),
-          // Add a PopupMenuButton for displaying the options
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          // floatingActionButton: FloatingActionButton(
+          //   onPressed: () {
+          //     // Show the popup menu
+          //     final RenderBox fabRenderBox = context.findRenderObject() as RenderBox;
+          //     final fabOffset = fabRenderBox.localToGlobal(Offset.zero);
+          //     showMenu(
+          //       context: context,
+          //       position: RelativeRect.fromLTRB(
+          //         fabOffset.dx,
+          //         fabOffset.dy - 200,
+          //         fabOffset.dx,
+          //         fabOffset.dy,
+          //       ),
+          //       // position: RelativeRect.fromLTRB(0, 0, 0, 100),
+          //       items: [
+          //         PopupMenuItem(
+          //           child: ListTile(
+          //             leading: Icon(Icons.camera_alt),
+          //             title: Text('Take a Photo or Video'),
+          //             onTap: () async {
+          //               final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+          //               if (pickedFile != null) {
+          //
+          //                 print('Picked image from camera: ${pickedFile.path}');
+          //               }
+          //               Navigator.pop(context);
+          //             },
+          //           ),
+          //         ),
+          //         PopupMenuItem(
+          //           child: ListTile(
+          //             leading: Icon(Icons.photo_library),
+          //             title: Text('Select from Gallery'),
+          //             onTap: () async {
+          //               final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+          //               if (pickedFile != null) {
+          //
+          //                 print('Picked image from gallery: ${pickedFile.path}');
+          //               }
+          //               Navigator.pop(context);
+          //             },
+          //           ),
+          //         ),
+          //       ],
+          //     );
+          //   },
+          //   child: Icon(Icons.add),
+          // ),
+          // // Add a PopupMenuButton for displaying the options
+          // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
         ),
     ),
@@ -142,6 +136,8 @@ void viewImage(BuildContext context, String imageUrl) {
 }
 
 Future<Null> buildFab(BuildContext context, price, postId) {
+  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+
   return showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -195,7 +191,7 @@ Future<Null> buildFab(BuildContext context, price, postId) {
                     ),
                     Center(
                       child: paymentProvider.isPaying
-                          ? LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30)
+                          ? LoadingAnimationWidget.staggeredDotsWave(color: Color(0xFFF40BF5), size: 30)
                           : TextButton(
                         onPressed: () async {
                           paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, postId, 'post');                        },
@@ -219,7 +215,6 @@ Future<Null> buildFab(BuildContext context, price, postId) {
       );
     },
   ).then((result) {
-    var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
     paymentProvider.paymentCanceled = true;
     print(paymentProvider.isPaying);
     print('Modal bottom sheet closed: $result');

@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="2.0">
+<plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>bangapp Tz</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>Icon-App-40x40@1x.png</string>
+		<string>Icon-App-60x60@2x 1.png</string>
+		<string>Icon-App-60x60@2x-2.png</string>
+		<string>Icon-App-60x60@2x-3.png</string>
+		<string>Icon-App-60x60@2x-4.png</string>
+		<string>Icon-App-40x40@2x.png</string>
+		<string>Icon-App-60x60@2x-5.png</string>
+		<string>Icon-App-60x60@2x-6.png</string>
+		<string>Icon-App-60x60@2x-7.png</string>
+		<string>Icon-App-60x60@2x-5 1.png</string>
+		<string>Icon-App-60x60@3x.png</string>
+		<string>Icon-App-60x60@2x-8.png</string>
+		<string>Icon-App-167x6167@2x-9.png</string>
+		<string>Icon-App-152x152@2x-9.png</string>
+	</array>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -22,6 +43,14 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to the camera for taking photos and videos to enhance your experience.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library to upload and post your images, You can delete your uploaded photos anytime.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchImageFile</key>
+	<string>/assets/app_icon</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -45,34 +74,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>In order to access your photo library</string>
-	<key>CFBundleDisplayName</key>
-	<string>bangapp Tz</string>
-	<key>UILaunchImageFile</key>
-	<string>/assets/app_icon</string>
-	<key>NSCameraUsageDescription</key>
-	<string>We need access to the camera for taking photos and videos to enhance your experience.</string>
-	<key>CFBundleIconFiles</key>
-	<array>
-		<string>Icon-App-40x40@1x.png</string>
-		<string>Icon-App-60x60@2x 1.png</string>
-		<string>Icon-App-60x60@2x-2.png</string>
-		<string>Icon-App-60x60@2x-3.png</string>
-		<string>Icon-App-60x60@2x-4.png</string>
-		<string>Icon-App-40x40@2x.png</string>
-		<string>Icon-App-60x60@2x-5.png</string>
-		<string>Icon-App-60x60@2x-6.png</string>
-		<string>Icon-App-60x60@2x-7.png</string>
-		<string>Icon-App-60x60@2x-5 1.png</string>
-		<string>Icon-App-60x60@3x.png</string>
-		<string>Icon-App-60x60@2x-8.png</string>
-		<string>Icon-App-167x6167@2x-9.png</string>
-		<string>Icon-App-152x152@2x-9.png</string>
-	</array>
 </dict>
 </plist>

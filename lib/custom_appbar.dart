@@ -1,15 +1,16 @@
 
-import 'package:bangapp/inspiration/inspirations.dart';
 import 'package:bangapp/message/screens/chats/chats_screen.dart';
 import 'package:bangapp/providers/chat_provider.dart';
+import 'package:bangapp/screens/Profile/profilelist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final int? navIndex;
   final BuildContext context;
 
-  CustomAppBar({required this.title, required this.context});
+  CustomAppBar({required this.title, required this.context, this.navIndex});
 
   @override
   Size get preferredSize => Size.fromHeight(56.0);
@@ -17,8 +18,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-
     return AppBar(
+      titleSpacing:8,
       title: Text(
         title,
         style: TextStyle(
@@ -31,6 +32,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         InkWell(
+        onTap: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileList(fromNav:true,navIndex:navIndex)),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(right: 2,bottom: 5),
+          child: Icon(
+            Icons.search,
+            color: Colors.black,
+            size: 30,
+          ),
+        ),
+      ),
+        InkWell(
           onTap: () {
             Navigator.push(
               context,
@@ -41,7 +58,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
           child: Stack(
             children: [
-              Container(margin: EdgeInsets.only(top: 14),
+              Container(margin: EdgeInsets.all(8),
                 height: 30,
                 width: 25,
                 child: Image.asset('assets/images/chatmessage.png')),
@@ -77,26 +94,26 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
         ),
-        Container(
-          padding: EdgeInsets.all(2),
-          margin: EdgeInsets.only(right: 10, left: 5),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [Colors.pink, Colors.redAccent, Colors.orange],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: InkWell(
-            child: Icon(Icons.notes_rounded),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return BangInspiration();
-              }));
-            },
-          ),
-        ),
+        // Container(
+        //   padding: EdgeInsets.all(2),
+        //   margin: EdgeInsets.only(right: 10, left: 5),
+        //   decoration: BoxDecoration(
+        //     shape: BoxShape.circle,
+        //     gradient: LinearGradient(
+        //       colors: [Colors.pink, Colors.redAccent, Colors.orange],
+        //       begin: Alignment.topLeft,
+        //       end: Alignment.bottomRight,
+        //     ),
+        //   ),
+        //   child: InkWell(
+        //     child: Icon(Icons.notes_rounded),
+        //     onTap: () {
+        //       Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //         return BangInspiration();
+        //       }));
+        //     },
+        //   ),
+        // ),
       ],
       automaticallyImplyLeading: false,
       elevation: 0.0,

@@ -9,7 +9,6 @@ import '../../widgets/build_media.dart';
 import '../../widgets/user_profile.dart';
 import '../Profile/profile.dart';
 import '../Widgets/readmore.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:bangapp/constants/urls.dart';
@@ -210,7 +209,7 @@ class _PostCardState extends State<PostCard> {
               },
               child: AspectRatio(
                 aspectRatio: widget.width / widget.height,
-                child: buildMediaWidget(context, widget.challenge_img,widget.type,widget.width,widget.height,0,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio,widget.post_id,widget.price),
+                child: buildMediaWidget(context, widget.challenge_img,widget.type,0,widget.cacheUrl,widget.thumbnailUrl,widget.aspectRatio,widget.post_id,widget.price),
               ),
             ),
             Row(

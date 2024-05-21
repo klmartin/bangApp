@@ -1,38 +1,48 @@
-import 'package:google_sign_in/google_sign_in.dart';
-
-/*
-class AuthService {
-
-  //Google Sign In
-  signInWithGoogle() async {
-    // begin interactive sign in process
-    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
-
-    // obtain auth details from request
-
-    final GoogleSignInAuthentication gAuth = await gUser!.authentication;
-
-    // create a new credentials for user
-    final credential = GoogleAuthProvider.credential(
-      accessToken: gAuth.accessToken,
-      idToken: gAuth.idToken,
-    );
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:bangapp/constants/urls.dart';
 
 
-    // finally, lets sign in
-
-    return await FirebaseAuth.instance.signInWithCredential(credential);
-
-
-  }
-
-}
-*/
  class  AuthService {
-    signIn() async {
-   final _googleSignIn = GoogleSignIn();
-   Future<GoogleSignInAccount?> login() => _googleSignIn.signIn();
- }
+
+   Future<Map<String, dynamic>> addGoogleUser (userName,userEmail,userPic,userPhone,uid) async {
+     try{
+       print('nimeingia hapa');
+       print("$baseUrl/v1/registerGoogleUser");
+       final response = await http.post(
+         Uri.parse('$baseUrl/v1/registerGoogleUser'),
+         body: {
+           'user_name': userName,
+           'user_email': userEmail,
+           'user_picture': userPic,
+           'user_phone': userPhone ?? "",
+           'uid' : uid,
+         },
+       );
+       print(response.body);
+       print('google user response');
+       if (response.statusCode == 200) {
+         return json.decode(response.body);
+       }
+       else {
+        return {};
+       }
+     }
+     catch(e){
+       print(e);
+       return {};
+     }
+
+   }
+
+   bool validateEmail(String email) {
+     // Regular expression for email validation
+     // This regex checks for basic email pattern, but it may not cover all possible valid email formats
+     final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+     // Check if the email matches the regex pattern
+     return emailRegex.hasMatch(email);
+   }
 
  }
 

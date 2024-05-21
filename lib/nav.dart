@@ -1,8 +1,11 @@
-import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/custom_appbar.dart';
 import 'package:bangapp/providers/chat_provider.dart';
+import 'package:bangapp/providers/posts_provider.dart';
+import 'package:bangapp/screens/Create/final_create.dart';
 import 'package:bangapp/screens/Explore/explore_page2.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
@@ -11,10 +14,8 @@ import 'screens/Activity/activity_page.dart';
 import 'package:bangapp/screens/Home/Home2.dart';
 import 'package:bangapp/services/service.dart';
 import 'screens/Profile/profile.dart';
-import 'package:bangapp/screens/Widgets/fab_container.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
-import 'package:bangapp/providers/user_provider.dart';
+import 'package:video_player/video_player.dart';
 
 
 class Nav extends StatefulWidget {
@@ -29,24 +30,21 @@ class Nav extends StatefulWidget {
 class _NavState extends State<Nav> {
   bool _isAppBarEnabled = true; // Variable to track app bar state
   int _selectedIndex = 0;
-  late List<Widget> _widgetOptions ;
 
+  late List<Widget> _widgetOptions ;
   @override
   void initState() {
-
     super.initState();
     _selectedIndex = widget.initialIndex;
     _widgetOptions = [
       Home2(),
       BangUpdates2(),
       CR.Create(),
-      Activity(),
+       Activity(),
       Profile(),
     ];
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     chatProvider.getTotalUnreadMessages();
-
-
   }
 
   @override
@@ -54,6 +52,11 @@ class _NavState extends State<Nav> {
     setState(() {
       _selectedIndex = index;
       _isAppBarEnabled = index != 2 && index != 1;
+      if(_selectedIndex == index){
+        print("pressed twice");
+        final postsProvider = Provider.of<PostsProvider>(context, listen: false);
+        postsProvider.setTop(true);
+      }
     });
   }
 
@@ -68,11 +71,11 @@ class _NavState extends State<Nav> {
     ));
 
     return Scaffold(
-      appBar: _isAppBarEnabled ? CustomAppBar(title: 'BangApp', context: context,  ): null,
+      appBar: _isAppBarEnabled ? CustomAppBar(title: 'BangApp', context: context,navIndex: _selectedIndex): null,
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.grey.shade200,
-        buttonBackgroundColor: Colors.redAccent.shade100,
+        buttonBackgroundColor: Color(0xFFF40BF5),
         height: 50.0,
         color: Colors.white,
         items: <Widget>[
@@ -139,6 +142,4 @@ class _NavState extends State<Nav> {
       ),
     );
   }
-
-
 }

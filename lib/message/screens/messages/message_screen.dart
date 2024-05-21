@@ -246,7 +246,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 BoxShadow(
                   offset: const Offset(0, 4),
                   blurRadius: 32,
-                  color: const Color(0xFF087949).withOpacity(0.08),
+                  color: const Color(0xFFF40BF5).withOpacity(0.08),
                 ),
               ],
             ),
@@ -291,6 +291,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       children: [
         Expanded(
           child: TextField(
+            textCapitalization: TextCapitalization.sentences,
             controller: _textEditingController,
             decoration: InputDecoration(
               hintText: "Type message",
@@ -329,7 +330,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 Provider.of<ChatProvider>(context, listen: false)
                     .setShouldRefresh(true);
               },
-              child: Icon(Icons.arrow_back, color: Colors.white, size: 33),
+              child: Icon(Icons.arrow_back, color: Colors.black, size: 33),
             ),
           ),
           CircleAvatar(
@@ -567,6 +568,7 @@ Future<Null> buildMessagePayment(BuildContext context, price, postId) {
                       ),
                     ),
                     TextField(
+                      textCapitalization: TextCapitalization.sentences,
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       controller: phoneNumberController,
@@ -597,14 +599,16 @@ Future<Null> buildMessagePayment(BuildContext context, price, postId) {
                                     postId,
                                     'message');
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(Color(
+                                        0xFFF40BF5)), // Change background color
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white), // Change text color
                               ),
                               child: Text(
                                 'Pay',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
                               ),
                             ),
                     ),
@@ -673,6 +677,7 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
                       ),
                     ),
                     TextField(
+                      textCapitalization: TextCapitalization.sentences,
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       controller: phoneNumberController,
@@ -695,6 +700,10 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
                           ? LoadingAnimationWidget.staggeredDotsWave(
                               color: Colors.red, size: 30)
                           : TextButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFF40BF5)), // Change background color
+                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Change text color
+                        ),
                               onPressed: () async {
                                 subscriptionPaymentProvider.startPaying(
                                     userProvider.userData['phone_number']
@@ -703,16 +712,57 @@ Future<Null> buildSubscriptionPayment(BuildContext context, price, userId) {
                                     userId,
                                     'subscription');
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
+
                               child: Text(
                                 'Pay',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
                               ),
                             ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      );
+    },
+  ).then((result) {
+    var messagePaymentProvider =
+        Provider.of<MessagePaymentProvider>(context, listen: false);
+    messagePaymentProvider.paymentCanceled = true;
+    print(messagePaymentProvider.isPaying);
+    print('Modal bottom sheet closed: $result');
+  });
+}
+
+Future<Null> showSubscriptionInfo(BuildContext context, mySubscribeDays) {
+  return showModalBottomSheet(
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+    builder: (BuildContext context) {
+      return Builder(
+        builder: (BuildContext innerContext) {
+          return Consumer<SubscriptionPaymentProvider>(
+            builder: (context, subscriptionPaymentProvider, _) {
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Center(
+                        child: Text(
+                          'Subscription Days Remaining: $mySubscribeDays',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

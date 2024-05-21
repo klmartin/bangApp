@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:bangapp/screens/Authenticate/login_screen.dart';
 import "package:bangapp/services/service.dart";
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/token_storage_helper.dart';
+import '../../widgets/app_bar_tittle.dart';
+import 'blocked_users.dart';
+import 'friends.dart';
+import 'insight.dart';
 
 class AppSettings extends StatefulWidget {
   @override
@@ -16,15 +18,14 @@ class AppSettings extends StatefulWidget {
 class _AppSettings extends State<AppSettings> {
   @override
   var price;
-  late bool pinPost ;
+  late bool pinPost;
   late bool subscribe;
   late UserProvider userProvider;
-
 
   void initState() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     pinPost = userProvider.userData['public'] == 1 ? true : false;
-    subscribe = userProvider.userData['subscribe'] == 1 ? true :false;
+    subscribe = userProvider.userData['subscribe'] == 1 ? true : false;
     super.initState();
   }
 
@@ -33,95 +34,150 @@ class _AppSettings extends State<AppSettings> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Settings",
-          style: TextStyle(color: Colors.black),
-        ),
+        automaticallyImplyLeading: false,
+        title: AppBarTitle(text: 'Settings'),
         backgroundColor: Colors.white,
       ),
       body: ListView(
         children: <Widget>[
           ListTile(
             leading: FaIcon(FontAwesomeIcons.userPlus),
-            title: Text("Follow and Invite Friends  "),
+            title: Text("Invite Friends"),
+            onTap: () => {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Friends()))
+            },
           ),
           ListTile(
-            leading: FaIcon(FontAwesomeIcons.bell),
-            title: Text("Notifications"),
+            leading: FaIcon(FontAwesomeIcons.moneyBill),
+            title: Text("Insights"),
+            onTap: () => {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Insight())
+              )
+            },
           ),
-          ListTile(
-            leading: FaIcon(FontAwesomeIcons.lock),
-            title: Text("Privacy"),
-          ),
+          // ListTile(
+          //   leading: FaIcon(FontAwesomeIcons.lock),
+          //   title: Text("Notifications & Privacy"),
+          // ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.person),
             title: Text("Pin Profile"),
-            subtitle: subscribe ? TextFormField(
-              decoration: InputDecoration(
-                hintText:
-                (userProvider.userData['subscriptionPrice'] ?? 0).toString() +
-                    ' Tshs',
-                focusedBorder: UnderlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number, // Allow only numbers
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Price is required';
-                }
-                // Additional validation for numbers
-                if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                  return 'Enter a valid number';
-                }
-                int price = int.parse(value);
-                if (price < 1000) {
-                  return 'Price must be at least 1000';
-                }
-                return null; // Validation passed
-              },
-              onChanged: (val) async {
-                print('changed');
-                var newPrice = await Service().setUserPinProfilePrice(val);
-                print(newPrice);
-                if (newPrice['message'] == 'Price set successfully') {
-                  userProvider.userData['subscriptionPrice'] = newPrice['subscriptionPrice'];
-                }
-                print('this is new Price');
-                print(val);
-                Fluttertoast.showToast(
-                  msg: newPrice['message'],
-                  toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
-                  gravity: ToastGravity.CENTER, // Toast position
-                  timeInSecForIosWeb: 1, // Time duration for iOS and web
-                  backgroundColor: Colors.grey[600],
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
-                setState(() {
-                  price = val;
-                });
-              },
-            )
+            subtitle: subscribe
+                ? TextFormField(
+                    decoration: InputDecoration(
+                      hintText:
+                          (userProvider.userData['subscriptionPrice'] ?? 0)
+                                  .toString() +
+                              ' Tshs',
+                      focusedBorder: UnderlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number, // Allow only numbers
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Price is required';
+                      }
+                      // Additional validation for numbers
+                      if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                        return 'Enter a valid number';
+                      }
+                      int price = int.parse(value);
+                      if (price < 1000) {
+                        return 'Price must be at least 1000';
+                      }
+                      return null; // Validation passed
+                    },
+                    onChanged: (val) async {
+                      print('changed');
+                      var newPrice =
+                          await Service().setUserPinProfilePrice(val);
+                      print(newPrice);
+                      if (newPrice['message'] == 'Price set successfully') {
+                        userProvider.userData['subscriptionPrice'] =
+                            newPrice['subscriptionPrice'];
+                      }
+                      print('this is new Price');
+                      print(val);
+                      Fluttertoast.showToast(
+                        msg: newPrice['message'],
+                        toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
+                        gravity: ToastGravity.CENTER, // Toast position
+                        timeInSecForIosWeb: 1, // Time duration for iOS and web
+                        backgroundColor: Colors.grey[600],
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                      setState(() {
+                        price = val;
+                      });
+                    },
+                  )
                 : Container(),
             trailing: Switch(
               value: subscribe,
+              activeColor: Color(0xFFF40BF5), // Set the color of the thumb when the switch is active
+              inactiveTrackColor: Colors.white,
               onChanged: (bool value) async {
-                print(subscribe);
-                var valueRes = await Service().pinProfile();
-                userProvider.userData['subscribe'] = valueRes['value'];
-                setState(() {
-                  subscribe = !subscribe;
-                  print(subscribe);
-
-                });
-                Fluttertoast.showToast(
-                  msg: valueRes['message'],
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.grey[600],
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
+                if(subscribe == true){
+                  setState(() {
+                    subscribe = !subscribe;
+                  });
+                  var valueRes = await Service().pinProfile();
+                  userProvider.userData['subscribe'] = valueRes['value'];
+                  Fluttertoast.showToast(
+                    msg: valueRes['message'],
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.grey[600],
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+                }
+                else{
+                  // Show AlertDialog
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Your Account is going to be a business account'),
+                        content: Text('33% of earnings goes to BangApp'),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFF40BF5)), // Change background color
+                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Change text color
+                            ),
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          ElevatedButton(
+                            child: Text('OK'),
+                            onPressed: () async {
+                              setState(() {
+                                subscribe = !subscribe;
+                              });
+                              Navigator.of(context).pop();
+                              var valueRes = await Service().pinProfile();
+                              userProvider.userData['subscribe'] = valueRes['value'];
+                              Fluttertoast.showToast(
+                                msg: valueRes['message'],
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.grey[600],
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
 
               },
             ),
@@ -155,12 +211,9 @@ class _AppSettings extends State<AppSettings> {
                     onChanged: (val) async {
                       print('changed');
                       var newPrice = await Service().setUserPinPrice(val);
-                      print(newPrice);
                       if (newPrice['message'] == 'Price set successfully') {
                         userProvider.userData['price'] = newPrice['price'];
                       }
-                      print('this is new Price');
-                      print(val);
                       Fluttertoast.showToast(
                         msg: newPrice['message'],
                         toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
@@ -178,58 +231,109 @@ class _AppSettings extends State<AppSettings> {
                 : Container(),
             trailing: Switch(
               value: pinPost,
+              activeColor: Color(0xFFF40BF5), // Set the color of the thumb when the switch is active
+              inactiveTrackColor: Colors.white,
               onChanged: (bool value) async {
-                print(pinPost);
-                print('this is pinpost');
-
-                var valueRes = await Service().pinMessage();
-                userProvider.userData['public'] = valueRes['value'];
-                setState(() {
-                  pinPost = !pinPost;
-                  print(pinPost);
-                  print('this is pinpost after');
-
-                });
-                Fluttertoast.showToast(
-                  msg: valueRes['message'],
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.grey[600],
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
+                // Show AlertDialog
+                if(pinPost == true){
+                  setState(() {
+                    pinPost = !pinPost;
+                  });
+                  var valueRes = await Service().pinMessage();
+                  userProvider.userData['public'] = valueRes['value'];
+                  // Show toast message
+                  Fluttertoast.showToast(
+                    msg: valueRes['message'],
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.grey[600],
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+                }
+                else{
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Your Account is going to be a business account'),
+                        content: Text('33% of earnings goes to BangApp'),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFF40BF5)), // Change background color
+                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Change text color
+                            ),
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          ElevatedButton(
+                            child: Text('OK'),
+                            onPressed: () async {
+                              setState(() {
+                                pinPost = !pinPost;
+                              });
+                              Navigator.of(context).pop();
+                              var valueRes = await Service().pinMessage();
+                              userProvider.userData['public'] = valueRes['value'];
+                              // Show toast message
+                              Fluttertoast.showToast(
+                                msg: valueRes['message'],
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.grey[600],
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
 
               },
             ),
           ),
+          // ListTile(
+          //   leading: FaIcon(FontAwesomeIcons.shieldAlt),
+          //   title: Text("Security"),
+          // ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.shieldAlt),
-            title: Text("Security"),
+            title: Text("Blocked Users"),
+            onTap: () => {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => BlockedUsers())
+              )
+            },
           ),
-          ListTile(
-              leading: FaIcon(FontAwesomeIcons.user), title: Text("Account")),
-          ListTile(
-            leading: FaIcon(FontAwesomeIcons.questionCircle),
-            title: Text("Help"),
-          ),
-          ListTile(
-            leading: FaIcon(FontAwesomeIcons.exclamationCircle),
-            title: Text("About"),
-          ),
+          // ListTile(
+          //     leading: FaIcon(FontAwesomeIcons.user), title: Text("Account")),
+          // ListTile(
+          //   leading: FaIcon(FontAwesomeIcons.questionCircle),
+          //   title: Text("Help"),
+          // ),
+          // ListTile(
+          //   leading: FaIcon(FontAwesomeIcons.exclamationCircle),
+          //   title: Text("About"),
+          // ),
           ListTile(
             leading: Icon(Icons.logout),
             title: Text("Logout"),
             onTap: () async {
-
               // Show confirmation dialog
               bool confirmLogout = await showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text("Confirmation"),
-                    content:
-                    Text("Are you sure you want to logout?"),
+                    content: Text("Are you sure you want to logout?"),
                     actions: <Widget>[
                       ElevatedButton(
                         child: Text("Cancel"),
@@ -240,7 +344,8 @@ class _AppSettings extends State<AppSettings> {
                       ),
                       ElevatedButton(
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Color(0xFFF40BF5)),
                         ),
                         child: Text("Logout"),
                         onPressed: () {
@@ -252,7 +357,6 @@ class _AppSettings extends State<AppSettings> {
                   );
                 },
               );
-              // If user confirms logout
               if (confirmLogout == true) {
                 await TokenManager.clearToken();
                 await userProvider.clearUserDataFile();
@@ -265,7 +369,6 @@ class _AppSettings extends State<AppSettings> {
             leading: Icon(Icons.delete_forever),
             title: Text("Delete Account"),
             onTap: () async {
-              // Show confirmation dialog
               bool confirmDelete = await showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -283,7 +386,8 @@ class _AppSettings extends State<AppSettings> {
                       ),
                       ElevatedButton(
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.red),
                         ),
                         child: Text("Delete"),
                         onPressed: () {
@@ -305,14 +409,14 @@ class _AppSettings extends State<AppSettings> {
 
                 // Navigate to login screen
                 Fluttertoast.showToast(
-                        msg: delete['message'],
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.grey[600],
-                        textColor: Colors.white,
-                        fontSize: 16.0,
-                      );
+                  msg: delete['message'],
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.grey[600],
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                );
                 if (delete['message'] == "User account deleted successfully") {
                   Navigator.pushReplacementNamed(context, '/login');
                 }

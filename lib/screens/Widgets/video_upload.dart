@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../nav.dart';
 
 import '../../providers/video_upload.dart';
 
@@ -18,6 +16,7 @@ class _VideoUploadState extends State<VideoUpload> {
 
   @override
   void initState() {
+    print("nina processs");
     super.initState();
   }
 

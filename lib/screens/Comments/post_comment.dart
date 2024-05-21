@@ -1,4 +1,3 @@
-import 'package:bangapp/providers/posts_provider.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/providers/comment_provider.dart';
 
-import '../../loaders/comment_line_skeleton.dart';
-import '../../providers/Profile_Provider.dart';
+import '../../widgets/app_bar_tittle.dart';
+
 
 class CommentsPage extends StatefulWidget {
   final int? userId;
@@ -118,7 +117,7 @@ class _CommentsPageState extends State<CommentsPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(comment?.body ?? "",
+                    Text(comment.body ?? "",
                         style: TextStyle(fontWeight: FontWeight.w500)),
                     SizedBox(height: 5),
                     GestureDetector(
@@ -208,7 +207,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 ),
               ),
               title: Text(
-                comment!.commentUser?.name ?? "",
+                comment.commentUser?.name ?? "",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Column(
@@ -308,19 +307,8 @@ class _CommentsPageState extends State<CommentsPage> {
     Provider.of<CommentProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-          icon: Icon(CupertinoIcons.back),
-        ),
-        title: Text(
-          'Comments',
-          style: TextStyle(
-            fontFamily: 'Metropolis',
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-        ),
+        automaticallyImplyLeading: false,
+        title: AppBarTitle(text:"Comments"),
         backgroundColor: Colors.white,
       ),
       body:  Container(

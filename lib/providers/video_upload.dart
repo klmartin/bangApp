@@ -16,6 +16,8 @@ class VideoUploadProvider extends ChangeNotifier {
   Future<bool> startUpload(body,video) async {
     _isUploading = true;
    _uploadText = 'Uploading Video...';
+   print(body);
+   print("video body");
     print('Is Uploading after setting to true: $_isUploading');
     notifyListeners();
       final token = await TokenManager.getToken();
@@ -28,7 +30,7 @@ class VideoUploadProvider extends ChangeNotifier {
           ..files.add(await http.MultipartFile.fromPath('video', video!));
         try {
           var response = await http.Response.fromStream(await request.send());
-
+          print("${response.body} this is video upload response");
           if (response.statusCode == 200) {
             final response2 = jsonDecode(response.body);
             _uploadText = 'Processing Video...';

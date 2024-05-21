@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mime/mime.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../providers/posts_provider.dart';
 import '../../services/animation.dart';
 import '../../widgets/delete_post.dart';
+import '../../widgets/hide_post.dart';
 import '../../widgets/user_profile.dart';
 import 'package:bangapp/screens/Profile/user_profile.dart' as User;
 import '../Create/video_editing/video_edit.dart';
@@ -31,8 +33,8 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
 
 
   return  Padding(
-    padding: const EdgeInsets.symmetric(
-        horizontal: 16.0, vertical: 8.0),
+    padding: const EdgeInsets.only(
+        left: 8.0, bottom:8,right: 8),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -71,16 +73,16 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                           ),
                         ),
                         SizedBox(width: 5),
-                        Text(
-                          '        $followerCount Followers',
-                          style: const TextStyle(
-                            fontFamily: 'EuclidTriangle',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            letterSpacing: 0,
-                            color: Colors.black,
-                          ),
-                        )
+                        // Text(
+                        //   '        $followerCount Followers',
+                        //   style: const TextStyle(
+                        //     fontFamily: 'EuclidTriangle',
+                        //     fontWeight: FontWeight.bold,
+                        //     fontSize: 15,
+                        //     letterSpacing: 0,
+                        //     color: Colors.black,
+                        //   ),
+                        // )
                       ],
                     ),
                     const SizedBox(height: 2),
@@ -117,7 +119,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                 height: 5,
                                 width: 100,
                                 decoration: BoxDecoration(
-                                  color: Colors.blue,
+                                  color: Color(0xFFF40BF5),
                                   borderRadius:
                                   BorderRadius.circular(20),
                                 ),
@@ -130,8 +132,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                     ListTile(
                                         leading: Icon(
                                       CupertinoIcons.eye,
-                                      color: Theme.of(context)
-                                          .primaryColor,
+                                      color: Colors.black,
                                     ),
                                     title: Text(
                                       "$postViews Views",
@@ -173,15 +174,14 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                         toastLength: Toast.LENGTH_SHORT,
                                         gravity: ToastGravity.CENTER,
                                         timeInSecForIosWeb: 1,
-                                        backgroundColor: Colors.red,
+                                        backgroundColor: Color(0xFFF40BF5),
                                         textColor: Colors.white,
                                       );
                                     },
                                     minLeadingWidth: 20,
                                     leading: Icon(
                                       CupertinoIcons.link,
-                                      color: Theme.of(context)
-                                          .primaryColor,
+                                      color: Colors.black,
                                     ),
                                     title: Text(
                                       "Copy URL",
@@ -241,8 +241,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                     minLeadingWidth: 20,
                                     leading: Icon(
                                       CupertinoIcons.photo,
-                                      color: Theme.of(context)
-                                          .primaryColor,
+                                      color: Colors.black,
                                     ),
                                     title: Text(
                                       "Challenge $type",
@@ -258,6 +257,7 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                   )
                                 ],
                               ),
+                              HidePostWidget(imagePostId: imagePostId, imageUserId: imageUserId),
                               Column(
                                 children: [
                                   ListTile(
@@ -351,18 +351,16 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
                                       );
 
                                       // If user selects a reason, report the post
-                                      if (reason != null) {
-                                        final response = await Service().reportPost(imagePostId, reason);
-                                        print('reporting post');
-                                        if(response != null && response.containsKey('message')){
-                                          Fluttertoast.showToast(msg: response['message']);
-                                        }
+                                      final response = await Service().reportPost(imagePostId, reason);
+                                      print('reporting post');
+                                      if(response.containsKey('message')){
+                                        Fluttertoast.showToast(msg: response['message']);
                                       }
-                                    },
+                                                                        },
                                     minLeadingWidth: 20,
                                     leading: Icon(
                                       CupertinoIcons.arrow_2_circlepath_circle,
-                                      color: Theme.of(context).primaryColor,
+                                      color: Colors.black,
                                     ),
                                     title: Text(
                                       "Report this Post",
@@ -383,8 +381,8 @@ Widget postOptions (BuildContext context,userId,userImage,userName,followerCount
               },
             );
           },
-          child: const Icon(
-            CupertinoIcons.ellipsis,
+          child: Icon(
+            CupertinoIcons.ellipsis_vertical,
             color: Colors.black,
             size: 24,
           ),

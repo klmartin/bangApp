@@ -1,9 +1,7 @@
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:bangapp/models/comment.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 List<dynamic> commentsData =  [
   {
@@ -190,12 +188,12 @@ class _CommentLineSkeletonState extends State<CommentLineSkeleton> {
   bool _enabled = true;
 
   Widget build(BuildContext context) {
-    print(comment!.length);
+    print(comment.length);
     print('comment length');
     return  Skeletonizer(
       enabled: _enabled,
         child:  ListView.builder(
-        itemCount: comment!.length,
+        itemCount: comment.length,
         itemBuilder: (context, index) {
            Padding(
               padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
@@ -228,7 +226,7 @@ class _CommentLineSkeletonState extends State<CommentLineSkeleton> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(comment.first?.body ?? "",
+            Text(comment.first.body ?? "",
                 style: TextStyle(fontWeight: FontWeight.w500)),
             SizedBox(height: 5),
             GestureDetector(
@@ -275,6 +273,7 @@ class _CommentLineSkeletonState extends State<CommentLineSkeleton> {
             ),
         ],
       ));
+           return null;
 
         })
         );

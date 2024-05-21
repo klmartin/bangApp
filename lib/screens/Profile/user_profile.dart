@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/screens/Profile/profilelist_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bangapp/services/service.dart';
+import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:bangapp/models/image_post.dart';
@@ -13,19 +17,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../message/screens/messages/message_screen.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
+import '../../providers/follower_provider.dart';
+import '../../providers/friends_provider.dart';
 import '../../providers/message_payment_provider.dart';
-import '../../providers/payment_provider.dart';
 import '../../providers/subscription_payment_provider.dart';
-import '../../widgets/build_media.dart';
+import '../../providers/user_profile_data_provider.dart';
+import '../../widgets/friends_sheet.dart';
 import '../../widgets/video_rect.dart';
+import '../Explore/bang_update_view.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
-import 'package:bangapp/providers/user_provider.dart';
-import 'package:bangapp/loaders/profile_header_skeleton.dart';
 import 'package:bangapp/loaders/profile_posts_skeleton.dart';
 import 'package:bangapp/loaders/profile_updates_skeleton.dart';
-
-import '../Widgets/message_payment.dart';
 
 List<dynamic> followinglist = [];
 bool _persposts = true;
@@ -42,47 +45,49 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   ScrollController? _scrollController;
   bool _isLoading = false;
-  String myName = "";
-  String myBio = "";
-  String myPrice = "";
-  int myId = 0;
-  String myImage = profileUrl;
-  int myPostCount = 0;
-  bool mySubscribe = false;
-  String mySubscribePrice = "";
-  bool privacySwitchValue = false;
-  int myFollowerCount = 0;
-  int myFollowingCount = 0;
-  String description = "";
+
   final int _numberOfPostsPerRequest = 20;
   int _pageNumber = 1;
   List<ImagePost> allImagePosts = [];
   late MessagePaymentProvider messagePaymentProvider;
+  late UserProfileDataProvider userProfileDataProvider;
 
   @override
   void initState() {
-    _getMyInfo();
-    messagePaymentProvider = Provider.of<MessagePaymentProvider>(context, listen: false);
+    super.initState();
+    BackButtonInterceptor.add(myInterceptor);
+    userProfileDataProvider =
+        Provider.of<UserProfileDataProvider>(context, listen: false);
+    userProfileDataProvider.getUserInfo(widget.userid);
+    messagePaymentProvider =
+        Provider.of<MessagePaymentProvider>(context, listen: false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
-    super.initState();
-
-
     messagePaymentProvider.addListener(() {
       if (messagePaymentProvider.payed == true) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) {
-              return MessagesScreen(
-                  widget.userid!,
-                  myName,
-                  myImage,
-                  privacySwitchValue,
-                  widget.userid,
-                  "0");
-            }));
-          privacySwitchValue = false;
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return MessagesScreen(
+              widget.userid!,
+              userProfileDataProvider.userData['name'],
+              userProfileDataProvider.userData['user_image_url'],
+              userProfileDataProvider.userData['public'],
+              widget.userid,
+              userProfileDataProvider.userData['price']);
+        }));
+        userProfileDataProvider.setUserRequestStatus(false);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();
+  }
+
+  bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    Navigator.pop(context);
+    return true;
   }
 
   void _scrollListener() {
@@ -93,28 +98,10 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  void _getMyInfo() async {
-    var myInfo = await Service().getMyInformation(userId: widget.userid);
-    setState(() {
-      myName = myInfo['name'] ?? "";
-      myBio = myInfo['bio'] ?? "";
-      myImage = myInfo['user_image_url'] ?? "";
-      myPostCount = myInfo['postCount'] ?? 0;
-      myFollowerCount = myInfo['followerCount'] ?? 0;
-      myFollowingCount = myInfo['followingCount'] ?? 0;
-      privacySwitchValue = myInfo['public'] == 1 ? true : false;
-      mySubscribe = myInfo['subscribe'] == 1 ? true : false;
-      myPrice = myInfo['price'] ?? "";
-      mySubscribePrice = myInfo['subscriptionPrice'] ?? "";
-      myId = myInfo['id'];
-    });
-  }
-
   void _loadMorePosts() async {
     if (_isLoading) {
       return;
     }
-
     setState(() {
       _isLoading = true;
     });
@@ -150,7 +137,8 @@ class _UserProfileState extends State<UserProfile> {
   Future<List<dynamic>> getMyPosts(int pageNumber) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final viewerId = prefs.getInt('user_id').toString();
-    var response = await http.get(Uri.parse("$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=${widget.userid}&viewer_id=$viewerId"));
+    var response = await http.get(Uri.parse(
+        "$baseUrl/getMyPosts?_page=$_pageNumber&_limit=$_numberOfPostsPerRequest&user_id=${widget.userid}&viewer_id=$viewerId"));
     print(response.body);
     var data = json.decode(response.body);
     return data['data']['data'];
@@ -158,6 +146,10 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
+
+    final friendProvider = Provider.of<FriendProvider>(context, listen: false);
+    final userProfileDataProvider =
+        Provider.of<UserProfileDataProvider>(context, listen: true);
     return Scaffold(
         appBar: AppBar(
           title: GestureDetector(
@@ -169,7 +161,11 @@ class _UserProfileState extends State<UserProfile> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.redAccent, Colors.orange],
+                  colors: [
+                    Color(0xFFF40BF5),
+                    Color(0xFFBF46BE),
+                    Color(0xFFF40BF5)
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -177,10 +173,35 @@ class _UserProfileState extends State<UserProfile> {
               child: Icon(Icons.navigate_before_outlined, size: 30),
             ),
           ),
+          actions: [
+            InkWell(
+              onTap: () {
+                if (userProfileDataProvider.userData['public']) {
+                  buildMessagePayment(context,
+                      userProfileDataProvider.userData['price'], int.parse(widget.userid));
+                } else {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return MessagesScreen(
+                        widget.userid!,
+                        userProfileDataProvider.userData['name'],
+                        userProfileDataProvider.userData['user_image_url'],
+                        userProfileDataProvider.userData['public'],
+                        widget.userid,
+                        userProfileDataProvider.userData['price']);
+                  }));
+                }
+              },
+              child: Container(
+                  margin: EdgeInsets.only(top: 14),
+                  height: 40,
+                  width: 25,
+                  child: Image.asset('assets/images/chatmessage.png')),
+            ),
+            SizedBox(width: 20)
+          ],
           automaticallyImplyLeading: false,
           elevation: 0.0,
           backgroundColor: Colors.white,
-          actions: [SizedBox(width: 10)],
         ),
         body: Padding(
           padding: const EdgeInsets.all(15.0),
@@ -199,7 +220,10 @@ class _UserProfileState extends State<UserProfile> {
                           color: Colors.red.shade100,
                           borderRadius: BorderRadius.circular(25),
                           image: DecorationImage(
-                            image: CachedNetworkImageProvider(myImage),
+                            image: CachedNetworkImageProvider(
+                                userProfileDataProvider
+                                        .userData['user_image_url'] ??
+                                    profileUrl),
                             fit: BoxFit.cover,
                           )),
                     ),
@@ -209,7 +233,8 @@ class _UserProfileState extends State<UserProfile> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 5.0),
                         child: Text(
-                          myPostCount.toString(),
+                          userProfileDataProvider.userData['postCount']
+                              .toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
@@ -236,7 +261,8 @@ class _UserProfileState extends State<UserProfile> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 5.0),
                         child: Text(
-                          myFollowerCount.toString(),
+                          userProfileDataProvider.userData['followerCount']
+                              .toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
@@ -258,31 +284,39 @@ class _UserProfileState extends State<UserProfile> {
                       color: Colors.grey,
                     ),
                   ),
-                  Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4.0),
-                        child: Text(
-                          myFollowerCount.toString(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              fontFamily: 'Metropolis'),
+                  GestureDetector(
+                    onTap: () async {
+                      FriendsModal.showFriendsModal(context, widget.userid);
+                      await Provider.of<FriendProvider>(context, listen: false)
+                          .getFriends(userId: widget.userid);
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: Text(
+                            userProfileDataProvider.userData['friendsCount']
+                                .toString(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontFamily: 'Metropolis'),
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Friends',
-                        style:
-                            TextStyle(fontFamily: 'Metropolis', fontSize: 12),
-                      )
-                    ],
-                  ),
+                        Text(
+                          'Friends',
+                          style:
+                              TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                        )
+                      ],
+                    ),
+                  )
                 ],
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  myName,
+                  userProfileDataProvider.userData['name'] ?? "",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Metropolis',
@@ -293,7 +327,7 @@ class _UserProfileState extends State<UserProfile> {
                 padding: const EdgeInsets.only(left: 8.0),
                 child: Container(
                     // constraints: BoxConstraints(maxWidth: ),
-                    child: Text(myBio)),
+                    child: Text(userProfileDataProvider.userData['bio'] ?? "")),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -301,55 +335,68 @@ class _UserProfileState extends State<UserProfile> {
                   Expanded(
                       child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: mySubscribe ? OutlinedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                        onPressed: () async {
-                          //follow or unfollow
-                          buildSubscriptionPayment(context, mySubscribePrice, widget.userid);
-                        },
-                        child: Text(
-                          'Subscribe',
-                          style: TextStyle(color: Colors.black),
-                        )) :OutlinedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                        onPressed: () async {
-                          //follow or unfollow
-                        },
-                        child: Text(
-                          'Subscribe',
-                          style: TextStyle(color: Colors.white),
-                        )) ,
+                    child: userProfileDataProvider.userData['subscribe'] == 1
+                        ? OutlinedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                            onPressed: () async {
+                              //follow or unfollow
+                              buildSubscriptionPayment(
+                                  context,
+                                  userProfileDataProvider
+                                      .userData['subscriptionPrice'],
+                                  widget.userid);
+                            },
+                            child: Text(
+                              'Subscribe',
+                              style: TextStyle(color: Colors.black),
+                            ))
+                        : OutlinedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.grey.shade300,
+                              ),
+                            ),
+                            onPressed: () async {
+                              showSubscriptionInfo(
+                                  context,
+                                  userProfileDataProvider
+                                      .userData['subscriptionDays']);
+                              //follow or unfollow
+                            },
+                            child: Text(
+                              'Subscribed',
+                              style: TextStyle(color: Colors.black),
+                            )),
                   )),
                   SizedBox(width: 10),
                   Expanded(
                       child: Container(
                     child: OutlinedButton(
-                        onPressed: () {
-                          if (privacySwitchValue) {
-                            buildMessagePayment(context, myPrice, myId);
-                          } else {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return MessagesScreen(
-                                  widget.userid!,
-                                  myName,
-                                  myImage,
-                                  privacySwitchValue,
-                                  widget.userid,
-                                  "0");
-                            }));
+                        onPressed: () async {
+                          userProfileDataProvider.userData['isFriendRequest'] =
+                              true;
+                          userProfileDataProvider.setUserRequestStatus(true);
+                          await friendProvider.requestFriendship(widget.userid);
+                          if (friendProvider.addingFriend == true) {
+                            Fluttertoast.showToast(
+                              msg: friendProvider.requestMessage,
+                              toastLength:
+                                  Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
+                              gravity: ToastGravity.CENTER, // Toast position
+                              timeInSecForIosWeb:
+                                  1, // Time duration for iOS and web
+                              backgroundColor: Colors.grey[600],
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
                           }
                         },
                         child: Text(
-                          'Message',
+                          userProfileDataProvider.userFriendStatus,
                           style: TextStyle(color: Colors.black),
                         )),
                   )),
@@ -446,9 +493,15 @@ class _UserProfileState extends State<UserProfile> {
                     _persposts
                         ? Expanded(
                             child: ProfilePostsStream(
-                                userid: widget.userid.toString(),
-                              subscribe: mySubscribe,
-                            ))
+                            userid: widget.userid.toString(),
+                            subscribe:
+                                userProfileDataProvider.userData['subscribe'] ==
+                                        1
+                                    ? true
+                                    : false,
+                            username:
+                                userProfileDataProvider.userData['name'] ?? "",
+                          ))
                         : Expanded(
                             child: Update(userid: widget.userid.toString())),
                   ],
@@ -486,6 +539,7 @@ class _UpdatePostsStreamContent extends StatefulWidget {
 
 class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
   ScrollController _scrollController = ScrollController();
+  int _pageNumber = 1;
 
   @override
   void initState() {
@@ -507,7 +561,11 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
         _scrollController.position.maxScrollExtent - 200) {
       final updateProvider =
           Provider.of<BangUpdateProfileProvider>(context, listen: false);
-      updateProvider.getMyUpdate(); // Trigger loading of the next page
+      if (updateProvider.isLoading != true) {
+        _pageNumber++;
+        updateProvider.loadMoreUserUpdates(
+            widget.userid, _pageNumber); // Trigger loading of the next page
+      }
     }
   }
 
@@ -537,7 +595,23 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                         borderRadius: BorderRadius.circular(5),
                         child: InkWell(
                           onTap: () {
-                            viewImage(context, provider.updates[i].filename);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UpdateView(
+                                        provider.updates[i].postId,
+                                        provider.updates[i].type,
+                                        provider.updates[i].filename,
+                                        provider.updates[i].likeCount,
+                                        provider.updates[i].isLiked,
+                                        provider.updates[i].commentCount,
+                                        provider.updates[i].userImage,
+                                        provider.updates[i].userName,
+                                        provider.updates[i].caption,
+                                        provider.updates[i].aspectRatio,
+                                        provider.updates[i].thumbnailUrl,
+                                        provider.updates[i].cacheUrl,
+                                        provider)));
                           },
                           child: CachedNetworkImage(
                             imageUrl: provider.updates[i].filename,
@@ -553,10 +627,28 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                         borderRadius: BorderRadius.circular(5),
                         child: InkWell(
                             onTap: () {
-                              print('pressed');
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => UpdateView(
+                                          provider.updates[i].postId,
+                                          provider.updates[i].type,
+                                          provider.updates[i].filename,
+                                          provider.updates[i].likeCount,
+                                          provider.updates[i].isLiked,
+                                          provider.updates[i].commentCount,
+                                          provider.updates[i].userImage,
+                                          provider.updates[i].userName,
+                                          provider.updates[i].caption,
+                                          provider.updates[i].aspectRatio,
+                                          provider.updates[i].thumbnailUrl,
+                                          provider.updates[i].cacheUrl,
+                                          provider)));
                             },
-                            child: VideoRect(
-                                message: provider.updates[i].filename)),
+                            child: CachedNetworkImage(
+                              imageUrl: provider.updates[i].thumbnailUrl,
+                              fit: BoxFit.cover,
+                            )),
                       ),
                     )
                   ]
@@ -573,12 +665,17 @@ class ProfilePostsStream extends StatelessWidget {
   @override
   String userid;
   bool subscribe;
-
-  ProfilePostsStream({required this.userid, required this.subscribe});
+  String username;
+  ProfilePostsStream(
+      {required this.userid, required this.subscribe, required this.username});
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ProfileProvider(),
-      child: _ProfilePostsStreamContent(userid: userid,subscribe: subscribe),
+      child: _ProfilePostsStreamContent(
+        userid: userid,
+        subscribe: subscribe,
+        username: username,
+      ),
     );
   }
 }
@@ -586,7 +683,9 @@ class ProfilePostsStream extends StatelessWidget {
 class _ProfilePostsStreamContent extends StatefulWidget {
   String userid;
   bool subscribe;
-  _ProfilePostsStreamContent({required this.userid, required this.subscribe});
+  String username;
+  _ProfilePostsStreamContent(
+      {required this.userid, required this.subscribe, required this.username});
   @override
   _ProfilePostsStreamContentState createState() =>
       _ProfilePostsStreamContentState();
@@ -604,7 +703,8 @@ class _ProfilePostsStreamContentState
     final providerPost = Provider.of<ProfileProvider>(context, listen: false);
     providerPost.getUserPost(widget.userid, _pageNumber);
     _scrollController.addListener(_scrollListener);
-    subscriptionPaymentProvider = Provider.of<SubscriptionPaymentProvider>(context, listen: false);
+    subscriptionPaymentProvider =
+        Provider.of<SubscriptionPaymentProvider>(context, listen: false);
 
     subscriptionPaymentProvider.addListener(() {
       if (subscriptionPaymentProvider.payed == true) {
@@ -625,26 +725,34 @@ class _ProfilePostsStreamContentState
   void _scrollListener() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      _pageNumber++;
       final profileProvider =
           Provider.of<ProfileProvider>(context, listen: false);
-      profileProvider.loadMoreUserData(widget.userid, _pageNumber);
+      if (profileProvider.isLoading != true) {
+        _pageNumber++;
+        profileProvider.loadMoreUserData(widget.userid, _pageNumber);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProfileDataProvider =
+    Provider.of<UserProfileDataProvider>(context, listen: true);
     return Consumer<ProfileProvider>(builder: (context, provider, child) {
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));
-      }
-      else if(widget.subscribe == true){
-        return Center(child: Text('Subscribe to View Users Posts', style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 15
-        )));
-      }
-      else if (provider.isLoading == false && provider.posts.isNotEmpty) {
+      } else if (widget.subscribe == true) {
+        return GestureDetector(
+          onTap: (){   buildSubscriptionPayment(
+              context,
+              userProfileDataProvider
+                  .userData['subscriptionPrice'],
+              int.parse(widget.userid)); },
+          child: Center(
+              child: Text('Subscribe to View ${widget.username} Posts',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
+        );
+      } else if (provider.isLoading == false && provider.posts.isNotEmpty) {
         return SingleChildScrollView(
           controller: _scrollController,
           child: GridView(
@@ -675,7 +783,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].commentCount,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -716,7 +824,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount!,
+                                        provider.posts[i].commentCount,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -759,7 +867,7 @@ class _ProfilePostsStreamContentState
                                   provider.posts[i].imgWidth!,
                                   provider.posts[i].imgHeight!,
                                   provider.posts[i].postId!,
-                                  provider.posts[i].commentCount!,
+                                  provider.posts[i].commentCount,
                                   provider.posts[i].userId!,
                                   provider.posts[i].isLikedA,
                                   provider.posts[i].likeCountA,
@@ -811,7 +919,7 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].imgWidth!,
                                       provider.posts[i].imgHeight!,
                                       provider.posts[i].postId!,
-                                      provider.posts[i].commentCount!,
+                                      provider.posts[i].commentCount,
                                       provider.posts[i].userId!,
                                       provider.posts[i].isLikedA,
                                       provider.posts[i].likeCountA,
@@ -827,7 +935,12 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].postViews,
                                       provider)));
                         },
-                        child: VideoRect(message: provider.posts[i].imageUrl),
+                        child: CachedNetworkImage(
+                          imageUrl: provider.posts[i].pinned == 1
+                              ? pinnedUrl
+                              : provider.posts[i].thumbnailUrl!,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ] else if (provider.posts[i].type == 'video' &&
@@ -848,7 +961,7 @@ class _ProfilePostsStreamContentState
                                           provider.posts[i].imgWidth!,
                                           provider.posts[i].imgHeight!,
                                           provider.posts[i].postId!,
-                                          provider.posts[i].commentCount!,
+                                          provider.posts[i].commentCount,
                                           provider.posts[i].userId!,
                                           provider.posts[i].isLikedA,
                                           provider.posts[i].likeCountA,
