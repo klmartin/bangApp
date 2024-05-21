@@ -68,6 +68,6 @@ class DefaultFirebaseOptions {
     storageBucket: 'bangappp-3f9ec.appspot.com',
     androidClientId: '515952068275-p8n4jkhbtc3d8103t63gvuvm52r16re3.apps.googleusercontent.com',
     iosClientId: '515952068275-993ca05akfgi392br8br7ggbn7be1cnn.apps.googleusercontent.com',
-    iosBundleId: 'pro.bangapp.bangapptz',
+    iosBundleId: 'com.cyblogerz.bangapp',
   );
 }
