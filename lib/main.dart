@@ -156,7 +156,7 @@ class _AuthenticateState extends State<Authenticate> {
     _configureLocalNotifications();
 
 // For sharing images coming from outside the app while the app is closed
-    ReceiveSharingIntent.instance
+    ReceiveSharingIntent
         .getInitialMedia()
         .then((List<SharedMediaFile> value) {
       final firstSharedFile = value.isNotEmpty ? value[0] : null;
@@ -166,7 +166,6 @@ class _AuthenticateState extends State<Authenticate> {
 
         if (value.length == 1) {
           // Single file
-          print('single file');
           if (filePath.toLowerCase().endsWith('.jpg') ||
               filePath.toLowerCase().endsWith('.png')) {
             Navigator.pushReplacement(

@@ -176,7 +176,7 @@ class _UserProfileState extends State<UserProfile> {
           actions: [
             InkWell(
               onTap: () {
-                if (userProfileDataProvider.userData['public']) {
+                if (userProfileDataProvider.userData['public'] ==1) {
                   buildMessagePayment(context,
                       userProfileDataProvider.userData['price'], int.parse(widget.userid));
                 } else {
@@ -185,7 +185,7 @@ class _UserProfileState extends State<UserProfile> {
                         widget.userid!,
                         userProfileDataProvider.userData['name'],
                         userProfileDataProvider.userData['user_image_url'],
-                        userProfileDataProvider.userData['public'],
+                        userProfileDataProvider.userData['public'] !=1,
                         widget.userid,
                         userProfileDataProvider.userData['price']);
                   }));
