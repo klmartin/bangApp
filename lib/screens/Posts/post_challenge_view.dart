@@ -1,4 +1,4 @@
-import 'package:bangapp/providers/Profile_Provider.dart';
+import 'package:bangapp/providers/profile_provider.dart';
 import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -57,7 +57,7 @@ class POstChallengeView extends StatefulWidget {
     this.likeCountA,
     this.likeCountB,
     this.postViews,
-   this.myProvider,
+    this.myProvider,
   );
   static const id = 'postview';
   @override
@@ -129,30 +129,29 @@ class PostCard extends StatefulWidget {
   ProfileProvider? myProvider;
 
   PostCard(
-      this.name,
-      this.caption,
-      this.postUrl,
-      this.challengeImgUrl,
-      this.imgWidth,
-      this.imgHeight,
-      this.postId,
-      this.commentCount,
-      this.userId,
-      this.isLiked,
-      this.likeCount,
-      this.type,
-      this.followerCount,
-      this.createdAt,
-      this.userImage,
-      this.pinned,
-      this.isLikedA,
-      this.isLikedB,
-      this.likeCountA,
-      this.likeCountB,
-      this.postViews,
-      this.myProvider,
-
-      );
+    this.name,
+    this.caption,
+    this.postUrl,
+    this.challengeImgUrl,
+    this.imgWidth,
+    this.imgHeight,
+    this.postId,
+    this.commentCount,
+    this.userId,
+    this.isLiked,
+    this.likeCount,
+    this.type,
+    this.followerCount,
+    this.createdAt,
+    this.userImage,
+    this.pinned,
+    this.isLikedA,
+    this.isLikedB,
+    this.likeCountA,
+    this.likeCountB,
+    this.postViews,
+    this.myProvider,
+  );
   @override
   State<PostCard> createState() => _PostCardState();
 }

@@ -10,7 +10,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import '../../models/hobby.dart';
-import '../../providers/Profile_Provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
 import '../../providers/payment_provider.dart';
 import '../../widgets/build_media.dart';
@@ -184,7 +184,9 @@ class _ProfileState extends State<Profile> {
                                   phoneNumber: int.parse(
                                       userProvider.userData!['phone_number']),
                                   selectedHobbiesText: selectedHobbiesText,
-                                  occupation: userProvider.userData!['occupation'] ?? "",
+                                  occupation:
+                                      userProvider.userData!['occupation'] ??
+                                          "",
                                   bio: userProvider.userData!['bio'] ?? "",
                                   occupationController: TextEditingController(),
                                   dateOfBirthController:
@@ -566,21 +568,27 @@ buildPayments(selectedHobbiesText, BuildContext context, price, count) {
                 ),
                 Center(
                   child: paymentProvider.isPaying
-                      ? LoadingAnimationWidget.staggeredDotsWave(color: Colors.red, size: 30)
+                      ? LoadingAnimationWidget.staggeredDotsWave(
+                          color: Colors.red, size: 30)
                       : TextButton(
-                    onPressed: () async {
-
-                      paymentProvider.startPaying(userProvider.userData['phone_number'].toString(), price, count, 'followers');                        },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    child: Text(
-                      'Pay',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                          onPressed: () async {
+                            paymentProvider.startPaying(
+                                userProvider.userData['phone_number']
+                                    .toString(),
+                                price,
+                                count,
+                                'followers');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                          child: Text(
+                            'Pay',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -1120,6 +1128,3 @@ class _ProfilePostsStreamContentState
     });
   }
 }
-
-
-

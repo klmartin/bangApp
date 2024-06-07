@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/post.dart';
 import 'package:bangapp/providers/posts_provider.dart'; // Import your PostsProvider class
-import '../../providers/Profile_Provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../providers/challenge_upload.dart';
 import '../../providers/image_upload.dart';
 import '../../providers/payment_provider.dart';
@@ -123,7 +123,8 @@ class _Home2ContentState extends State<Home2Content>
     }
     return RefreshIndicator(
       onRefresh: () async {
-        final postsProvider = Provider.of<PostsProvider>(context, listen: false);
+        final postsProvider =
+            Provider.of<PostsProvider>(context, listen: false);
         postsProvider.refreshData();
         _scrollController.jumpTo(0);
       },

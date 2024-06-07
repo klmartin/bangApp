@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:bangapp/models/notification.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/screens/Posts/notificationView_model.dart';
-import '../../providers/Profile_Provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../services/token_storage_helper.dart';
 import 'package:bangapp/loaders/notification_skeleton.dart';
 
@@ -30,7 +30,7 @@ class _Activity extends State<Activity> {
   @override
   void initState() {
     super.initState();
-    fetchNotifications(_pageNumber,_perPage);
+    fetchNotifications(_pageNumber, _perPage);
     _scrollController.addListener(() {
       _scrollPosition = _scrollController.offset;
     });
@@ -43,7 +43,9 @@ class _Activity extends State<Activity> {
       _pageNumber++;
       print(_pageNumber);
       print('this is page number');
-      loadMoreNotifications(_pageNumber,); // Trigger loading of the next page
+      loadMoreNotifications(
+        _pageNumber,
+      ); // Trigger loading of the next page
     }
   }
 
@@ -57,13 +59,14 @@ class _Activity extends State<Activity> {
     try {
       if (cachedData.isNotEmpty &&
           DateTime.now()
-              .difference(
-              DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
-              .inMinutes <=
+                  .difference(
+                      DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+                  .inMinutes <=
               2) {
-        final  data = json.decode(cachedData);
+        final data = json.decode(cachedData);
         List<dynamic> responseList = data['notifications']['data'];
-        final notificationModel = NotificationModel.fromJson(responseList); // Parse JSON
+        final notificationModel =
+            NotificationModel.fromJson(responseList); // Parse JSON
         setState(() {
           notifications = notificationModel.notifications;
           isLoading = false;
@@ -75,15 +78,16 @@ class _Activity extends State<Activity> {
           Uri.parse('$baseUrl/getNotifications/$userId/$page/$perPage'),
           headers: {
             'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json', // Include other headers as needed
+            'Content-Type':
+                'application/json', // Include other headers as needed
           },
         );
         if (response.statusCode == 200) {
-          final  data = json.decode(response.body);
+          final data = json.decode(response.body);
           List<dynamic> responseList = data['notifications']['data'];
           print(data);
           final notificationModel =
-          NotificationModel.fromJson(responseList); // Parse JSON
+              NotificationModel.fromJson(responseList); // Parse JSON
           setState(() {
             notifications = notificationModel.notifications;
             isLoading = false; // Set isLoading to false when data is loaded
@@ -107,7 +111,6 @@ class _Activity extends State<Activity> {
   Future<void> loadMoreNotifications(pageNumber) async {
     print(pageNumber);
   }
-
 
   GestureDetector _notificationList(NotificationItem notification) {
     return GestureDetector(
@@ -184,11 +187,9 @@ class _Activity extends State<Activity> {
                     postDetails[0]['thumbnail_url'],
                     postDetails[0]['aspect_ratio'],
                     postDetails[0]['post_views_count'],
-                    Provider.of<ProfileProvider>(context, listen: false)
-                ),
+                    Provider.of<ProfileProvider>(context, listen: false)),
               ),
             );
-
           },
           child: Text(
             notification.userName.toString(),
@@ -245,7 +246,9 @@ class _Activity extends State<Activity> {
             width: 40.0,
             color: Color(0xffFF0E58),
             child: CachedNetworkImage(
-              imageUrl: notification.postType == 'video' ? notification.thumbnailUrl : notification.postUrl,
+              imageUrl: notification.postType == 'video'
+                  ? notification.thumbnailUrl
+                  : notification.postUrl,
               placeholder: (context, url) => Center(
                 child: CircularProgressIndicator(),
               ),
@@ -257,7 +260,6 @@ class _Activity extends State<Activity> {
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

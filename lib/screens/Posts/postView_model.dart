@@ -4,7 +4,7 @@ import 'package:bangapp/widgets/like_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../../providers/Profile_Provider.dart';
+import '../../providers/profile_provider.dart';
 import 'package:bangapp/services/service.dart';
 import '../../services/animation.dart';
 import '../../widgets/build_media.dart';
@@ -287,7 +287,6 @@ class _PostCardState extends State<PostCard> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-
                                       widget.myProvider
                                           .increaseLikes(widget.postId);
                                       Service().likeAction(
@@ -310,7 +309,6 @@ class _PostCardState extends State<PostCard> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-
                                       Provider.of<UserLikesProvider>(context,
                                               listen: false)
                                           .getUserLikedPost(widget.postId);
@@ -338,16 +336,18 @@ class _PostCardState extends State<PostCard> {
                 ),
                 Container(
                   margin: EdgeInsets.only(left: 15),
-                  child: GestureDetector(onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) {
-                        return CommentsPage(
-                          userId: widget.userId,
-                          postId: widget.postId,
-                        );
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return CommentsPage(
+                              userId: widget.userId,
+                              postId: widget.postId,
+                            );
+                          },
+                        ));
                       },
-                    ));
-                  },child: Text('${widget.commentCount} comments')),
+                      child: Text('${widget.commentCount} comments')),
                 ),
               ],
             )));
@@ -355,7 +355,7 @@ class _PostCardState extends State<PostCard> {
 }
 
 class PostCaptionWidget extends StatefulWidget {
-   String? caption;
+  String? caption;
   final String? name;
   final int? postId;
   bool isEditing;
@@ -405,7 +405,8 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
                 IconButton(
                   icon: Icon(Icons.check),
                   onPressed: () async {
-                    var editMessage = await Service().editPost(widget.postId, _captionController.text);
+                    var editMessage = await Service()
+                        .editPost(widget.postId, _captionController.text);
                     print(editMessage);
 
                     Fluttertoast.showToast(

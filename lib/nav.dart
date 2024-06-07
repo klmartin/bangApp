@@ -8,14 +8,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'screens/Activity/activity_page.dart';
-import 'package:bangapp/screens/Home/Home2.dart';
+import 'package:bangapp/screens/Home/home2.dart';
 import 'package:bangapp/services/service.dart';
 import 'screens/Profile/profile.dart';
 import 'package:bangapp/screens/Widgets/fab_container.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
 import 'package:bangapp/providers/user_provider.dart';
-
 
 class Nav extends StatefulWidget {
   static const String id = 'nav';
@@ -29,11 +28,10 @@ class Nav extends StatefulWidget {
 class _NavState extends State<Nav> {
   bool _isAppBarEnabled = true; // Variable to track app bar state
   int _selectedIndex = 0;
-  late List<Widget> _widgetOptions ;
+  late List<Widget> _widgetOptions;
 
   @override
   void initState() {
-
     super.initState();
     _selectedIndex = widget.initialIndex;
     _widgetOptions = [
@@ -45,8 +43,6 @@ class _NavState extends State<Nav> {
     ];
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     chatProvider.getTotalUnreadMessages();
-
-
   }
 
   @override
@@ -68,7 +64,12 @@ class _NavState extends State<Nav> {
     ));
 
     return Scaffold(
-      appBar: _isAppBarEnabled ? CustomAppBar(title: 'BangApp', context: context,  ): null,
+      appBar: _isAppBarEnabled
+          ? CustomAppBar(
+              title: 'BangApp',
+              context: context,
+            )
+          : null,
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.grey.shade200,
@@ -92,15 +93,14 @@ class _NavState extends State<Nav> {
             size: 25.0,
           ),
           Stack(
-            children:[
-              FaIcon(
-              FontAwesomeIcons.heart,
-              size: 25.0),
+            children: [
+              FaIcon(FontAwesomeIcons.heart, size: 25.0),
               FutureBuilder<int>(
                 future: Service().fetchNotificationCount(),
                 builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                   final notificationCount = snapshot.data ?? 0;
-                  bool isNotificationCountGreaterThanZero = notificationCount > 0;
+                  bool isNotificationCountGreaterThanZero =
+                      notificationCount > 0;
                   return Visibility(
                     visible: isNotificationCountGreaterThanZero,
                     child: Positioned(
@@ -139,6 +139,4 @@ class _NavState extends State<Nav> {
       ),
     );
   }
-
-
 }

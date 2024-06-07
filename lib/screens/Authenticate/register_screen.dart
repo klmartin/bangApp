@@ -1,6 +1,4 @@
-//import 'dart:ffi';
 import 'dart:io';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,13 +21,14 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  @override
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final _formKey = GlobalKey<FormState>();
   late String email;
   late String password;
   late String confirmPassword;
   late String name;
   bool showSpinner = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,103 +51,134 @@ class _RegisterState extends State<Register> {
               SizedBox(
                 height: 48.0,
               ),
-              TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.name,
-                onChanged: (value) {
-                  name = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter your name',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.person),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.name,
+                      onChanged: (value) {
+                        name = value;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Enter your name',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.person),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 8.0,
+                    ),
+                    TextFormField(
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.emailAddress,
+                      onChanged: (value) {
+                        email = value;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Enter your email or Phone Number',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.mail_outline),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email or phone number';
+                        }
+                        // Add more specific validation for email if needed
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 8.0,
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      textAlign: TextAlign.center,
+                      onChanged: (value) {
+                        password = value;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.lock_person),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      keyboardType: TextInputType.text,
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 24.0,
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      textAlign: TextAlign.center,
+                      onChanged: (value) {
+                        confirmPassword = value;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.lock_person),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      keyboardType: TextInputType.text,
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (value != password) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.emailAddress,
-                onChanged: (value) {
-                  //Do something with the user input.
-                  email = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter your email or Phone Number',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.mail_outline),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-
-              SizedBox(
-                height: 8.0,
-              ),
-
-              TextField(
-                obscureText: true,
-                textAlign: TextAlign.center,
-                onChanged: (value) {
-                  password = value;
-                  //Do something with the user input.
-                },
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.lock_person),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                keyboardType: TextInputType.text,
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 24.0,
-              ),
-
-              //confirm password
-              TextField(
-                obscureText: true,
-                textAlign: TextAlign.center,
-                onChanged: (value) {
-                  confirmPassword = value;
-                  //Do something with the user input.
-                },
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.lock_person),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                keyboardType: TextInputType.text,
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
               ),
               SizedBox(
                 height: 24.0,
@@ -156,10 +186,10 @@ class _RegisterState extends State<Register> {
               Container(
                 child: MaterialButton(
                   onPressed: () async {
-                    setState(() {
-                      showSpinner = true;
-                    });
-                    if (password == confirmPassword) {
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        showSpinner = true;
+                      });
                       try {
                         var response = await http.post(
                           Uri.parse('$baseUrl/v1/register'),
@@ -179,13 +209,11 @@ class _RegisterState extends State<Register> {
                             setState(() {
                               showSpinner = false;
                             });
-                            // There are validation errors
                             final errors = responseBody['errors'];
                             String errorMessage = '';
                             errors.forEach((key, value) {
                               errorMessage += value[0] + '\n';
                             });
-                            // Display a toast message with the error
                             Fluttertoast.showToast(
                               msg: errorMessage,
                               toastLength: Toast.LENGTH_LONG,
@@ -208,7 +236,9 @@ class _RegisterState extends State<Register> {
                             prefs.setString('name', responseBody['name']);
                             prefs.setString('email', responseBody['email']);
                             print(prefs.getString('name'));
-                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            final userProvider = Provider.of<UserProvider>(
+                                context,
+                                listen: false);
                             if (userProvider.userData.isEmpty) {
                               userProvider.fetchUserData();
                             }
@@ -219,21 +249,21 @@ class _RegisterState extends State<Register> {
                                 ));
                           }
                         }
-                      }
-                      //Implement login functionality.
-                      catch (e) {
+                      } catch (e) {
+                        // Handle error
                       } finally {
-                        showSpinner = false;
+                        setState(() {
+                          showSpinner = false;
+                        });
                       }
                     } else {
                       Fluttertoast.showToast(
-                        msg: "Password and Confirm Password do not Match",
+                        msg: "Please correct the errors in the form",
                         toastLength: Toast.LENGTH_LONG,
                         gravity: ToastGravity.CENTER,
                         backgroundColor: Colors.red,
                         textColor: Colors.white,
                       );
-                      showSpinner = false;
                     }
                   },
                   minWidth: 200.0,
@@ -255,27 +285,6 @@ class _RegisterState extends State<Register> {
                     ),
                     borderRadius: BorderRadius.circular(20.0)),
               ),
-
-              const SizedBox(height: 50),
-              //google + apple sign in buttons
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     //google button
-              //     SquareTile(
-              //       imagePath: 'assets/images/google.png',
-              //       onTap: () => AuthService().signIn(),),
-              //
-              //     const SizedBox(width: 10),
-              //     //apple button
-              //     SquareTile(
-              //       imagePath: 'assets/images/apple.png',
-              //       onTap: () => AuthService().signIn(),
-              //     ),
-              //
-              //   ],
-              // ),
-
               const SizedBox(height: 50),
               MaterialButton(
                 onPressed: () {

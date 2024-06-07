@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart';
-import 'package:bangapp/providers/Profile_Provider.dart';
+import 'package:bangapp/providers/profile_provider.dart';
 import 'package:bangapp/providers/bang_update_provider.dart';
 import 'package:bangapp/providers/battle_comment_provider.dart';
 import 'package:bangapp/providers/challenge_upload.dart';
@@ -45,7 +45,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:bangapp/services/service.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferences.getInstance();
@@ -77,8 +76,6 @@ void main() async {
     ChangeNotifierProvider(create: (context) => BattleCommentProvider()),
     ChangeNotifierProvider(create: (context) => MessagePaymentProvider()),
     ChangeNotifierProvider(create: (context) => SubscriptionPaymentProvider()),
-
-
   ], child: MyApp()));
 }
 
@@ -131,7 +128,6 @@ class _AuthenticateState extends State<Authenticate> {
     super.initState();
     _configureFirebaseMessaging();
     _configureLocalNotifications();
-
 
 // For sharing images coming from outside the app while the app is closed
     ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
@@ -229,8 +225,13 @@ class _AuthenticateState extends State<Authenticate> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MessagesScreen(notificationId,
-                message.data['user_name'] ?? "Username", logoUrl,false,0,"0"),
+            builder: (context) => MessagesScreen(
+                notificationId,
+                message.data['user_name'] ?? "Username",
+                logoUrl,
+                false,
+                0,
+                "0"),
           ),
         );
       }
@@ -252,8 +253,8 @@ class _AuthenticateState extends State<Authenticate> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                MessagesScreen(notificationId, userName ?? "Username", logoUrl,false,0,"0"),
+            builder: (context) => MessagesScreen(
+                notificationId, userName ?? "Username", logoUrl, false, 0, "0"),
           ),
         );
       }

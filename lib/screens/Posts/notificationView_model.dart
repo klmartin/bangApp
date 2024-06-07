@@ -1,7 +1,7 @@
 import 'package:bangapp/screens/Widgets/post_options.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../providers/Profile_Provider.dart';
+import '../../providers/profile_provider.dart';
 import 'package:bangapp/services/service.dart';
 import '../../providers/post_likes.dart';
 import '../../widgets/build_media.dart';
@@ -359,8 +359,7 @@ class _NotifyCardState extends State<NotifyCard> {
                           },
                         ));
                       },
-                      child: Text('${widget.commentCount} comments')
-                  ),
+                      child: Text('${widget.commentCount} comments')),
                 ),
               ],
             )));
