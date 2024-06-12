@@ -3,7 +3,7 @@ import 'package:bangapp/message/constants.dart';
 import 'package:bangapp/providers/chat_provider.dart';
 import 'package:bangapp/screens/Activity/activity_page.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
-import 'package:bangapp/screens/Home/Home2.dart';
+import 'package:bangapp/screens/Home/home2.dart';
 import 'package:bangapp/screens/Profile/profile.dart';
 import 'package:bangapp/widgets/app_bar_tittle.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -52,13 +52,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
       print("Connected to frontend");
     });
 
-    socket.on('updateLastMessageInConversation', (lastMessage){
-        print("updateLastMessageInConverstion");
-        print(lastMessage);
-        final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-        chatProvider.updateLastMessageInConverstion(lastMessage);
-        });
-
+    socket.on('updateLastMessageInConversation', (lastMessage) {
+      print("updateLastMessageInConverstion");
+      print(lastMessage);
+      final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+      chatProvider.updateLastMessageInConverstion(lastMessage);
+    });
   }
 
   @override

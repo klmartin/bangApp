@@ -1,18 +1,16 @@
-import 'package:bangapp/providers/post_likes.dart';
 import 'package:bangapp/screens/Widgets/post_options.dart';
-import 'package:bangapp/widgets/like_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../providers/profile_provider.dart';
 import 'package:bangapp/services/service.dart';
-import '../../services/animation.dart';
+import '../../providers/post_likes.dart';
 import '../../widgets/build_media.dart';
+import '../../widgets/like_sheet.dart';
 import '../Comments/post_comment.dart';
 import '../Widgets/readmore.dart';
 import 'package:provider/provider.dart';
 
-class POstView extends StatefulWidget {
+class NotifyView extends StatefulWidget {
   String? name;
   String? caption;
   String? imgurl;
@@ -32,11 +30,10 @@ class POstView extends StatefulWidget {
   String? cacheUrl;
   String? thumbnailUrl;
   String? aspectRatio;
-  int? price;
   int postViews;
   ProfileProvider? myProvider;
 
-  POstView(
+  NotifyView(
     this.name,
     this.caption,
     this.imgurl,
@@ -56,16 +53,15 @@ class POstView extends StatefulWidget {
     this.cacheUrl,
     this.thumbnailUrl,
     this.aspectRatio,
-    this.price,
     this.postViews,
     this.myProvider,
   );
   static const id = 'postview';
   @override
-  _POstViewState createState() => _POstViewState();
+  _NotifyViewState createState() => _NotifyViewState();
 }
 
-class _POstViewState extends State<POstView> {
+class _NotifyViewState extends State<NotifyView> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -74,7 +70,7 @@ class _POstViewState extends State<POstView> {
         body: Container(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: PostCard(
+            child: NotifyCard(
                 widget.name!,
                 widget.caption!,
                 widget.imgurl!,
@@ -94,7 +90,6 @@ class _POstViewState extends State<POstView> {
                 widget.cacheUrl,
                 widget.thumbnailUrl,
                 widget.aspectRatio,
-                widget.price,
                 widget.postViews,
                 widget.myProvider!),
           ),
@@ -104,7 +99,7 @@ class _POstViewState extends State<POstView> {
   }
 }
 
-class PostCard extends StatefulWidget {
+class NotifyCard extends StatefulWidget {
   String postUrl;
   String name;
   String caption;
@@ -127,7 +122,8 @@ class PostCard extends StatefulWidget {
   int? price;
   int postViews;
   ProfileProvider myProvider;
-  PostCard(
+  ScrollController _scrollController = ScrollController();
+  NotifyCard(
       this.name,
       this.caption,
       this.postUrl,
@@ -147,17 +143,15 @@ class PostCard extends StatefulWidget {
       this.cacheUrl,
       this.thumbnailUrl,
       this.aspectRatio,
-      this.price,
       this.postViews,
       this.myProvider);
   @override
-  State<PostCard> createState() => _PostCardState();
+  State<NotifyCard> createState() => _NotifyCardState();
 }
 
-class _PostCardState extends State<PostCard> {
+class _NotifyCardState extends State<NotifyCard> {
   bool _isEditing = false;
 
-  var myProvider;
   void toggleEditing() {
     setState(() {
       _isEditing = !_isEditing;
@@ -209,27 +203,26 @@ class _PostCardState extends State<PostCard> {
                         widget.type,
                         widget.createdAt,
                         widget.postViews,
-                        "profile") ??
+                        "notification") ??
                     Container(),
                 InkWell(
-                  onTap: () {
-                    viewImage(context, widget.postUrl);
-                  },
+                  onTap: () => widget.type == 'image'
+                      ? viewImage(context, widget.postUrl)
+                      : null,
                   child: AspectRatio(
                     aspectRatio: widget.imgWidth / widget.imgHeight,
                     child: buildMediaWidget(
-                      context,
-                      widget.postUrl,
-                      widget.type,
-                      widget.imgWidth,
-                      widget.imgHeight,
-                      widget.pinned,
-                      widget.cacheUrl,
-                      widget.thumbnailUrl,
-                      widget.aspectRatio,
-                      widget.postId,
-                      widget.price,
-                    ),
+                        context,
+                        widget.postUrl,
+                        widget.type,
+                        widget.imgWidth,
+                        widget.imgHeight,
+                        widget.pinned,
+                        widget.cacheUrl,
+                        widget.thumbnailUrl,
+                        widget.aspectRatio,
+                        widget.postId,
+                        widget.postId),
                   ),
                 ),
                 Row(
@@ -250,11 +243,30 @@ class _PostCardState extends State<PostCard> {
                               width:
                                   3), // Add some spacing between the username and caption
                           Expanded(
-                            child: PostCaptionWidget(
-                                name: widget.name,
-                                caption: widget.caption,
-                                isEditing: false,
-                                postId: widget.postId),
+                            child: ReadMoreText(
+                              widget.caption,
+                              trimLines: 1,
+                              colorClickableText:
+                                  Theme.of(context).primaryColor,
+                              trimMode: TrimMode.line,
+                              trimCollapsedText: '...Show more',
+                              trimExpandedText: '...Show less',
+                              textColor: Colors.black,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                              lessStyle: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              moreStyle: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -287,8 +299,8 @@ class _PostCardState extends State<PostCard> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      widget.myProvider
-                                          .increaseLikes(widget.postId);
+                                      print('tapped');
+
                                       Service().likeAction(
                                           widget.postId, "A", widget.userId);
                                       setState(() {
@@ -355,15 +367,14 @@ class _PostCardState extends State<PostCard> {
 }
 
 class PostCaptionWidget extends StatefulWidget {
-  String? caption;
+  final String? caption;
   final String? name;
-  final int? postId;
-  bool isEditing;
-  PostCaptionWidget({
+  final bool isEditing;
+
+  const PostCaptionWidget({
     Key? key,
     this.caption,
     this.name,
-    this.postId,
     required this.isEditing,
   }) : super(key: key);
 
@@ -383,73 +394,37 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          // Toggle the isEditing state when the caption is pressed
-          widget.isEditing = !widget.isEditing;
-        });
-      },
-      child: widget.isEditing
-          ? Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _captionController,
-                    style: Theme.of(context).textTheme.bodyLarge!,
-                    decoration: InputDecoration(
-                      hintText: 'Type your caption...',
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.check),
-                  onPressed: () async {
-                    var editMessage = await Service()
-                        .editPost(widget.postId, _captionController.text);
-                    print(editMessage);
-
-                    Fluttertoast.showToast(
-                      msg: editMessage['message'],
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.CENTER,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.grey[600],
-                      textColor: Colors.white,
-                      fontSize: 16.0,
-                    );
-                    if (editMessage['message'] == "Post edited successfully") {
-                      setState(() {
-                        widget.caption = _captionController.text;
-                        widget.isEditing = !widget.isEditing;
-                      });
-                    }
-                  },
-                ),
-              ],
-            )
-          : ReadMoreText(
-              widget.caption ?? "",
-              trimLines: 2,
-              colorClickableText: Theme.of(context).primaryColor,
-              trimMode: TrimMode.line,
-              trimCollapsedText: '...Show more',
-              trimExpandedText: '...Show less',
-              textColor: Colors.black,
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.black,
-              ),
-              lessStyle: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-              moreStyle: TextStyle(
-                fontSize: 15,
-                color: Colors.black,
-              ),
-            ),
-    );
+    if (widget.isEditing) {
+      return TextField(
+        controller: _captionController,
+        style: Theme.of(context).textTheme.bodyLarge!,
+        decoration: InputDecoration(
+          hintText: 'Type your caption...',
+        ),
+      );
+    } else {
+      return ReadMoreText(
+        widget.caption ?? "",
+        trimLines: 2,
+        colorClickableText: Theme.of(context).primaryColor,
+        trimMode: TrimMode.line,
+        trimCollapsedText: '...Show more',
+        trimExpandedText: '...Show less',
+        textColor: Colors.black,
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+        ),
+        lessStyle: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        moreStyle: TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+        ),
+      );
+    }
   }
 }

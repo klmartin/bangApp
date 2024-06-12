@@ -30,13 +30,14 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  @override
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final _formKey = GlobalKey<FormState>();
   late String email;
   late String password;
   late String confirmPassword;
   late String name;
   bool showSpinner = false;
+
   bool _isObscured = true;
   bool _isObscuredConfirm = true;
   bool acceptTerms = false;
@@ -117,120 +118,134 @@ class _RegisterState extends State<Register> {
               SizedBox(
                 height: 48.0,
               ),
-              TextField(
-                textCapitalization: TextCapitalization.sentences,
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.name,
-                onChanged: (value) {
-                  name = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter Full Name',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.person),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.name,
+                      onChanged: (value) {
+                        name = value;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Enter your name',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.person),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 8.0,
+                    ),
+                    TextFormField(
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.emailAddress,
+                      onChanged: (value) {
+                        email = value;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Enter your email or Phone Number',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.mail_outline),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email or phone number';
+                        }
+                        // Add more specific validation for email if needed
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 8.0,
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      textAlign: TextAlign.center,
+                      onChanged: (value) {
+                        password = value;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.lock_person),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      keyboardType: TextInputType.text,
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 24.0,
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      textAlign: TextAlign.center,
+                      onChanged: (value) {
+                        confirmPassword = value;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(Icons.lock_person),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      keyboardType: TextInputType.text,
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (value != password) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                textCapitalization: TextCapitalization.sentences,
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.emailAddress,
-                onChanged: (value) {
-                  //Do something with the user input.
-                  email = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter your email or Phone Number',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.mail_outline),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                obscureText: _isObscured,
-                textAlign: TextAlign.center,
-                onChanged: (value) {
-                  password = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.lock_person),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _isObscured = !_isObscured;
-                      });
-                    },
-                    icon: Icon(
-                        _isObscured ? Icons.visibility_off : Icons.visibility),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                keyboardType: TextInputType.text,
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 24.0,
-              ),
-              //confirm password
-              TextField(
-                obscureText: _isObscuredConfirm,
-                textAlign: TextAlign.center,
-                onChanged: (value) {
-                  confirmPassword = value;
-                  //Do something with the user input.
-                },
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.lock_person),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _isObscuredConfirm = !_isObscuredConfirm;
-                      });
-                    },
-                    icon: Icon(_isObscuredConfirm
-                        ? Icons.visibility_off
-                        : Icons.visibility),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                keyboardType: TextInputType.text,
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
               ),
               Row(
                 children: [
@@ -269,10 +284,10 @@ class _RegisterState extends State<Register> {
               Container(
                 child: MaterialButton(
                   onPressed: () async {
-                    setState(() {
-                      showSpinner = true;
-                    });
-                    if (password == confirmPassword && acceptTerms) {
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        showSpinner = true;
+                      });
                       try {
                         var response = await http.post(
                           Uri.parse('$baseUrl/v1/register'),
@@ -292,13 +307,11 @@ class _RegisterState extends State<Register> {
                             setState(() {
                               showSpinner = false;
                             });
-                            // There are validation errors
                             final errors = responseBody['errors'];
                             String errorMessage = '';
                             errors.forEach((key, value) {
                               errorMessage += value[0] + '\n';
                             });
-                            // Display a toast message with the error
                             Fluttertoast.showToast(
                               msg: errorMessage,
                               toastLength: Toast.LENGTH_LONG,
@@ -335,33 +348,21 @@ class _RegisterState extends State<Register> {
                                 ));
                           }
                         }
-                      }
-                      //Implement login functionality.
-                      catch (e) {
+                      } catch (e) {
+                        // Handle error
                       } finally {
-                        showSpinner = false;
+                        setState(() {
+                          showSpinner = false;
+                        });
                       }
                     } else {
-                      if(password != confirmPassword){
-                        Fluttertoast.showToast(
-                          msg: "Password and Confirm Password do not Match",
-                          toastLength: Toast.LENGTH_LONG,
-                          gravity: ToastGravity.CENTER,
-                          backgroundColor: Color(0xFFF40BF5),
-                          textColor: Colors.white,
-                        );
-                      }
-                      if(acceptTerms == false){
-                        Fluttertoast.showToast(
-                          msg: "Pleas Accept/Read our Terms and Conditions",
-                          toastLength: Toast.LENGTH_LONG,
-                          gravity: ToastGravity.CENTER,
-                          backgroundColor: Color(0xFFF40BF5),
-                          textColor: Colors.white,
-                        );
-                      }
-
-                      showSpinner = false;
+                      Fluttertoast.showToast(
+                        msg: "Please correct the errors in the form",
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.CENTER,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                      );
                     }
                   },
                   minWidth: 200.0,
@@ -383,84 +384,7 @@ class _RegisterState extends State<Register> {
                     ),
                     borderRadius: BorderRadius.circular(20.0)),
               ),
-
-              const SizedBox(height: 25),
-              //google + apple sign in buttons
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     //google button
-              //     SquareTile(
-              //       imagePath: 'assets/images/google.png',
-              //       onTap: () async {
-              //         try {
-              //           setState(() {
-              //             showSpinner = true;
-              //           });
-              //           UserCredential userCredential = await signInWithGoogle();
-              //           // Handle successful sign-in
-              //           User? user = userCredential.user;
-              //           if (user != null) {
-              //             print([user.displayName,user.email,user.photoURL,user.phoneNumber]);
-              //             final newGoogleUser = await AuthService().addGoogleUser(user.displayName,user.email,user.photoURL,user.phoneNumber,user.uid);
-
-              //             if(newGoogleUser.containsKey('access_token')){
-
-              //               _firebaseMessaging.getToken().then((token) async {
-              //                 Service().sendTokenToBackend(
-              //                     token, newGoogleUser['id']);
-              //               });
-              //               SharedPreferences prefs = await SharedPreferences.getInstance();
-              //               prefs.setInt('user_id', newGoogleUser['id']);
-              //               await TokenManager.saveToken(
-              //                   newGoogleUser['access_token']);
-              //               prefs.setString('token', newGoogleUser['access_token']);
-              //               prefs.setString('name', newGoogleUser['name']);
-              //               prefs.setString('email', newGoogleUser['email']);
-              //               print("this is seted ${prefs.getString('name')}");
-              //               final userProvider = Provider.of<UserProvider>(context, listen: false);
-              //               if (userProvider.userData.isEmpty) {
-              //                 userProvider.fetchUserData();
-              //               }
-              //               Navigator.pushReplacement(
-              //                   context,
-              //                   MaterialPageRoute(
-              //                     builder: (context) => EditPage(),
-              //                   ));
-              //             }
-              //             print(newGoogleUser);
-              //           }
-              //           else{
-              //             setState(() {
-              //               showSpinner = false;
-              //             });
-              //           }
-              //         }
-              //         catch(e){
-              //           print(e);
-              //           setState(() {
-              //             showSpinner = false;
-              //           });
-              //         }
-              //       }),
-              //     const SizedBox(width: 10),
-              //     //apple button
-              //     // SquareTile(
-              //     //   imagePath: 'assets/images/facebook.png',
-              //     //   onTap: () async {
-              //     //     try {
-              //     //       await signInWithFacebook();
-              //     //       // Handle successful sign-in
-              //     //     } catch (e) {
-              //     //       // Handle sign-in error
-              //     //     }
-              //     //   },
-              //     // ),
-
-              //   ],
-              // ),
-
-              const SizedBox(height: 25),
+              const SizedBox(height: 50),
               MaterialButton(
                 onPressed: () {
                   Navigator.pushNamed(context, LoginScreen.id);

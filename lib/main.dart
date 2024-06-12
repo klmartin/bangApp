@@ -13,7 +13,7 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart';
-import 'package:bangapp/providers/Profile_Provider.dart';
+import 'package:bangapp/providers/profile_provider.dart';
 import 'package:bangapp/providers/bang_update_provider.dart';
 import 'package:bangapp/providers/battle_comment_provider.dart';
 import 'package:bangapp/providers/challenge_upload.dart';
@@ -62,8 +62,6 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final _noScreenshot = NoScreenshot.instance;
-  await _noScreenshot.screenshotOff();
   await SharedPreferences.getInstance();
   // Listen for shared data when the app starts
   if (Platform.isIOS) {

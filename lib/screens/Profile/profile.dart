@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bangapp/screens/Profile/edit_my_profile.dart';
 import 'package:bangapp/screens/settings/settings.dart';
@@ -11,14 +10,11 @@ import 'package:ionicons/ionicons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import '../../models/hobby.dart';
-import '../../providers/Profile_Provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../providers/bangUpdate_profile_provider.dart';
-import '../../providers/follower_provider.dart';
-import '../../providers/friends_provider.dart';
-import '../../widgets/followers_sheet.dart';
-import '../../widgets/friends_sheet.dart';
+import '../../providers/payment_provider.dart';
+import '../../widgets/build_media.dart';
 import '../../widgets/video_rect.dart';
-import '../Explore/bang_update_view.dart';
 import '../Posts/postView_model.dart';
 import '../Posts/post_challenge_view.dart';
 import '../Posts/post_video_challenge_view.dart';
@@ -46,41 +42,28 @@ class _ProfileState extends State<Profile> {
   ScrollController? _scrollController;
   bool _isLoading = false;
   int? phoneNumber;
-  List<Hobby> hobbies = [];
-
   DateTime date_of_birth = DateTime.now();
   String selectedHobbiesText = "";
   List<Hobby>? selectedHobbyList;
   List<Hobby> hobbyList = [];
   List<int> selectedHobbyIds = [];
   bool privacySwitchValue = false;
-  late FollowerProvider followerProvider;
+  late PaymentProvider paymentProvider;
   late UserProvider userProvider;
   final int _numberOfPostsPerRequest = 20;
   int _pageNumber = 1;
   bool _persposts = true;
   List<ImagePost> allImagePosts = [];
 
-  void fetchHobbies() async {
-    setState(() async {
-      hobbies = await Service().fetchHobbies();
-      print(hobbies![0].name);
-      print('first hobby');
-    });
-  }
-
   void initState() {
     super.initState();
-    fetchHobbies();
     userProvider = Provider.of<UserProvider>(context, listen: false);
-    followerProvider = Provider.of<FollowerProvider>(context, listen: false);
+    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
     _scrollController = ScrollController();
     _scrollController?.addListener(_scrollListener);
-    followerProvider.addListener(() {
-      if (followerProvider.payed == true &&
-          followerProvider.followersCount > 0) {
-        userProvider.addFollowerCount(followerProvider.followersCount);
-        followerProvider.resetFollowerCount = 0;
+    paymentProvider.addListener(() {
+      if (paymentProvider.isFinishPaying == true) {
+        userProvider.addFollowerCount(paymentProvider.payedPost);
       }
     });
   }
@@ -97,6 +80,7 @@ class _ProfileState extends State<Profile> {
     if (userProvider.userData.isEmpty) {
       userProvider.fetchUserData();
     }
+    // Build your UI using the imagePosts list
     return userProvider.userData.isEmpty
         ? ProfileHeaderSkeleton()
         : ListView(
@@ -104,11 +88,10 @@ class _ProfileState extends State<Profile> {
             controller: _scrollController,
             children: <Widget>[
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 8.0, right: 20.0, bottom: 10.0),
+                    padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
                     child: Container(
                         width: 80,
                         height: 80,
@@ -118,7 +101,7 @@ class _ProfileState extends State<Profile> {
                             image: DecorationImage(
                               image: CachedNetworkImageProvider(
                                   userProvider.userData['user_image_url'] ??
-                                      profileUrl),
+                                      ""),
                               fit: BoxFit.cover,
                             )),
                         child: rimage != null
@@ -130,64 +113,45 @@ class _ProfileState extends State<Profile> {
                               )
                             : Container()),
                   ),
-
-                  // Padding(
-                  //   padding: const EdgeInsets.only(right: 8.0),
-                  //   child: GestureDetector(
-                  //     onTap: () {
-                  //       openFilterDialog(context);
-                  //     },
-                  //     child: Container(
-                  //       width: 80,
-                  //       height: 80,
-                  //       child: Transform.translate(
-                  //         offset:
-                  //             Offset(0, 30), // Adjust the value of 8 as needed
-                  //         child: Icon(
-                  //           Ionicons.person_add_outline,
-                  //           color: Theme.of(context).colorScheme.secondary,
-                  //           size: 30,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.min,
-                children: [
+                  SizedBox(width: 150),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      userProvider.userData['name'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Metropolis',
+                    padding: const EdgeInsets.only(right: 20.0, bottom: 10.0),
+                    child: InkWell(
+                      onTap: () {
+                        print('no fat');
+                        openFilterDialog(context);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(right: 10),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Ionicons.person_add_outline,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 30,
+                            ),
+                            Text(
+                              'Buy Followers',
+                              style: TextStyle(
+                                fontSize: 14.5,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  // Row(
-                  //   children: [
-                  //     Padding(
-                  //       padding: const EdgeInsets.only(
-                  //           right: 8.0), // Adjust as needed
-                  //       child: GestureDetector(
-                  //         onTap: () {
-                  //           openFilterDialog(context);
-                  //         },
-                  //         child: Text(
-                  //           'Buy Followers',
-                  //           style: TextStyle(
-                  //             fontSize: 14.5,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                 ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  userProvider.userData['name'],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Metropolis',
+                  ),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),
@@ -197,7 +161,7 @@ class _ProfileState extends State<Profile> {
                   text: TextSpan(
                       style: TextStyle(
                           color: Colors.black, fontFamily: 'Metropolis'),
-                      text: userProvider.userData['bio']),
+                      text: userProvider.userData!['bio']),
                 ),
               ),
               Row(
@@ -213,22 +177,17 @@ class _ProfileState extends State<Profile> {
                                 builder: (context) => EditPage(
                                   nameController: TextEditingController(),
                                   userImage:
-                                      userProvider.userData['user_image_url'] ??
-                                          profileUrl,
-                                  name: userProvider.userData['name'] ?? "",
-                                  date_of_birth:
-                                      userProvider.userData['date_of_birth'] !=
-                                              null
-                                          ? DateTime.parse(userProvider
-                                              .userData['date_of_birth'])
-                                          : DateTime.parse("2000-01-01"),
-                                  phoneNumber:
-                                      userProvider.userData['phone_number'] ??
-                                          "",
+                                      userProvider.userData!['user_image_url'],
+                                  name: userProvider.userData!['name'],
+                                  date_of_birth: DateTime.parse(
+                                      userProvider.userData!['date_of_birth']),
+                                  phoneNumber: int.parse(
+                                      userProvider.userData!['phone_number']),
                                   selectedHobbiesText: selectedHobbiesText,
                                   occupation:
-                                      userProvider.userData['occupation'] ?? "",
-                                  bio: userProvider.userData['bio'] ?? "",
+                                      userProvider.userData!['occupation'] ??
+                                          "",
+                                  bio: userProvider.userData!['bio'] ?? "",
                                   occupationController: TextEditingController(),
                                   dateOfBirthController:
                                       TextEditingController(),
@@ -246,7 +205,6 @@ class _ProfileState extends State<Profile> {
                   SizedBox(width: 10),
                   Expanded(
                       child: Container(
-                    padding: EdgeInsets.only(right: 8),
                     child: OutlinedButton(
                         onPressed: () {
                           Navigator.push(
@@ -271,7 +229,7 @@ class _ProfileState extends State<Profile> {
                           padding: const EdgeInsets.only(bottom: 5.0),
                           child: Text(
                             // '$posts',
-                            userProvider.userData['postCount'].toString(),
+                            userProvider.userData!['postCount'].toString(),
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
@@ -293,33 +251,25 @@ class _ProfileState extends State<Profile> {
                         color: Colors.grey,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () async {
-                        FollowersModal.showFollowersModal(context);
-                        await Provider.of<FollowerProvider>(context,
-                                listen: false)
-                            .getAllFollowers();
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 5.0),
-                            child: Text(
-                              // '$followers',
-                              userProvider.userData['followerCount'].toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  fontFamily: 'Metropolis'),
-                            ),
-                          ),
-                          Text(
-                            'Followers',
+                    Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 5.0),
+                          child: Text(
+                            // '$followers',
+                            userProvider.userData!['followerCount'].toString(),
                             style: TextStyle(
-                                fontFamily: 'Metropolis', fontSize: 12),
-                          )
-                        ],
-                      ),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontFamily: 'Metropolis'),
+                          ),
+                        ),
+                        Text(
+                          'Followers',
+                          style:
+                              TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                        )
+                      ],
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
@@ -329,33 +279,25 @@ class _ProfileState extends State<Profile> {
                         color: Colors.grey,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () async {
-                        FriendsModal.showFriendsModal(
-                            context, userProvider.userData['id']);
-                        await Provider.of<FriendProvider>(context,
-                                listen: false)
-                            .getFriends();
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 4.0),
-                            child: Text(
-                              userProvider.userData['friendsCount'].toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  fontFamily: 'Metropolis'),
-                            ),
-                          ),
-                          Text(
-                            'Friends',
+                    Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: Text(
+                            // '$following',
+                            userProvider.userData!['followingCount'].toString(),
                             style: TextStyle(
-                                fontFamily: 'Metropolis', fontSize: 12),
-                          )
-                        ],
-                      ),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontFamily: 'Metropolis'),
+                          ),
+                        ),
+                        Text(
+                          'Friends',
+                          style:
+                              TextStyle(fontFamily: 'Metropolis', fontSize: 12),
+                        )
+                      ],
                     ),
                   ]),
               Container(
@@ -470,13 +412,10 @@ class _ProfileState extends State<Profile> {
 
   void openFilterDialog(BuildContext context) async {
     selectedHobbyList?.clear();
-    selectedHobbyIds?.clear();
-    FilterListDialog.display<Hobby>(
+    await FilterListDialog.display<Hobby>(
       context,
-      resetButtonText: "Select/Reset",
-      applyButtonText: "Buy",
-      backgroundColor: Color(0xFFF40BF5),
-      listData: hobbies, // Use hobbyList as the data source
+      listData:
+          await Service().fetchHobbies(), // Use hobbyList as the data source
       selectedListData: selectedHobbyList,
       choiceChipLabel: (hobby) =>
           hobby!.name, // Access the name property of Hobby
@@ -491,13 +430,13 @@ class _ProfileState extends State<Profile> {
           updateSelectedHobbiesText();
         });
         Navigator.pop(context);
-        buildFab(context, selectedHobbiesText, selectedHobbyIds);
+        buildFab(context, selectedHobbiesText);
       },
     );
   }
 }
 
-buildFab(BuildContext context, selectedHobbiesText, selectedHobbyIds) {
+buildFab(BuildContext context, selectedHobbiesText) {
   print(selectedHobbiesText);
   return showModalBottomSheet(
     isScrollControlled: true,
@@ -533,11 +472,10 @@ buildFab(BuildContext context, selectedHobbiesText, selectedHobbyIds) {
               ),
               title: Text('Bronze'),
               trailing: Text('2,500 Tshs'),
-              subtitle: Text('10 followers'),
+              subtitle: Text('500 followers'),
               onTap: () {
                 Navigator.pop(context);
-                buildPayments(
-                    selectedHobbiesText, context, 1000, 10, selectedHobbyIds);
+                buildPayments(selectedHobbiesText, context, 2500, 500);
               },
             ),
             ListTile(
@@ -548,11 +486,10 @@ buildFab(BuildContext context, selectedHobbiesText, selectedHobbyIds) {
               ),
               title: Text('Silver'),
               trailing: Text('5,000 Tshs'),
-              subtitle: Text('20 followers'),
+              subtitle: Text('1,100 followers'),
               onTap: () async {
                 Navigator.pop(context);
-                buildPayments(
-                    selectedHobbiesText, context, 5000, 20, selectedHobbyIds);
+                buildPayments(selectedHobbiesText, context, 5000, 1100);
               },
             ),
             ListTile(
@@ -563,12 +500,11 @@ buildFab(BuildContext context, selectedHobbiesText, selectedHobbyIds) {
               ),
               title: Text('Gold'),
               trailing: Text('10,000 Tshs'),
-              subtitle: Text('30 followers'),
+              subtitle: Text('2,300 followers'),
               onTap: () {
                 print(selectedHobbiesText);
                 Navigator.pop(context);
-                buildPayments(
-                    selectedHobbiesText, context, 10000, 30, selectedHobbyIds);
+                buildPayments(selectedHobbiesText, context, 10000, 2300);
               },
             ),
           ],
@@ -578,9 +514,8 @@ buildFab(BuildContext context, selectedHobbiesText, selectedHobbyIds) {
   );
 }
 
-buildPayments(
-    selectedHobbiesText, BuildContext context, price, count, selectedHobbyIds) {
-  var paymentProvider = Provider.of<FollowerProvider>(context, listen: false);
+buildPayments(selectedHobbiesText, BuildContext context, price, count) {
+  var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
   return showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -589,88 +524,82 @@ buildPayments(
     builder: (BuildContext context) {
       return Builder(
         builder: (BuildContext innerContext) {
-          return Consumer<FollowerProvider>(
-            builder: (context, paymentProvider, _) {
-              final userProvider = Provider.of<UserProvider>(innerContext);
-              final TextEditingController phoneNumberController =
-                  TextEditingController(
-                text: userProvider.userData['phone_number'].toString(),
-              );
+          final userProvider = Provider.of<UserProvider>(innerContext);
+          final TextEditingController phoneNumberController =
+              TextEditingController(
+            text: userProvider.userData['phone_number'].toString(),
+          );
 
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20.0),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Center(
-                        child: Text(
-                          'Pay $price Tshs for $selectedHobbiesText followers',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary,
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Center(
+                    child: Text(
+                      'Pay $price Tshs for $selectedHobbiesText followers',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                  ),
+                ),
+                TextField(
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  controller: phoneNumberController,
+                  decoration: InputDecoration(
+                    labelText: 'Phone number',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(Icons.phone),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                ),
+                Center(
+                  child: paymentProvider.isPaying
+                      ? LoadingAnimationWidget.staggeredDotsWave(
+                          color: Colors.red, size: 30)
+                      : TextButton(
+                          onPressed: () async {
+                            paymentProvider.startPaying(
+                                userProvider.userData['phone_number']
+                                    .toString(),
+                                price,
+                                count,
+                                'followers');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                          child: Text(
+                            'Pay',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    TextField(
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      controller: phoneNumberController,
-                      decoration: InputDecoration(
-                        labelText: 'Phone number',
-                        labelStyle: TextStyle(color: Colors.black),
-                        prefixIcon: Icon(Icons.phone),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                      ),
-                      style: TextStyle(color: Colors.black),
-                      cursorColor: Colors.black,
-                    ),
-                    Center(
-                      child: paymentProvider.isPaying
-                          ? LoadingAnimationWidget.staggeredDotsWave(
-                              color: Color(0xFFF40BF5), size: 30)
-                          : TextButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(Color(
-                                        0xFFF40BF5)), // Change background color
-                                foregroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white), // Change text color
-                              ),
-                              onPressed: () async {
-                                paymentProvider.startPaying(
-                                    userProvider.userData['phone_number']
-                                        .toString(),
-                                    price,
-                                    count,
-                                    'followers',
-                                    selectedHobbyIds);
-                              },
-                              child: Text(
-                                'Pay',
-                              ),
-                            ),
-                    ),
-                  ],
                 ),
-              );
-            },
+              ],
+            ),
           );
         },
       );
     },
   ).then((result) {
-    paymentProvider.paymentCanceled = true;
-    print(paymentProvider.isPaying);
+    // var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    // // paymentProvider.paymentCanceled = true;
+    // print(paymentProvider.isPaying);
     print('Modal bottom sheet closed: $result');
   });
 }
@@ -692,8 +621,7 @@ class _UpdatePostsStreamContent extends StatefulWidget {
 }
 
 class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
-  ScrollController _scrollUpdateController = ScrollController();
-  int _pageNumber = 1;
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -701,26 +629,21 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
     final updateProvider =
         Provider.of<BangUpdateProfileProvider>(context, listen: false);
     updateProvider.getMyUpdate();
-    _scrollUpdateController.addListener(_scrollListener);
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
-    _scrollUpdateController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   void _scrollListener() {
-    if (_scrollUpdateController.position.pixels >=
-        _scrollUpdateController.position.maxScrollExtent - 200) {
-      print('this is mwisho');
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent - 200) {
       final updateProvider =
           Provider.of<BangUpdateProfileProvider>(context, listen: false);
-      if (updateProvider.isLoading != true) {
-        _pageNumber++;
-        updateProvider
-            .loadMoreUpdates(_pageNumber); // Trigger loading of the next page
-      }
+      updateProvider.getMyUpdate(); // Trigger loading of the next page
     }
   }
 
@@ -733,7 +656,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
       } else if (provider.isLoading == false && provider.updates.isNotEmpty) {
         return SingleChildScrollView(
           key: const PageStorageKey<String>('update'),
-          controller: _scrollUpdateController,
+          controller: _scrollController,
           child: GridView(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -751,23 +674,7 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                         borderRadius: BorderRadius.circular(5),
                         child: InkWell(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => UpdateView(
-                                        provider.updates[i].postId,
-                                        provider.updates[i].type,
-                                        provider.updates[i].filename,
-                                        provider.updates[i].likeCount,
-                                        provider.updates[i].isLiked,
-                                        provider.updates[i].commentCount,
-                                        provider.updates[i].userImage,
-                                        provider.updates[i].userName,
-                                        provider.updates[i].caption,
-                                        provider.updates[i].aspectRatio,
-                                        provider.updates[i].thumbnailUrl,
-                                        provider.updates[i].cacheUrl,
-                                        provider)));
+                            viewImage(context, provider.updates[i].filename);
                           },
                           child: CachedNetworkImage(
                             imageUrl: provider.updates[i].filename,
@@ -783,28 +690,10 @@ class _UpdatePostsStreamContentState extends State<_UpdatePostsStreamContent> {
                         borderRadius: BorderRadius.circular(5),
                         child: InkWell(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => UpdateView(
-                                          provider.updates[i].postId,
-                                          provider.updates[i].type,
-                                          provider.updates[i].filename,
-                                          provider.updates[i].likeCount,
-                                          provider.updates[i].isLiked,
-                                          provider.updates[i].commentCount,
-                                          provider.updates[i].userImage,
-                                          provider.updates[i].userName,
-                                          provider.updates[i].caption,
-                                          provider.updates[i].aspectRatio,
-                                          provider.updates[i].thumbnailUrl,
-                                          provider.updates[i].cacheUrl,
-                                          provider)));
+                              print('pressed');
                             },
-                            child: CachedNetworkImage(
-                              imageUrl: provider.updates[i].thumbnailUrl,
-                              fit: BoxFit.cover,
-                            )),
+                            child: VideoRect(
+                                message: provider.updates[i].filename)),
                       ),
                     )
                   ]
@@ -842,6 +731,7 @@ class _ProfilePostsStreamContentState
   void initState() {
     super.initState();
     final providerPost = Provider.of<ProfileProvider>(context, listen: false);
+
     providerPost.getMyPosts(_pageNumber);
     _scrollController.addListener(_scrollListener);
   }
@@ -855,17 +745,16 @@ class _ProfilePostsStreamContentState
   void _scrollListener() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
+      _pageNumber++;
       final profileProvider =
           Provider.of<ProfileProvider>(context, listen: false);
-      if (profileProvider.isLoading != true) {
-        _pageNumber++;
-        profileProvider.loadMoreData(_pageNumber);
-      }
+      profileProvider.loadMoreData(_pageNumber);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Use the ProfileProvider here to build your UI based on the fetched posts
     return Consumer<ProfileProvider>(builder: (context, provider, child) {
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));
@@ -901,7 +790,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount,
+                                        provider.posts[i].commentCount!,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -942,7 +831,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount,
+                                        provider.posts[i].commentCount!,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -985,7 +874,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount,
+                                        provider.posts[i].commentCount!,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -1034,7 +923,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount,
+                                        provider.posts[i].commentCount!,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -1052,9 +941,7 @@ class _ProfilePostsStreamContentState
                                       )));
                         },
                         child: CachedNetworkImage(
-                          imageUrl: provider.posts[i].pinned == 1
-                              ? pinnedUrl
-                              : provider.posts[i].thumbnailUrl!,
+                          imageUrl: provider.posts[i].thumbnailUrl!,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -1077,7 +964,7 @@ class _ProfilePostsStreamContentState
                                         provider.posts[i].imgWidth!,
                                         provider.posts[i].imgHeight!,
                                         provider.posts[i].postId!,
-                                        provider.posts[i].commentCount,
+                                        provider.posts[i].commentCount!,
                                         provider.posts[i].userId!,
                                         provider.posts[i].isLikedA,
                                         provider.posts[i].likeCountA,
@@ -1120,7 +1007,7 @@ class _ProfilePostsStreamContentState
                                           provider.posts[i].imgWidth!,
                                           provider.posts[i].imgHeight!,
                                           provider.posts[i].postId!,
-                                          provider.posts[i].commentCount,
+                                          provider.posts[i].commentCount!,
                                           provider.posts[i].userId!,
                                           provider.posts[i].isLikedA,
                                           provider.posts[i].likeCountA,
@@ -1170,7 +1057,7 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].imgWidth!,
                                       provider.posts[i].imgHeight!,
                                       provider.posts[i].postId!,
-                                      provider.posts[i].commentCount,
+                                      provider.posts[i].commentCount!,
                                       provider.posts[i].userId!,
                                       provider.posts[i].isLikedA,
                                       provider.posts[i].likeCountA,
@@ -1186,10 +1073,7 @@ class _ProfilePostsStreamContentState
                                       provider.posts[i].postViews,
                                       provider)));
                         },
-                        child: VideoRect(
-                            message: provider.posts[i].pinned == 1
-                                ? pinnedUrl
-                                : provider.posts[i].thumbnailUrl),
+                        child: VideoRect(message: provider.posts[i].imageUrl),
                       ),
                     ),
                   ] else if (provider.posts[i].type == 'video' &&
@@ -1210,7 +1094,7 @@ class _ProfilePostsStreamContentState
                                           provider.posts[i].imgWidth!,
                                           provider.posts[i].imgHeight!,
                                           provider.posts[i].postId!,
-                                          provider.posts[i].commentCount,
+                                          provider.posts[i].commentCount!,
                                           provider.posts[i].userId!,
                                           provider.posts[i].isLikedA,
                                           provider.posts[i].likeCountA,
@@ -1226,9 +1110,7 @@ class _ProfilePostsStreamContentState
                             children: [
                               Expanded(
                                 child: VideoRect(
-                                    message: provider.posts[i].pinned == 1
-                                        ? pinnedUrl
-                                        : provider.posts[i].thumbnailUrl),
+                                    message: provider.posts[i].thumbnailUrl),
                               ),
                               Expanded(
                                 child: VideoRect(

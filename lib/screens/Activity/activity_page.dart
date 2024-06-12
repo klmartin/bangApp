@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:bangapp/models/notification.dart';
+import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/screens/Posts/notificationView_model.dart';
+import '../../providers/profile_provider.dart';
+import '../../services/token_storage_helper.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/friends_provider.dart';
 import '../../providers/notification_provider.dart';
@@ -30,12 +34,7 @@ class _Activity extends State<Activity> {
   void initState() {
     print('from notification');
     super.initState();
-    friendProvider = Provider.of<FriendProvider>(context, listen: false);
-
-    notificationProvider =
-        Provider.of<NotificationProvider>(context, listen: false);
-
-    notificationProvider.fetchNotifications(_pageNumber, _perPage);
+    fetchNotifications(_pageNumber, _perPage);
     _scrollController.addListener(() {
       _scrollPosition = _scrollController.offset;
     });
@@ -46,106 +45,75 @@ class _Activity extends State<Activity> {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       _pageNumber++;
-      // loadMoreNotifications(
-      //   _pageNumber,
-      // ); // Trigger loading of the next page
+      print(_pageNumber);
+      print('this is page number');
+      loadMoreNotifications(
+        _pageNumber,
+      ); // Trigger loading of the next page
     }
   }
 
-  ListTile _friendRequestList(NotificationItem notification) {
-    return ListTile(
-      leading: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UserProfile(userid: notification.userId),
-            ),
-          );
-        },
-        child: CircleAvatar(
-          backgroundImage: NetworkImage(notification.userImage),
-          radius: 28.0,
-        ),
-      ),
-      title: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UserProfile(userid: notification.userId),
-            ),
-          );
-        },
-        child: Text(
-          notification.userName,
-          style: TextStyle(
-            fontFamily: 'Metropolis',
-            fontWeight: FontWeight.bold,
-            fontSize: 15.0,
-          ),
-        ),
-      ),
-      subtitle: Text(
-        notification.message,
-        style: TextStyle(
-          fontFamily: 'Metropolis',
-          fontSize: 12.0,
-        ),
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            onPressed: () async {
-              String decline =
-              await friendProvider.declineFriendship(notification.postId);
-              if (decline.isNotEmpty) {
-                Fluttertoast.showToast(
-                  msg: friendProvider.requestMessage,
-                  toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
-                  gravity: ToastGravity.CENTER, // Toast position
-                  timeInSecForIosWeb: 1, // Time duration for iOS and web
-                  backgroundColor: Colors.grey[600],
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
-                notificationProvider.deleteNotification(notification.id);
-              }
-            },
-            icon: Icon(Icons.close),
-            iconSize: 30,
-            color: Colors.red,
-            padding: EdgeInsets.zero,
-            splashRadius: 35,
-          ),
-          SizedBox(width: 3), // Add some space between buttons
-          IconButton(
-            onPressed: () async {
-              String decline =
-              await friendProvider.acceptFriendship(notification.postId);
-              if (decline == "Confirmed") {
-                Fluttertoast.showToast(
-                  msg: friendProvider.requestMessage,
-                  toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
-                  gravity: ToastGravity.CENTER, // Toast position
-                  timeInSecForIosWeb: 1, // Time duration for iOS and web
-                  backgroundColor: Colors.grey[600],
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
-                notificationProvider.deleteNotification(notification.id);
-              }
-            },
-            icon: Icon(Icons.check),
-            iconSize: 30,
-            color: Colors.green,
-            padding: EdgeInsets.zero,
-            splashRadius: 35,
-          ),
-        ],
-      ),
-    );
+  Future<void> fetchNotifications(int page, int perPage) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    final String cacheKey = 'cached_notifications';
+    final String cachedData = prefs.getString(cacheKey) ?? '';
+    final int lastCachedTimestamp = prefs.getInt('${cacheKey}_time') ?? 0;
+
+    try {
+      if (cachedData.isNotEmpty &&
+          DateTime.now()
+                  .difference(
+                      DateTime.fromMillisecondsSinceEpoch(lastCachedTimestamp))
+                  .inMinutes <=
+              2) {
+        final data = json.decode(cachedData);
+        List<dynamic> responseList = data['notifications']['data'];
+        final notificationModel =
+            NotificationModel.fromJson(responseList); // Parse JSON
+        setState(() {
+          notifications = notificationModel.notifications;
+          isLoading = false;
+        });
+      } else {
+        final token = await TokenManager.getToken();
+        // Fetch data from the server with page and perPage parameters
+        final response = await http.get(
+          Uri.parse('$baseUrl/getNotifications/$userId/$page/$perPage'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type':
+                'application/json', // Include other headers as needed
+          },
+        );
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          List<dynamic> responseList = data['notifications']['data'];
+          print(data);
+          final notificationModel =
+              NotificationModel.fromJson(responseList); // Parse JSON
+          setState(() {
+            notifications = notificationModel.notifications;
+            isLoading = false; // Set isLoading to false when data is loaded
+          });
+          // Save data and timestamp to SharedPreferences
+          prefs.setString(cacheKey, response.body);
+          prefs.setInt(
+              '${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+        } else {
+          // Handle API error
+          isLoading = false; // Set isLoading to false when data is loaded
+          print('Failed to load notifications');
+        }
+      }
+    } catch (e) {
+      isLoading = false; // Set isLoading to false when data is loaded
+      print('Error fetching notifications: $e');
+    }
+  }
+
+  Future<void> loadMoreNotifications(pageNumber) async {
+    print(pageNumber);
   }
 
   GestureDetector _notificationList(NotificationItem notification) {
