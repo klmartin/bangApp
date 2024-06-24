@@ -1,8 +1,10 @@
+import 'package:bangapp/app_config.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/constants.dart';
 import 'package:bangapp/message/models/Chat.dart' as Chat;
 import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/chat_provider.dart';
+import 'package:bangapp/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,6 +50,8 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
+      final config = AppConfig.instance();
+        final userProvider = Provider.of<UserProvider>(context, listen: true);
     return  Column(
       children: [
         Container(
@@ -91,7 +95,7 @@ class _BodyState extends State<Body> {
                               print('conv status');
                               print(conv.isActive);
                               print(conv.privacySwitchValue);
-                            if (conv.privacySwitchValue! && conv.isActive==false ) {
+                            if (conv.privacySwitchValue! && conv.isActive==false && userProvider.userData['email'] != config.appleEmail ) {
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {

@@ -64,8 +64,7 @@ class _ProfileState extends State<Profile> {
   void fetchHobbies() async {
     setState(() async {
       hobbies = await Service().fetchHobbies();
-      print(hobbies![0].name);
-      print('first hobby');
+     
     });
   }
 

@@ -301,31 +301,29 @@ class _PostCardState extends State<PostCard> {
                                   3), // Add some spacing between the username and caption
                           Expanded(
                             child: GestureDetector(
-                              onTap: () {
-                                toggleEditing();
-                              },
-                              child: ReadMoreText(
-                                widget.caption ?? "",
-                                trimLines: 2,
-                                colorClickableText:Colors.black,
-                                trimMode: TrimMode.line,
-                                trimCollapsedText: '...Show more',
-                                trimExpandedText: '...Show less',
-                                textColor: Colors.black,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                                lessStyle: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFFF40BF5),
-                                ),
-                                moreStyle: TextStyle(
-                                  fontSize: 15,
-                                  color: Color(0xFFF40BF5),
-                                ),
-                              ),
+                              child: EditableTextWidget(initialText: widget.caption, postId: widget.postId, myProvider: widget.myProvider,),
+                              //   child: ReadMoreText(
+                              //   widget.caption ?? "",
+                              //   trimLines: 2,
+                              //   colorClickableText:Colors.black,
+                              //   trimMode: TrimMode.line,
+                              //   trimCollapsedText: '...Show more',
+                              //   trimExpandedText: '...Show less',
+                              //   textColor: Colors.black,
+                              //   style: TextStyle(
+                              //     fontSize: 15,
+                              //     color: Colors.black,
+                              //   ),
+                              //   lessStyle: TextStyle(
+                              //     fontSize: 15,
+                              //     fontWeight: FontWeight.bold,
+                              //     color: Color(0xFFF40BF5),
+                              //   ),
+                              //   moreStyle: TextStyle(
+                              //     fontSize: 15,
+                              //     color: Color(0xFFF40BF5),
+                              //   ),
+                              // ),
                             ),
                           ),
                         ],
@@ -366,6 +364,7 @@ class _PostCardState extends State<PostCard> {
                                       }
                                       Service().likeAction(
                                           widget.postId, "A", widget.userId);
+                                      widget.myProvider.refreshProfilePosts();
                                       setState(() {
                                         if (widget.isLiked) {
                                           widget.likeCount--;
@@ -543,6 +542,63 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
                 color: Color(0xFFF40BF5),
               ),
             ),
+    );
+  }
+}
+
+
+
+class EditableTextWidget extends StatefulWidget {
+  final String initialText;
+  final int postId;
+  final ProfileProvider myProvider;
+  const EditableTextWidget({Key? key, required this.initialText, required this.postId, required this.myProvider}) : super(key: key);
+
+  @override
+  _EditableTextWidgetState createState() => _EditableTextWidgetState();
+}
+
+class _EditableTextWidgetState extends State<EditableTextWidget> {
+  TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.initialText; // Set initial text directly
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      maxLines: null,
+      decoration: null,
+      onChanged: (text) async {
+        var editMessage = await Service().editPost(widget.postId, text);
+        Fluttertoast.showToast(
+          msg: editMessage['message'],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.grey[600],
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        // if (editMessage['message'] == "Post edited successfully") {
+        //   setState(() {
+        //     widget.caption = _captionController.text;
+        //     widget.isEditing = !widget.isEditing;
+        //   });
+        // }
+        // Perform actions based on the text entered
+        widget.myProvider.refreshProfilePosts();
+      },
     );
   }
 }

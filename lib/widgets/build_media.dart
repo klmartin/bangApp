@@ -1,3 +1,5 @@
+//import 'package:bangapp/flickplayer/flick_multi_manager.dart';
+import 'package:bangapp/app_config.dart';
 import 'package:bangapp/flickplayer/flick_multi_manager.dart';
 import 'package:bangapp/widgets/video_player_item.dart';
 import 'package:flick_video_player/flick_video_player.dart';
@@ -16,7 +18,10 @@ import '../providers/payment_provider.dart';
 late FlickMultiManager flickMultiManager;
 Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
      isPinned, cacheUrl, thumbnailUrl, aspectRatio, postId, price) {
-  if (type == 'image' && isPinned == 0) {
+        final userProvider = Provider.of<UserProvider>(context, listen: true);
+          final config = AppConfig.instance();
+
+  if (type == 'image' && isPinned == 0 ) {
     return AspectRatio(
       aspectRatio: double.parse(aspectRatio),
       child: GestureDetector(
@@ -38,7 +43,9 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
         ),
       ),
     );
-  } else if (type == 'image' || type == 'video' && isPinned == 1) {
+  } else if ((type == 'image' || type == 'video') && isPinned == 1 && userProvider.userData['email'] != config.appleEmail) {
+    print("nimeingia hapa");
+    print(userProvider.userData['email']);
     return GestureDetector(
       onTap: () {
         buildFab(context, price, postId);
@@ -58,10 +65,33 @@ Widget? buildMediaWidget(BuildContext context, mediaUrl, type,
       ),
     );
   } else if (type == 'video' && isPinned == 0) {
-    flickMultiManager = FlickMultiManager();
+    //flickMultiManager = FlickMultiManager();
     //return FlickMultiPlayer(url: mediaUrl, flickMultiManager: flickMultiManager,image: thumbnailUrl,aspectRatio: aspectRatio);
      return VideoPlayerItem(videoUrl: mediaUrl,aspectRatio: aspectRatio,thumbnailUrl: thumbnailUrl, cacheUrl: cacheUrl);
-  } else {
+  } else if (type == 'image' && isPinned == 1 && userProvider.userData['email'] == config.appleEmail) {
+     return AspectRatio(
+      aspectRatio: double.parse(aspectRatio),
+      child: GestureDetector(
+        onTap: () {
+          viewImage(context, mediaUrl);
+        },
+        child: CachedNetworkImage(
+          imageUrl: mediaUrl,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => AspectRatio(
+            aspectRatio: double.parse(aspectRatio),
+            child: Shimmer.fromColors(
+              baseColor: const Color.fromARGB(255, 30, 34, 45),
+              highlightColor:
+                  const Color.fromARGB(255, 30, 34, 45).withOpacity(.85),
+              child: Container(color: const Color.fromARGB(255, 30, 34, 45)),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  else{
     return Container();
   }
 }
@@ -137,7 +167,6 @@ void viewImage(BuildContext context, String imageUrl) {
 
 Future<Null> buildFab(BuildContext context, price, postId) {
   var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
-
   return showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -152,7 +181,6 @@ Future<Null> buildFab(BuildContext context, price, postId) {
               final TextEditingController phoneNumberController = TextEditingController(
                 text: userProvider.userData['phone_number'].toString(),
               );
-
               return SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

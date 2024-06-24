@@ -1,3 +1,5 @@
+import 'package:bangapp/app_config.dart';
+import 'package:bangapp/screens/settings/apple_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -30,9 +32,10 @@ class _AppSettings extends State<AppSettings> {
   }
 
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: true);
+  final userProvider = Provider.of<UserProvider>(context, listen: true);
+  final config = AppConfig.instance();
 
-    return Scaffold(
+    return userProvider.userData['email'] == config.appleEmail ? AppleSettingsPage() :  Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: AppBarTitle(text: 'Settings'),

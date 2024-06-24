@@ -18,6 +18,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/screens/Authenticate/reset_password.dart';
 import '../../services/token_storage_helper.dart';
+import 'package:bangapp/app_config.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login';
@@ -32,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late String password;
   final user = GoogleSignInAccount;
   bool _isObscured = true;
-
+  final config = AppConfig.instance();
   @override
   void initState() {
     super.initState();
@@ -187,6 +188,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               showSpinner = true;
                             });
                             try {
+                              // if(email == config.appleEmail && password ==config.applePassword){
+                              //    Navigator.pushReplacement(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) =>
+                              //             Nav(initialIndex: 0)),
+                              //   );
+                              // }
+
                               final response = await http.post(
                                 Uri.parse('$baseUrl/v1/login'),
                                 body: {
@@ -195,7 +205,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                               );
                               final responseBody = jsonDecode(response.body);
-
                               if (responseBody.containsKey('error') &&
                                   responseBody['error'] ==
                                       'invalid_credentials') {
@@ -220,8 +229,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                                 SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
-
-
                                   prefs.setInt(
                                       'user_id', responseBody['user_id']);
                                   await TokenManager.saveToken(
@@ -235,7 +242,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _firebaseMessaging
                                     .getToken()
                                     .then((token) async {
-
                                   Service().sendTokenToBackend(
                                       token, responseBody['user_id']);
                                   final userProvider =

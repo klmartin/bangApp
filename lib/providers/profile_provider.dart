@@ -309,4 +309,27 @@ class ProfileProvider extends ChangeNotifier {
     // You may want to set an error flag or log the error
   }
 
+  void refreshProfilePosts() async {
+    final token = await TokenManager.getToken();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id').toString();
+    final String cacheKey = 'cached_my_posts';
+      final response = await get(
+        Uri.parse(
+          "$baseUrl/getMyPosts?_page=1&_limit=100&user_id=$userId&viewer_id=$userId",
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Include other headers as needed
+        },
+      );
+      final responseData = json.decode(response.body);
+      prefs.setString(cacheKey, json.encode(responseData));
+      prefs.setInt('${cacheKey}_time', DateTime.now().millisecondsSinceEpoch);
+      processResponseData(responseData);
+      notifyListeners();
+  }
+
+
+
 }

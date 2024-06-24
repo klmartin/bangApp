@@ -56,7 +56,7 @@ class POstChallengeView extends StatefulWidget {
     this.likeCountA,
     this.likeCountB,
     this.postViews,
-   this.myProvider,
+    this.myProvider,
   );
   static const id = 'postview';
   @override
@@ -128,30 +128,29 @@ class PostCard extends StatefulWidget {
   ProfileProvider? myProvider;
 
   PostCard(
-      this.name,
-      this.caption,
-      this.postUrl,
-      this.challengeImgUrl,
-      this.imgWidth,
-      this.imgHeight,
-      this.postId,
-      this.commentCount,
-      this.userId,
-      this.isLiked,
-      this.likeCount,
-      this.type,
-      this.followerCount,
-      this.createdAt,
-      this.userImage,
-      this.pinned,
-      this.isLikedA,
-      this.isLikedB,
-      this.likeCountA,
-      this.likeCountB,
-      this.postViews,
-      this.myProvider,
-
-      );
+    this.name,
+    this.caption,
+    this.postUrl,
+    this.challengeImgUrl,
+    this.imgWidth,
+    this.imgHeight,
+    this.postId,
+    this.commentCount,
+    this.userId,
+    this.isLiked,
+    this.likeCount,
+    this.type,
+    this.followerCount,
+    this.createdAt,
+    this.userImage,
+    this.pinned,
+    this.isLikedA,
+    this.isLikedB,
+    this.likeCountA,
+    this.likeCountB,
+    this.postViews,
+    this.myProvider,
+  );
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -430,7 +429,7 @@ class _PostCardState extends State<PostCard> {
                 child: Row(
                   children: [
                     Text(
-                      widget.caption, // Add your username here
+                      widget.name, // Add your username here
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -439,25 +438,27 @@ class _PostCardState extends State<PostCard> {
                         width:
                             5), // Add some spacing between the username and caption
                     Expanded(
-                      child: ReadMoreText(
-                        widget.caption,
-                        trimLines: 1,
-                        style: Theme.of(context).textTheme.bodyLarge!,
-                        colorClickableText: Colors.black,
-                        trimMode: TrimMode.line,
-                        trimCollapsedText: '...Show more',
-                        trimExpandedText: '...Show less',
-                        moreStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFF40BF5),
-                        ),
+                      child: ReadMoreText(widget.caption,
+                          trimLines: 2,
+                          colorClickableText: Colors.black,
+                          trimMode: TrimMode.line,
+                          trimCollapsedText: '...Show more',
+                          trimExpandedText: '...Show less',
+                          textColor: Colors.black,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                          moreStyle: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFF40BF5),
+                          ),
                           lessStyle: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFF40BF5),
-                          )
-                      ),
+                          )),
                     ),
                   ],
                 ),

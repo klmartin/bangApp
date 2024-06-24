@@ -1,4 +1,7 @@
 {
-    "dart.flutterSdkPath": "C:\\src\\flutter\\flutter",
-    "dart.sdkPath": "C:\\src\\flutter\\bin\\cache\\dart-sdk"
+    "dart.flutterSdkPath": "/Users/ab036cc/fvm/default/bin/flutter/bin",
+    "dart.sdkPath": "/Users/ab036cc/fvm/default/bin/flutter/bin",
+    "cSpell.words": [
+        "bangapp"
+    ]
 }

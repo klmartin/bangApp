@@ -592,9 +592,7 @@ class PostItem2 extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
-                          width:
-                              5), // Add some spacing between the username and caption
+                      SizedBox(width:5), // Add some spacing between the username and caption
                       Expanded(
                         child: ReadMoreText(
                           caption,
@@ -606,7 +604,6 @@ class PostItem2 extends StatelessWidget {
                           trimExpandedText: '...Show less',
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
                           lessStyle: TextStyle(

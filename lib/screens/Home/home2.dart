@@ -17,7 +17,6 @@ import 'package:bangapp/loaders/home_skeleton.dart';
 import '../Widgets/video_upload.dart';
 
 class Home2 extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,6 +113,7 @@ class _Home2ContentState extends State<Home2Content>
       _pageNumber++;
       postsProvider.loadMoreData(_pageNumber); // Trigger loading of the next page
     }
+    
   }
 
   @override
@@ -272,7 +272,6 @@ class _Home2ContentState extends State<Home2Content>
           ),
           TextButton(
             onPressed: () {
-              print('pressed');
               final postsProvider =
                   Provider.of<PostsProvider>(context, listen: false);
               postsProvider.refreshData();

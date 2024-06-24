@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:bangapp/app_config.dart';
 import 'package:bangapp/constants/urls.dart';
+import 'package:bangapp/providers/user_provider.dart';
 import 'package:bangapp/screens/Profile/profilelist_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,7 +47,7 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   ScrollController? _scrollController;
   bool _isLoading = false;
-
+  final config = AppConfig.instance();
   final int _numberOfPostsPerRequest = 20;
   int _pageNumber = 1;
   List<ImagePost> allImagePosts = [];
@@ -146,6 +148,7 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
+  final userProvider = Provider.of<UserProvider>(context, listen: true);
 
     final friendProvider = Provider.of<FriendProvider>(context, listen: false);
     final userProfileDataProvider =
@@ -176,7 +179,7 @@ class _UserProfileState extends State<UserProfile> {
           actions: [
             InkWell(
               onTap: () {
-                if (userProfileDataProvider.userData['public']) {
+                if (userProfileDataProvider.userData['public'] && userProvider.userData['email'] != config.appleEmail) {
                   buildMessagePayment(context,
                       userProfileDataProvider.userData['price'], int.parse(widget.userid));
                 } else {
@@ -335,7 +338,7 @@ class _UserProfileState extends State<UserProfile> {
                   Expanded(
                       child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: userProfileDataProvider.userData['subscribe'] == 1
+                    child: userProfileDataProvider.userData['subscribe'] == 1 && userProvider.userData['email'] != config.appleEmail
                         ? OutlinedButton(
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
@@ -738,10 +741,12 @@ class _ProfilePostsStreamContentState
   Widget build(BuildContext context) {
     final userProfileDataProvider =
     Provider.of<UserProfileDataProvider>(context, listen: true);
+    final config = AppConfig.instance();
+        final userProvider = Provider.of<UserProvider>(context, listen: true);
     return Consumer<ProfileProvider>(builder: (context, provider, child) {
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));
-      } else if (widget.subscribe == true) {
+      } else if (widget.subscribe == true && userProvider.userData['email'] != config.appleEmail) {
         return GestureDetector(
           onTap: (){   buildSubscriptionPayment(
               context,

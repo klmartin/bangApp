@@ -728,6 +728,7 @@ class Service {
   }
 
   Future<Map<String, dynamic>> deletePost(postId) async {
+    print(postId);
     try {
       final token = await TokenManager.getToken();
       final response = await http.delete(
