@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bangapp/constants/urls.dart';
 import 'package:bangapp/message/screens/messages/message_screen.dart';
 import 'package:bangapp/providers/BoxDataProvider.dart';
+import 'package:bangapp/providers/auth_provider.dart';
 import 'package:bangapp/providers/profile_provider.dart';
 import 'package:bangapp/providers/bang_update_provider.dart';
 import 'package:bangapp/providers/battle_comment_provider.dart';
@@ -21,7 +22,7 @@ import 'package:bangapp/providers/update_comment_provider.dart';
 import 'package:bangapp/providers/video_upload.dart';
 import 'package:bangapp/screens/Posts/postView_model.dart';
 import 'package:bangapp/screens/Posts/view_challenge_page.dart';
-import 'package:bangapp/screens/Widgets/video_upload.dart';
+
 import 'package:flutter/material.dart';
 import 'package:bangapp/nav.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -75,6 +76,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => UpdateCommentProvider()),
     ChangeNotifierProvider(create: (context) => BattleCommentProvider()),
     ChangeNotifierProvider(create: (context) => MessagePaymentProvider()),
+    ChangeNotifierProvider(create: (context) => AuthProvider()),
     ChangeNotifierProvider(create: (context) => SubscriptionPaymentProvider()),
   ], child: MyApp()));
 }

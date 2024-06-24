@@ -28,6 +28,7 @@ class _RegisterState extends State<Register> {
   late String confirmPassword;
   late String name;
   bool showSpinner = false;
+  late String msg;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +77,7 @@ class _RegisterState extends State<Register> {
                       cursorColor: Colors.black,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return msg = 'Please enter your name';
                         }
                         return null;
                       },
@@ -105,9 +106,10 @@ class _RegisterState extends State<Register> {
                       cursorColor: Colors.black,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email or phone number';
+                          return msg =
+                              'Please enter your email or phone number';
                         }
-                        // Add more specific validation for email if needed
+                        // Add mo=re specific validation for email if needed
                         return null;
                       },
                     ),
@@ -136,10 +138,10 @@ class _RegisterState extends State<Register> {
                       cursorColor: Colors.black,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return msg = 'Please enter your password';
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return msg = 'Password must be at least 6 characters';
                         }
                         return null;
                       },
@@ -169,10 +171,10 @@ class _RegisterState extends State<Register> {
                       cursorColor: Colors.black,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
+                          return msg = 'Please confirm your password';
                         }
                         if (value != password) {
-                          return 'Passwords do not match';
+                          return msg = 'Passwords do not match';
                         }
                         return null;
                       },
@@ -258,7 +260,7 @@ class _RegisterState extends State<Register> {
                       }
                     } else {
                       Fluttertoast.showToast(
-                        msg: "Please correct the errors in the form",
+                        msg: "Error message $msg",
                         toastLength: Toast.LENGTH_LONG,
                         gravity: ToastGravity.CENTER,
                         backgroundColor: Colors.red,

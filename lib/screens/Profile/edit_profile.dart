@@ -18,20 +18,17 @@ late String occupation;
 String selectedHobbiesText = "";
 DateTime date_of_birth = DateTime.now();
 TextEditingController _dateController = TextEditingController();
-
-Service? loggedInUser;
+late String msg;
+late Service? loggedInUser;
 
 var imagePicker;
+final _formKey = GlobalKey<FormState>();
 
 enum ImageSourceType { gallery, camera }
 
 class EditPage extends StatefulWidget {
-  //final GoogleSignInAccount user;
   static const String id = 'edit';
-  EditPage({
-    Key? key,
-    //required this.user,
-  }) : super(key: key);
+  EditPage({Key? key}) : super(key: key);
 
   _EditPageState createState() => _EditPageState();
 }
@@ -43,12 +40,12 @@ ApiCacheHelper apiCacheHelper = ApiCacheHelper(
 
 Future<List<Hobby>> fetchHobbies() async {
   final response = await apiCacheHelper.fetchHobbies();
-  print(response);
   return response.map((json) => Hobby.fromJson(json)).toList();
 }
 
 class _EditPageState extends State<EditPage> {
   late Map<String, dynamic> _currentUser;
+
   @override
   void initState() {
     super.initState();
@@ -56,31 +53,24 @@ class _EditPageState extends State<EditPage> {
   }
 
   bool showSpinner = false;
-  @override
   List<Hobby>? selectedHobbyList;
   List<Hobby> hobbyList = [];
   List<int> selectedHobbyIds = [];
 
-
   void updateSelectedHobbiesText() {
     setState(() {
-      selectedHobbiesText = selectedHobbyList!
-          .map((hobby) => hobby.name!)
-          .toList()
-          .join(", "); // Concatenate hobby names with a comma and space
-      selectedHobbyIds = selectedHobbyList!
-          .map((hobby) => hobby.id!) // Access the ID property of the Hobby
-          .toList();
+      selectedHobbiesText =
+          selectedHobbyList!.map((hobby) => hobby.name!).toList().join(", ");
+      selectedHobbyIds = selectedHobbyList!.map((hobby) => hobby.id!).toList();
     });
   }
 
   void openFilterDialog() async {
     await FilterListDialog.display<Hobby>(
       context,
-      listData: await fetchHobbies(), // Use hobbyList as the data source
+      listData: await fetchHobbies(),
       selectedListData: selectedHobbyList,
-      choiceChipLabel: (hobby) =>
-          hobby!.name, // Access the name property of Hobby
+      choiceChipLabel: (hobby) => hobby!.name,
       validateSelectedItem: (list, val) => list!.contains(val),
       onItemSearch: (hobby, query) {
         return hobby.name!.toLowerCase().contains(query.toLowerCase());
@@ -95,10 +85,9 @@ class _EditPageState extends State<EditPage> {
       },
     );
   }
-  //late final GoogleSignInAccount user;
 
-  chooseUploadFile(BuildContext context) {
-    return showModalBottomSheet(
+  void chooseUploadFile(BuildContext context) {
+    showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -113,15 +102,16 @@ class _EditPageState extends State<EditPage> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
                 child: Container(
-                  // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
                   child: TextButton(
                       onPressed: () async {
-                        XFile image = await imagePicker.pickImage(
+                        XFile? image = await imagePicker.pickImage(
                           source: ImageSource.gallery,
                         );
-                        setState(() {
-                          rimage = image.path;
-                        });
+                        if (image != null) {
+                          setState(() {
+                            rimage = image.path;
+                          });
+                        }
                         Navigator.pop(context, rimage);
                       },
                       child: Text(
@@ -143,16 +133,17 @@ class _EditPageState extends State<EditPage> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
                 child: Container(
-                  // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
                   child: TextButton(
                       onPressed: () async {
-                        // _handleURLButtonPress(context, ImageSourceType.camera);
-                        XFile image = await imagePicker.pickImage(
+                        XFile? image = await imagePicker.pickImage(
                           source: ImageSource.camera,
                         );
-                        setState(() {
-                          rimage = image.path;
-                        });
+                        if (image != null) {
+                          setState(() {
+                            rimage = image.path;
+                          });
+                        } else
+                          msg = "Provide image";
                         Navigator.pop(context, rimage);
                       },
                       child: Text(
@@ -168,10 +159,6 @@ class _EditPageState extends State<EditPage> {
                           Colors.deepOrange,
                           Colors.deepPurple,
                           Colors.redAccent
-
-                          /* Colors.purple,
-                        Colors.deepPurple,
-                        Colors.blueAccent*/
                         ],
                         begin: Alignment.bottomRight,
                         end: Alignment.topLeft,
@@ -186,6 +173,7 @@ class _EditPageState extends State<EditPage> {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -214,243 +202,268 @@ class _EditPageState extends State<EditPage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: <Widget>[
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    rimage != null
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Container(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                  //to show image, you type like this.
-                                  File(rimage!),
-                                  fit: BoxFit.cover,
-                                  width: 100,
-                                  height: 100,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      rimage != null
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Container(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.file(
+                                    File(rimage!),
+                                    fit: BoxFit.cover,
+                                    width: 100,
+                                    height: 100,
+                                  ),
                                 ),
                               ),
+                            )
+                          : Text(
+                              "No Image",
+                              style: TextStyle(fontSize: 20),
                             ),
-                          )
-                        : Text(
-                            "No Image",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                    TextButton(
-                        onPressed: () {
-                          chooseUploadFile(context);
-                        },
-                        child: Text(
-                          'Change Profile photo',
-                          style: TextStyle(color: Colors.purple),
-                        ))
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                controller: _dateController,
-                onTap: () async {
-                  final DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: date_of_birth,
-                    //initialDate: DateTime.now(),
-                    firstDate: DateTime(1900, 1),
-                    lastDate: DateTime(2100, 12),
-                  );
-                  if (picked != null) {
-                    setState(() {
-                      date_of_birth = picked;
-                      _dateController.text = DateFormatter.formatDateTime(
-                        dateTime: date_of_birth,
-                        outputFormat: 'dd/MM/yyyy',
-                      );
-                    });
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter your date of birth',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.date_range),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  //Do something with the user input.
-                  phoneNumber = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter your phone number',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.phone),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                onTap: () async {
-                  openFilterDialog();
-                },
-                readOnly:
-                    true, // Make the TextField read-only to prevent manual input
-                decoration: InputDecoration(
-                  labelText: 'Select hobbies and intrests',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.accessibility_new),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-                controller: TextEditingController(text: selectedHobbiesText),
-                // Show the selected hobbies in the TextField
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.text,
-                onChanged: (value) {
-                  occupation = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Occupation',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.work_outline),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        //child: Text('Bio'),
-                      ),
-                      TextField(
-                        minLines: 6,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        textAlign: TextAlign.center,
-                        onChanged: (value) {
-                          _descr = value;
-                          //Do something with the user input.
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'Bio',
-                          labelStyle: TextStyle(color: Colors.black),
-                          prefixIcon: Icon(Icons.info_outline),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                        style: TextStyle(color: Colors.black),
-                        cursorColor: Colors.black,
-                      ),
+                      TextButton(
+                          onPressed: () {
+                            chooseUploadFile(context);
+                          },
+                          child: Text(
+                            'Change Profile photo',
+                            style: TextStyle(color: Colors.purple),
+                          ))
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 50.0, vertical: 100.0),
-                child: Container(
-                  // padding: EdgeInsets.fromLTRB(20.0, 20.0, 50.0, 10.0),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                    child: TextButton(
-                        onPressed: () async {
-                          if(hobbyList.isEmpty){Fluttertoast.showToast(msg: "Please Select Hobbies");}
-                          else if(hobbyList.length < 5){Fluttertoast.showToast(msg: "Please Select More Than 5 Hobbies");}
-                          else{
-                            await Service().setUserProfile(
-                                date_of_birth,
-                                int.parse(phoneNumber!),
-                                selectedHobbiesText,
-                                occupation,
-                                _descr,
-                                rimage,
-                                '');
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Nav(initialIndex: 0),
-                              ),
-                            );
-                          }
-                        },
-                        child: Text(
-                          'Update',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        )),
+                SizedBox(height: 8.0),
+                TextFormField(
+                  textAlign: TextAlign.center,
+                  controller: _dateController,
+                  onTap: () async {
+                    final DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: date_of_birth,
+                      firstDate: DateTime(1900, 1),
+                      lastDate: DateTime(2100, 12),
+                    );
+                    if (picked != null) {
+                      setState(() {
+                        date_of_birth = picked;
+                        _dateController.text = DateFormatter.formatDateTime(
+                          dateTime: date_of_birth,
+                          outputFormat: 'dd/MM/yyyy',
+                        );
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Enter your date of birth',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(Icons.date_range),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.deepOrange,
-                          Colors.deepPurple,
-                          Colors.redAccent
-                        ],
-                        begin: Alignment.bottomRight,
-                        end: Alignment.topLeft,
-                      ),
-                      borderRadius: BorderRadius.circular(20.0)),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return msg = 'Please enter your date of birth';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-            ],
+                SizedBox(height: 8.0),
+                TextFormField(
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    phoneNumber = value;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Enter your phone number',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(Icons.phone),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return msg = 'Please enter your phone number';
+                    }
+                    if (!RegExp(r'^\d+$').hasMatch(value)) {
+                      return msg = 'Please enter a valid phone number';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 8.0),
+                TextFormField(
+                  textAlign: TextAlign.center,
+                  onTap: () async {
+                    openFilterDialog();
+                  },
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Select hobbies and interests',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(Icons.accessibility_new),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                  controller: TextEditingController(text: selectedHobbiesText),
+                  validator: (value) {
+                    if (selectedHobbyList == null ||
+                        selectedHobbyList!.isEmpty) {
+                      return msg = 'Please select at least one hobby';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 8.0),
+                TextFormField(
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.text,
+                  onChanged: (value) {
+                    occupation = value;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Occupation',
+                    labelStyle: TextStyle(color: Colors.black),
+                    prefixIcon: Icon(Icons.work_outline),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  cursorColor: Colors.black,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return msg = 'Please enter your occupation';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 8.0),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TextFormField(
+                          minLines: 6,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          textAlign: TextAlign.center,
+                          onChanged: (value) {
+                            _descr = value;
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Bio',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(Icons.info_outline),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.black),
+                          cursorColor: Colors.black,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return msg = 'Please enter your bio';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 50.0, vertical: 100.0),
+                  child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                      child: TextButton(
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              if (selectedHobbyList!.length < 5) {
+                                Fluttertoast.showToast(msg: "error : $msg");
+                              } else {
+                                await Service().setUserProfile(
+                                    date_of_birth,
+                                    int.parse(phoneNumber!),
+                                    selectedHobbiesText,
+                                    occupation,
+                                    _descr,
+                                    rimage,
+                                    '');
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Nav(initialIndex: 0),
+                                  ),
+                                );
+                              }
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: "Error message $msg",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.CENTER,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                              );
+                            }
+                          },
+                          child: Text(
+                            'Update',
+                            style: TextStyle(color: Colors.white),
+                          )),
+                    ),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.deepOrange,
+                            Colors.deepPurple,
+                            Colors.redAccent
+                          ],
+                          begin: Alignment.bottomRight,
+                          end: Alignment.topLeft,
+                        ),
+                        borderRadius: BorderRadius.circular(20.0)),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

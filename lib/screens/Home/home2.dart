@@ -23,18 +23,18 @@ class Home2 extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
-    if (!authProvider.isAuthenticated) {
-      // Redirect to login if not authenticated
-      Future.microtask(() {
-        Navigator.of(context).pushReplacementNamed(
-            '/login'); // Ensure you have a route named '/login'
-      });
-      return Scaffold(
-        body: Center(
-            child:
-                CircularProgressIndicator()), // Placeholder until navigation completes
-      );
-    }
+    // if (!authProvider.isAuthenticated) {
+    //   // Redirect to login if not authenticated
+    //   Future.microtask(() {
+    //     Navigator.of(context).pushReplacementNamed(
+    //         Home2()); // Ensure you have a route named '/login'
+    //   });
+    //   return Scaffold(
+    //     body: Center(
+    //         child:
+    //             CircularProgressIndicator()), // Placeholder until navigation completes
+    //   );
+    // }
 
     return Scaffold(
       body: Home2Content(),
