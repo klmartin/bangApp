@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bangapp/constants/urls.dart';
 import 'package:date_formatter/date_formatter.dart';
 import 'package:filter_list/filter_list.dart';
@@ -25,8 +27,8 @@ class EditPage extends StatefulWidget {
   String phoneNumber;
   String occupation;
   String bio;
-
   String selectedHobbiesText = "";
+  List<int> selectedHobbyIds = [];
   DateTime date_of_birth = DateTime.now();
   TextEditingController _dateController = TextEditingController();
   String userImage ;
@@ -41,6 +43,7 @@ class EditPage extends StatefulWidget {
     required this.date_of_birth,
     required this.phoneNumber,
     required this.selectedHobbiesText,
+    required this.selectedHobbyIds,
     required this.occupation,
     required this.bio,
     required this.bioController,
@@ -367,9 +370,10 @@ class _EditPageState extends State<EditPage> {
                               showSpinner = true;
                             });
                             print('hobbies');
-                            print(widget.selectedHobbiesText);
+                            print(widget.selectedHobbyIds);
+                            
                             print('hobbies id');
-                            await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber,widget.selectedHobbiesText,widget.occupation,widget.bio,rimage,widget.name);
+                            await Service().setUserProfile(widget.date_of_birth,widget.phoneNumber,jsonEncode(widget.selectedHobbyIds),widget.occupation,widget.bio,rimage,widget.name);
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -410,7 +414,7 @@ class _EditPageState extends State<EditPage> {
           .map((hobby) => hobby.name!)
           .toList()
           .join(", "); // Concatenate hobby names with a comma and space
-      selectedHobbyIds = selectedHobbyList!
+      widget.selectedHobbyIds = selectedHobbyList!
           .map((hobby) => hobby.id!) // Access the ID property of the Hobby
           .toList();
     });

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bangapp/constants/urls.dart';
 import 'package:date_formatter/date_formatter.dart';
@@ -433,7 +435,6 @@ class _EditPageState extends State<EditPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 50.0),
                       child: TextButton(
                           onPressed: () async {
-                           
                             if (rimage == null) {
                               Fluttertoast.showToast(
                                   msg: "Upload Your Profile Picture");
@@ -460,10 +461,14 @@ class _EditPageState extends State<EditPage> {
                               setState(() {
                                 showSpinner = true;
                               });
+                               print('hobbies');
+                            print(selectedHobbyIds);
+                            print('hobbies id');
+
                               await Service().setUserProfile(
                                   date_of_birth,
-                                  phoneNumber!,
-                                  selectedHobbiesText,
+                                  phoneNumber,
+                                  jsonEncode(selectedHobbyIds),
                                   occupation,
                                   _descr,
                                   rimage,
