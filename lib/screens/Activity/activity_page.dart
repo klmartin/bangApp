@@ -8,10 +8,6 @@ import 'package:bangapp/models/notification.dart';
 import '../../providers/Profile_Provider.dart';
 import '../../providers/friends_provider.dart';
 import '../../providers/notification_provider.dart';
-import 'package:bangapp/constants/urls.dart';
-import 'package:bangapp/screens/Posts/notificationView_model.dart';
-import '../../providers/profile_provider.dart';
-import '../../services/token_storage_helper.dart';
 import 'package:bangapp/loaders/notification_skeleton.dart';
 
 import '../Posts/postView_model.dart';
