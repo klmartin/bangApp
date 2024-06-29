@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/azampay.dart';
 
-
 class MessagePaymentProvider extends ChangeNotifier {
   bool _isPaying = false;
   bool _payed = false;
@@ -54,13 +53,13 @@ class MessagePaymentProvider extends ChangeNotifier {
 
   Future<bool> _fetchPaymentStatus(transactionId) async {
     var status = await AzamPay().getPaymentStatus(transactionId);
-    if(status == true ){
+    if (status == true) {
       _payed = true;
       _isPaying = false;
       _processingStatusTimer?.cancel();
       notifyListeners();
     }
-    if (_paymentCanceled== true) {
+    if (_paymentCanceled == true) {
       _isFinishPaying = true;
       _isPaying = false;
       _processingStatusTimer?.cancel();

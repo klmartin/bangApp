@@ -30,8 +30,8 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  @override
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final _formKey = GlobalKey<FormState>();
   late String email;
   late String password;
   late String confirmPassword;
@@ -228,9 +228,6 @@ class _RegisterState extends State<Register> {
                     borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
-                keyboardType: TextInputType.text,
-                style: TextStyle(color: Colors.black),
-                cursorColor: Colors.black,
               ),
               Row(
                 children: [
@@ -292,13 +289,11 @@ class _RegisterState extends State<Register> {
                             setState(() {
                               showSpinner = false;
                             });
-                            // There are validation errors
                             final errors = responseBody['errors'];
                             String errorMessage = '';
                             errors.forEach((key, value) {
                               errorMessage += value[0] + '\n';
                             });
-                            // Display a toast message with the error
                             Fluttertoast.showToast(
                               msg: errorMessage,
                               toastLength: Toast.LENGTH_LONG,
@@ -335,11 +330,12 @@ class _RegisterState extends State<Register> {
                                 ));
                           }
                         }
-                      }
-                      //Implement login functionality.
-                      catch (e) {
+                      } catch (e) {
+                        // Handle error
                       } finally {
-                        showSpinner = false;
+                        setState(() {
+                          showSpinner = false;
+                        });
                       }
                     } else {
                       if(password != confirmPassword){
@@ -383,84 +379,7 @@ class _RegisterState extends State<Register> {
                     ),
                     borderRadius: BorderRadius.circular(20.0)),
               ),
-
-              const SizedBox(height: 25),
-              //google + apple sign in buttons
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     //google button
-              //     SquareTile(
-              //       imagePath: 'assets/images/google.png',
-              //       onTap: () async {
-              //         try {
-              //           setState(() {
-              //             showSpinner = true;
-              //           });
-              //           UserCredential userCredential = await signInWithGoogle();
-              //           // Handle successful sign-in
-              //           User? user = userCredential.user;
-              //           if (user != null) {
-              //             print([user.displayName,user.email,user.photoURL,user.phoneNumber]);
-              //             final newGoogleUser = await AuthService().addGoogleUser(user.displayName,user.email,user.photoURL,user.phoneNumber,user.uid);
-
-              //             if(newGoogleUser.containsKey('access_token')){
-
-              //               _firebaseMessaging.getToken().then((token) async {
-              //                 Service().sendTokenToBackend(
-              //                     token, newGoogleUser['id']);
-              //               });
-              //               SharedPreferences prefs = await SharedPreferences.getInstance();
-              //               prefs.setInt('user_id', newGoogleUser['id']);
-              //               await TokenManager.saveToken(
-              //                   newGoogleUser['access_token']);
-              //               prefs.setString('token', newGoogleUser['access_token']);
-              //               prefs.setString('name', newGoogleUser['name']);
-              //               prefs.setString('email', newGoogleUser['email']);
-              //               print("this is seted ${prefs.getString('name')}");
-              //               final userProvider = Provider.of<UserProvider>(context, listen: false);
-              //               if (userProvider.userData.isEmpty) {
-              //                 userProvider.fetchUserData();
-              //               }
-              //               Navigator.pushReplacement(
-              //                   context,
-              //                   MaterialPageRoute(
-              //                     builder: (context) => EditPage(),
-              //                   ));
-              //             }
-              //             print(newGoogleUser);
-              //           }
-              //           else{
-              //             setState(() {
-              //               showSpinner = false;
-              //             });
-              //           }
-              //         }
-              //         catch(e){
-              //           print(e);
-              //           setState(() {
-              //             showSpinner = false;
-              //           });
-              //         }
-              //       }),
-              //     const SizedBox(width: 10),
-              //     //apple button
-              //     // SquareTile(
-              //     //   imagePath: 'assets/images/facebook.png',
-              //     //   onTap: () async {
-              //     //     try {
-              //     //       await signInWithFacebook();
-              //     //       // Handle successful sign-in
-              //     //     } catch (e) {
-              //     //       // Handle sign-in error
-              //     //     }
-              //     //   },
-              //     // ),
-
-              //   ],
-              // ),
-
-              const SizedBox(height: 25),
+              const SizedBox(height: 50),
               MaterialButton(
                 onPressed: () {
                   Navigator.pushNamed(context, LoginScreen.id);

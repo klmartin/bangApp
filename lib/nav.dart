@@ -11,12 +11,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'screens/Activity/activity_page.dart';
-import 'package:bangapp/screens/Home/Home2.dart';
+import 'package:bangapp/screens/Home/home2.dart';
 import 'package:bangapp/services/service.dart';
 import 'screens/Profile/profile.dart';
 import 'package:bangapp/screens/Create/create_page.dart' as CR;
 import 'package:video_player/video_player.dart';
-
 
 class Nav extends StatefulWidget {
   static const String id = 'nav';
@@ -95,15 +94,14 @@ class _NavState extends State<Nav> {
             size: 25.0,
           ),
           Stack(
-            children:[
-              FaIcon(
-              FontAwesomeIcons.heart,
-              size: 25.0),
+            children: [
+              FaIcon(FontAwesomeIcons.heart, size: 25.0),
               FutureBuilder<int>(
                 future: Service().fetchNotificationCount(),
                 builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                   final notificationCount = snapshot.data ?? 0;
-                  bool isNotificationCountGreaterThanZero = notificationCount > 0;
+                  bool isNotificationCountGreaterThanZero =
+                      notificationCount > 0;
                   return Visibility(
                     visible: isNotificationCountGreaterThanZero,
                     child: Positioned(

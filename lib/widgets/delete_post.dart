@@ -6,7 +6,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../nav.dart';
-import '../providers/Profile_Provider.dart';
+import '../providers/profile_provider.dart';
 import '../providers/posts_provider.dart';
 
 class DeletePostWidget extends StatefulWidget {
