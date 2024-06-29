@@ -12,6 +12,7 @@ import '../Comments/post_comment.dart';
 import '../Widgets/readmore.dart';
 import 'package:provider/provider.dart';
 
+
 class POstView extends StatefulWidget {
   String? name;
   String? caption;

@@ -234,6 +234,7 @@ class _ProfileState extends State<Profile> {
                                   phoneNumberController:
                                       TextEditingController(),
                                   bioController: TextEditingController(),
+                                  selectedHobbyIds: [],
                                 ),
                               ));
                         },
