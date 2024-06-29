@@ -580,52 +580,60 @@ class PostItem2 extends StatelessWidget {
                 Container(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: EdgeInsets.all(8),
-                  width: MediaQuery.of(context).size.width * 0.82,
-                  child: Row(
-                    children: [
-                      Text(
-                        name, // Add your username here
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width:5), // Add some spacing between the username and caption
-                      Expanded(
-                        child: ReadMoreText(
-                          caption,
-                          trimLines: 1,
-                          colorClickableText: Colors.black,
-                          trimMode: TrimMode.line,
-                          textColor: Colors.black,
-                          trimCollapsedText: '...Show more',
-                          trimExpandedText: '...Show less',
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                          name, 
                           style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black,
-                          ),
-                          lessStyle: TextStyle(
-                            fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFFF40BF5),
                           ),
-                          moreStyle: TextStyle(
-                            fontSize: 15,
-                            color: Color(0xFFF40BF5),
-                          ),
-                          delimiterStyle: TextStyle(color:Colors.black),
                         ),
-                      ),
-                    ],
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(left: 8,top: 8),
+                    width: MediaQuery.of(context).size.width * 0.82,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        
+                        SizedBox(width:5), // Add some spacing between the username and caption
+                        Expanded(
+                          child: ReadMoreText(
+                            caption,
+                            trimLines: 1,
+                            colorClickableText: Colors.black,
+                            trimMode: TrimMode.line,
+                            textColor: Colors.black,
+                            trimCollapsedText: '...Show more',
+                            trimExpandedText: '...Show less',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
+                            ),
+                            lessStyle: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFF40BF5),
+                            ),
+                            moreStyle: TextStyle(
+                              fontSize: 15,
+                              color: Color(0xFFF40BF5),
+                            ),
+                            delimiterStyle: TextStyle(color:Colors.black),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
+                      padding: const EdgeInsets.only(right: 8.0,top: 8),
                       child: Row(
                         children: [
                           GestureDetector(

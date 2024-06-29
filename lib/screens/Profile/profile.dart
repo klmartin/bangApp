@@ -62,9 +62,9 @@ class _ProfileState extends State<Profile> {
   List<ImagePost> allImagePosts = [];
 
   void fetchHobbies() async {
-    setState(() async {
-      hobbies = await Service().fetchHobbies();
-     
+    var hobby = await Service().fetchHobbies();
+    setState(() {
+      hobbies = hobby;
     });
   }
 
@@ -234,6 +234,7 @@ class _ProfileState extends State<Profile> {
                                   phoneNumberController:
                                       TextEditingController(),
                                   bioController: TextEditingController(),
+                                  selectedHobbyIds: [],
                                 ),
                               ));
                         },
@@ -869,6 +870,8 @@ class _ProfilePostsStreamContentState
       if (provider.posts.isEmpty && provider.isLoading == false) {
         return Center(child: Text('No Posts Available'));
       } else if (provider.isLoading == false && provider.posts.isNotEmpty) {
+           
+
         return SingleChildScrollView(
           key: const PageStorageKey<String>('profile'),
           controller: _scrollController,

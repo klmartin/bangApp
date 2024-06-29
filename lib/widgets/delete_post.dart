@@ -27,7 +27,6 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
     setState(() {
       _isLoading = true;
     });
-
     try {
       final responseBody = await Service().deletePost(widget.imagePostId);
       if (responseBody['message'] == 'Post deleted successfully') {
@@ -38,11 +37,9 @@ class _DeletePostWidgetState extends State<DeletePostWidget> {
           postsProvider.deletePostById(widget.imagePostId);
           Navigator.pop(context);
         } else if (widget.type == 'profile') {
-          final providerPost =
-              Provider.of<ProfileProvider>(context, listen: false);
+          final providerPost = Provider.of<ProfileProvider>(context, listen: false);
           providerPost.deletePostById(widget.imagePostId);
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => Nav(initialIndex: 4)));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Nav(initialIndex: 4)));
         }
       }
     } catch (e) {

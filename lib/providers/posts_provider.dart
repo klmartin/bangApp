@@ -178,7 +178,7 @@ class PostsProvider with ChangeNotifier {
       }
       if (responseData.containsKey('data')) {
         print('refresh response print');
-        print(_error);
+        print(responseData['data']['data']);
         List<dynamic> responseList = responseData['data']['data'];
         final newPosts = responseList.map((data) {
           List<dynamic>? challengesList = data['challenges'];
@@ -244,9 +244,14 @@ class PostsProvider with ChangeNotifier {
   }
 
   void deletePostById(int postId) {
+    print(_posts.length);
     _posts.removeWhere((post) => post.postId == postId);
+    print("posts deleted");
+    print(_posts.length);
     notifyListeners();
   }
+
+
 
   void deletePinnedById(int postId) {
     _posts.forEach((post) {

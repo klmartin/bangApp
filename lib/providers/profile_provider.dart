@@ -89,8 +89,8 @@ class ProfileProvider extends ChangeNotifier {
   void processResponseData(Map<String, dynamic> responseData) {
     if (responseData.containsKey('data')) {
       List<dynamic> responseList = responseData['data']['data'];
-      _posts.addAll(
-          responseList.map((json) => ImagePost.fromJson(json)).toList());
+      _posts.addAll(responseList.map((json) => ImagePost.fromJson(json)).toList());
+     
       _isLoading = false;
       notifyListeners();
     } else {
@@ -247,8 +247,8 @@ class ProfileProvider extends ChangeNotifier {
 
 
   void deletePostById(int postId) {
+    
     _posts.removeWhere((post) => post.postId == postId);
-    _isLoading = true;
     notifyListeners();
   }
 

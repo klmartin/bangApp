@@ -248,17 +248,6 @@ class _PostCardState extends State<PostCard> {
                               onPressed: () async {
                                 var editMessage = await Service().editPost(
                                     widget.postId, _captionController.text);
-                                print(editMessage);
-
-                                Fluttertoast.showToast(
-                                  msg: editMessage['message'],
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.grey[600],
-                                  textColor: Colors.white,
-                                  fontSize: 16.0,
-                                );
                                 if (editMessage['message'] ==
                                     "Post edited successfully") {
                                   setState(() {
@@ -282,55 +271,37 @@ class _PostCardState extends State<PostCard> {
                       widget.price,
                     ) ??
                     Container(),
+                    
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left:8.0, top: 8.0),
+                      child: Text(
+                                  widget.name, // Add your username here
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                    ),
                     Container(
-                      padding: EdgeInsets.only(left: 8),
+                      padding: EdgeInsets.only(top: 4),
                       width: MediaQuery.of(context).size.width * 0.72,
                       child: Row(
                         children: [
-                          Text(
-                            widget.name, // Add your username here
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                              width:
-                                  3), // Add some spacing between the username and caption
+                          
+                          SizedBox(width:3), // Add some spacing between the username and caption
                           Expanded(
                             child: GestureDetector(
-                              child: EditableTextWidget(initialText: widget.caption, postId: widget.postId, myProvider: widget.myProvider,),
-                              //   child: ReadMoreText(
-                              //   widget.caption ?? "",
-                              //   trimLines: 2,
-                              //   colorClickableText:Colors.black,
-                              //   trimMode: TrimMode.line,
-                              //   trimCollapsedText: '...Show more',
-                              //   trimExpandedText: '...Show less',
-                              //   textColor: Colors.black,
-                              //   style: TextStyle(
-                              //     fontSize: 15,
-                              //     color: Colors.black,
-                              //   ),
-                              //   lessStyle: TextStyle(
-                              //     fontSize: 15,
-                              //     fontWeight: FontWeight.bold,
-                              //     color: Color(0xFFF40BF5),
-                              //   ),
-                              //   moreStyle: TextStyle(
-                              //     fontSize: 15,
-                              //     color: Color(0xFFF40BF5),
-                              //   ),
-                              // ),
+                              child: EditableTextWidget(initialText: widget.caption, postId: widget.postId, myProvider: widget.myProvider,)
                             ),
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 10),
+                      padding: EdgeInsets.only(right: 8, top: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -501,15 +472,7 @@ class _PostCaptionWidgetState extends State<PostCaptionWidget> {
                     var editMessage = await Service()
                         .editPost(widget.postId, _captionController.text);
 
-                    Fluttertoast.showToast(
-                      msg: editMessage['message'],
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.CENTER,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.grey[600],
-                      textColor: Colors.white,
-                      fontSize: 16.0,
-                    );
+                   
                     if (editMessage['message'] == "Post edited successfully") {
                       setState(() {
                         widget.caption = _captionController.text;
@@ -581,15 +544,7 @@ class _EditableTextWidgetState extends State<EditableTextWidget> {
       decoration: null,
       onChanged: (text) async {
         var editMessage = await Service().editPost(widget.postId, text);
-        Fluttertoast.showToast(
-          msg: editMessage['message'],
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.grey[600],
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+       
         // if (editMessage['message'] == "Post edited successfully") {
         //   setState(() {
         //     widget.caption = _captionController.text;
